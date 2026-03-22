@@ -31,8 +31,10 @@ public partial class Enemy : Node
 
 	private IEnemyAI _ai;
 	private AIAction _currentAction;
+	private List<StatusEffect> _statusEffects = new List<StatusEffect>();
 
 	public AIAction CurrentAction => _currentAction;
+	public List<StatusEffect> StatusEffects => _statusEffects;
 
 	public override void _Ready()
 	{
@@ -64,10 +66,10 @@ public partial class Enemy : Node
 		return TakeDamage(damage);
 	}
 
-	public int AttackPlayer(Player player)
+	public void AttackPlayer(Player player)
 	{
 		int damage = CombatCalculator.CalculateDamageWithVariance(Attack);
-		return player.TakeDamage(damage);
+		player.TakeDamage(damage);
 	}
 
 	public void PerformAction(Player player, List<Enemy> allEnemies)
@@ -111,6 +113,55 @@ public partial class Enemy : Node
 		CurrentHealth = Mathf.Min(MaxHealth, CurrentHealth + amount);
 	}
 
+	public void AddStatusEffect(StatusEffect effect)
+	{
+		StatusEffect existing = _statusEffects.Find(e => e.EffectName == effect.EffectName);
+		if (existing != null)
+		{
+			existing.RefreshDuration();
+			return;
+		}
+
+		effect.Initialize();
+		_statusEffects.Add(effect);
+		effect.OnApplyEnemy(this);
+	}
+
+	public void RemoveStatusEffect(StatusEffect effect)
+	{
+		if (_statusEffects.Remove(effect))
+		{
+			effect.OnRemoveEnemy(this);
+		}
+	}
+
+	public void ProcessTurnStartEffects()
+	{
+		foreach (StatusEffect effect in _statusEffects.ToArray())
+		{
+			effect.OnTurnStartEnemy(this);
+		}
+	}
+
+	public void ProcessTurnEndEffects()
+	{
+		foreach (StatusEffect effect in _statusEffects.ToArray())
+		{
+			effect.OnTurnEndEnemy(this);
+		}
+		_statusEffects.RemoveAll(e => e.IsExpired());
+	}
+
+	public int CalculateModifiedDamage(int baseDamage, Enemy attacker)
+	{
+		int modifiedDamage = baseDamage;
+		foreach (StatusEffect effect in _statusEffects)
+		{
+			modifiedDamage = effect.ModifyDamageEnemy(modifiedDamage, attacker, this);
+		}
+		return modifiedDamage;
+	}
+
 	public float GetHealthPercent()
 	{
 		return (float)CurrentHealth / MaxHealth;
@@ -133,5 +184,10 @@ public partial class Enemy : Node
 			InitializeAI();
 		}
 		return _ai.ChooseAction(this, player, allEnemies);
+	}
+
+	public bool IsDead()
+	{
+		return CurrentHealth <= 0;
 	}
 }

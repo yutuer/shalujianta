@@ -29,6 +29,7 @@ public partial class BattleManager : Node2D
     private PackedScene battleLogScene;
 
     private BattleLogWindow battleLogWindow;
+    private EnemyIntentDisplay intentDisplay;
 
     private int hoveredCardIndex = -1;
 
@@ -92,6 +93,7 @@ public partial class BattleManager : Node2D
     {
         battleLogWindow = battleLogScene.Instantiate<BattleLogWindow>();
         GetNode<CanvasLayer>("UI").AddChild(battleLogWindow);
+        intentDisplay = new EnemyIntentDisplay();
     }
 
     private void InitializePlayer()
@@ -354,6 +356,40 @@ public partial class BattleManager : Node2D
             player.Heal(card.HealAmount);
             AddMessage($"你使用了{card.Name}，回复{card.HealAmount}点生命", LogType.Heal);
         }
+
+        if (card.DrawCount > 0)
+        {
+            player.DrawCards(card.DrawCount);
+            AddMessage($"你使用了{card.Name}，抽了{card.DrawCount}张牌", LogType.System);
+        }
+
+        if (!string.IsNullOrEmpty(card.ApplyBuffName) && HasLivingEnemies())
+        {
+            StatusEffect buff = card.CreateBuffFromCard();
+            if (buff != null)
+            {
+                Enemy target = ResolveCardTarget(card);
+                if (target != null)
+                {
+                    target.AddStatusEffect(buff);
+                    AddMessage($"你使用了{card.Name}，给{target.EnemyName}附加了增益效果", LogType.System);
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(card.ApplyDebuffName) && HasLivingEnemies())
+        {
+            StatusEffect debuff = card.CreateDebuffFromCard();
+            if (debuff != null)
+            {
+                Enemy target = ResolveCardTarget(card);
+                if (target != null)
+                {
+                    target.AddStatusEffect(debuff);
+                    AddMessage($"你使用了{card.Name}，给{target.EnemyName}附加了减益效果", LogType.System);
+                }
+            }
+        }
     }
 
     private void ApplyCardDamage(Card card)
@@ -412,6 +448,15 @@ public partial class BattleManager : Node2D
         for (int i = 0; i < enemies.Count && i < enemyUIs.Count; i++)
         {
             enemyUIs[i].UpdateHealth();
+            Enemy enemy = enemies[i];
+            if (!enemy.IsDead() && intentDisplay != null)
+            {
+                AIAction predictedAction = intentDisplay.PredictEnemyAction(enemy, player, enemies);
+                if (predictedAction != null)
+                {
+                    enemyUIs[i].UpdateIntent(predictedAction.Type, predictedAction.Value);
+                }
+            }
         }
     }
 
