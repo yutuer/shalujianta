@@ -14,6 +14,7 @@ public partial class BattleManager : Node2D
     private Button endTurnButton;
     private Label handInfoLabel;
     private Panel playerPanel;
+    private Button mapButton;
 
     private List<EnemyUI> enemyUIs = new List<EnemyUI>();
     private List<CardUI> cardUIs = new List<CardUI>();
@@ -79,8 +80,10 @@ public partial class BattleManager : Node2D
         endTurnButton = GetNode<Button>("UI/BottomBar/EndTurnButton");
         handInfoLabel = GetNode<Label>("UI/BottomBar/HandInfo");
         playerPanel = GetNode<Panel>("UI/MainArea/PlayerPanel");
+        mapButton = GetNode<Button>("UI/BottomBar/MapButton");
 
         endTurnButton.Pressed += OnEndTurnPressed;
+        mapButton.Pressed += OnMapPressed;
 
         InitializeBattleLogWindow();
     }
@@ -535,6 +538,11 @@ public partial class BattleManager : Node2D
 
     private void OnNextLevelPressed()
     {
-        GetTree().ChangeSceneToFile("res://Scenes/MainMenu.tscn");
+        GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
+    }
+
+    private void OnMapPressed()
+    {
+        GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
     }
 }
