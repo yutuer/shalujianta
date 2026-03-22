@@ -116,7 +116,7 @@ public partial class Player : Node
 		}
 	}
 	
-	public void TakeDamage(int damage)
+	public int TakeDamage(int damage)
 	{
 		int remainingDamage = damage;
 		
@@ -135,6 +135,7 @@ public partial class Player : Node
 		}
 		
 		CurrentHealth = Mathf.Max(0, CurrentHealth - remainingDamage);
+		return remainingDamage;
 	}
 	
 	public void Heal(int amount)

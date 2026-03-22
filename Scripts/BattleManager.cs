@@ -193,13 +193,10 @@ public partial class BattleManager : Node2D
     {
         AddMessage("敌人回合", LogType.Enemy);
 
-        foreach (Enemy enemy in enemies)
+        foreach (Enemy enemy in GetLivingEnemies())
         {
-            if (enemy.CurrentHealth > 0)
-            {
-                enemy.AttackPlayer(player);
-                AddMessage($"{enemy.EnemyName} 攻击了你，造成 {enemy.Attack} 点伤害", LogType.Damage);
-            }
+            int actualDamage = enemy.AttackPlayer(player);
+            AddMessage($"{enemy.EnemyName} 攻击了你，造成 {actualDamage} 点伤害", LogType.Damage);
         }
 
         UpdateUI();
@@ -226,17 +223,7 @@ public partial class BattleManager : Node2D
             return true;
         }
 
-        bool allEnemiesDead = true;
-        foreach (Enemy enemy in enemies)
-        {
-            if (enemy.CurrentHealth > 0)
-            {
-                allEnemiesDead = false;
-                break;
-            }
-        }
-
-        if (allEnemiesDead)
+        if (!HasLivingEnemies())
         {
             AddMessage("你赢得了战斗!", LogType.System);
             endTurnButton.Text = "下一关";
@@ -249,57 +236,151 @@ public partial class BattleManager : Node2D
         return false;
     }
 
+    private List<Enemy> GetLivingEnemies()
+    {
+        List<Enemy> livingEnemies = new List<Enemy>();
+
+        foreach (Enemy enemy in enemies)
+        {
+            if (enemy.CurrentHealth > 0)
+            {
+                livingEnemies.Add(enemy);
+            }
+        }
+
+        return livingEnemies;
+    }
+
+    private bool HasLivingEnemies()
+    {
+        foreach (Enemy enemy in enemies)
+        {
+            if (enemy.CurrentHealth > 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private Enemy GetFrontmostEnemy()
     {
         Enemy frontmost = null;
         int minPosition = int.MaxValue;
 
-        foreach (Enemy enemy in enemies)
+        foreach (Enemy enemy in GetLivingEnemies())
         {
-            if (enemy.CurrentHealth > 0 && enemy.Position < minPosition)
+            if (enemy.Position < minPosition)
             {
                 minPosition = enemy.Position;
                 frontmost = enemy;
             }
         }
 
-        return frontmost ?? enemies[0];
+        return frontmost;
     }
 
     private Enemy GetRearmostEnemy()
     {
         Enemy rearMost = null;
-        int maxPosition = -1;
+        int maxPosition = int.MinValue;
 
-        foreach (Enemy enemy in enemies)
+        foreach (Enemy enemy in GetLivingEnemies())
         {
-            if (enemy.CurrentHealth > 0 && enemy.Position > maxPosition)
+            if (enemy.Position > maxPosition)
             {
                 maxPosition = enemy.Position;
                 rearMost = enemy;
             }
         }
 
-        return rearMost ?? enemies[0];
+        return rearMost;
     }
 
     private Enemy GetEnemyAtPosition(int position)
     {
-        foreach (Enemy enemy in enemies)
-        {
-            if (enemy.Position == position && enemy.CurrentHealth > 0)
-            {
-                return enemy;
-            }
-        }
-        foreach (Enemy enemy in enemies)
+        foreach (Enemy enemy in GetLivingEnemies())
         {
             if (enemy.Position == position)
             {
                 return enemy;
             }
         }
+
         return null;
+    }
+
+    private Enemy ResolveCardTarget(Card card)
+    {
+        return card.Target switch
+        {
+            TargetType.Front => GetFrontmostEnemy(),
+            TargetType.Rear => GetRearmostEnemy(),
+            TargetType.Position => GetEnemyAtPosition(card.TargetPosition),
+            _ => GetFrontmostEnemy()
+        };
+    }
+
+    private void ApplyCardEffects(Card card)
+    {
+        if (card.ShieldGain > 0)
+        {
+            player.AddShield(card.ShieldGain);
+            AddMessage($"你使用了{card.Name}，获得{card.ShieldGain}点护盾", LogType.Shield);
+        }
+
+        if (card.EnergyGain > 0)
+        {
+            player.CurrentEnergy += card.EnergyGain;
+            AddMessage($"你使用了{card.Name}，获得{card.EnergyGain}点能量", LogType.Energy);
+        }
+
+        if (card.HealAmount > 0)
+        {
+            player.Heal(card.HealAmount);
+            AddMessage($"你使用了{card.Name}，回复{card.HealAmount}点生命", LogType.Heal);
+        }
+    }
+
+    private void ApplyCardDamage(Card card)
+    {
+        if (!card.IsAttack || !HasLivingEnemies())
+        {
+            return;
+        }
+
+        if (card.IsAreaAttack)
+        {
+            foreach (Enemy enemy in GetLivingEnemies())
+            {
+                int actualDamage = enemy.TakeDamage(card.Damage);
+                AddMessage($"你使用了{card.Name}，对{enemy.EnemyName}造成{actualDamage}点伤害", LogType.Damage);
+            }
+
+            return;
+        }
+
+        Enemy target = ResolveCardTarget(card);
+        if (target == null)
+        {
+            if (card.Target == TargetType.Position)
+            {
+                AddMessage($"你使用了{card.Name}，但{card.TargetPosition}号位置没有存活的敌人", LogType.System);
+            }
+
+            return;
+        }
+
+        int damage = target.TakeDamage(card.Damage);
+        string targetDescription = card.Target switch
+        {
+            TargetType.Front => $"最前的敌人{target.EnemyName}",
+            TargetType.Rear => $"最后的敌人{target.EnemyName}",
+            _ => target.EnemyName
+        };
+
+        AddMessage($"你使用了{card.Name}，对{targetDescription}造成{damage}点伤害", LogType.Damage);
     }
 
     private void UpdateUI()
@@ -437,73 +518,14 @@ public partial class BattleManager : Node2D
 
     private void OnCardPlayed(Card card, int cardIndex)
     {
-        if (!isPlayerTurn || player.CurrentEnergy < card.Cost) return;
+        if (!isPlayerTurn || player.CurrentEnergy < card.Cost)
+        {
+            return;
+        }
 
         player.CurrentEnergy -= card.Cost;
-
-        if (card.ShieldGain > 0)
-        {
-            player.AddShield(card.ShieldGain);
-            AddMessage($"你使用了{card.Name}，获得{card.ShieldGain}点护盾", LogType.Shield);
-        }
-
-        if (card.EnergyGain > 0)
-        {
-            player.CurrentEnergy += card.EnergyGain;
-            AddMessage($"你使用了{card.Name}，获得{card.EnergyGain}点能量", LogType.Energy);
-        }
-
-        if (card.HealAmount > 0)
-        {
-            player.Heal(card.HealAmount);
-            AddMessage($"你使用了{card.Name}，回复{card.HealAmount}点生命", LogType.Heal);
-        }
-
-        if (card.IsAttack && enemies.Count > 0)
-        {
-            if (card.IsAreaAttack)
-            {
-                foreach (Enemy enemy in enemies)
-                {
-                    if (enemy.CurrentHealth > 0)
-                    {
-                        enemy.TakeDamage(card.Damage);
-                        AddMessage($"你使用了{card.Name}，对{enemy.EnemyName}造成{card.Damage}点伤害", LogType.Damage);
-                    }
-                }
-            }
-            else if (card.Target == TargetType.Front)
-            {
-                Enemy target = GetFrontmostEnemy();
-                target.TakeDamage(card.Damage);
-                AddMessage($"你使用了{card.Name}，对最前的敌人{target.EnemyName}造成{card.Damage}点伤害", LogType.Damage);
-            }
-            else if (card.Target == TargetType.Rear)
-            {
-                Enemy target = GetRearmostEnemy();
-                target.TakeDamage(card.Damage);
-                AddMessage($"你使用了{card.Name}，对最后的敌人{target.EnemyName}造成{card.Damage}点伤害", LogType.Damage);
-            }
-            else if (card.Target == TargetType.Position)
-            {
-                Enemy target = GetEnemyAtPosition(card.TargetPosition);
-                if (target != null && target.CurrentHealth > 0)
-                {
-                    target.TakeDamage(card.Damage);
-                    AddMessage($"你使用了{card.Name}，对{target.EnemyName}造成{card.Damage}点伤害", LogType.Damage);
-                }
-                else
-                {
-                    AddMessage($"你使用了{card.Name}，但{card.TargetPosition}号位置没有敌人", LogType.System);
-                }
-            }
-            else
-            {
-                Enemy target = GetFrontmostEnemy();
-                target.TakeDamage(card.Damage);
-                AddMessage($"你使用了{card.Name}，对{target.EnemyName}造成{card.Damage}点伤害", LogType.Damage);
-            }
-        }
+        ApplyCardEffects(card);
+        ApplyCardDamage(card);
 
         if (player.Hand.Contains(card))
         {
