@@ -46,7 +46,7 @@ public partial class MainMenu : Control
 	{
 		// 开始游戏 - 跳转到地图场景
 		GD.Print("开始游戏按钮点击");
-		// 这里可以添加跳转到地图场景的代码
+		GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
 	}
 	
 	private void OnTestButtonPressed()
