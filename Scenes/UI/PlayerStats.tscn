@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=4]
+
+[ext_resource type="Script" path="res://Scripts/UI/PlayerStatsUI.cs" id="1_stats"]
+
+[node name="PlayerStats" type="HBoxContainer"]
+script = ExtResource("1_stats")
+
+[node name="HealthLabel" type="Label" parent="."]
+layout_mode = 2
+text = "生命: 100/100"
+
+[node name="Spacer1" type="Label" parent="."]
+layout_mode = 2
+text = "  "
+
+[node name="EnergyLabel" type="Label" parent="."]
+layout_mode = 2
+text = "能量: 3/3"
+
+[node name="Spacer2" type="Label" parent="."]
+layout_mode = 2
+text = "  "
+
+[node name="ShieldLabel" type="Label" parent="."]
+layout_mode = 2
+text = "护盾: 0"
+
+[node name="Spacer3" type="Label" parent="."]
+layout_mode = 2
+text = "  "
+
+[node name="TurnLabel" type="Label" parent="."]
+layout_mode = 2
+text = "回合: 1"

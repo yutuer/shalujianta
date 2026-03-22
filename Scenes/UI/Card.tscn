@@ -1,0 +1,59 @@
+[gd_scene load_steps=3 format=4]
+
+[ext_resource type="Script" path="res://Scripts/UI/CardUI.cs" id="1_card"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.15, 0.15, 0.2, 1)
+border_color = Color(0.4, 0.4, 0.5, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
+[node name="Card" type="Panel"]
+custom_minimum_size = Vector2(140, 200)
+script = ExtResource("1_card")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="ImageContainer" type="CenterContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="CardImage" type="TextureRect" parent="VBoxContainer/ImageContainer"]
+custom_minimum_size = Vector2(100, 60)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CostLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PlayButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "使用"
