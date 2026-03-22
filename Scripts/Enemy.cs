@@ -27,15 +27,16 @@ public partial class Enemy : Node
 		CurrentHealth = MaxHealth;
 	}
 	
-	public void TakeDamage(int damage)
+	public int TakeDamage(int damage)
 	{
 		int actualDamage = Mathf.Max(0, damage - Defense);
 		CurrentHealth = Mathf.Max(0, CurrentHealth - actualDamage);
+		return actualDamage;
 	}
 	
-	public void AttackPlayer(Player player)
+	public int AttackPlayer(Player player)
 	{
-		player.TakeDamage(Attack);
+		return player.TakeDamage(Attack);
 	}
 	
 	public void AddDefense(int amount)
