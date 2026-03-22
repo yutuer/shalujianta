@@ -110,12 +110,12 @@ public partial class BattleManager : Node2D
         ClearEnemyUI();
         enemies.Clear();
 
-        AddEnemy("守卫 A", 54, 8, 2);
-        AddEnemy("精锐 B", 50, 10, 1);
-        AddEnemy("背信 C", 38, 6, 0);
+        AddEnemy("守卫 A", 54, 8, 2, "balanced");
+        AddEnemy("精锐 B", 50, 10, 1, "aggressive");
+        AddEnemy("背信 C", 38, 6, 0, "defensive");
     }
 
-    private void AddEnemy(string name, int maxHealth, int attack, int position)
+    private void AddEnemy(string name, int maxHealth, int attack, int position, string behavior = "aggressive")
     {
         Enemy enemy = new Enemy
         {
@@ -123,7 +123,8 @@ public partial class BattleManager : Node2D
             MaxHealth = maxHealth,
             CurrentHealth = maxHealth,
             Attack = attack,
-            Position = position
+            Position = position,
+            Behavior = behavior
         };
         enemies.Add(enemy);
         CreateEnemyUI(enemy);
@@ -195,8 +196,20 @@ public partial class BattleManager : Node2D
 
         foreach (Enemy enemy in GetLivingEnemies())
         {
-            int actualDamage = enemy.AttackPlayer(player);
-            AddMessage($"{enemy.EnemyName} 攻击了你，造成 {actualDamage} 点伤害", LogType.Damage);
+            enemy.PerformAction(player, enemies);
+            AIAction action = enemy.CurrentAction;
+            if (action != null)
+            {
+                string actionDesc = action.Type switch
+                {
+                    AIActionType.Attack => $"攻击了你，造成 {enemy.Attack} 点伤害",
+                    AIActionType.Defend => $"增加了 {action.Value} 点防御",
+                    AIActionType.Buff => $"增加了 {action.Value} 点攻击",
+                    AIActionType.Heal => $"恢复了 {action.Value} 点生命",
+                    _ => "采取了行动"
+                };
+                AddMessage($"{enemy.EnemyName} {actionDesc}", LogType.Damage);
+            }
         }
 
         UpdateUI();
