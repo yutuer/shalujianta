@@ -48,7 +48,7 @@ public partial class PlayerStatsUI : HBoxContainer
     private void ApplyStats(int turn)
     {
         healthLabel.Text = $"生命: {playerData.CurrentHealth}/{playerData.MaxHealth}";
-        energyLabel.Text = $"能量: {playerData.CurrentEnergy}";
+        energyLabel.Text = playerData.CurrentEnergy.ToString();
         shieldLabel.Text = $"护盾: {playerData.Shield}";
         turnLabel.Text = $"回合: {turn}";
     }
@@ -58,7 +58,7 @@ public partial class PlayerStatsUI : HBoxContainer
         if (playerData == null) return;
 
         healthLabel.Text = $"生命: {playerData.CurrentHealth}/{playerData.MaxHealth}";
-        energyLabel.Text = $"能量: {playerData.CurrentEnergy}";
+        energyLabel.Text = playerData.CurrentEnergy.ToString();
         shieldLabel.Text = $"护盾: {playerData.Shield}";
         turnLabel.Text = $"回合: {turn}";
     }

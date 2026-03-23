@@ -1,0 +1,152 @@
+[gd_scene load_steps=2 format=3 uid="uid://key_order_selection_ui"]
+
+[ext_resource type="Script" path="res://Scripts/UI/KeyOrderSelectionUI.cs" id="1"]
+
+[node name="KeyOrderSelectionUI" type="Control"]
+custom_minimum_size = Vector2(700, 250)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -125.0
+offset_right = 350.0
+offset_bottom = 125.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -125.0
+offset_right = 350.0
+offset_bottom = 125.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+text = "选择钥令技能"
+horizontal_alignment = 1
+
+[node name="InstructionsLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+text = "选择一个钥令释放（消耗1000银钥）"
+horizontal_alignment = 1
+
+[node name="Spacer1" type="Control" parent="BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="KeyOrderSlotsContainer" type="HBoxContainer" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="KeyOrderSlot0" type="Panel" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer"]
+custom_minimum_size = Vector2(180, 120)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot0"]
+layout_mode = 2
+alignment = 1
+
+[node name="IconRect" type="TextureRect" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot0/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+
+[node name="NameLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot0/VBoxContainer"]
+layout_mode = 2
+text = "钥令"
+
+[node name="CostLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot0/VBoxContainer"]
+layout_mode = 2
+text = "消耗: 0"
+
+[node name="DescLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot0/VBoxContainer"]
+layout_mode = 2
+text = "描述"
+
+[node name="HotkeyLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot0/VBoxContainer"]
+layout_mode = 2
+text = "[ 1 ]"
+
+[node name="KeyOrderSlot1" type="Panel" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer"]
+custom_minimum_size = Vector2(180, 120)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot1"]
+layout_mode = 2
+alignment = 1
+
+[node name="IconRect" type="TextureRect" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot1/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+
+[node name="NameLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot1/VBoxContainer"]
+layout_mode = 2
+text = "钥令"
+
+[node name="CostLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot1/VBoxContainer"]
+layout_mode = 2
+text = "消耗: 0"
+
+[node name="DescLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot1/VBoxContainer"]
+layout_mode = 2
+text = "描述"
+
+[node name="HotkeyLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot1/VBoxContainer"]
+layout_mode = 2
+text = "[ 2 ]"
+
+[node name="KeyOrderSlot2" type="Panel" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer"]
+custom_minimum_size = Vector2(180, 120)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot2"]
+layout_mode = 2
+alignment = 1
+
+[node name="IconRect" type="TextureRect" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot2/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+
+[node name="NameLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot2/VBoxContainer"]
+layout_mode = 2
+text = "钥令"
+
+[node name="CostLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot2/VBoxContainer"]
+layout_mode = 2
+text = "消耗: 0"
+
+[node name="DescLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot2/VBoxContainer"]
+layout_mode = 2
+text = "描述"
+
+[node name="HotkeyLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot2/VBoxContainer"]
+layout_mode = 2
+text = "[ 3 ]"
+
+[node name="Spacer2" type="Control" parent="BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="ButtonContainer" type="CenterContainer" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="CancelButton" type="Button" parent="BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "取消"

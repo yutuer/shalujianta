@@ -25,7 +25,11 @@ public partial class EnemyUI : Panel
         healthBar = GetNode<ProgressBar>("VBoxContainer/HealthBar");
         healthLabel = GetNode<Label>("VBoxContainer/HealthLabel");
         intentLabel = GetNode<Label>("VBoxContainer/IntentLabel");
-        intentIcon = GetNode<TextureRect>("VBoxContainer/IntentIcon");
+
+        if (HasNode("VBoxContainer/IntentIcon"))
+        {
+            intentIcon = GetNode<TextureRect>("VBoxContainer/IntentIcon");
+        }
 
         LoadIcons();
 

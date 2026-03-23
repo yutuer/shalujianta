@@ -1,36 +1,50 @@
-[gd_scene load_steps=2 format=4]
+[gd_scene format=3 uid="uid://cg7pfcricr231"]
 
-[ext_resource type="Script" path="res://Scripts/BattleManager.cs" id="1_battle"]
+[ext_resource type="Script" uid="uid://g0n4d8440ta4" path="res://Scripts/BattleManager.cs" id="1_battle"]
+[ext_resource type="Script" uid="uid://dofgf2yjjym2n" path="res://Scripts/UI/HandCardPreview.cs" id="2_preview"]
+[ext_resource type="Script" uid="uid://0k25fywn32tc" path="res://Scripts/Battle/CardLayoutManager.cs" id="3_card_layout"]
 
-[node name="BattleScene" type="Node2D"]
+[node name="BattleScene" type="Node2D" unique_id=1960259589]
 script = ExtResource("1_battle")
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="CardLayoutManager" type="Node" parent="." unique_id=123456789]
+script = ExtResource("3_card_layout")
+_handArcAngleMinDegrees = 0.0
+_handArcAngleMaxDegrees = 18.0
+_handArcRadiusMin = 739.0
+_handBottomPadding = 72.0
+_handPivotYOffsetFactor = 1.2
+_handHoverLift = 65.0
+_handHoverScale = 1.3
 
-[node name="TopBar" type="HBoxContainer" parent="UI"]
-layout_mode = 1
+[node name="UI" type="CanvasLayer" parent="." unique_id=706672011]
+
+[node name="TopBar" type="HBoxContainer" parent="UI" unique_id=2140713231]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 40.0
 grow_horizontal = 2
 
-[node name="Title" type="Label" parent="UI/TopBar"]
+[node name="Title" type="Label" parent="UI/TopBar" unique_id=877999875]
 layout_mode = 2
 text = "FishEatFish"
 
-[node name="FloorInfo" type="Label" parent="UI/TopBar"]
+[node name="FloorInfo" type="Label" parent="UI/TopBar" unique_id=459992778]
 layout_mode = 2
 text = "楼层: 1"
 
-[node name="Spacer" type="Control" parent="UI/TopBar"]
+[node name="Spacer" type="Control" parent="UI/TopBar" unique_id=1603848874]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PlayerStats" type="HBoxContainer" parent="UI/TopBar"]
+[node name="PlayerStats" type="HBoxContainer" parent="UI/TopBar" unique_id=1782152917]
 layout_mode = 2
 
-[node name="MainArea" type="VBoxContainer" parent="UI"]
-layout_mode = 1
+[node name="SilverKeyLabel" type="Label" parent="UI/TopBar" unique_id=1754407400]
+layout_mode = 2
+text = "银钥: 0/1000"
+
+[node name="MainArea" type="VBoxContainer" parent="UI" unique_id=671973020]
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -39,17 +53,17 @@ offset_top = -870.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="BattleZones" type="HBoxContainer" parent="UI/MainArea"]
+[node name="BattleZones" type="HBoxContainer" parent="UI/MainArea" unique_id=496655171]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="PlayerZone" type="Panel" parent="UI/MainArea/BattleZones"]
+[node name="PlayerZone" type="Panel" parent="UI/MainArea/BattleZones" unique_id=1092735748]
 custom_minimum_size = Vector2(300, 400)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/MainArea/BattleZones/PlayerZone"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MainArea/BattleZones/PlayerZone" unique_id=1499945426]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -62,42 +76,42 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="PlayerName" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+[node name="PlayerName" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=302640767]
 layout_mode = 2
 text = "玩家"
 horizontal_alignment = 1
 
-[node name="PlayerIcon" type="TextureRect" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+[node name="PlayerIcon" type="TextureRect" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=687323976]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 4
 
-[node name="HealthBar" type="ProgressBar" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+[node name="HealthBar" type="ProgressBar" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=75131468]
 custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
 
-[node name="HealthLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+[node name="HealthLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=429952254]
 layout_mode = 2
 text = "100/100"
 horizontal_alignment = 1
 
-[node name="ShieldLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+[node name="ShieldLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=1464598258]
 layout_mode = 2
 text = "护盾: 0"
 horizontal_alignment = 1
 
-[node name="EnergyLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+[node name="EnergyLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=1708676063]
 layout_mode = 2
 text = "能量: 3/3"
 horizontal_alignment = 1
 
-[node name="EnemyZone" type="Panel" parent="UI/MainArea/BattleZones"]
+[node name="EnemyZone" type="Panel" parent="UI/MainArea/BattleZones" unique_id=762201044]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="EnemyContainer" type="HBoxContainer" parent="UI/MainArea/BattleZones/EnemyZone"]
+[node name="EnemyContainer" type="HBoxContainer" parent="UI/MainArea/BattleZones/EnemyZone" unique_id=663287302]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -109,12 +123,11 @@ offset_bottom = 200.0
 grow_horizontal = 0
 alignment = 2
 
-[node name="Spacer" type="Control" parent="UI/MainArea"]
+[node name="Spacer" type="Control" parent="UI/MainArea" unique_id=654335520]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="HandArea" type="Panel" parent="UI"]
-layout_mode = 1
+[node name="HandArea" type="Panel" parent="UI" unique_id=1462648875]
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -123,7 +136,7 @@ offset_top = -300.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="HandContainer" type="HBoxContainer" parent="UI/HandArea"]
+[node name="HandContainer" type="HBoxContainer" parent="UI/HandArea" unique_id=1002692378]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -136,8 +149,23 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="BottomBar" type="HBoxContainer" parent="UI"]
-layout_mode = 1
+[node name="HandCardPreview" type="Control" parent="UI/HandArea/HandContainer" unique_id=26487472]
+custom_minimum_size = Vector2(1200, 400)
+layout_mode = 2
+script = ExtResource("2_preview")
+_editorPreviewCardCount = 15
+_editorHoverCardIndex = 3
+_editorSimulateHover = true
+_handArcAngleMinDegrees = 0.0
+_handArcAngleMaxDegrees = 18.0
+_handArcRadiusMin = 739.0
+_handArcRadiusMax = 1080.0
+_handBottomPadding = 72.0
+_handPivotYOffsetFactor = 1.2
+_handHoverLift = 65.0
+_handHoverScale = 1.3
+
+[node name="BottomBar" type="HBoxContainer" parent="UI" unique_id=281206105]
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -145,22 +173,26 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="EndTurnButton" type="Button" parent="UI/BottomBar"]
+[node name="EndTurnButton" type="Button" parent="UI/BottomBar" unique_id=1192792991]
 layout_mode = 2
 text = "结束回合"
 
-[node name="MapButton" type="Button" parent="UI/BottomBar"]
+[node name="MapButton" type="Button" parent="UI/BottomBar" unique_id=1132950590]
 layout_mode = 2
 text = "地图"
 
-[node name="TestButton" type="Button" parent="UI/BottomBar"]
+[node name="KeyOrderButton" type="Button" parent="UI/BottomBar" unique_id=234160028]
+layout_mode = 2
+text = "钥令"
+
+[node name="TestButton" type="Button" parent="UI/BottomBar" unique_id=190281928]
 layout_mode = 2
 text = "测试"
 
-[node name="Spacer" type="Control" parent="UI/BottomBar"]
+[node name="Spacer" type="Control" parent="UI/BottomBar" unique_id=2088033362]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HandInfo" type="Label" parent="UI/BottomBar"]
+[node name="HandInfo" type="Label" parent="UI/BottomBar" unique_id=646114592]
 layout_mode = 2
 text = "手牌: 5"

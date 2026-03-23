@@ -35,23 +35,13 @@ public partial class SilverKeyProgressIndicator : Control
 
     public override void _Ready()
     {
-        CustomMinimumSize = new Vector2(Diameter, Diameter);
+        _valueLabel = GetNode<Label>("ValueLabel");
+        _maxLabel = GetNode<Label>("MaxLabel");
 
-        var vbox = new VBoxContainer();
-        vbox.Alignment = VBoxContainer.AlignmentMode.Center;
-        AddChild(vbox);
-
-        _valueLabel = new Label();
-        _valueLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        _valueLabel.AddThemeColorOverride("font_color", TextColor);
-        _valueLabel.AddThemeFontSizeOverride("font_size", 16);
-        vbox.AddChild(_valueLabel);
-
-        _maxLabel = new Label();
-        _maxLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        _maxLabel.AddThemeColorOverride("font_color", new Color("#AAAAAA"));
-        _maxLabel.AddThemeFontSizeOverride("font_size", 12);
-        vbox.AddChild(_maxLabel);
+        if (_valueLabel == null)
+        {
+            GD.PrintErr("[SilverKeyProgressIndicator] 未找到ValueLabel节点");
+        }
 
         UpdateDisplay();
     }
@@ -95,7 +85,7 @@ public partial class SilverKeyProgressIndicator : Control
 
         if (_maxLabel != null)
         {
-            _maxLabel.Text = _maxValue.ToString();
+            _maxLabel.Text = $"/{_maxValue}";
         }
 
         bool canUse = CanUseKeyOrder();

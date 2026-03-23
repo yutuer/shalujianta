@@ -1,0 +1,137 @@
+[gd_scene load_steps=2 format=3 uid="uid://rage_display_ui"]
+
+[ext_resource type="Script" path="res://Scripts/UI/RageDisplayUI.cs" id="1"]
+
+[node name="RageDisplayUI" type="Control"]
+custom_minimum_size = Vector2(280, 120)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 20.0
+offset_top = 150.0
+offset_right = 300.0
+offset_bottom = 270.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -60.0
+offset_right = 140.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "怒气值"
+horizontal_alignment = 1
+
+[node name="RageSlotsContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="RageSlot0" type="Panel" parent="VBoxContainer/RageSlotsContainer"]
+custom_minimum_size = Vector2(60, 80)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/RageSlotsContainer/RageSlot0"]
+layout_mode = 2
+alignment = 1
+
+[node name="CharacterNameLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot0/VBoxContainer"]
+layout_mode = 2
+text = "角色"
+
+[node name="RageValueLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot0/VBoxContainer"]
+layout_mode = 2
+text = "0/100"
+
+[node name="RageBar" type="ProgressBar" parent="VBoxContainer/RageSlotsContainer/RageSlot0/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(50, 10)
+
+[node name="UltReadyLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot0/VBoxContainer"]
+layout_mode = 2
+text = "大招"
+
+[node name="RageSlot1" type="Panel" parent="VBoxContainer/RageSlotsContainer"]
+custom_minimum_size = Vector2(60, 80)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/RageSlotsContainer/RageSlot1"]
+layout_mode = 2
+alignment = 1
+
+[node name="CharacterNameLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot1/VBoxContainer"]
+layout_mode = 2
+text = "角色"
+
+[node name="RageValueLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot1/VBoxContainer"]
+layout_mode = 2
+text = "0/100"
+
+[node name="RageBar" type="ProgressBar" parent="VBoxContainer/RageSlotsContainer/RageSlot1/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(50, 10)
+
+[node name="UltReadyLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot1/VBoxContainer"]
+layout_mode = 2
+text = "大招"
+
+[node name="RageSlot2" type="Panel" parent="VBoxContainer/RageSlotsContainer"]
+custom_minimum_size = Vector2(60, 80)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/RageSlotsContainer/RageSlot2"]
+layout_mode = 2
+alignment = 1
+
+[node name="CharacterNameLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot2/VBoxContainer"]
+layout_mode = 2
+text = "角色"
+
+[node name="RageValueLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot2/VBoxContainer"]
+layout_mode = 2
+text = "0/100"
+
+[node name="RageBar" type="ProgressBar" parent="VBoxContainer/RageSlotsContainer/RageSlot2/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(50, 10)
+
+[node name="UltReadyLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot2/VBoxContainer"]
+layout_mode = 2
+text = "大招"
+
+[node name="RageSlot3" type="Panel" parent="VBoxContainer/RageSlotsContainer"]
+custom_minimum_size = Vector2(60, 80)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/RageSlotsContainer/RageSlot3"]
+layout_mode = 2
+alignment = 1
+
+[node name="CharacterNameLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot3/VBoxContainer"]
+layout_mode = 2
+text = "角色"
+
+[node name="RageValueLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot3/VBoxContainer"]
+layout_mode = 2
+text = "0/100"
+
+[node name="RageBar" type="ProgressBar" parent="VBoxContainer/RageSlotsContainer/RageSlot3/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(50, 10)
+
+[node name="UltReadyLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot3/VBoxContainer"]
+layout_mode = 2
+text = "大招"
+
+[node name="TotalRageLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "总怒气: 0"
+horizontal_alignment = 1

@@ -2,195 +2,151 @@ using Godot;
 
 public partial class LevelMap : Control
 {
-    private readonly string[] nodeTypes =
-    {
-        "起点",
-        "普通战斗",
-        "事件",
-        "商店",
-        "精英",
-        "篝火",
-        "Boss"
-    };
+    private VBoxContainer _mapContainer;
+    private Button _backButton;
+    private Button _battleButton;
 
-    private readonly string[] nodeDescriptions =
-    {
-        "整顿卡组并观察路线。",
-        "基础敌人，适合稳定获取奖励。",
-        "随机事件，可能带来收益或代价。",
-        "消耗金币购买卡牌与遗物。",
-        "高风险高收益，建议准备充足。",
-        "恢复生命并可调整卡组。",
-        "章节终点，胜利后进入下一段冒险。"
-    };
-
-    private readonly Color[] nodeColors =
-    {
-        new(0.28f, 0.65f, 0.93f),
-        new(0.90f, 0.42f, 0.34f),
-        new(0.71f, 0.52f, 0.92f),
-        new(0.95f, 0.76f, 0.30f),
-        new(0.81f, 0.24f, 0.24f),
-        new(0.34f, 0.74f, 0.44f),
-        new(0.98f, 0.55f, 0.18f)
-    };
-
-    private Label routeTitleLabel;
-    private Label routeDescriptionLabel;
-    private Label progressLabel;
-    private Label hintLabel;
-    private GridContainer nodeGrid;
-    private VBoxContainer legendContainer;
-    private OptionButton deckDropdown;
-    private Button continueButton;
-
-    private int selectedNodeIndex = 1;
+    private MapDefinition _selectedMap;
+    private MapDefinition[] _availableMaps;
 
     public override void _Ready()
     {
-        routeTitleLabel = GetNode<Label>("SafeArea/Content/TopSection/Header/RouteTitle");
-        routeDescriptionLabel = GetNode<Label>("SafeArea/Content/TopSection/Header/RouteDescription");
-        progressLabel = GetNode<Label>("SafeArea/Content/TopSection/Sidebar/ProgressPanel/ProgressLabel");
-        hintLabel = GetNode<Label>("SafeArea/Content/TopSection/Sidebar/HintPanel/HintLabel");
-        nodeGrid = GetNode<GridContainer>("SafeArea/Content/TopSection/Header/MapCard/MapPanel/NodeGrid");
-        legendContainer = GetNode<VBoxContainer>("SafeArea/Content/TopSection/Sidebar/LegendPanel/LegendMargin/LegendBox/LegendList");
-        deckDropdown = GetNode<OptionButton>("SafeArea/Content/BottomBar/BottomMargin/BottomLayout/DeckPanel/DeckDropdown");
-        continueButton = GetNode<Button>("SafeArea/Content/BottomBar/BottomMargin/BottomLayout/ActionButtons/ContinueButton");
+        _mapContainer = GetNode<VBoxContainer>("SafeArea/Content/MapList/MapContainer");
+        _backButton = GetNode<Button>("SafeArea/Content/BottomBar/BottomMargin/BottomLayout/BackButton");
+        _battleButton = GetNode<Button>("SafeArea/Content/BottomBar/BottomMargin/BottomLayout/BattleButton");
 
-        SetupDeckOptions();
-        BuildMapNodes();
-        BuildLegend();
-        UpdateSelection(selectedNodeIndex);
+        _backButton.Pressed += OnBackPressed;
+        _battleButton.Pressed += OnBattlePressed;
 
-        continueButton.Pressed += OnContinuePressed;
-        GetNode<Button>("SafeArea/Content/BottomBar/BottomMargin/BottomLayout/ActionButtons/BattleButton").Pressed += OnBattlePressed;
-        GetNode<Button>("SafeArea/Content/BottomBar/BottomMargin/BottomLayout/ActionButtons/BackButton").Pressed += OnBackPressed;
+        LoadMaps();
+        BuildMapList();
     }
 
-    private void SetupDeckOptions()
+    private void LoadMaps()
     {
-        if (deckDropdown.ItemCount > 0)
-        {
-            return;
-        }
-
-        deckDropdown.AddItem("均衡流派 - 攻守均衡，适合首次开局");
-        deckDropdown.AddItem("防御流派 - 容错更高，推进更稳");
-        deckDropdown.AddItem("攻击流派 - 输出爆发，但更依赖节奏");
-        deckDropdown.AddItem("连击流派 - 依赖手牌联动与费用运营");
-        deckDropdown.Selected = 0;
+        _availableMaps = MapDefinition.GetAllMaps();
     }
 
-    private void BuildMapNodes()
+    private void BuildMapList()
     {
-        for (int i = 0; i < nodeTypes.Length; i++)
+        foreach (var map in _availableMaps)
         {
-            Button button = new Button
-            {
-                Text = $"{i + 1}\n{nodeTypes[i]}",
-                CustomMinimumSize = new Vector2(0, 96),
-                TooltipText = nodeDescriptions[i],
-                Alignment = HorizontalAlignment.Center,
-                VerticalIconAlignment = VerticalAlignment.Center,
-                FocusMode = Control.FocusModeEnum.None,
-                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-                SizeFlagsVertical = Control.SizeFlags.ExpandFill
-            };
-
-            StyleBoxFlat style = new StyleBoxFlat
-            {
-                BgColor = nodeColors[i],
-                CornerRadiusTopLeft = 18,
-                CornerRadiusTopRight = 18,
-                CornerRadiusBottomRight = 18,
-                CornerRadiusBottomLeft = 18,
-                BorderWidthLeft = 2,
-                BorderWidthTop = 2,
-                BorderWidthRight = 2,
-                BorderWidthBottom = 2,
-                BorderColor = Colors.White,
-                ShadowColor = new Color(0, 0, 0, 0.18f),
-                ShadowSize = 6,
-                ContentMarginLeft = 8,
-                ContentMarginTop = 8,
-                ContentMarginRight = 8,
-                ContentMarginBottom = 8
-            };
-
-            StyleBox hoverStyle = (StyleBox)style.Duplicate();
-            StyleBox pressedStyle = (StyleBox)style.Duplicate();
-            button.AddThemeStyleboxOverride("normal", style);
-            button.AddThemeStyleboxOverride("hover", hoverStyle);
-            button.AddThemeStyleboxOverride("pressed", pressedStyle);
-
-            int capturedIndex = i;
-            button.Pressed += () => UpdateSelection(capturedIndex);
-            nodeGrid.AddChild(button);
+            CreateMapCard(map);
         }
     }
 
-    private void BuildLegend()
+    private void CreateMapCard(MapDefinition map)
     {
-        for (int i = 0; i < nodeTypes.Length; i++)
+        Panel card = new Panel();
+        card.CustomMinimumSize = new Vector2(0, 120);
+        card.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+
+        StyleBoxFlat normalStyle = new StyleBoxFlat
         {
-            HBoxContainer row = new HBoxContainer();
-            row.AddThemeConstantOverride("separation", 10);
+            BgColor = new Color(0.15f, 0.18f, 0.25f),
+            BorderWidthLeft = 2,
+            BorderWidthTop = 2,
+            BorderWidthRight = 2,
+            BorderWidthBottom = 2,
+            BorderColor = new Color(0.3f, 0.35f, 0.45f),
+            CornerRadiusTopLeft = 12,
+            CornerRadiusTopRight = 12,
+            CornerRadiusBottomRight = 12,
+            CornerRadiusBottomLeft = 12,
+            ContentMarginLeft = 20,
+            ContentMarginTop = 15,
+            ContentMarginRight = 20,
+            ContentMarginBottom = 15
+        };
+        card.AddThemeStyleboxOverride("normal", normalStyle);
 
-            ColorRect swatch = new ColorRect
-            {
-                Color = nodeColors[i],
-                CustomMinimumSize = new Vector2(18, 18)
-            };
+        HBoxContainer content = new HBoxContainer();
+        content.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+        content.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
+        card.AddChild(content);
 
-            Label label = new Label
-            {
-                Text = $"{nodeTypes[i]}：{nodeDescriptions[i]}",
-                AutowrapMode = TextServer.AutowrapMode.WordSmart
-            };
-            label.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+        VBoxContainer info = new VBoxContainer();
+        info.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+        info.Alignment = VBoxContainer.AlignmentMode.Center;
+        content.AddChild(info);
 
-            row.AddChild(swatch);
-            row.AddChild(label);
-            legendContainer.AddChild(row);
-        }
+        Label nameLabel = new Label();
+        nameLabel.Text = map.Name;
+        nameLabel.AddThemeFontSizeOverride("font_size", 24);
+        info.AddChild(nameLabel);
+
+        Label descLabel = new Label();
+        descLabel.Text = map.Description;
+        descLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+        descLabel.Modulate = new Color(0.7f, 0.7f, 0.7f);
+        info.AddChild(descLabel);
+
+        VBoxContainer stats = new VBoxContainer();
+        stats.Alignment = VBoxContainer.AlignmentMode.Center;
+        stats.CustomMinimumSize = new Vector2(200, 0);
+        content.AddChild(stats);
+
+        Label difficultyLabel = new Label();
+        difficultyLabel.Text = $"难度: {GetDifficultyText(map.Difficulty)}";
+        difficultyLabel.HorizontalAlignment = HorizontalAlignment.Right;
+        stats.AddChild(difficultyLabel);
+
+        Label battleLabel = new Label();
+        battleLabel.Text = $"战斗: {map.BattleCount}场";
+        battleLabel.HorizontalAlignment = HorizontalAlignment.Right;
+        stats.AddChild(battleLabel);
+
+        Label rewardLabel = new Label();
+        rewardLabel.Text = $"奖励: {map.GoldReward}金币";
+        rewardLabel.HorizontalAlignment = HorizontalAlignment.Right;
+        stats.AddChild(rewardLabel);
+
+        Button selectButton = new Button();
+        selectButton.Text = "选择";
+        selectButton.CustomMinimumSize = new Vector2(100, 50);
+        selectButton.Pressed += () => OnMapSelected(map);
+        content.AddChild(selectButton);
+
+        _mapContainer.AddChild(card);
     }
 
-    private void UpdateSelection(int index)
+    private string GetDifficultyText(MapDifficulty difficulty)
     {
-        selectedNodeIndex = index;
-        routeTitleLabel.Text = $"当前预览：第 {index + 1} 站 · {nodeTypes[index]}";
-        routeDescriptionLabel.Text = nodeDescriptions[index];
-        progressLabel.Text = $"当前路线进度\n已解锁节点：{index + 1}/{nodeTypes.Length}\n推荐能量：{Mathf.Clamp(index + 2, 3, 6)} 点";
-        hintLabel.Text = index >= nodeTypes.Length - 1
-            ? "Boss 节点前建议优先补血、升级核心卡牌，并留意高费输出节奏。"
-            : $"下一站建议：{nodeTypes[Mathf.Min(index + 1, nodeTypes.Length - 1)]}。可根据当前卡组强度调整路线。";
-
-        for (int i = 0; i < nodeGrid.GetChildCount(); i++)
+        return difficulty switch
         {
-            if (nodeGrid.GetChild(i) is not Button button)
-            {
-                continue;
-            }
-
-            bool isSelected = i == index;
-            button.Scale = isSelected ? new Vector2(1.03f, 1.03f) : Vector2.One;
-            button.Modulate = isSelected ? Colors.White : new Color(1, 1, 1, 0.92f);
-            button.Text = isSelected ? $"▶ {i + 1}\n{nodeTypes[i]}" : $"{i + 1}\n{nodeTypes[i]}";
-        }
+            MapDifficulty.Easy => "简单",
+            MapDifficulty.Normal => "普通",
+            MapDifficulty.Hard => "困难",
+            _ => "未知"
+        };
     }
 
-    private void OnContinuePressed()
+    private void OnMapSelected(MapDefinition map)
     {
-        GD.Print($"继续推进到节点 {selectedNodeIndex + 1}: {nodeTypes[selectedNodeIndex]}");
-    }
+        _selectedMap = map;
+        GD.Print($"选择了地图: {map.Name}");
 
-    private void OnBattlePressed()
-    {
-        GetTree().ChangeSceneToFile("res://Scenes/BattleScene.tscn");
+        MapManager mapManager = new MapManager();
+        mapManager.StartMap(map);
+
+        GlobalData.CurrentMap = map;
+        GetTree().ChangeSceneToFile("res://Scenes/CharacterSelection.tscn");
     }
 
     private void OnBackPressed()
     {
         GetTree().ChangeSceneToFile("res://Scenes/MainMenu.tscn");
     }
+
+    private void OnBattlePressed()
+    {
+        GetTree().ChangeSceneToFile("res://Scenes/BattleScene.tscn");
+    }
+}
+
+public static class GlobalData
+{
+    public static MapDefinition CurrentMap { get; set; }
+    public static CharacterDefinition[] SelectedCharacters { get; set; }
+    public static KeyOrder EquippedKeyOrder { get; set; }
 }

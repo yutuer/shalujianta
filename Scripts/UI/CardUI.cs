@@ -81,7 +81,7 @@ public partial class CardUI : Panel
     {
         Name = $"Card_{index}";
         nameLabel.Text = card.Name;
-        costLabel.Text = $"费用: {card.Cost}";
+        costLabel.Text = card.Cost.ToString();
         descLabel.Text = card.Description;
         playButton.Disabled = !canPlay;
 

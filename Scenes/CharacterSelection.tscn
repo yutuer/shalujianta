@@ -1,0 +1,212 @@
+[gd_scene load_steps=5 format=4]
+
+[ext_resource type="Script" path="res://Scripts/CharacterSelection.cs" id="1_charsel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.07, 0.09, 0.15, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.12, 0.15, 0.22, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.30, 0.36, 0.50, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary"]
+bg_color = Color(0.94, 0.48, 0.24, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="CharacterSelection" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_charsel")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.07, 0.11, 1)
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = -30.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="SafeArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="Header" type="VBoxContainer" parent="SafeArea/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="SafeArea/Content/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "选择角色与钥令"
+
+[node name="Subtitle" type="Label" parent="SafeArea/Content/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "选择4个角色组成你的攻击者，并选择钥令"
+autowrap_mode = 3
+
+[node name="MainContent" type="HBoxContainer" parent="SafeArea/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="CharacterGrid" type="ScrollContainer" parent="SafeArea/Content/MainContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CharacterContainer" type="GridContainer" parent="SafeArea/Content/MainContent/CharacterGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 4
+
+[node name="RightPanel" type="VBoxContainer" parent="SafeArea/Content/MainContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(380, 0)
+theme_override_constants/separation = 16
+
+[node name="SelectedPanel" type="Panel" parent="SafeArea/Content/MainContent/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="SelectedMargin" type="MarginContainer" parent="SafeArea/Content/MainContent/RightPanel/SelectedPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SelectedContent" type="VBoxContainer" parent="SafeArea/Content/MainContent/RightPanel/SelectedPanel/SelectedMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SelectedTitle" type="Label" parent="SafeArea/Content/MainContent/RightPanel/SelectedPanel/SelectedMargin/SelectedContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "已选择角色 (0/4)"
+
+[node name="SelectedSlots" type="HBoxContainer" parent="SafeArea/Content/MainContent/RightPanel/SelectedPanel/SelectedMargin/SelectedContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="KeyOrderPanel" type="Panel" parent="SafeArea/Content/MainContent/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="KeyOrderMargin" type="MarginContainer" parent="SafeArea/Content/MainContent/RightPanel/KeyOrderPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="KeyOrderContent" type="VBoxContainer" parent="SafeArea/Content/MainContent/RightPanel/KeyOrderPanel/KeyOrderMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="KeyOrderTitle" type="Label" parent="SafeArea/Content/MainContent/RightPanel/KeyOrderPanel/KeyOrderMargin/KeyOrderContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "选择钥令"
+
+[node name="KeyOrderDesc" type="Label" parent="SafeArea/Content/MainContent/RightPanel/KeyOrderPanel/KeyOrderMargin/KeyOrderContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "银钥值达到1000时释放"
+autowrap_mode = 3
+
+[node name="KeyOrderContainer" type="HBoxContainer" parent="SafeArea/Content/MainContent/RightPanel/KeyOrderPanel/KeyOrderMargin/KeyOrderContent"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="KeyOrderSlot" type="Panel" parent="SafeArea/Content/MainContent/RightPanel/KeyOrderPanel/KeyOrderMargin/KeyOrderContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(100, 80)
+
+[node name="StatsPanel" type="Panel" parent="SafeArea/Content/MainContent/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="StatsMargin" type="MarginContainer" parent="SafeArea/Content/MainContent/RightPanel/StatsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StatsContent" type="VBoxContainer" parent="SafeArea/Content/MainContent/RightPanel/StatsPanel/StatsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StatsTitle" type="Label" parent="SafeArea/Content/MainContent/RightPanel/StatsPanel/StatsMargin/StatsContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "攻击者属性"
+
+[node name="HealthStat" type="Label" parent="SafeArea/Content/MainContent/RightPanel/StatsPanel/StatsMargin/StatsContent"]
+layout_mode = 2
+text = "生命: 0"
+
+[node name="AttackStat" type="Label" parent="SafeArea/Content/MainContent/RightPanel/StatsPanel/StatsMargin/StatsContent"]
+layout_mode = 2
+text = "攻击: 0"
+
+[node name="DefenseStat" type="Label" parent="SafeArea/Content/MainContent/RightPanel/StatsPanel/StatsMargin/StatsContent"]
+layout_mode = 2
+text = "防御: 0"
+
+[node name="EnergyStat" type="Label" parent="SafeArea/Content/MainContent/RightPanel/StatsPanel/StatsMargin/StatsContent"]
+layout_mode = 2
+text = "能量: 0"
+
+[node name="BottomBar" type="HBoxContainer" parent="SafeArea/Content"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="BackButton" type="Button" parent="SafeArea/Content/BottomBar"]
+layout_mode = 2
+text = "返回"
+
+[node name="StartButton" type="Button" parent="SafeArea/Content/BottomBar"]
+layout_mode = 2
+disabled = true
+text = "开始战斗"
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=4]
+[gd_scene load_steps=6 format=4]
 
 [ext_resource type="Script" path="res://Scripts/LevelMap.cs" id="1_levelmap"]
 
@@ -16,36 +16,9 @@ corner_radius_top_left = 18
 corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
-content_margin_left = 20.0
-content_margin_top = 20.0
-content_margin_right = 20.0
-content_margin_bottom = 20.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_highlight"]
-bg_color = Color(0.16, 0.20, 0.30, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.45, 0.54, 0.75, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-content_margin_left = 16.0
-content_margin_top = 16.0
-content_margin_right = 16.0
-content_margin_bottom = 16.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary"]
 bg_color = Color(0.94, 0.48, 0.24, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary"]
-bg_color = Color(0.22, 0.27, 0.38, 1)
 corner_radius_top_left = 14
 corner_radius_top_right = 14
 corner_radius_bottom_right = 14
@@ -92,131 +65,35 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 20
+theme_override_constants/separation = 24
 
-[node name="TopSection" type="HBoxContainer" parent="SafeArea/Content"]
+[node name="Header" type="VBoxContainer" parent="SafeArea/Content"]
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 20
-
-[node name="Header" type="VBoxContainer" parent="SafeArea/Content/TopSection"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 1.8
-theme_override_constants/separation = 14
-
-[node name="Title" type="Label" parent="SafeArea/Content/TopSection/Header"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 34
-text = "关卡地图"
-
-[node name="RouteTitle" type="Label" parent="SafeArea/Content/TopSection/Header"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "当前预览：第 1 站"
-
-[node name="RouteDescription" type="Label" parent="SafeArea/Content/TopSection/Header"]
-layout_mode = 2
-autowrap_mode = 3
-text = "根据节点预览查看该楼层的奖励与风险。"
-
-[node name="MapCard" type="Panel" parent="SafeArea/Content/TopSection/Header"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
-
-[node name="MapPanel" type="MarginContainer" parent="SafeArea/Content/TopSection/Header/MapCard"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="MapVBox" type="VBoxContainer" parent="SafeArea/Content/TopSection/Header/MapCard/MapPanel"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_constants/separation = 16
-
-[node name="MapSummary" type="Label" parent="SafeArea/Content/TopSection/Header/MapCard/MapPanel/MapVBox"]
-layout_mode = 2
-autowrap_mode = 3
-text = "优化后的地图页将关卡节点、路线预览与卡组信息集中展示，减少来回切换成本。"
-
-[node name="NodeGrid" type="GridContainer" parent="SafeArea/Content/TopSection/Header/MapCard/MapPanel/MapVBox"]
-layout_mode = 2
-size_flags_vertical = 3
-columns = 4
-theme_override_constants/h_separation = 14
-theme_override_constants/v_separation = 14
-
-[node name="Sidebar" type="VBoxContainer" parent="SafeArea/Content/TopSection"]
-layout_mode = 2
-custom_minimum_size = Vector2(380, 0)
-size_flags_vertical = 3
-theme_override_constants/separation = 16
-
-[node name="ProgressPanel" type="Panel" parent="SafeArea/Content/TopSection/Sidebar"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_highlight")
-
-[node name="ProgressLabel" type="Label" parent="SafeArea/Content/TopSection/Sidebar/ProgressPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-autowrap_mode = 3
-text = "当前路线进度"
-
-[node name="HintPanel" type="Panel" parent="SafeArea/Content/TopSection/Sidebar"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_highlight")
-
-[node name="HintLabel" type="Label" parent="SafeArea/Content/TopSection/Sidebar/HintPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-autowrap_mode = 3
-text = "根据当前血量与卡组费用曲线选择更稳妥的路线。"
-
-[node name="LegendPanel" type="Panel" parent="SafeArea/Content/TopSection/Sidebar"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
-
-[node name="LegendMargin" type="MarginContainer" parent="SafeArea/Content/TopSection/Sidebar/LegendPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="LegendBox" type="VBoxContainer" parent="SafeArea/Content/TopSection/Sidebar/LegendPanel/LegendMargin"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="LegendTitle" type="Label" parent="SafeArea/Content/TopSection/Sidebar/LegendPanel/LegendMargin/LegendBox"]
+[node name="Title" type="Label" parent="SafeArea/Content/Header"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "图例与说明"
+theme_override_font_sizes/font_size = 34
+text = "选择地图"
 
-[node name="LegendList" type="VBoxContainer" parent="SafeArea/Content/TopSection/Sidebar/LegendPanel/LegendMargin/LegendBox"]
+[node name="Subtitle" type="Label" parent="SafeArea/Content/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "选择一个关卡开始你的冒险"
+autowrap_mode = 3
+
+[node name="MapList" type="ScrollContainer" parent="SafeArea/Content"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 10
+
+[node name="MapContainer" type="VBoxContainer" parent="SafeArea/Content/MapList"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
 
 [node name="BottomBar" type="Panel" parent="SafeArea/Content"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 180)
+custom_minimum_size = Vector2(0, 100)
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="BottomMargin" type="MarginContainer" parent="SafeArea/Content/BottomBar"]
@@ -232,42 +109,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 24
+alignment = 2
 
-[node name="DeckPanel" type="VBoxContainer" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="DeckTitle" type="Label" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout/DeckPanel"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "出发卡组"
-
-[node name="DeckDescription" type="Label" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout/DeckPanel"]
-layout_mode = 2
-autowrap_mode = 3
-text = "在地图页直接确认本局卡组流派与路线节奏，减少开局前的信息断层。"
-
-[node name="DeckDropdown" type="OptionButton" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout/DeckPanel"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="ActionButtons" type="VBoxContainer" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout"]
-layout_mode = 2
-custom_minimum_size = Vector2(280, 0)
-theme_override_constants/separation = 12
-
-[node name="ContinueButton" type="Button" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout/ActionButtons"]
-layout_mode = 2
-text = "继续推进"
-theme_override_styles/normal = SubResource("StyleBoxFlat_primary")
-
-[node name="BattleButton" type="Button" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout/ActionButtons"]
-layout_mode = 2
-text = "进入战斗测试"
-theme_override_styles/normal = SubResource("StyleBoxFlat_secondary")
-
-[node name="BackButton" type="Button" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout/ActionButtons"]
+[node name="BackButton" type="Button" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout"]
 layout_mode = 2
 text = "返回主菜单"
+theme_override_styles/normal = SubResource("StyleBoxFlat_back")
+
+[node name="BattleButton" type="Button" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout"]
+layout_mode = 2
+text = "进入战斗测试"
 theme_override_styles/normal = SubResource("StyleBoxFlat_back")
