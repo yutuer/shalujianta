@@ -13,35 +13,39 @@ public partial class BattleManager : Node2D
     private HBoxContainer playerStatsContainer;
     private Button endTurnButton;
     private Label handInfoLabel;
-    private Panel playerPanel;
     private Button mapButton;
+    private Label silverKeyLabel;
+    private Button keyOrderButton;
 
     private List<EnemyUI> enemyUIs = new List<EnemyUI>();
     private List<CardUI> cardUIs = new List<CardUI>();
     private PlayerStatsUI playerStatsUI;
-
-    private Dictionary<string, Texture2D> cardTextures = new Dictionary<string, Texture2D>();
-    private Texture2D enemyTexture;
-
-    private PackedScene cardScene;
-    private PackedScene enemyScene;
-    private PackedScene playerStatsScene;
-    private PackedScene battleLogScene;
+    private PlayerZoneUI playerZoneUI;
 
     private BattleLogWindow battleLogWindow;
     private EnemyIntentDisplay intentDisplay;
+    private CardLayoutManager cardLayoutManager;
+    private EnemyManager enemyManager;
+    private ResourceManager resourceManager;
+
+    private SilverKeyConfig silverKeyConfig;
+    private KeyOrderManager keyOrderManager;
+    private int currentSilverKey = 0;
+    private bool isKeyOrderSelectionOpen = false;
 
     private int hoveredCardIndex = -1;
 
-    private const float CARD_WIDTH = 140f;
-    private const float CARD_HEIGHT = 200f;
-    private const float OVERLAP_OFFSET = 80f;
-    private const float HOVER_LIFT = 50f;
-
     public override void _Ready()
     {
-        LoadScenes();
-        LoadResources();
+        resourceManager = new ResourceManager();
+        resourceManager.LoadAll();
+
+        enemyManager = new EnemyManager();
+
+        silverKeyConfig = SilverKeyConfig.CreateDefault();
+        keyOrderManager = new KeyOrderManager();
+        AddChild(keyOrderManager);
+
         InitializeUI();
         InitializePlayer();
         InitializeEnemies();
@@ -51,47 +55,72 @@ public partial class BattleManager : Node2D
 
     public override void _Process(double delta)
     {
-        CheckCardHover();
-        UpdateCardPositions();
+        int newHoveredIndex = cardLayoutManager.CheckCardHover(
+            cardUIs,
+            handContainer,
+            GetGlobalMousePosition(),
+            hoveredCardIndex);
+
+        if (newHoveredIndex != hoveredCardIndex)
+        {
+            hoveredCardIndex = newHoveredIndex;
+        }
+
+        cardLayoutManager.UpdateCardPositions(cardUIs, handContainer, hoveredCardIndex);
     }
 
-    private void LoadScenes()
+    public override void _Input(InputEvent @event)
     {
-        cardScene = ResourceLoader.Load<PackedScene>("res://Scenes/UI/Card.tscn");
-        enemyScene = ResourceLoader.Load<PackedScene>("res://Scenes/UI/Enemy.tscn");
-        playerStatsScene = ResourceLoader.Load<PackedScene>("res://Scenes/UI/PlayerStats.tscn");
-        battleLogScene = ResourceLoader.Load<PackedScene>("res://Scenes/UI/BattleLogWindow.tscn");
+        if (@event is InputEventMouseButton mouseEvent)
+        {
+            if (mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed)
+            {
+                TryQuickPlayCard();
+            }
+        }
     }
 
-    private void LoadResources()
+    private void TryQuickPlayCard()
     {
-        cardTextures["打击"] = ResourceLoader.Load<Texture2D>("res://Assets/Cards/strike.png");
-        cardTextures["铁壁"] = ResourceLoader.Load<Texture2D>("res://Assets/Cards/defend.png");
-        cardTextures["猛击"] = ResourceLoader.Load<Texture2D>("res://Assets/Cards/bash.png");
-        cardTextures["背上疯狂"] = ResourceLoader.Load<Texture2D>("res://Assets/Cards/whirlwind.png");
-        cardTextures["双重打击"] = ResourceLoader.Load<Texture2D>("res://Assets/Cards/twin_strike.png");
-        enemyTexture = ResourceLoader.Load<Texture2D>("res://Assets/Icons/enemy_elite.svg");
+        if (hoveredCardIndex >= 0 && hoveredCardIndex < cardUIs.Count)
+        {
+            CardUI hoveredCard = cardUIs[hoveredCardIndex];
+            if (hoveredCard != null && isPlayerTurn && player.CurrentEnergy >= hoveredCard.GetCardData().Cost)
+            {
+                hoveredCard.GetPlayButton().EmitSignal("pressed");
+            }
+        }
     }
 
     private void InitializeUI()
     {
         handContainer = GetNode<HBoxContainer>("UI/HandArea/HandContainer");
-        enemyContainer = GetNode<HBoxContainer>("UI/MainArea/BattleArea/EnemyContainer");
+        enemyContainer = GetNode<HBoxContainer>("UI/MainArea/BattleZones/EnemyZone/EnemyContainer");
         playerStatsContainer = GetNode<HBoxContainer>("UI/TopBar/PlayerStats");
         endTurnButton = GetNode<Button>("UI/BottomBar/EndTurnButton");
         handInfoLabel = GetNode<Label>("UI/BottomBar/HandInfo");
-        playerPanel = GetNode<Panel>("UI/MainArea/PlayerPanel");
         mapButton = GetNode<Button>("UI/BottomBar/MapButton");
+        silverKeyLabel = GetNode<Label>("UI/TopBar/SilverKeyLabel");
+        keyOrderButton = GetNode<Button>("UI/BottomBar/KeyOrderButton");
+
+        Control playerZone = GetNode<Control>("UI/MainArea/BattleZones/PlayerZone");
+        playerZoneUI = new PlayerZoneUI();
+        playerZone.AddChild(playerZoneUI);
+
+        cardLayoutManager = new CardLayoutManager();
 
         endTurnButton.Pressed += OnEndTurnPressed;
         mapButton.Pressed += OnMapPressed;
+        keyOrderButton.Pressed += OnKeyOrderPressed;
+
+        keyOrderButton.Disabled = true;
 
         InitializeBattleLogWindow();
     }
 
     private void InitializeBattleLogWindow()
     {
-        battleLogWindow = battleLogScene.Instantiate<BattleLogWindow>();
+        battleLogWindow = resourceManager.BattleLogScene.Instantiate<BattleLogWindow>();
         GetNode<CanvasLayer>("UI").AddChild(battleLogWindow);
         intentDisplay = new EnemyIntentDisplay();
     }
@@ -115,6 +144,8 @@ public partial class BattleManager : Node2D
         AddEnemy("守卫 A", 54, 8, 2, "balanced");
         AddEnemy("精锐 B", 50, 10, 1, "aggressive");
         AddEnemy("背信 C", 38, 6, 0, "defensive");
+
+        enemyManager.SetEnemies(enemies);
     }
 
     private void AddEnemy(string name, int maxHealth, int attack, int position, string behavior = "aggressive")
@@ -134,9 +165,9 @@ public partial class BattleManager : Node2D
 
     private void CreateEnemyUI(Enemy enemy)
     {
-        EnemyUI enemyUI = enemyScene.Instantiate<EnemyUI>();
+        EnemyUI enemyUI = resourceManager.EnemyScene.Instantiate<EnemyUI>();
         enemyUI.Setup(enemy);
-        enemyUI.SetSprite(enemyTexture);
+        enemyUI.SetSprite(resourceManager.EnemyTexture);
         enemyContainer.AddChild(enemyUI);
         enemyUIs.Add(enemyUI);
     }
@@ -171,9 +202,12 @@ public partial class BattleManager : Node2D
         player.StartTurn();
         player.Shield = 0;
 
+        keyOrderManager.ResetTurnUsage();
+
         UpdateUI();
         UpdateHandUI();
         UpdateEnemyUI();
+        UpdateSilverKeyUI();
 
         endTurnButton.Text = "结束回合";
         endTurnButton.Disabled = false;
@@ -196,7 +230,7 @@ public partial class BattleManager : Node2D
     {
         AddMessage("敌人回合", LogType.Enemy);
 
-        foreach (Enemy enemy in GetLivingEnemies())
+        foreach (Enemy enemy in enemyManager.GetLivingEnemies())
         {
             enemy.PerformAction(player, enemies);
             AIAction action = enemy.CurrentAction;
@@ -238,7 +272,7 @@ public partial class BattleManager : Node2D
             return true;
         }
 
-        if (!HasLivingEnemies())
+        if (!enemyManager.HasLivingEnemies())
         {
             AddMessage("你赢得了战斗!", LogType.System);
             endTurnButton.Text = "下一关";
@@ -251,90 +285,9 @@ public partial class BattleManager : Node2D
         return false;
     }
 
-    private List<Enemy> GetLivingEnemies()
-    {
-        List<Enemy> livingEnemies = new List<Enemy>();
-
-        foreach (Enemy enemy in enemies)
-        {
-            if (enemy.CurrentHealth > 0)
-            {
-                livingEnemies.Add(enemy);
-            }
-        }
-
-        return livingEnemies;
-    }
-
-    private bool HasLivingEnemies()
-    {
-        foreach (Enemy enemy in enemies)
-        {
-            if (enemy.CurrentHealth > 0)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private Enemy GetFrontmostEnemy()
-    {
-        Enemy frontmost = null;
-        int minPosition = int.MaxValue;
-
-        foreach (Enemy enemy in GetLivingEnemies())
-        {
-            if (enemy.Position < minPosition)
-            {
-                minPosition = enemy.Position;
-                frontmost = enemy;
-            }
-        }
-
-        return frontmost;
-    }
-
-    private Enemy GetRearmostEnemy()
-    {
-        Enemy rearMost = null;
-        int maxPosition = int.MinValue;
-
-        foreach (Enemy enemy in GetLivingEnemies())
-        {
-            if (enemy.Position > maxPosition)
-            {
-                maxPosition = enemy.Position;
-                rearMost = enemy;
-            }
-        }
-
-        return rearMost;
-    }
-
-    private Enemy GetEnemyAtPosition(int position)
-    {
-        foreach (Enemy enemy in GetLivingEnemies())
-        {
-            if (enemy.Position == position)
-            {
-                return enemy;
-            }
-        }
-
-        return null;
-    }
-
     private Enemy ResolveCardTarget(Card card)
     {
-        return card.Target switch
-        {
-            TargetType.Front => GetFrontmostEnemy(),
-            TargetType.Rear => GetRearmostEnemy(),
-            TargetType.Position => GetEnemyAtPosition(card.TargetPosition),
-            _ => GetFrontmostEnemy()
-        };
+        return enemyManager.ResolveTarget(card.Target, card.TargetPosition);
     }
 
     private void ApplyCardEffects(Card card)
@@ -363,7 +316,7 @@ public partial class BattleManager : Node2D
             AddMessage($"你使用了{card.Name}，抽了{card.DrawCount}张牌", LogType.System);
         }
 
-        if (!string.IsNullOrEmpty(card.ApplyBuffName) && HasLivingEnemies())
+        if (!string.IsNullOrEmpty(card.ApplyBuffName) && enemyManager.HasLivingEnemies())
         {
             StatusEffect buff = card.CreateBuffFromCard();
             if (buff != null)
@@ -377,7 +330,7 @@ public partial class BattleManager : Node2D
             }
         }
 
-        if (!string.IsNullOrEmpty(card.ApplyDebuffName) && HasLivingEnemies())
+        if (!string.IsNullOrEmpty(card.ApplyDebuffName) && enemyManager.HasLivingEnemies())
         {
             StatusEffect debuff = card.CreateDebuffFromCard();
             if (debuff != null)
@@ -394,14 +347,14 @@ public partial class BattleManager : Node2D
 
     private void ApplyCardDamage(Card card)
     {
-        if (!card.IsAttack || !HasLivingEnemies())
+        if (!card.IsAttack || !enemyManager.HasLivingEnemies())
         {
             return;
         }
 
         if (card.IsAreaAttack)
         {
-            foreach (Enemy enemy in GetLivingEnemies())
+            foreach (Enemy enemy in enemyManager.GetLivingEnemies())
             {
                 int actualDamage = enemy.TakeDamage(card.Damage);
                 AddMessage($"你使用了{card.Name}，对{enemy.EnemyName}造成{actualDamage}点伤害", LogType.Damage);
@@ -436,10 +389,14 @@ public partial class BattleManager : Node2D
     {
         if (playerStatsUI == null)
         {
-            playerStatsUI = playerStatsScene.Instantiate<PlayerStatsUI>();
+            playerStatsUI = resourceManager.PlayerStatsScene.Instantiate<PlayerStatsUI>();
             playerStatsContainer.AddChild(playerStatsUI);
         }
         playerStatsUI.Setup(player, turnCount);
+        if (playerZoneUI != null)
+        {
+            playerZoneUI.Setup(player);
+        }
         handInfoLabel.Text = $"手牌: {player.Hand.Count} | 抽牌堆: {player.Deck.Count} | 弃牌堆: {player.DiscardPile.Count}";
     }
 
@@ -483,11 +440,11 @@ public partial class BattleManager : Node2D
 
     private void CreateCardUI(Card card, int cardIndex)
     {
-        CardUI cardUI = cardScene.Instantiate<CardUI>();
+        CardUI cardUI = resourceManager.CardScene.Instantiate<CardUI>();
         bool canPlay = isPlayerTurn && player.CurrentEnergy >= card.Cost;
         cardUI.Setup(card, cardIndex, canPlay);
 
-        if (cardTextures.TryGetValue(card.Name, out Texture2D texture))
+        if (resourceManager.CardTextures.TryGetValue(card.Name, out Texture2D texture))
         {
             cardUI.SetTexture(texture);
         }
@@ -498,80 +455,33 @@ public partial class BattleManager : Node2D
         handContainer.AddChild(cardUI);
         cardUIs.Add(cardUI);
         cardUI.ZIndex = cardIndex;
+
+        PlayCardDrawAnimation(cardUI, cardIndex);
     }
 
-    private void CheckCardHover()
+    private void PlayCardDrawAnimation(CardUI cardUI, int cardIndex)
     {
-        Vector2 mousePos = GetGlobalMousePosition();
-        int newHoveredIndex = -1;
+        Vector2 startPos = cardLayoutManager.GetCardDrawStartPosition(handContainer);
 
-        if (cardUIs.Count == 0) return;
+        cardUI.OffsetLeft = startPos.X;
+        cardUI.OffsetTop = startPos.Y;
+        cardUI.OffsetRight = startPos.X + cardLayoutManager.CardWidth;
+        cardUI.OffsetBottom = startPos.Y + cardLayoutManager.CardHeight;
+        cardUI.Scale = new Vector2(0.5f, 0.5f);
+        cardUI.Modulate = new Color(1f, 1f, 1f, 0.5f);
 
-        int totalCards = cardUIs.Count;
-        float handWidth = OVERLAP_OFFSET * (totalCards - 1) + CARD_WIDTH;
-        float startX = (handContainer.Size.X - handWidth) / 2f;
-        float baseY = handContainer.Size.Y - CARD_HEIGHT - 10;
+        Tween tween = CreateTween();
+        tween.SetParallel(true);
 
-        Vector2 containerGlobalPos = handContainer.GlobalPosition;
+        int totalCards = player.Hand.Count;
+        var (targetX, targetY) = cardLayoutManager.GetCardDrawTargetPosition(handContainer, cardIndex, totalCards);
 
-        for (int i = 0; i < cardUIs.Count; i++)
-        {
-            float x = startX + i * OVERLAP_OFFSET;
-            float y = baseY;
+        tween.TweenProperty(cardUI, "offset_left", targetX, 0.3f).SetEase(Tween.EaseType.Out);
+        tween.TweenProperty(cardUI, "offset_top", targetY, 0.3f).SetEase(Tween.EaseType.Out);
+        tween.TweenProperty(cardUI, "scale", Vector2.One, 0.3f).SetEase(Tween.EaseType.Out);
+        tween.TweenProperty(cardUI, "modulate:a", 1f, 0.2f);
 
-            Rect2 cardRect = new Rect2(
-                containerGlobalPos.X + x,
-                containerGlobalPos.Y + y,
-                CARD_WIDTH,
-                CARD_HEIGHT
-            );
-
-            if (cardRect.HasPoint(mousePos))
-            {
-                newHoveredIndex = i;
-                break;
-            }
-        }
-
-        if (newHoveredIndex != hoveredCardIndex)
-        {
-            hoveredCardIndex = newHoveredIndex;
-        }
-    }
-
-    private void UpdateCardPositions()
-    {
-        if (cardUIs.Count == 0) return;
-
-        int totalCards = cardUIs.Count;
-        float handWidth = OVERLAP_OFFSET * (totalCards - 1) + CARD_WIDTH;
-        float startX = (handContainer.Size.X - handWidth) / 2f;
-        float baseY = handContainer.Size.Y - CARD_HEIGHT - 10;
-
-        for (int i = 0; i < cardUIs.Count; i++)
-        {
-            CardUI cardUI = cardUIs[i];
-
-            float x = startX + i * OVERLAP_OFFSET;
-            float y = baseY;
-
-            if (i == hoveredCardIndex)
-            {
-                y -= HOVER_LIFT;
-            }
-
-            cardUI.OffsetLeft = x;
-            cardUI.OffsetTop = y;
-            cardUI.OffsetRight = x + CARD_WIDTH;
-            cardUI.OffsetBottom = y + CARD_HEIGHT;
-
-            int zIndex = i;
-            if (i == hoveredCardIndex)
-            {
-                zIndex = totalCards + 10;
-            }
-            cardUI.ZIndex = zIndex;
-        }
+        tween.Play();
     }
 
     private void OnCardPlayed(Card card, int cardIndex)
@@ -582,6 +492,7 @@ public partial class BattleManager : Node2D
         }
 
         player.CurrentEnergy -= card.Cost;
+        AddSilverKey(card.Cost);
         ApplyCardEffects(card);
         ApplyCardDamage(card);
 
@@ -596,6 +507,63 @@ public partial class BattleManager : Node2D
         UpdateHandUI();
 
         CheckGameOver();
+    }
+
+    private void AddSilverKey(int energyCost)
+    {
+        int silverToAdd = (int)(energyCost * silverKeyConfig.SilverPerEnergy);
+        currentSilverKey = Mathf.Min(currentSilverKey + silverToAdd, silverKeyConfig.MaxStackSilverKey);
+        UpdateSilverKeyUI();
+    }
+
+    private void UpdateSilverKeyUI()
+    {
+        if (silverKeyLabel != null)
+        {
+            silverKeyLabel.Text = $"银钥: {currentSilverKey}/{silverKeyConfig.BaseMaxSilverKey}";
+        }
+
+        if (keyOrderButton != null)
+        {
+            bool canUse = currentSilverKey >= silverKeyConfig.BaseMaxSilverKey &&
+                         keyOrderManager.CanUseKeyOrder();
+            keyOrderButton.Disabled = !canUse;
+        }
+    }
+
+    private void OnKeyOrderPressed()
+    {
+        if (isKeyOrderSelectionOpen) return;
+
+        KeyOrder equippedOrder = keyOrderManager.GetEquippedKeyOrder();
+
+        if (equippedOrder != null && currentSilverKey >= silverKeyConfig.BaseMaxSilverKey)
+        {
+            currentSilverKey -= equippedOrder.SilverKeyCost;
+            keyOrderManager.ApplyKeyOrderEffect(equippedOrder, player, enemies.ToArray());
+            AddMessage($"你释放了钥令：{equippedOrder.Name}！", LogType.System);
+
+            if (currentSilverKey >= silverKeyConfig.BaseMaxSilverKey &&
+                keyOrderManager.CanUseKeyOrder())
+            {
+                ShowRandomKeyOrderSelection();
+            }
+
+            UpdateSilverKeyUI();
+            UpdateUI();
+            UpdateEnemyUI();
+        }
+    }
+
+    private void ShowRandomKeyOrderSelection()
+    {
+        isKeyOrderSelectionOpen = true;
+
+        List<KeyOrder> randomOrders = keyOrderManager.GetRandomKeyOrders(3);
+
+        AddMessage("选择额外的钥令技能", LogType.System);
+
+        isKeyOrderSelectionOpen = false;
     }
 
     private void AddMessage(string message, LogType logType = LogType.Info)

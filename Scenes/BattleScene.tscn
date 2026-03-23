@@ -29,7 +29,7 @@ size_flags_horizontal = 3
 [node name="PlayerStats" type="HBoxContainer" parent="UI/TopBar"]
 layout_mode = 2
 
-[node name="MainArea" type="HBoxContainer" parent="UI"]
+[node name="MainArea" type="VBoxContainer" parent="UI"]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -39,25 +39,79 @@ offset_top = -870.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="PlayerPanel" type="Panel" parent="UI/MainArea"]
+[node name="BattleZones" type="HBoxContainer" parent="UI/MainArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PlayerZone" type="Panel" parent="UI/MainArea/BattleZones"]
+custom_minimum_size = Vector2(300, 400)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BattleArea" type="Panel" parent="UI/MainArea"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MainArea/BattleZones/PlayerZone"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="PlayerName" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+layout_mode = 2
+text = "玩家"
+horizontal_alignment = 1
+
+[node name="PlayerIcon" type="TextureRect" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 4
+
+[node name="HealthBar" type="ProgressBar" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+layout_mode = 2
+text = "100/100"
+horizontal_alignment = 1
+
+[node name="ShieldLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+layout_mode = 2
+text = "护盾: 0"
+horizontal_alignment = 1
+
+[node name="EnergyLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer"]
+layout_mode = 2
+text = "能量: 3/3"
+horizontal_alignment = 1
+
+[node name="EnemyZone" type="Panel" parent="UI/MainArea/BattleZones"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="EnemyContainer" type="HBoxContainer" parent="UI/MainArea/BattleArea"]
+[node name="EnemyContainer" type="HBoxContainer" parent="UI/MainArea/BattleZones/EnemyZone"]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -620.0
-offset_top = 10
-offset_right = -10
-offset_bottom = 200
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 200.0
 grow_horizontal = 0
+alignment = 2
+
+[node name="Spacer" type="Control" parent="UI/MainArea"]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="HandArea" type="Panel" parent="UI"]
 layout_mode = 1
@@ -65,7 +119,7 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -280.0
+offset_top = -300.0
 grow_horizontal = 2
 grow_vertical = 0
 
@@ -74,10 +128,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 100
-offset_top = 10
-offset_right = -100
-offset_bottom = -10
+offset_left = 100.0
+offset_top = 10.0
+offset_right = -100.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1

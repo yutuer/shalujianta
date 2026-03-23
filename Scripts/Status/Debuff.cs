@@ -101,3 +101,28 @@ public partial class SilenceDebuff : StatusEffect
     {
     }
 }
+
+public partial class DefenseDownDebuff : StatusEffect
+{
+    [Export]
+    public int DefenseReduction { get; set; } = 10;
+
+    public DefenseDownDebuff()
+    {
+        EffectName = "DefenseDown";
+        Description = "防御力が %d 減少";
+        Duration = 3;
+        EffectType = StatusEffectType.Debuff;
+        Trigger = EffectTrigger.OnApply;
+    }
+
+    public override void OnApplyEnemy(Enemy target)
+    {
+        target.Defense = Mathf.Max(0, target.Defense - DefenseReduction);
+    }
+
+    public override void OnRemoveEnemy(Enemy target)
+    {
+        target.Defense += DefenseReduction;
+    }
+}

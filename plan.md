@@ -1,101 +1,86 @@
-# 战斗逻辑优化计划
+# BattleManager.cs 模块化优化计划
 
-## 当前问题分析
-
-### 1. BattleManager.cs 过于臃肿 (~550行)
-- 承担了太多职责：UI管理、卡牌管理、敌人管理、战斗流程控制
-- 难以扩展和维护
-
-### 2. 敌人AI极度简单
-- 只是盲目攻击，没有任何策略
-- 没有血量判断、威胁评估、行动选择
-
-### 3. 卡牌效果系统简陋
-- 仅支持固定伤害/护盾/治疗/能量
-- 没有状态效果(buff/debuff)
-- 没有条件触发效果
-- 没有连击/组合机制
-
-### 4. 玩家和敌人数据类过于简单
-- 缺乏状态效果管理
-- 缺乏战斗状态追踪
+## 当前状态
+已完成所有计划重构：
+- [CardLayoutManager.cs](file:///e:/trae_Projects/FishEatFish/Scripts/Battle/CardLayoutManager.cs) - 已创建
+- [EnemyManager.cs](file:///e:/trae_Projects/FishEatFish/Scripts/Battle/EnemyManager.cs) - 已创建
+- [ResourceManager.cs](file:///e:/trae_Projects/FishEatFish/Scripts/Battle/ResourceManager.cs) - 已创建
+- BattleManager.cs 从 ~740 行精简至 **519 行**
 
 ---
 
-## 优化方案
+## 已完成的模块
 
-### Phase 1: 架构重构
-1. **分离BattleManager职责**
-   - 创建 `TurnManager.cs` - 管理回合流程
-   - 创建 `CombatCalculator.cs` - 伤害计算公式
-   - 创建 `CardEffectResolver.cs` - 卡牌效果解析
+### 1. EnemyManager ✅
+**职责**：敌人状态查询和管理
 
-2. **创建状态效果系统**
-   - 创建 `StatusEffect.cs` - 状态效果基类
-   - 创建 `Buff.cs` / `Debuff.cs` - 增益/减益效果
-   - 在 Player/Enemy 中添加状态效果列表
+**包含方法**：
+- `GetLivingEnemies()` - 获取存活敌人列表
+- `HasLivingEnemies()` - 是否有存活敌人
+- `GetFrontmostEnemy()` - 获取最前方敌人
+- `GetRearmostEnemy()` - 获取最后方敌人
+- `GetEnemyAtPosition(int position)` - 获取指定位置敌人
+- `ResolveTarget(TargetType, int)` - 解析卡牌目标
 
-### Phase 2: 敌人AI增强
-1. **创建AI策略接口**
-   - `IEnemyAI.cs` - 敌人AI接口
-   - `AggressiveAI.cs` - 激进型AI(优先攻击)
-   - `DefensiveAI.cs` - 防守型AI(优先叠甲)
-   - `BalancedAI.cs` - 平衡型AI
+**代码行数**：~98 行
 
-2. **AI决策优化**
-   - 根据血量选择攻击目标
-   - 根据玩家护盾决定是否攻击
-   - 添加预判机制
+### 2. ResourceManager ✅
+**职责**：游戏资源加载和管理
 
-### Phase 3: 卡牌效果系统增强
-1. **扩展Card类**
-   - 添加条件效果字段
-   - 添加持续效果字段
-   - 添加触发效果
+**包含内容**：
+- `LoadScenes()` - 场景加载
+- `LoadResources()` - 资源加载
+- `LoadAll()` - 一键加载所有资源
+- `CardTextures` - 卡牌纹理字典
+- `EnemyTexture` - 敌人纹理
+- 各场景引用属性
 
-2. **添加新效果类型**
-   - 护盾转移
-   - 伤害反弹
-   - 抽牌效果
-   - 能量消耗降低
-
-### Phase 4: 代码清理
-1. 重构 BattleManager 为更小的类
-2. 添加适当的接口和抽象
-3. 整理代码结构和命名
+**代码行数**：~44 行
 
 ---
 
-## 文件结构
+## 当前模块结构
 
 ```
 Scripts/
 ├── Battle/
-│   ├── BattleManager.cs      (重构为协调者)
-│   ├── TurnManager.cs       (新增)
-│   ├── CombatCalculator.cs   (新增)
-│   └── CardEffectResolver.cs (新增)
-├── Entity/
-│   ├── Player.cs            (添加状态效果支持)
-│   └── Enemy.cs             (添加状态效果和AI)
-├── Status/
-│   ├── StatusEffect.cs      (新增)
-│   ├── Buff.cs              (新增)
-│   └── Debuff.cs            (新增)
-├── AI/
-│   ├── IEnemyAI.cs          (新增)
-│   ├── AggressiveAI.cs      (新增)
-│   ├── DefensiveAI.cs       (新增)
-│   └── BalancedAI.cs         (新增)
-├── Card/
-│   ├── Card.cs              (扩展)
-│   └── CardData.cs          (扩展)
+│   ├── BattleManager.cs      (519行) - 战斗流程协调 ✅
+│   ├── CardLayoutManager.cs  (~160行) - 卡牌布局 ✅
+│   ├── EnemyManager.cs       (98行)  - 敌人状态查询 ✅
+│   ├── ResourceManager.cs    (44行)  - 资源加载 ✅
+│   ├── EnemyIntentDisplay.cs - 敌人意图显示
+│   ├── TurnManager.cs        - 回合管理
+│   └── CardEffectResolver.cs - 卡牌效果解析
 ```
 
 ---
 
-## 优先级
+## 实施状态
 
-1. **高优先级**: 敌人AI增强、伤害计算分离
-2. **中优先级**: 状态效果系统、卡牌效果扩展
-3. **低优先级**: 完整重构BattleManager
+### Step 1: 创建 EnemyManager.cs ✅
+- 移动敌人查询方法
+- BattleManager 持有 EnemyManager 实例
+
+### Step 2: 创建 ResourceManager.cs ✅
+- 移动资源加载方法
+- BattleManager 持有 ResourceManager 实例
+
+### Step 3: 验证编译通过 ✅
+- 编译成功，无错误
+
+---
+
+## 可选后续优化
+
+### CardHandManager (可选)
+**职责**：手牌UI创建和管理
+
+**移动方法**：
+- `UpdateHandUI()` - 更新手牌UI
+- `CreateCardUI()` - 创建单张卡牌UI
+- `ClearHandUI()` - 清除手牌UI
+- `PlayCardDrawAnimation()` - 抽牌动画
+
+**注意**：此模块依赖 BattleManager 的多个状态，抽取需要传入依赖
+
+**预估精简**：~65 行

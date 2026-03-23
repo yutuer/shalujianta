@@ -11,6 +11,9 @@ public enum TargetType
 public partial class Card : Resource
 {
 	[Export]
+	public string CardId { get; set; } = "";
+
+	[Export]
 	public string Name { get; set; } = "Card";
 
 	[Export]
@@ -65,6 +68,17 @@ public partial class Card : Resource
 
 	[Export]
 	public int ApplyDebuffDuration { get; set; } = 0;
+
+    [Export]
+    public bool IsEngraved { get; set; } = false;
+
+    [Export]
+    public EngravingType EngravingType { get; set; } = EngravingType.Shield;
+
+    public EngravingEffect EngravingEffect { get; set; }
+
+    [Export]
+    public bool IsDefense { get; set; } = false;
 
     public System.Action<Player> Effect { get; set; }
 
