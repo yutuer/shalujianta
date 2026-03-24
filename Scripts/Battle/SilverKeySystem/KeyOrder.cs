@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using FishEatFish.Battle.Core;
 
 public partial class KeyOrder : Resource
 {

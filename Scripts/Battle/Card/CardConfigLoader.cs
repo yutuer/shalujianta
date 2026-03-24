@@ -1,11 +1,12 @@
 using Godot;
-using Godot.Collections;
 using System.Collections.Generic;
+
+namespace FishEatFish.Battle.Card;
 
 public class CardConfigLoader
 {
-	private static System.Collections.Generic.Dictionary<string, CardData> cardDatabase = new System.Collections.Generic.Dictionary<string, CardData>();
-	private static System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> deckDatabase = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>();
+	private static Dictionary<string, CardData> cardDatabase = new Dictionary<string, CardData>();
+	private static Dictionary<string, List<string>> deckDatabase = new Dictionary<string, List<string>>();
 	private static string defaultDeckId = "starter";
 	private static bool isLoaded = false;
 
@@ -13,13 +14,13 @@ public class CardConfigLoader
 	{
 		if (isLoaded) return;
 
-		if (!Godot.FileAccess.FileExists(configPath))
+		if (!FileAccess.FileExists(configPath))
 		{
 			GD.PrintErr($"Card config file not found: {configPath}");
 			return;
 		}
 
-		using var file = Godot.FileAccess.Open(configPath, Godot.FileAccess.ModeFlags.Read);
+		using var file = FileAccess.Open(configPath, FileAccess.ModeFlags.Read);
 		string jsonContent = file.GetAsText();
 
 		ParseJson(jsonContent);
@@ -68,7 +69,7 @@ public class CardConfigLoader
 			foreach (var deckPair in decks)
 			{
 				string deckId = deckPair.Key.ToString();
-				System.Collections.Generic.List<string> cardIds = new System.Collections.Generic.List<string>();
+				List<string> cardIds = new List<string>();
 
 				foreach (var cardId in deckPair.Value.AsGodotArray())
 				{
@@ -98,7 +99,7 @@ public class CardConfigLoader
 		return null;
 	}
 
-	public static System.Collections.Generic.List<Card> CreateDeck(string deckId = "")
+	public static List<Card> CreateDeck(string deckId = "")
 	{
 		if (!isLoaded) LoadCards();
 
@@ -107,7 +108,7 @@ public class CardConfigLoader
 			deckId = defaultDeckId;
 		}
 
-		System.Collections.Generic.List<Card> deck = new System.Collections.Generic.List<Card>();
+		List<Card> deck = new List<Card>();
 
 		if (deckDatabase.ContainsKey(deckId))
 		{
@@ -128,22 +129,22 @@ public class CardConfigLoader
 		return deck;
 	}
 
-	public static System.Collections.Generic.Dictionary<string, CardData> GetAllCards()
+	public static Dictionary<string, CardData> GetAllCards()
 	{
 		if (!isLoaded) LoadCards();
-		return new System.Collections.Generic.Dictionary<string, CardData>(cardDatabase);
+		return new Dictionary<string, CardData>(cardDatabase);
 	}
 
-	public static System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> GetAllDecks()
+	public static Dictionary<string, List<string>> GetAllDecks()
 	{
 		if (!isLoaded) LoadCards();
-		return new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>(deckDatabase);
+		return new Dictionary<string, List<string>>(deckDatabase);
 	}
 
-	public static System.Collections.Generic.List<string> GetDeckIds()
+	public static List<string> GetDeckIds()
 	{
 		if (!isLoaded) LoadCards();
-		return new System.Collections.Generic.List<string>(deckDatabase.Keys);
+		return new List<string>(deckDatabase.Keys);
 	}
 
 	public static void Reload()

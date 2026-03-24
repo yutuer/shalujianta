@@ -1,7 +1,10 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Effects.Buffs;
 
-public partial class Player : Node
+namespace FishEatFish.Battle.Core;
+
+public partial class Player : Node, IUnit
 {
 	[Export]
 	public int MaxHealth { get; set; } = 100;
@@ -15,6 +18,9 @@ public partial class Player : Node
 	public int Shield { get; set; } = 0;
 
 	[Export]
+	public int Defense { get; set; } = 0;
+
+	[Export]
 	public int MaxEnergy { get; set; } = 3;
 
 	public int CurrentEnergy { get; set; }
@@ -25,16 +31,20 @@ public partial class Player : Node
 	[Export]
 	public int MaxHandSize { get; set; } = 10;
 
-	public List<Card> Hand { get; set; } = new List<Card>();
+	public List<Card.Card> Hand { get; set; } = new List<Card.Card>();
 
-	public List<Card> Deck { get; set; } = new List<Card>();
+	public List<Card.Card> Deck { get; set; } = new List<Card.Card>();
 
-	public List<Card> DiscardPile { get; set; } = new List<Card>();
+	public List<Card.Card> DiscardPile { get; set; } = new List<Card.Card>();
 
 	public string Class { get; set; } = "Default";
 
 	private List<StatusEffect> _statusEffects = new List<StatusEffect>();
 	public List<StatusEffect> StatusEffects => _statusEffects;
+
+	public int Id { get; set; } = 0;
+
+	public FactionType Faction => FactionType.Player;
 
 	public override void _Ready()
 	{
@@ -60,7 +70,7 @@ public partial class Player : Node
 
 			if (Deck.Count > 0 && Hand.Count < MaxHandSize)
 			{
-				Card card = Deck[0];
+				Card.Card card = Deck[0];
 				Deck.RemoveAt(0);
 				Hand.Add(card);
 			}
@@ -69,7 +79,7 @@ public partial class Player : Node
 
 	public void ShuffleDiscardIntoDeck()
 	{
-		foreach (Card card in DiscardPile)
+		foreach (Card.Card card in DiscardPile)
 		{
 			Deck.Add(card);
 		}
@@ -85,7 +95,7 @@ public partial class Player : Node
 		for (int i = Deck.Count - 1; i > 0; i--)
 		{
 			int j = rng.RandiRange(0, i);
-			Card temp = Deck[i];
+			Card.Card temp = Deck[i];
 			Deck[i] = Deck[j];
 			Deck[j] = temp;
 		}
@@ -93,8 +103,8 @@ public partial class Player : Node
 
 	public void DiscardHand()
 	{
-		List<Card> cardsToDiscard = new List<Card>();
-		foreach (Card card in Hand)
+		List<Card.Card> cardsToDiscard = new List<Card.Card>();
+		foreach (Card.Card card in Hand)
 		{
 			if (!card.IsRetain)
 			{
@@ -102,14 +112,14 @@ public partial class Player : Node
 			}
 		}
 
-		foreach (Card card in cardsToDiscard)
+		foreach (Card.Card card in cardsToDiscard)
 		{
 			Hand.Remove(card);
 			DiscardPile.Add(card);
 		}
 	}
 
-	public void PlayCard(Card card)
+	public void PlayCard(Card.Card card)
 	{
 		if (CurrentEnergy >= card.Cost)
 		{
@@ -206,13 +216,10 @@ public partial class Player : Node
 		return modifiedDamage;
 	}
 
-	public bool IsDead()
-	{
-		return CurrentHealth <= 0;
-	}
-
 	public float GetHealthPercent()
 	{
 		return (float)CurrentHealth / MaxHealth;
 	}
+
+	public bool IsDead => CurrentHealth <= 0;
 }

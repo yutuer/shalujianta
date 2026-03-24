@@ -1,6 +1,10 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using FishEatFish.Battle.Core;
+using FishEatFish.Battle.Effects.Buffs;
+
+namespace FishEatFish.Battle.EngravingSystem;
 
 public partial class EngravingManager : Node
 {
@@ -36,22 +40,22 @@ public partial class EngravingManager : Node
         return result;
     }
 
-    public List<Card> GetUnengravedCards(List<Card> allCards)
+    public List<FishEatFish.Battle.Card.Card> GetUnengravedCards(List<FishEatFish.Battle.Card.Card> allCards)
     {
         return allCards.Where(card => !card.IsEngraved).ToList();
     }
 
-    public List<Card> GetRandomUnengravedCards(List<Card> allCards, int count)
+    public List<FishEatFish.Battle.Card.Card> GetRandomUnengravedCards(List<FishEatFish.Battle.Card.Card> allCards, int count)
     {
-        List<Card> unengraved = GetUnengravedCards(allCards);
+        List<FishEatFish.Battle.Card.Card> unengraved = GetUnengravedCards(allCards);
 
         if (unengraved.Count <= count)
         {
-            return new List<Card>(unengraved);
+            return new List<FishEatFish.Battle.Card.Card>(unengraved);
         }
 
-        List<Card> result = new List<Card>();
-        List<Card> available = new List<Card>(unengraved);
+        List<FishEatFish.Battle.Card.Card> result = new List<FishEatFish.Battle.Card.Card>();
+        List<FishEatFish.Battle.Card.Card> available = new List<FishEatFish.Battle.Card.Card>(unengraved);
 
         RandomNumberGenerator rng = new RandomNumberGenerator();
         rng.Randomize();
@@ -66,7 +70,7 @@ public partial class EngravingManager : Node
         return result;
     }
 
-    public void ApplyEngraving(Card card, EngravingEffect engraving)
+    public void ApplyEngraving(FishEatFish.Battle.Card.Card card, EngravingEffect engraving)
     {
         if (card == null || engraving == null) return;
 
@@ -75,7 +79,7 @@ public partial class EngravingManager : Node
         card.EngravingEffect = engraving;
     }
 
-    public void OnCardPlayed(Card card, Player player, Enemy[] enemies, CharacterPosition character, List<CharacterPosition> allCharacters)
+    public void OnCardPlayed(FishEatFish.Battle.Card.Card card, Player player, Enemy[] enemies, CharacterPosition character, List<CharacterPosition> allCharacters)
     {
         if (card == null || !card.IsEngraved || card.EngravingEffect == null) return;
 
@@ -116,7 +120,7 @@ public partial class EngravingManager : Node
 
         foreach (Enemy enemy in enemies)
         {
-            if (!enemy.IsDead())
+            if (!enemy.IsDead)
             {
                 PoisonDebuff poison = new PoisonDebuff
                 {
@@ -128,11 +132,11 @@ public partial class EngravingManager : Node
         }
     }
 
-    private void ApplyCopyEffect(Card originalCard, Player player)
+    private void ApplyCopyEffect(FishEatFish.Battle.Card.Card originalCard, Player player)
     {
         if (originalCard == null || player == null) return;
 
-        Card copy = new Card
+        FishEatFish.Battle.Card.Card copy = new FishEatFish.Battle.Card.Card
         {
             CardId = originalCard.CardId + "_copy",
             Name = originalCard.Name + "(复制)",
@@ -179,7 +183,7 @@ public partial class EngravingManager : Node
 
         foreach (Enemy enemy in enemies)
         {
-            if (!enemy.IsDead())
+            if (!enemy.IsDead)
             {
                 VulnerableDebuff vulnerable = new VulnerableDebuff
                 {

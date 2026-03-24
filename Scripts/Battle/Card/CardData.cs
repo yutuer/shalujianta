@@ -1,5 +1,7 @@
 using Godot;
 
+namespace FishEatFish.Battle.Card;
+
 public partial class CardData : Resource
 {
 	[Export]
@@ -41,8 +43,8 @@ public partial class CardData : Resource
     [Export]
     public int HealAmount { get; set; } = 0;
 
-    [Export]
-    public string SpritePath { get; set; } = "";
+	[Export]
+	public string SpritePath { get; set; } = "";
 
 	[Export]
 	public bool IsRetain { get; set; } = false;

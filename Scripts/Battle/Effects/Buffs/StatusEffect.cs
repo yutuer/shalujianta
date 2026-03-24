@@ -1,5 +1,7 @@
 using Godot;
 
+namespace FishEatFish.Battle.Effects.Buffs;
+
 public enum StatusEffectType
 {
     Buff,
@@ -40,38 +42,38 @@ public abstract partial class StatusEffect : Resource
 
     public int RemainingDuration => _remainingDuration;
 
-    public virtual void OnApplyPlayer(Player target) { }
-    public virtual void OnRemovePlayer(Player target) { }
-    public virtual void OnTurnStartPlayer(Player target) { }
-    public virtual void OnTurnEndPlayer(Player target)
+    public virtual void OnApplyPlayer(Core.Player target) { }
+    public virtual void OnRemovePlayer(Core.Player target) { }
+    public virtual void OnTurnStartPlayer(Core.Player target) { }
+    public virtual void OnTurnEndPlayer(Core.Player target)
     {
         _remainingDuration--;
     }
 
-    public virtual void OnApplyEnemy(Enemy target) { }
-    public virtual void OnRemoveEnemy(Enemy target) { }
-    public virtual void OnTurnStartEnemy(Enemy target) { }
-    public virtual void OnTurnEndEnemy(Enemy target)
+    public virtual void OnApplyEnemy(Core.Enemy target) { }
+    public virtual void OnRemoveEnemy(Core.Enemy target) { }
+    public virtual void OnTurnStartEnemy(Core.Enemy target) { }
+    public virtual void OnTurnEndEnemy(Core.Enemy target)
     {
         _remainingDuration--;
     }
 
-    public virtual int ModifyDamagePlayer(int baseDamage, Enemy attacker, Player defender)
+    public virtual int ModifyDamagePlayer(int baseDamage, Core.Enemy attacker, Core.Player defender)
     {
         return baseDamage;
     }
 
-    public virtual int ModifyDamageEnemy(int baseDamage, Enemy attacker, Enemy defender)
+    public virtual int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
         return baseDamage;
     }
 
-    public virtual int ModifyHealing(int baseHealing, Player target)
+    public virtual int ModifyHealing(int baseHealing, Core.Player target)
     {
         return baseHealing;
     }
 
-    public virtual int ModifyShield(int baseShield, Player target)
+    public virtual int ModifyShield(int baseShield, Core.Player target)
     {
         return baseShield;
     }

@@ -1,5 +1,7 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Core;
+using FishEatFish.Battle.Card;
 
 public partial class EnemyManager
 {

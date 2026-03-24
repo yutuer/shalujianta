@@ -1,5 +1,7 @@
 using Godot;
 
+namespace FishEatFish.Battle.Effects.Buffs;
+
 public partial class WeakDebuff : StatusEffect
 {
     [Export]
@@ -14,17 +16,17 @@ public partial class WeakDebuff : StatusEffect
         Trigger = EffectTrigger.OnDamageDealt;
     }
 
-    public override void OnApplyEnemy(Enemy target)
+    public override void OnApplyEnemy(Core.Enemy target)
     {
         target.Attack = Mathf.Max(0, target.Attack - AttackReduction);
     }
 
-    public override void OnRemoveEnemy(Enemy target)
+    public override void OnRemoveEnemy(Core.Enemy target)
     {
         target.Attack += AttackReduction;
     }
 
-    public override int ModifyDamageEnemy(int baseDamage, Enemy attacker, Enemy defender)
+    public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
         return baseDamage - AttackReduction;
     }
@@ -44,7 +46,7 @@ public partial class VulnerableDebuff : StatusEffect
         Trigger = EffectTrigger.OnDamageReceived;
     }
 
-    public override int ModifyDamageEnemy(int baseDamage, Enemy attacker, Enemy defender)
+    public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
         return baseDamage + DamageIncrease;
     }
@@ -64,7 +66,7 @@ public partial class PoisonDebuff : StatusEffect
         Trigger = EffectTrigger.OnTurnEnd;
     }
 
-    public override void OnTurnEndEnemy(Enemy target)
+    public override void OnTurnEndEnemy(Core.Enemy target)
     {
         base.OnTurnEndEnemy(target);
         target.TakeDamage(DamagePerTurn);
@@ -97,7 +99,7 @@ public partial class SilenceDebuff : StatusEffect
         Trigger = EffectTrigger.OnApply;
     }
 
-    public override void OnApplyEnemy(Enemy target)
+    public override void OnApplyEnemy(Core.Enemy target)
     {
     }
 }
@@ -116,12 +118,12 @@ public partial class DefenseDownDebuff : StatusEffect
         Trigger = EffectTrigger.OnApply;
     }
 
-    public override void OnApplyEnemy(Enemy target)
+    public override void OnApplyEnemy(Core.Enemy target)
     {
         target.Defense = Mathf.Max(0, target.Defense - DefenseReduction);
     }
 
-    public override void OnRemoveEnemy(Enemy target)
+    public override void OnRemoveEnemy(Core.Enemy target)
     {
         target.Defense += DefenseReduction;
     }

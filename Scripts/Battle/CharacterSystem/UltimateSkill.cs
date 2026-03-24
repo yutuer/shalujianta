@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using FishEatFish.Battle.Core;
 
 public partial class UltimateSkill : Resource
 {
@@ -43,7 +44,7 @@ public partial class UltimateSkill : Resource
 
     public static UltimateSkill CreateRatUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("rat_ultimate") ?? new UltimateSkill
         {
             SkillId = "rat_ultimate",
             Name = "鼠群来袭",
@@ -52,12 +53,11 @@ public partial class UltimateSkill : Resource
             Damage = 20,
             DrawCount = 3
         };
-        return skill;
     }
 
     public static UltimateSkill CreateOxUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("ox_ultimate") ?? new UltimateSkill
         {
             SkillId = "ox_ultimate",
             Name = "震天蛮牛冲",
@@ -65,12 +65,11 @@ public partial class UltimateSkill : Resource
             RageCost = 100,
             Damage = 50
         };
-        return skill;
     }
 
     public static UltimateSkill CreateTigerUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("tiger_ultimate") ?? new UltimateSkill
         {
             SkillId = "tiger_ultimate",
             Name = "猛虎灭世斩",
@@ -78,25 +77,24 @@ public partial class UltimateSkill : Resource
             RageCost = 100,
             Damage = 30
         };
-        return skill;
     }
 
     public static UltimateSkill CreateRabbitUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("rabbit_ultimate") ?? new UltimateSkill
         {
             SkillId = "rabbit_ultimate",
             Name = "疾风连蹬",
             Description = "随机敌人攻击4次，各10伤害",
             RageCost = 100,
-            Damage = 10
+            Damage = 10,
+            BuffValue = 4
         };
-        return skill;
     }
 
     public static UltimateSkill CreateDragonUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("dragon_ultimate") ?? new UltimateSkill
         {
             SkillId = "dragon_ultimate",
             Name = "龙王咆哮",
@@ -106,12 +104,11 @@ public partial class UltimateSkill : Resource
             BuffValue = 3,
             BuffDuration = 3
         };
-        return skill;
     }
 
     public static UltimateSkill CreateSnakeUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("snake_ultimate") ?? new UltimateSkill
         {
             SkillId = "snake_ultimate",
             Name = "万蛇噬咬",
@@ -121,12 +118,11 @@ public partial class UltimateSkill : Resource
             BuffValue = 5,
             BuffDuration = 3
         };
-        return skill;
     }
 
     public static UltimateSkill CreateHorseUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("horse_ultimate") ?? new UltimateSkill
         {
             SkillId = "horse_ultimate",
             Name = "踏雪飞驹",
@@ -135,12 +131,11 @@ public partial class UltimateSkill : Resource
             Damage = 20,
             BuffValue = 2
         };
-        return skill;
     }
 
     public static UltimateSkill CreateGoatUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("goat_ultimate") ?? new UltimateSkill
         {
             SkillId = "goat_ultimate",
             Name = "羊灵祝福",
@@ -149,12 +144,11 @@ public partial class UltimateSkill : Resource
             Heal = 15,
             Shield = 10
         };
-        return skill;
     }
 
     public static UltimateSkill CreateMonkeyUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("monkey_ultimate") ?? new UltimateSkill
         {
             SkillId = "monkey_ultimate",
             Name = "齐天大圣",
@@ -163,12 +157,11 @@ public partial class UltimateSkill : Resource
             DrawCount = 3,
             BuffValue = 999
         };
-        return skill;
     }
 
     public static UltimateSkill CreateRoosterUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("rooster_ultimate") ?? new UltimateSkill
         {
             SkillId = "rooster_ultimate",
             Name = "雄鸡一唱天下白",
@@ -176,12 +169,11 @@ public partial class UltimateSkill : Resource
             RageCost = 100,
             BuffDuration = 1
         };
-        return skill;
     }
 
     public static UltimateSkill CreateDogUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("dog_ultimate") ?? new UltimateSkill
         {
             SkillId = "dog_ultimate",
             Name = "忠犬护主",
@@ -189,12 +181,11 @@ public partial class UltimateSkill : Resource
             RageCost = 100,
             Shield = 25
         };
-        return skill;
     }
 
     public static UltimateSkill CreatePigUltimate()
     {
-        var skill = new UltimateSkill
+        return CharacterConfigLoader.GetUltimateSkill("pig_ultimate") ?? new UltimateSkill
         {
             SkillId = "pig_ultimate",
             Name = "猪刚鬣冲击",
@@ -203,11 +194,16 @@ public partial class UltimateSkill : Resource
             Damage = 35,
             Heal = 10
         };
-        return skill;
     }
 
     public static UltimateSkill GetUltimateById(string skillId)
     {
+        var fromConfig = CharacterConfigLoader.GetUltimateSkill(skillId);
+        if (fromConfig != null)
+        {
+            return fromConfig;
+        }
+
         return skillId switch
         {
             "rat_ultimate" => CreateRatUltimate(),

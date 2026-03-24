@@ -40,7 +40,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateRat()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("rat") ?? new CharacterDefinition
         {
             CharacterId = "rat",
             Name = "鼠",
@@ -59,7 +59,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateOx()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("ox") ?? new CharacterDefinition
         {
             CharacterId = "ox",
             Name = "牛",
@@ -78,7 +78,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateTiger()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("tiger") ?? new CharacterDefinition
         {
             CharacterId = "tiger",
             Name = "虎",
@@ -97,7 +97,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateRabbit()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("rabbit") ?? new CharacterDefinition
         {
             CharacterId = "rabbit",
             Name = "兔",
@@ -116,7 +116,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateDragon()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("dragon") ?? new CharacterDefinition
         {
             CharacterId = "dragon",
             Name = "龙",
@@ -135,7 +135,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateSnake()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("snake") ?? new CharacterDefinition
         {
             CharacterId = "snake",
             Name = "蛇",
@@ -154,7 +154,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateHorse()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("horse") ?? new CharacterDefinition
         {
             CharacterId = "horse",
             Name = "马",
@@ -173,7 +173,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateGoat()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("goat") ?? new CharacterDefinition
         {
             CharacterId = "goat",
             Name = "羊",
@@ -192,7 +192,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateMonkey()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("monkey") ?? new CharacterDefinition
         {
             CharacterId = "monkey",
             Name = "猴",
@@ -211,7 +211,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateRooster()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("rooster") ?? new CharacterDefinition
         {
             CharacterId = "rooster",
             Name = "鸡",
@@ -230,7 +230,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreateDog()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("dog") ?? new CharacterDefinition
         {
             CharacterId = "dog",
             Name = "狗",
@@ -249,7 +249,7 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition CreatePig()
     {
-        return new CharacterDefinition
+        return CharacterConfigLoader.GetCharacter("pig") ?? new CharacterDefinition
         {
             CharacterId = "pig",
             Name = "猪",
@@ -268,6 +268,14 @@ public partial class CharacterDefinition : Resource
 
     public static CharacterDefinition[] GetAllCharacters()
     {
+        CharacterConfigLoader.LoadCharacters();
+        var chars = CharacterConfigLoader.GetAllCharacters();
+        if (chars.Count > 0)
+        {
+            var result = new CharacterDefinition[chars.Count];
+            chars.Values.CopyTo(result, 0);
+            return result;
+        }
         return new CharacterDefinition[]
         {
             CreateRat(),

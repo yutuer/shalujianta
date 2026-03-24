@@ -1,7 +1,10 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Effects.Buffs;
 
-public partial class Enemy : Node
+namespace FishEatFish.Battle.Core;
+
+public partial class Enemy : Node, IUnit
 {
 	[Export]
 	public string EnemyName { get; set; } = "Enemy";
@@ -36,6 +39,12 @@ public partial class Enemy : Node
 	public AIAction CurrentAction => _currentAction;
 	public List<StatusEffect> StatusEffects => _statusEffects;
 
+	public int Id { get; set; } = 0;
+
+	public FactionType Faction => FactionType.Enemy;
+
+	public int Shield { get; set; } = 0;
+
 	public override void _Ready()
 	{
 		CurrentHealth = MaxHealth;
@@ -53,17 +62,16 @@ public partial class Enemy : Node
 		};
 	}
 
-	public int TakeDamage(int damage)
+	public void TakeDamage(int damage)
 	{
 		int actualDamage = CombatCalculator.CalculateDamage(damage, Defense);
 		CurrentHealth = Mathf.Max(0, CurrentHealth - actualDamage);
-		return actualDamage;
 	}
 
-	public int TakeDamageWithVariance(int baseDamage, float variancePercent = 0.1f)
+	public void TakeDamageWithVariance(int baseDamage, float variancePercent = 0.1f)
 	{
 		int damage = CombatCalculator.CalculateDamageWithVariance(baseDamage, variancePercent);
-		return TakeDamage(damage);
+		TakeDamage(damage);
 	}
 
 	public void AttackPlayer(Player player)
@@ -111,6 +119,11 @@ public partial class Enemy : Node
 	public void Heal(int amount)
 	{
 		CurrentHealth = Mathf.Min(MaxHealth, CurrentHealth + amount);
+	}
+
+	public void AddShield(int amount)
+	{
+		Shield += amount;
 	}
 
 	public void AddStatusEffect(StatusEffect effect)
@@ -186,8 +199,5 @@ public partial class Enemy : Node
 		return _ai.ChooseAction(this, player, allEnemies);
 	}
 
-	public bool IsDead()
-	{
-		return CurrentHealth <= 0;
-	}
+	public bool IsDead => CurrentHealth <= 0;
 }

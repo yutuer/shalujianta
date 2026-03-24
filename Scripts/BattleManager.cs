@@ -1,5 +1,8 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Core;
+using FishEatFish.Battle.Card;
+using FishEatFish.Battle.Effects.Buffs;
 
 /// <summary>
 /// 战斗管理器 - 核心战斗系统
@@ -694,8 +697,8 @@ public partial class BattleManager : Node2D
 		{
 			foreach (Enemy enemy in enemyManager.GetLivingEnemies())
 			{
-				int actualDamage = enemy.TakeDamage(card.Damage);
-				AddMessage($"你使用了{card.Name}，对{enemy.EnemyName}造成{actualDamage}点伤害", LogType.Damage);
+				enemy.TakeDamage(card.Damage);
+				AddMessage($"你使用了{card.Name}，对{enemy.EnemyName}造成{card.Damage}点伤害", LogType.Damage);
 			}
 
 			return;
@@ -712,7 +715,7 @@ public partial class BattleManager : Node2D
 			return;
 		}
 
-		int damage = target.TakeDamage(card.Damage);
+		target.TakeDamage(card.Damage);
 		string targetDescription = card.Target switch
 		{
 			TargetType.Front => $"最前的敌人{target.EnemyName}",
@@ -720,7 +723,7 @@ public partial class BattleManager : Node2D
 			_ => target.EnemyName
 		};
 
-		AddMessage($"你使用了{card.Name}，对{targetDescription}造成{damage}点伤害", LogType.Damage);
+		AddMessage($"你使用了{card.Name}，对{targetDescription}造成{card.Damage}点伤害", LogType.Damage);
 	}
 
 	private void UpdateUI()
@@ -746,7 +749,7 @@ public partial class BattleManager : Node2D
 		{
 			enemyUIs[i].UpdateHealth();
 			Enemy enemy = enemies[i];
-			if (!enemy.IsDead() && intentDisplay != null)
+			if (!enemy.IsDead && intentDisplay != null)
 			{
 				AIAction predictedAction = intentDisplay.PredictEnemyAction(enemy, player, enemies);
 				if (predictedAction != null)

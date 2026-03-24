@@ -1,5 +1,7 @@
 using Godot;
 
+namespace FishEatFish.Battle.EngravingSystem;
+
 public enum EngravingType
 {
     Shield,

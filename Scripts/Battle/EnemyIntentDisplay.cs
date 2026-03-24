@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Core;
 
 public class EnemyIntentDisplay
 {

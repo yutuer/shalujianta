@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using FishEatFish.Battle.Effects.Buffs;
 
 public partial class BuffDebuffDisplay : Control
 {

@@ -1,5 +1,7 @@
 using Godot;
 
+namespace FishEatFish.Battle.Effects.Buffs;
+
 public partial class StrengthBuff : StatusEffect
 {
     [Export]
@@ -8,23 +10,23 @@ public partial class StrengthBuff : StatusEffect
     public StrengthBuff()
     {
         EffectName = "Strength";
-        Description = "攻击力が+%d 増加";
+        Description = "攻撃力が+%d 増加";
         Duration = 3;
         EffectType = StatusEffectType.Buff;
         Trigger = EffectTrigger.OnDamageDealt;
     }
 
-    public override void OnApplyEnemy(Enemy target)
+    public override void OnApplyEnemy(Core.Enemy target)
     {
         target.Attack += AttackBonus;
     }
 
-    public override void OnRemoveEnemy(Enemy target)
+    public override void OnRemoveEnemy(Core.Enemy target)
     {
         target.Attack -= AttackBonus;
     }
 
-    public override int ModifyDamageEnemy(int baseDamage, Enemy attacker, Enemy defender)
+    public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
         return baseDamage + AttackBonus;
     }
@@ -43,12 +45,12 @@ public partial class DefenseBuff : StatusEffect
         EffectType = StatusEffectType.Buff;
     }
 
-    public override void OnApplyEnemy(Enemy target)
+    public override void OnApplyEnemy(Core.Enemy target)
     {
         target.Defense += DefenseBonus;
     }
 
-    public override void OnRemoveEnemy(Enemy target)
+    public override void OnRemoveEnemy(Core.Enemy target)
     {
         target.Defense -= DefenseBonus;
     }
@@ -68,7 +70,7 @@ public partial class RegenerationBuff : StatusEffect
         Trigger = EffectTrigger.OnTurnEnd;
     }
 
-    public override void OnTurnEndEnemy(Enemy target)
+    public override void OnTurnEndEnemy(Core.Enemy target)
     {
         base.OnTurnEndEnemy(target);
         target.Heal(HealPerTurn);
@@ -89,7 +91,7 @@ public partial class ThornsBuff : StatusEffect
         Trigger = EffectTrigger.OnDamageReceived;
     }
 
-    public override int ModifyDamageEnemy(int baseDamage, Enemy attacker, Enemy defender)
+    public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
         return baseDamage;
     }
@@ -109,7 +111,7 @@ public partial class FuryBuff : StatusEffect
         Trigger = EffectTrigger.OnDamageDealt;
     }
 
-    public override int ModifyDamageEnemy(int baseDamage, Enemy attacker, Enemy defender)
+    public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
         float healthPercent = attacker.GetHealthPercent();
         if (healthPercent < 0.3f)

@@ -1,4 +1,5 @@
 using Godot;
+using FishEatFish.Battle.Card;
 
 public partial class CardUI : Panel
 {

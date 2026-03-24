@@ -1,5 +1,7 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Core;
+using FishEatFish.Battle.Effects.Buffs;
 
 public partial class KeyOrderManager : Node
 {
@@ -102,7 +104,7 @@ public partial class KeyOrderManager : Node
 
         foreach (Enemy enemy in enemies)
         {
-            if (!enemy.IsDead())
+            if (!enemy.IsDead)
             {
                 enemy.TakeDamage(order.EffectValue);
             }
@@ -126,7 +128,7 @@ public partial class KeyOrderManager : Node
 
         foreach (Enemy enemy in enemies)
         {
-            if (!enemy.IsDead())
+            if (!enemy.IsDead)
             {
                 DefenseDownDebuff debuff = new DefenseDownDebuff
                 {

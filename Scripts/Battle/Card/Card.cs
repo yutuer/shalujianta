@@ -1,4 +1,9 @@
 using Godot;
+using FishEatFish.Battle.Effects.Buffs;
+using FishEatFish.Battle.Core;
+using FishEatFish.Battle.EngravingSystem;
+
+namespace FishEatFish.Battle.Card;
 
 public enum TargetType
 {
@@ -27,7 +32,7 @@ public partial class Card : Resource
 
 	public bool IsRetain { get; set; } = false;
 
-	[Export]
+    [Export]
     public bool IsAttack { get; set; } = false;
 
     [Export]
@@ -73,9 +78,9 @@ public partial class Card : Resource
     public bool IsEngraved { get; set; } = false;
 
     [Export]
-    public EngravingType EngravingType { get; set; } = EngravingType.Shield;
+    public EngravingSystem.EngravingType EngravingType { get; set; } = EngravingSystem.EngravingType.Shield;
 
-    public EngravingEffect EngravingEffect { get; set; }
+    public EngravingSystem.EngravingEffect EngravingEffect { get; set; }
 
     [Export]
     public bool IsDefense { get; set; } = false;

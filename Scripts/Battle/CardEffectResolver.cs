@@ -1,16 +1,21 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Core;
+using FishEatFish.Battle.Effects.Buffs;
+using FishEatFish.Battle.Card;
+
+namespace FishEatFish.Battle;
 
 public static class CardEffectResolver
 {
-    public static void ResolveCardEffects(Card card, Player player, List<Enemy> enemies, System.Action<string, LogType> logCallback)
+    public static void ResolveCardEffects(FishEatFish.Battle.Card.Card card, Player player, List<Enemy> enemies, System.Action<string, LogType> logCallback)
     {
         ApplyStatEffects(card, player, logCallback);
         ApplyDrawEffects(card, player, logCallback);
         ApplyStatusEffects(card, player, enemies, logCallback);
     }
 
-    private static void ApplyStatEffects(Card card, Player player, System.Action<string, LogType> logCallback)
+    private static void ApplyStatEffects(FishEatFish.Battle.Card.Card card, Player player, System.Action<string, LogType> logCallback)
     {
         if (card.ShieldGain > 0)
         {
@@ -31,7 +36,7 @@ public static class CardEffectResolver
         }
     }
 
-    private static void ApplyDrawEffects(Card card, Player player, System.Action<string, LogType> logCallback)
+    private static void ApplyDrawEffects(FishEatFish.Battle.Card.Card card, Player player, System.Action<string, LogType> logCallback)
     {
         if (card.DrawCount > 0)
         {
@@ -40,7 +45,7 @@ public static class CardEffectResolver
         }
     }
 
-    private static void ApplyStatusEffects(Card card, Player player, List<Enemy> enemies, System.Action<string, LogType> logCallback)
+    private static void ApplyStatusEffects(FishEatFish.Battle.Card.Card card, Player player, List<Enemy> enemies, System.Action<string, LogType> logCallback)
     {
         if (!string.IsNullOrEmpty(card.ApplyBuffName))
         {
@@ -71,9 +76,9 @@ public static class CardEffectResolver
         }
     }
 
-    public static Enemy GetTargetFromCard(Card card, List<Enemy> enemies)
+    public static Enemy GetTargetFromCard(FishEatFish.Battle.Card.Card card, List<Enemy> enemies)
     {
-        enemies.RemoveAll(e => e.IsDead());
+        enemies.RemoveAll(e => e.IsDead);
 
         if (enemies.Count == 0) return null;
 
@@ -136,17 +141,17 @@ public static class CardEffectResolver
         return null;
     }
 
-    public static void ApplyCardDamage(Card card, List<Enemy> enemies, System.Action<string, LogType> logCallback)
+    public static void ApplyCardDamage(FishEatFish.Battle.Card.Card card, List<Enemy> enemies, System.Action<string, LogType> logCallback)
     {
-        enemies.RemoveAll(e => e.IsDead());
+        enemies.RemoveAll(e => e.IsDead);
         if (!card.IsAttack || enemies.Count == 0) return;
 
         if (card.IsAreaAttack)
         {
             foreach (Enemy enemy in enemies)
             {
-                int actualDamage = enemy.TakeDamage(card.Damage);
-                logCallback($"对{enemy.EnemyName}造成{actualDamage}点伤害", LogType.Damage);
+                enemy.TakeDamage(card.Damage);
+                logCallback($"对{enemy.EnemyName}造成{card.Damage}点伤害", LogType.Damage);
             }
             return;
         }
@@ -154,21 +159,21 @@ public static class CardEffectResolver
         Enemy target = GetTargetFromCard(card, enemies);
         if (target == null)
         {
-            if (card.Target == TargetType.Position)
+            if (card.Target == Card.TargetType.Position)
             {
                 logCallback($"{card.TargetPosition}号位置没有存活的敌人", LogType.System);
             }
             return;
         }
 
-        int damage = target.TakeDamage(card.Damage);
+        target.TakeDamage(card.Damage);
         string targetDescription = card.Target switch
         {
-            TargetType.Front => $"最前的敌人{target.EnemyName}",
-            TargetType.Rear => $"最后的敌人{target.EnemyName}",
+            Card.TargetType.Front => $"最前的敌人{target.EnemyName}",
+            Card.TargetType.Rear => $"最后的敌人{target.EnemyName}",
             _ => target.EnemyName
         };
 
-        logCallback($"对{targetDescription}造成{damage}点伤害", LogType.Damage);
+        logCallback($"对{targetDescription}造成{card.Damage}点伤害", LogType.Damage);
     }
 }

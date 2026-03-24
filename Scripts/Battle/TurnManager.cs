@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using FishEatFish.Battle.Core;
 
 public partial class TurnManager : Node
 {
@@ -62,7 +63,7 @@ public partial class TurnManager : Node
         List<Enemy> enemies = _getEnemiesFunc?.Invoke() ?? _enemies;
         foreach (Enemy enemy in enemies)
         {
-            if (!enemy.IsDead())
+            if (!enemy.IsDead)
             {
                 performAction(enemy, _player, enemies);
             }
@@ -87,7 +88,7 @@ public partial class TurnManager : Node
         List<Enemy> enemies = _getEnemiesFunc?.Invoke() ?? _enemies;
         foreach (Enemy enemy in enemies)
         {
-            if (!enemy.IsDead())
+            if (!enemy.IsDead)
             {
                 enemy.ProcessTurnEndEffects();
             }
@@ -99,7 +100,7 @@ public partial class TurnManager : Node
         List<Enemy> enemies = _getEnemiesFunc?.Invoke() ?? _enemies;
         foreach (Enemy enemy in enemies)
         {
-            if (!enemy.IsDead())
+            if (!enemy.IsDead)
             {
                 enemy.ProcessTurnStartEffects();
             }
@@ -108,13 +109,13 @@ public partial class TurnManager : Node
 
     public bool IsGameOver()
     {
-        if (_player.IsDead()) return true;
+        if (_player.IsDead) return true;
 
         List<Enemy> enemies = _getEnemiesFunc?.Invoke() ?? _enemies;
         bool allDead = true;
         foreach (Enemy enemy in enemies)
         {
-            if (!enemy.IsDead())
+            if (!enemy.IsDead)
             {
                 allDead = false;
                 break;
@@ -125,12 +126,12 @@ public partial class TurnManager : Node
 
     public bool IsPlayerVictory()
     {
-        if (_player.IsDead()) return false;
+        if (_player.IsDead) return false;
 
         List<Enemy> enemies = _getEnemiesFunc?.Invoke() ?? _enemies;
         foreach (Enemy enemy in enemies)
         {
-            if (!enemy.IsDead())
+            if (!enemy.IsDead)
             {
                 return false;
             }
@@ -140,6 +141,6 @@ public partial class TurnManager : Node
 
     public bool IsPlayerDefeated()
     {
-        return _player.IsDead();
+        return _player.IsDead;
     }
 }
