@@ -1,4 +1,5 @@
 using Godot;
+using FishEatFish.Battle.Effects;
 
 namespace FishEatFish.Battle.Effects.Buffs;
 
@@ -10,14 +11,14 @@ public partial class StrengthBuff : StatusEffect
     public StrengthBuff()
     {
         EffectName = "Strength";
-        Description = "攻撃力が+%d 増加";
+        Description = "攻击力+%d 增加";
         Duration = 3;
         EffectType = StatusEffectType.Buff;
-        Trigger = EffectTrigger.OnDamageDealt;
     }
 
     public override void OnApplyEnemy(Core.Enemy target)
     {
+        base.OnApplyEnemy(target);
         target.Attack += AttackBonus;
     }
 
@@ -28,7 +29,11 @@ public partial class StrengthBuff : StatusEffect
 
     public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
-        return baseDamage + AttackBonus;
+        if (attacker == defender)
+        {
+            return baseDamage + AttackBonus;
+        }
+        return baseDamage;
     }
 }
 
@@ -40,13 +45,14 @@ public partial class DefenseBuff : StatusEffect
     public DefenseBuff()
     {
         EffectName = "Defense";
-        Description = "防御力が+%d 増加";
+        Description = "防御力+%d 增加";
         Duration = 3;
         EffectType = StatusEffectType.Buff;
     }
 
     public override void OnApplyEnemy(Core.Enemy target)
     {
+        base.OnApplyEnemy(target);
         target.Defense += DefenseBonus;
     }
 
@@ -67,7 +73,6 @@ public partial class RegenerationBuff : StatusEffect
         Description = "毎ターン %d 回復";
         Duration = 3;
         EffectType = StatusEffectType.Buff;
-        Trigger = EffectTrigger.OnTurnEnd;
     }
 
     public override void OnTurnEndEnemy(Core.Enemy target)
@@ -88,7 +93,6 @@ public partial class ThornsBuff : StatusEffect
         Description = "攻撃者に %d のダメージを反射";
         Duration = 2;
         EffectType = StatusEffectType.Buff;
-        Trigger = EffectTrigger.OnDamageReceived;
     }
 
     public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
@@ -108,15 +112,17 @@ public partial class FuryBuff : StatusEffect
         Description = "HPが低いほど攻撃力増加";
         Duration = 99;
         EffectType = StatusEffectType.Buff;
-        Trigger = EffectTrigger.OnDamageDealt;
     }
 
     public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
-        float healthPercent = attacker.GetHealthPercent();
-        if (healthPercent < 0.3f)
+        if (attacker == defender)
         {
-            return baseDamage + AttackMultiplier;
+            float healthPercent = attacker.GetHealthPercent();
+            if (healthPercent < 0.3f)
+            {
+                return baseDamage + AttackMultiplier;
+            }
         }
         return baseDamage;
     }

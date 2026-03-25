@@ -1,0 +1,126 @@
+{
+    "buffs": {
+        "strength": {
+            "buffId": "strength",
+            "name": "力量",
+            "description": "攻击力+%d",
+            "duration": 3,
+            "effects": [
+                {
+                    "effectId": "strength_buff",
+                    "type": "modify_attack",
+                    "trigger": "immediate",
+                    "value": 3,
+                    "target": "self"
+                }
+            ]
+        },
+        "regeneration": {
+            "buffId": "regeneration",
+            "name": "回复",
+            "description": "每回合回复%d生命",
+            "duration": 3,
+            "effects": [
+                {
+                    "effectId": "regen_effect",
+                    "type": "heal",
+                    "trigger": "on_turn_end",
+                    "value": 5,
+                    "target": "self"
+                }
+            ]
+        },
+        "thorns": {
+            "buffId": "thorns",
+            "name": "荆棘",
+            "description": "受到伤害时反弹%d伤害",
+            "duration": 2,
+            "effects": [
+                {
+                    "effectId": "thorns_reflect",
+                    "type": "damage",
+                    "trigger": "on_damage_received",
+                    "value": 3,
+                    "target": "attacker",
+                    "ignore_defense": true
+                }
+            ]
+        },
+        "fury": {
+            "buffId": "fury",
+            "name": "狂暴",
+            "description": "生命值越低攻击力越高",
+            "duration": 99,
+            "effects": [
+                {
+                    "effectId": "fury_buff",
+                    "type": "modify_attack",
+                    "trigger": "immediate",
+                    "value": 2,
+                    "target": "self",
+                    "condition": "health_below_30"
+                }
+            ]
+        },
+        "defense": {
+            "buffId": "defense",
+            "name": "防御",
+            "description": "防御力+%d",
+            "duration": 3,
+            "effects": [
+                {
+                    "effectId": "defense_buff",
+                    "type": "modify_defense",
+                    "trigger": "immediate",
+                    "value": 5,
+                    "target": "self"
+                }
+            ]
+        },
+        "vampirism": {
+            "buffId": "vampirism",
+            "name": "吸血",
+            "description": "造成伤害时回复%d生命",
+            "duration": 2,
+            "effects": [
+                {
+                    "effectId": "vampirism_heal",
+                    "type": "heal",
+                    "trigger": "on_damage_dealt",
+                    "value": 3,
+                    "target": "self"
+                }
+            ]
+        },
+        "attack_up": {
+            "buffId": "attack_up",
+            "name": "攻击力提升",
+            "description": "攻击力+%d",
+            "duration": 2,
+            "effects": [
+                {
+                    "effectId": "attack_up_effect",
+                    "type": "modify_attack",
+                    "trigger": "immediate",
+                    "value": 5,
+                    "target": "self"
+                }
+            ]
+        },
+        "shield_wall": {
+            "buffId": "shield_wall",
+            "name": "护盾壁垒",
+            "description": "回合开始获得%d护盾",
+            "duration": 3,
+            "effects": [
+                {
+                    "effectId": "shield_wall_effect",
+                    "type": "shield",
+                    "trigger": "on_turn_start",
+                    "value": 10,
+                    "target": "self"
+                }
+            ]
+        }
+    }
+}

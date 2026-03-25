@@ -1,6 +1,8 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using FishEatFish.Battle.Core;
+using FishEatFish.Battle.Effects;
 
 public partial class KeyOrder : Resource
 {
@@ -25,12 +27,49 @@ public partial class KeyOrder : Resource
     [Export]
     public int Duration = 0;
 
+    public List<string> EffectIds { get; set; } = new List<string>();
+
+    public List<Effect> CachedEffects { get; set; } = new List<Effect>();
+
     public delegate void KeyOrderExecuteHandler(Player player, Enemy[] enemies);
     public KeyOrderExecuteHandler OnExecute;
 
     public void Execute(Player player, Enemy[] enemies)
     {
+        foreach (var effect in GetEffects())
+        {
+            var context = new EffectContext
+            {
+                Owner = player,
+                Target = player,
+                Value = effect.Value,
+                CurrentTrigger = TriggerType.Immediate
+            };
+            EffectResolver.ApplyEffect(effect, context);
+        }
         OnExecute?.Invoke(player, enemies);
+    }
+
+    public void LoadEffects()
+    {
+        CachedEffects.Clear();
+        foreach (var effectId in EffectIds)
+        {
+            var effect = EffectRegistry.CreateEffect(effectId);
+            if (effect != null)
+            {
+                CachedEffects.Add(effect);
+            }
+        }
+    }
+
+    public List<Effect> GetEffects()
+    {
+        if (CachedEffects.Count == 0 && EffectIds.Count > 0)
+        {
+            LoadEffects();
+        }
+        return CachedEffects;
     }
 
     public static KeyOrder CreateSilverSlash()

@@ -1,4 +1,6 @@
 using Godot;
+using System.Collections.Generic;
+using FishEatFish.Battle.Effects;
 
 namespace FishEatFish.Battle.Effects.Buffs;
 
@@ -6,16 +8,6 @@ public enum StatusEffectType
 {
     Buff,
     Debuff
-}
-
-public enum EffectTrigger
-{
-    OnApply,
-    OnTurnStart,
-    OnTurnEnd,
-    OnDamageReceived,
-    OnDamageDealt,
-    OnKill
 }
 
 public abstract partial class StatusEffect : Resource
@@ -33,29 +25,74 @@ public abstract partial class StatusEffect : Resource
     public StatusEffectType EffectType { get; set; } = StatusEffectType.Buff;
 
     [Export]
-    public EffectTrigger Trigger { get; set; } = EffectTrigger.OnApply;
+    public int IconPathHash { get; set; } = 0;
 
     [Export]
-    public int IconPathHash { get; set; } = 0;
+    public int StackCount { get; set; } = 1;
 
     protected int _remainingDuration;
 
     public int RemainingDuration => _remainingDuration;
 
-    public virtual void OnApplyPlayer(Core.Player target) { }
-    public virtual void OnRemovePlayer(Core.Player target) { }
-    public virtual void OnTurnStartPlayer(Core.Player target) { }
-    public virtual void OnTurnEndPlayer(Core.Player target)
+    public List<Effect> Effects { get; set; } = new List<Effect>();
+
+    public virtual void OnApplyPlayer(Core.Player target)
     {
-        _remainingDuration--;
+        ApplyEffectsToTarget(target, target);
     }
 
-    public virtual void OnApplyEnemy(Core.Enemy target) { }
-    public virtual void OnRemoveEnemy(Core.Enemy target) { }
-    public virtual void OnTurnStartEnemy(Core.Enemy target) { }
+    public virtual void OnRemovePlayer(Core.Player target)
+    {
+    }
+
+    public virtual void OnTurnStartPlayer(Core.Player target)
+    {
+        ApplyEffectsToTarget(target, target);
+    }
+
+    public virtual void OnTurnEndPlayer(Core.Player target)
+    {
+        TickDuration();
+    }
+
+    public virtual void OnApplyEnemy(Core.Enemy target)
+    {
+        ApplyEffectsToTarget(target, target);
+    }
+
+    public virtual void OnRemoveEnemy(Core.Enemy target)
+    {
+    }
+
+    public virtual void OnTurnStartEnemy(Core.Enemy target)
+    {
+        ApplyEffectsToTarget(target, target);
+    }
+
     public virtual void OnTurnEndEnemy(Core.Enemy target)
     {
-        _remainingDuration--;
+        TickDuration();
+    }
+
+    private void ApplyEffectsToTarget(Core.IUnit owner, Core.IUnit target)
+    {
+        foreach (var effect in Effects)
+        {
+            var context = new EffectContext
+            {
+                Owner = owner,
+                Target = target,
+                Value = effect.Value,
+                CurrentTrigger = GetTriggerType(effect)
+            };
+
+            EffectResolver.ApplyEffect(effect, context);
+        }
+    }
+
+    private TriggerType GetTriggerType(Effect effect)
+    {
+        return effect.Trigger;
     }
 
     public virtual int ModifyDamagePlayer(int baseDamage, Core.Enemy attacker, Core.Player defender)
@@ -83,6 +120,11 @@ public abstract partial class StatusEffect : Resource
         _remainingDuration = Duration;
     }
 
+    public void TickDuration()
+    {
+        _remainingDuration--;
+    }
+
     public bool IsExpired()
     {
         return _remainingDuration <= 0;
@@ -91,5 +133,23 @@ public abstract partial class StatusEffect : Resource
     public void RefreshDuration()
     {
         _remainingDuration = Duration;
+    }
+
+    public void AddEffect(Effect effect)
+    {
+        if (!Effects.Contains(effect))
+        {
+            Effects.Add(effect);
+        }
+    }
+
+    public void RemoveEffect(Effect effect)
+    {
+        Effects.Remove(effect);
+    }
+
+    public void ClearEffects()
+    {
+        Effects.Clear();
     }
 }

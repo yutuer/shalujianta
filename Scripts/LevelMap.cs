@@ -1,4 +1,5 @@
 using Godot;
+using FishEatFish.Battle.CharacterSystem;
 
 public partial class LevelMap : Control
 {

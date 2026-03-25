@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using FishEatFish.Battle.Effects.Buffs;
+using FishEatFish.Battle.CharacterSystem;
 
 namespace FishEatFish.Battle.Core;
 
@@ -46,8 +47,35 @@ public partial class Player : Node, IUnit
 
 	public FactionType Faction => FactionType.Player;
 
+	public string CharacterName { get; set; } = "Player";
+
+	public CharacterDefinition CharacterDef { get; set; }
+
+	public CharacterAttributes Attributes { get; set; }
+
 	public override void _Ready()
 	{
+		if (CharacterDef != null)
+		{
+			Attributes = CharacterDef.GetAttributes();
+			MaxHealth = Attributes.MaxHealth;
+			Attack = Attributes.Attack;
+			Defense = Attributes.Defense;
+		}
+		CurrentHealth = MaxHealth;
+		CurrentEnergy = MaxEnergy;
+	}
+
+	public void Initialize(CharacterDefinition charDef)
+	{
+		CharacterDef = charDef;
+		CharacterName = charDef.Name;
+		Attributes = charDef.GetAttributes();
+		MaxHealth = Attributes.MaxHealth;
+		Attack = Attributes.Attack;
+		Defense = Attributes.Defense;
+		MaxEnergy = charDef.BaseEnergy;
+		DrawCount = charDef.BaseDrawCount;
 		CurrentHealth = MaxHealth;
 		CurrentEnergy = MaxEnergy;
 	}
@@ -124,6 +152,10 @@ public partial class Player : Node, IUnit
 		if (CurrentEnergy >= card.Cost)
 		{
 			CurrentEnergy -= card.Cost;
+			if (Attributes != null)
+			{
+				int silverKeyGain = Attributes.CalculateSilverKeyFromPower(card.Cost);
+			}
 			card.Effect(this);
 			Hand.Remove(card);
 			DiscardPile.Add(card);
@@ -222,4 +254,29 @@ public partial class Player : Node, IUnit
 	}
 
 	public bool IsDead => CurrentHealth <= 0;
+
+	public void ForceRevive(int health)
+	{
+		CurrentHealth = Mathf.Max(1, health);
+	}
+
+	public void UseRage(int amount)
+	{
+		if (Attributes != null && Attributes.CanUseRage(amount))
+		{
+			int returnAmount = Attributes.UseRage(amount);
+			if (returnAmount > 0)
+			{
+				GD.Print($"[RageReturn] 怒气回冲：获得 {returnAmount} 点怒气");
+			}
+		}
+	}
+
+	public void AddRage(int amount)
+	{
+		if (Attributes != null)
+		{
+			Attributes.AddRage(amount);
+		}
+	}
 }

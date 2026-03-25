@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using FishEatFish.Battle.Core;
+using FishEatFish.Battle.Effects;
 using FishEatFish.Battle.Effects.Buffs;
 using FishEatFish.Battle.Card;
 
@@ -10,9 +11,53 @@ public static class CardEffectResolver
 {
     public static void ResolveCardEffects(FishEatFish.Battle.Card.Card card, Player player, List<Enemy> enemies, System.Action<string, LogType> logCallback)
     {
+        ResolveNewEffects(card, player, enemies, logCallback);
         ApplyStatEffects(card, player, logCallback);
         ApplyDrawEffects(card, player, logCallback);
         ApplyStatusEffects(card, player, enemies, logCallback);
+    }
+
+    private static void ResolveNewEffects(FishEatFish.Battle.Card.Card card, Player player, List<Enemy> enemies, System.Action<string, LogType> logCallback)
+    {
+        var effects = card.GetEffects();
+        if (effects.Count == 0) return;
+
+        var context = new EffectContext
+        {
+            Owner = player,
+            Source = player,
+            CurrentTrigger = TriggerType.Immediate,
+            Metadata = new Dictionary<string, object>
+            {
+                { "LogCallback", logCallback },
+                { "Enemies", enemies }
+            }
+        };
+
+        foreach (var effect in effects)
+        {
+            effect.Value = GetEffectValueOverride(card, effect);
+            EffectResolver.ApplyEffect(effect, context);
+        }
+    }
+
+    private static int GetEffectValueOverride(FishEatFish.Battle.Card.Card card, Effect effect)
+    {
+        switch (effect.Type)
+        {
+            case EffectType.Damage:
+                return card.Damage > 0 ? card.Damage : effect.Value;
+            case EffectType.Shield:
+                return card.ShieldGain > 0 ? card.ShieldGain : effect.Value;
+            case EffectType.Heal:
+                return card.HealAmount > 0 ? card.HealAmount : effect.Value;
+            case EffectType.Energy:
+                return card.EnergyGain > 0 ? card.EnergyGain : effect.Value;
+            case EffectType.Draw:
+                return card.DrawCount > 0 ? card.DrawCount : effect.Value;
+            default:
+                return effect.Value;
+        }
     }
 
     private static void ApplyStatEffects(FishEatFish.Battle.Card.Card card, Player player, System.Action<string, LogType> logCallback)

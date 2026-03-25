@@ -1,0 +1,119 @@
+{
+    "debuffs": {
+        "weak": {
+            "debuffId": "weak",
+            "name": "虚弱",
+            "description": "攻击力-%d",
+            "duration": 2,
+            "effects": [
+                {
+                    "effectId": "weak_effect",
+                    "type": "modify_attack",
+                    "trigger": "immediate",
+                    "value": -3,
+                    "target": "self"
+                }
+            ]
+        },
+        "vulnerable": {
+            "debuffId": "vulnerable",
+            "name": "易伤",
+            "description": "受到的伤害+%d",
+            "duration": 2,
+            "effects": [
+                {
+                    "effectId": "vulnerable_effect",
+                    "type": "modify_damage_received",
+                    "trigger": "immediate",
+                    "value": 3,
+                    "target": "self"
+                }
+            ]
+        },
+        "poison": {
+            "debuffId": "poison",
+            "name": "中毒",
+            "description": "每回合受到%d伤害",
+            "duration": 3,
+            "effects": [
+                {
+                    "effectId": "poison_damage",
+                    "type": "damage",
+                    "trigger": "on_turn_end",
+                    "value": 3,
+                    "target": "self",
+                    "ignore_defense": true
+                }
+            ]
+        },
+        "slow": {
+            "debuffId": "slow",
+            "name": "减速",
+            "description": "每回合失去%d能量",
+            "duration": 2,
+            "effects": [
+                {
+                    "effectId": "slow_energy",
+                    "type": "energy",
+                    "trigger": "on_turn_start",
+                    "value": -1,
+                    "target": "self"
+                }
+            ]
+        },
+        "silence": {
+            "debuffId": "silence",
+            "name": "沉默",
+            "description": "无法使用卡牌",
+            "duration": 1,
+            "effects": []
+        },
+        "defense_down": {
+            "debuffId": "defense_down",
+            "name": "防御降低",
+            "description": "防御力-%d",
+            "duration": 3,
+            "effects": [
+                {
+                    "effectId": "defense_down_effect",
+                    "type": "modify_defense",
+                    "trigger": "immediate",
+                    "value": -10,
+                    "target": "self"
+                }
+            ]
+        },
+        "burn": {
+            "debuffId": "burn",
+            "name": "灼烧",
+            "description": "每回合受到%d伤害",
+            "duration": 2,
+            "effects": [
+                {
+                    "effectId": "burn_damage",
+                    "type": "damage",
+                    "trigger": "on_turn_end",
+                    "value": 5,
+                    "target": "self",
+                    "ignore_defense": true
+                }
+            ]
+        },
+        "bleed": {
+            "debuffId": "bleed",
+            "name": "流血",
+            "description": "受到伤害时额外受到%d伤害",
+            "duration": 3,
+            "effects": [
+                {
+                    "effectId": "bleed_extra",
+                    "type": "damage",
+                    "trigger": "on_damage_received",
+                    "value": 2,
+                    "target": "self",
+                    "ignore_defense": true
+                }
+            ]
+        }
+    }
+}

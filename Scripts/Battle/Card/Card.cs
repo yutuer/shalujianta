@@ -1,4 +1,6 @@
 using Godot;
+using System.Collections.Generic;
+using FishEatFish.Battle.Effects;
 using FishEatFish.Battle.Effects.Buffs;
 using FishEatFish.Battle.Core;
 using FishEatFish.Battle.EngravingSystem;
@@ -85,12 +87,49 @@ public partial class Card : Resource
     [Export]
     public bool IsDefense { get; set; } = false;
 
+    [Export]
+    public string Style { get; set; } = "striker";
+
+    public List<string> EffectIds { get; set; } = new List<string>();
+
+    public List<Effect> CachedEffects { get; set; } = new List<Effect>();
+
     public System.Action<Player> Effect { get; set; }
 
 	public Card()
 	{
 		Effect = (player) => { };
 	}
+
+    public void LoadEffects()
+    {
+        CachedEffects.Clear();
+        foreach (var effectId in EffectIds)
+        {
+            var effect = EffectRegistry.CreateEffect(effectId);
+            if (effect != null)
+            {
+                CachedEffects.Add(effect);
+            }
+        }
+    }
+
+    public List<Effect> GetEffects()
+    {
+        if (CachedEffects.Count == 0 && EffectIds.Count > 0)
+        {
+            LoadEffects();
+        }
+        return CachedEffects;
+    }
+
+    public void AddEffectId(string effectId)
+    {
+        if (!EffectIds.Contains(effectId))
+        {
+            EffectIds.Add(effectId);
+        }
+    }
 
 	public void ResetCost()
 	{

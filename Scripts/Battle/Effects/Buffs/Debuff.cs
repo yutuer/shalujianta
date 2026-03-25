@@ -1,4 +1,5 @@
 using Godot;
+using FishEatFish.Battle.Effects;
 
 namespace FishEatFish.Battle.Effects.Buffs;
 
@@ -13,11 +14,11 @@ public partial class WeakDebuff : StatusEffect
         Description = "攻撃力が %d 減少";
         Duration = 2;
         EffectType = StatusEffectType.Debuff;
-        Trigger = EffectTrigger.OnDamageDealt;
     }
 
     public override void OnApplyEnemy(Core.Enemy target)
     {
+        base.OnApplyEnemy(target);
         target.Attack = Mathf.Max(0, target.Attack - AttackReduction);
     }
 
@@ -28,7 +29,11 @@ public partial class WeakDebuff : StatusEffect
 
     public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
-        return baseDamage - AttackReduction;
+        if (attacker == defender)
+        {
+            return baseDamage - AttackReduction;
+        }
+        return baseDamage;
     }
 }
 
@@ -43,12 +48,27 @@ public partial class VulnerableDebuff : StatusEffect
         Description = "受けるダメージが %d 増加";
         Duration = 2;
         EffectType = StatusEffectType.Debuff;
-        Trigger = EffectTrigger.OnDamageReceived;
     }
 
     public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
-        return baseDamage + DamageIncrease;
+        if (defender == GetOwner())
+        {
+            return baseDamage + DamageIncrease;
+        }
+        return baseDamage;
+    }
+
+    private Core.IUnit _owner;
+
+    public void SetOwner(Core.IUnit owner)
+    {
+        _owner = owner;
+    }
+
+    private Core.IUnit GetOwner()
+    {
+        return _owner;
     }
 }
 
@@ -63,7 +83,6 @@ public partial class PoisonDebuff : StatusEffect
         Description = "毎ターン %d の毒ダメージ";
         Duration = 3;
         EffectType = StatusEffectType.Debuff;
-        Trigger = EffectTrigger.OnTurnEnd;
     }
 
     public override void OnTurnEndEnemy(Core.Enemy target)
@@ -84,7 +103,6 @@ public partial class SlowDebuff : StatusEffect
         Description = "毎ターン %d のエネルギーを失う";
         Duration = 2;
         EffectType = StatusEffectType.Debuff;
-        Trigger = EffectTrigger.OnTurnStart;
     }
 }
 
@@ -96,7 +114,6 @@ public partial class SilenceDebuff : StatusEffect
         Description = "カードを使えない";
         Duration = 1;
         EffectType = StatusEffectType.Debuff;
-        Trigger = EffectTrigger.OnApply;
     }
 
     public override void OnApplyEnemy(Core.Enemy target)
@@ -115,11 +132,11 @@ public partial class DefenseDownDebuff : StatusEffect
         Description = "防御力が %d 減少";
         Duration = 3;
         EffectType = StatusEffectType.Debuff;
-        Trigger = EffectTrigger.OnApply;
     }
 
     public override void OnApplyEnemy(Core.Enemy target)
     {
+        base.OnApplyEnemy(target);
         target.Defense = Mathf.Max(0, target.Defense - DefenseReduction);
     }
 

@@ -2,6 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 using FishEatFish.Battle.Card;
+using FishEatFish.Battle.CharacterSystem;
 
 public partial class Attacker : Node
 {

@@ -1,0 +1,239 @@
+{
+    "effects": {
+        "damage_6": {
+            "effectId": "damage_6",
+            "type": "damage",
+            "value": 6,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_8": {
+            "effectId": "damage_8",
+            "type": "damage",
+            "value": 8,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_12": {
+            "effectId": "damage_12",
+            "type": "damage",
+            "value": 12,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_20": {
+            "effectId": "damage_20",
+            "type": "damage",
+            "value": 20,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_50": {
+            "effectId": "damage_50",
+            "type": "damage",
+            "value": 50,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_100": {
+            "effectId": "damage_100",
+            "type": "damage",
+            "value": 100,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_3_all": {
+            "effectId": "damage_3_all",
+            "type": "damage",
+            "value": 3,
+            "target": "enemy_all",
+            "trigger": "immediate"
+        },
+        "damage_5_twice": {
+            "effectId": "damage_5_twice",
+            "type": "damage",
+            "value": 10,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_8_thrice": {
+            "effectId": "damage_8_thrice",
+            "type": "damage",
+            "value": 24,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_15": {
+            "effectId": "damage_15",
+            "type": "damage",
+            "value": 15,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_25_front": {
+            "effectId": "damage_25_front",
+            "type": "damage",
+            "value": 25,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_35_front": {
+            "effectId": "damage_35_front",
+            "type": "damage",
+            "value": 35,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_20_rear": {
+            "effectId": "damage_20_rear",
+            "type": "damage",
+            "value": 20,
+            "target": "enemy_rear",
+            "trigger": "immediate"
+        },
+        "damage_40_rear": {
+            "effectId": "damage_40_rear",
+            "type": "damage",
+            "value": 40,
+            "target": "enemy_rear",
+            "trigger": "immediate"
+        },
+        "damage_80": {
+            "effectId": "damage_80",
+            "type": "damage",
+            "value": 80,
+            "target": "enemy_front",
+            "trigger": "immediate"
+        },
+        "damage_ignores_shield": {
+            "effectId": "damage_ignores_shield",
+            "type": "damage",
+            "value": 20,
+            "target": "enemy_front",
+            "trigger": "immediate",
+            "ignore_shield": true
+        },
+        "shield_5": {
+            "effectId": "shield_5",
+            "type": "shield",
+            "value": 5,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "shield_8": {
+            "effectId": "shield_8",
+            "type": "shield",
+            "value": 8,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "shield_15": {
+            "effectId": "shield_15",
+            "type": "shield",
+            "value": 15,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "shield_30": {
+            "effectId": "shield_30",
+            "type": "shield",
+            "value": 30,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "shield_40": {
+            "effectId": "shield_40",
+            "type": "shield",
+            "value": 40,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "shield_50": {
+            "effectId": "shield_50",
+            "type": "shield",
+            "value": 50,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "shield_25": {
+            "effectId": "shield_25",
+            "type": "shield",
+            "value": 25,
+            "target": "self",
+            "trigger": "immediate",
+            "is_retain": true
+        },
+        "energy_2": {
+            "effectId": "energy_2",
+            "type": "energy",
+            "value": 2,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "energy_3": {
+            "effectId": "energy_3",
+            "type": "energy",
+            "value": 3,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "energy_5": {
+            "effectId": "energy_5",
+            "type": "energy",
+            "value": 5,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "heal_20": {
+            "effectId": "heal_20",
+            "type": "heal",
+            "value": 20,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "draw_2": {
+            "effectId": "draw_2",
+            "type": "draw",
+            "value": 2,
+            "target": "self",
+            "trigger": "immediate"
+        },
+        "draw_3": {
+            "effectId": "draw_3",
+            "type": "draw",
+            "value": 3,
+            "target": "self",
+            "trigger": "immediate"
+        }
+    },
+    "targetSelectors": {
+        "enemy_front": {
+            "type": "single",
+            "faction": "enemy",
+            "selection": "front"
+        },
+        "enemy_rear": {
+            "type": "single",
+            "faction": "enemy",
+            "selection": "rear"
+        },
+        "enemy_all": {
+            "type": "all",
+            "faction": "enemy"
+        },
+        "enemy_random": {
+            "type": "single",
+            "faction": "enemy",
+            "selection": "random"
+        },
+        "self": {
+            "type": "single",
+            "faction": "self",
+            "selection": "self"
+        },
+        "friendly_all": {
+            "type": "all",
+            "faction": "friendly"
+        }
+    }
+}

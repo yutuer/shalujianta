@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using FishEatFish.Battle.Effects;
 
 public enum ArtifactType
 {
@@ -62,6 +64,32 @@ public partial class Artifact : Resource
 
     [Export]
     public int EnergyPenalty = 0;
+
+    public List<string> EffectIds { get; set; } = new List<string>();
+
+    public List<Effect> CachedEffects { get; set; } = new List<Effect>();
+
+    public void LoadEffects()
+    {
+        CachedEffects.Clear();
+        foreach (var effectId in EffectIds)
+        {
+            var effect = EffectRegistry.CreateEffect(effectId);
+            if (effect != null)
+            {
+                CachedEffects.Add(effect);
+            }
+        }
+    }
+
+    public List<Effect> GetEffects()
+    {
+        if (CachedEffects.Count == 0 && EffectIds.Count > 0)
+        {
+            LoadEffects();
+        }
+        return CachedEffects;
+    }
 
     public static Artifact GenerateRandom()
     {

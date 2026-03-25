@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FishEatFish.Battle.Core;
 using FishEatFish.Battle.Card;
 using FishEatFish.Battle.Effects.Buffs;
+using FishEatFish.Battle.CharacterSystem;
 
 /// <summary>
 /// 战斗管理器 - 核心战斗系统

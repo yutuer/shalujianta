@@ -37,7 +37,7 @@ public abstract partial class Effect : Resource
 
     public abstract void Apply(EffectContext context);
 
-    protected List<IUnit> ResolveTargets(EffectContext context)
+    public List<IUnit> ResolveTargets(EffectContext context)
     {
         var results = new List<IUnit>();
         var owner = context.Owner;

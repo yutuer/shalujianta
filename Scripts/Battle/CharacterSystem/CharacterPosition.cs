@@ -1,5 +1,6 @@
 using Godot;
 using FishEatFish.Battle.Core;
+using FishEatFish.Battle.CharacterSystem;
 
 public partial class CharacterPosition : Node2D
 {

@@ -43,7 +43,6 @@ public class EffectApplier
 
         if (definition.Trigger != TriggerType.Immediate)
         {
-            EventTriggerSystem.Instance.RegisterEffect(effectInstance);
         }
 
         return effectInstance;

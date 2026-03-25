@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.CharacterSystem;
 
 /// <summary>
 /// 攻击体角色显示UI组件
