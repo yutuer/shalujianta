@@ -1,5 +1,6 @@
 using Godot;
 using FishEatFish.Battle.Card;
+using FishEatFish.Battle.CharacterSystem;
 
 public partial class CardUI : Panel
 {
@@ -10,6 +11,7 @@ public partial class CardUI : Panel
     private Button playButton;
     private TextureRect typeIcon;
     private Label hoverHint;
+    private Label levelLabel;
 
     private Card cardData;
     private int cardIndex;
@@ -26,6 +28,8 @@ public partial class CardUI : Panel
     private Vector2 baseScale = Vector2.One;
     private Vector2 hoverScale = new Vector2(1.1f, 1.1f);
 
+    private CharacterAttributes _linkedAttributes;
+
     public override void _Ready()
     {
         nameLabel = GetNode<Label>("VBoxContainer/NameLabel");
@@ -35,6 +39,12 @@ public partial class CardUI : Panel
         playButton = GetNode<Button>("VBoxContainer/PlayButton");
         typeIcon = GetNode<TextureRect>("VBoxContainer/TypeIcon");
         hoverHint = GetNode<Label>("VBoxContainer/HoverHint");
+
+        Node levelNode = GetNodeOrNull("VBoxContainer/LevelLabel");
+        if (levelNode != null)
+        {
+            levelLabel = levelNode as Label;
+        }
 
         nameLabel.AddThemeColorOverride("font_color", new Color(1f, 1f, 1f));
         costLabel.AddThemeColorOverride("font_color", new Color(0.3f, 0.7f, 1f));
@@ -64,6 +74,12 @@ public partial class CardUI : Panel
 
     public void Setup(Card card, int index, bool canPlay)
     {
+        if (cardData != null)
+        {
+            cardData.OnValuesChanged -= OnCardValuesChanged;
+            cardData.OnLevelChanged -= OnCardLevelChanged;
+        }
+
         cardData = card;
         cardIndex = index;
         isInteractable = canPlay;
@@ -72,9 +88,63 @@ public partial class CardUI : Panel
         pendingIndex = index;
         pendingCanPlay = canPlay;
 
+        cardData.OnValuesChanged += OnCardValuesChanged;
+        cardData.OnLevelChanged += OnCardLevelChanged;
+
         if (IsInsideTree())
         {
             ApplySetup(card, index, canPlay);
+        }
+    }
+
+    public void SetLinkedAttributes(CharacterAttributes attributes)
+    {
+        _linkedAttributes = attributes;
+        if (cardData != null)
+        {
+            cardData.LinkedAttributes = attributes;
+        }
+        RefreshDescription();
+    }
+
+    private void OnCardValuesChanged(Card card)
+    {
+        RefreshDescription();
+    }
+
+    private void OnCardLevelChanged(ICardLevelable card)
+    {
+        UpdateLevelDisplay();
+    }
+
+    private void RefreshDescription()
+    {
+        if (cardData == null || descLabel == null) return;
+        descLabel.Text = DescriptionGenerator.GenerateCardDescription(cardData, _linkedAttributes);
+    }
+
+    private void UpdateLevelDisplay()
+    {
+        if (cardData == null || levelLabel == null) return;
+        levelLabel.Text = DescriptionGenerator.GenerateLevelInfo(cardData);
+        UpdateLevelStyle();
+    }
+
+    private void UpdateLevelStyle()
+    {
+        if (cardData == null || levelLabel == null) return;
+
+        if (cardData.Level >= cardData.MaxLevel)
+        {
+            levelLabel.AddThemeColorOverride("font_color", new Color(1f, 0.8f, 0.2f));
+        }
+        else if (cardData.Level >= 5)
+        {
+            levelLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.8f, 1f));
+        }
+        else
+        {
+            levelLabel.AddThemeColorOverride("font_color", new Color(0.7f, 0.7f, 0.7f));
         }
     }
 
@@ -83,9 +153,10 @@ public partial class CardUI : Panel
         Name = $"Card_{index}";
         nameLabel.Text = card.Name;
         costLabel.Text = card.Cost.ToString();
-        descLabel.Text = card.Description;
+        descLabel.Text = DescriptionGenerator.GenerateCardDescription(card, _linkedAttributes);
         playButton.Disabled = !canPlay;
 
+        UpdateLevelDisplay();
         UpdateCardStyle();
     }
 
@@ -260,5 +331,22 @@ public partial class CardUI : Panel
     public int GetCardIndex()
     {
         return cardIndex;
+    }
+
+    public override void _Notification(int what)
+    {
+        if (what == (int)GodotObject.NotificationPredelete)
+        {
+            Cleanup();
+        }
+    }
+
+    private void Cleanup()
+    {
+        if (cardData != null)
+        {
+            cardData.OnValuesChanged -= OnCardValuesChanged;
+            cardData.OnLevelChanged -= OnCardLevelChanged;
+        }
     }
 }

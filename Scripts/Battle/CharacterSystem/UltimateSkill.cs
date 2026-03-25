@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using FishEatFish.Battle.Core;
 using FishEatFish.Battle.Effects;
+using FishEatFish.Battle.Card;
+using FishEatFish.Battle.CharacterSystem;
 
-public partial class UltimateSkill : Resource
+public partial class UltimateSkill : Resource, ICardLevelable
 {
     [Export]
     public string SkillId;
@@ -35,6 +37,100 @@ public partial class UltimateSkill : Resource
 
     [Export]
     public int BuffDuration;
+
+    [Export]
+    public int Level { get; set; } = 1;
+
+    [Export]
+    public int MaxLevel { get; set; } = 6;
+
+    private CardUpgradeInfo _upgradeInfo = new CardUpgradeInfo();
+    public CardUpgradeInfo UpgradeInfo => _upgradeInfo;
+
+    public event System.Action<ICardLevelable> OnLevelChanged;
+    public event System.Action<UltimateSkill> OnValuesChanged;
+
+    [Export]
+    public float DamageBaseCoefficient { get; set; } = 1.0f;
+
+    [Export]
+    public float HealBaseCoefficient { get; set; } = 1.0f;
+
+    [Export]
+    public float ShieldBaseCoefficient { get; set; } = 1.0f;
+
+    [Export]
+    public int DrawCountPerLevel { get; set; } = 0;
+
+    [Export]
+    public int BuffValuePerLevel { get; set; } = 0;
+
+    private CharacterAttributes _linkedAttributes;
+
+    public CharacterAttributes LinkedAttributes
+    {
+        get => _linkedAttributes;
+        set
+        {
+            if (_linkedAttributes != value)
+            {
+                _linkedAttributes = value;
+                OnLinkedAttributeChanged();
+            }
+        }
+    }
+
+    public int CalculatedDamage => CardLevelSystem.CalculateAttributeLinkedValue(Level, Damage, DamageBaseCoefficient);
+
+    public int CalculatedHeal => CardLevelSystem.CalculateAttributeLinkedValue(Level, Heal, HealBaseCoefficient);
+
+    public int CalculatedShield => CardLevelSystem.CalculateAttributeLinkedValue(Level, Shield, ShieldBaseCoefficient);
+
+    public int CalculatedDrawCount => CardLevelSystem.CalculateFixedValue(Level, DrawCount, DrawCountPerLevel);
+
+    public int CalculatedBuffValue => CardLevelSystem.CalculateFixedValue(Level, BuffValue, BuffValuePerLevel);
+
+    private void OnLinkedAttributeChanged()
+    {
+        OnValuesChanged?.Invoke(this);
+    }
+
+    public void RefreshCalculatedValues()
+    {
+        OnValuesChanged?.Invoke(this);
+    }
+
+    public void LevelUp()
+    {
+        if (Level < MaxLevel)
+        {
+            Level++;
+            _upgradeInfo.CurrentLevel = Level;
+            OnLevelChanged?.Invoke(this);
+            OnValuesChanged?.Invoke(this);
+        }
+    }
+
+    public void SetLevel(int level)
+    {
+        int newLevel = Mathf.Clamp(level, 1, MaxLevel);
+        if (Level != newLevel)
+        {
+            Level = newLevel;
+            _upgradeInfo.CurrentLevel = Level;
+            OnLevelChanged?.Invoke(this);
+            OnValuesChanged?.Invoke(this);
+        }
+    }
+
+    public void AddExp(int exp)
+    {
+        _upgradeInfo.AddExp(exp);
+        if (_upgradeInfo.CurrentLevel > Level)
+        {
+            SetLevel(_upgradeInfo.CurrentLevel);
+        }
+    }
 
     public List<string> EffectIds { get; set; } = new List<string>();
 

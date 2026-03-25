@@ -4,6 +4,7 @@ using FishEatFish.Battle.Effects;
 using FishEatFish.Battle.Effects.Buffs;
 using FishEatFish.Battle.Core;
 using FishEatFish.Battle.EngravingSystem;
+using FishEatFish.Battle.CharacterSystem;
 
 namespace FishEatFish.Battle.Card;
 
@@ -15,7 +16,7 @@ public enum TargetType
     Position = 3
 }
 
-public partial class Card : Resource
+public partial class Card : Resource, ICardLevelable
 {
 	[Export]
 	public string CardId { get; set; } = "";
@@ -25,6 +26,130 @@ public partial class Card : Resource
 
 	[Export]
 	public string Description { get; set; } = "";
+
+	[Export]
+	public int Level { get; set; } = 1;
+
+	[Export]
+	public int MaxLevel { get; set; } = 6;
+
+	private CardUpgradeInfo _upgradeInfo = new CardUpgradeInfo();
+	public CardUpgradeInfo UpgradeInfo => _upgradeInfo;
+
+	public event System.Action<ICardLevelable> OnLevelChanged;
+	public event System.Action<Card> OnValuesChanged;
+
+	[Export]
+	public float DamageBaseCoefficient { get; set; } = 0.6f;
+
+	[Export]
+	public float ShieldBaseCoefficient { get; set; } = 0.6f;
+
+	[Export]
+	public float HealBaseCoefficient { get; set; } = 0.6f;
+
+	[Export]
+	public float CounterBaseCoefficient { get; set; } = 0.5f;
+
+	[Export]
+	public int RageGainPerLevel { get; set; } = 0;
+
+	[Export]
+	public int BuffValueBase { get; set; } = 0;
+
+	[Export]
+	public int BuffValuePerLevel { get; set; } = 0;
+
+	[Export]
+	public int DebuffValueBase { get; set; } = 0;
+
+	[Export]
+	public int DebuffValuePerLevel { get; set; } = 0;
+
+	[Export]
+	public int EnergyGainBase { get; set; } = 0;
+
+	[Export]
+	public int EnergyGainPerLevel { get; set; } = 0;
+
+	[Export]
+	public int DrawCountBase { get; set; } = 0;
+
+	[Export]
+	public int DrawCountPerLevel { get; set; } = 0;
+
+	private CharacterAttributes _linkedAttributes;
+
+	public CharacterAttributes LinkedAttributes
+	{
+		get => _linkedAttributes;
+		set
+		{
+			if (_linkedAttributes != value)
+			{
+				_linkedAttributes = value;
+				OnLinkedAttributeChanged();
+			}
+		}
+	}
+
+	public void RefreshCalculatedValues()
+	{
+		OnValuesChanged?.Invoke(this);
+	}
+
+	private void OnLinkedAttributeChanged()
+	{
+		OnValuesChanged?.Invoke(this);
+	}
+
+	public int CalculatedDamage => CardLevelSystem.CalculateAttributeLinkedValue(Level, Damage, DamageBaseCoefficient);
+
+	public int CalculatedShield => CardLevelSystem.CalculateAttributeLinkedValue(Level, ShieldGain, ShieldBaseCoefficient);
+
+	public int CalculatedHeal => CardLevelSystem.CalculateAttributeLinkedValue(Level, HealAmount, HealBaseCoefficient);
+
+	public int CalculatedRageGain => CardLevelSystem.CalculateRageGain(Level, RageGainPerLevel);
+
+	public int CalculatedBuffValue => CardLevelSystem.CalculateFixedValue(Level, BuffValueBase, BuffValuePerLevel);
+
+	public int CalculatedDebuffValue => CardLevelSystem.CalculateFixedValue(Level, DebuffValueBase, DebuffValuePerLevel);
+
+	public int CalculatedEnergyGain => CardLevelSystem.CalculateFixedValue(Level, EnergyGainBase, EnergyGainPerLevel);
+
+	public int CalculatedDrawCount => CardLevelSystem.CalculateFixedValue(Level, DrawCountBase, DrawCountPerLevel);
+
+	public void LevelUp()
+	{
+		if (Level < MaxLevel)
+		{
+			Level++;
+			_upgradeInfo.CurrentLevel = Level;
+			OnLevelChanged?.Invoke(this);
+			OnValuesChanged?.Invoke(this);
+		}
+	}
+
+	public void SetLevel(int level)
+	{
+		int newLevel = Mathf.Clamp(level, 1, MaxLevel);
+		if (Level != newLevel)
+		{
+			Level = newLevel;
+			_upgradeInfo.CurrentLevel = Level;
+			OnLevelChanged?.Invoke(this);
+			OnValuesChanged?.Invoke(this);
+		}
+	}
+
+	public void AddExp(int exp)
+	{
+		_upgradeInfo.AddExp(exp);
+		if (_upgradeInfo.CurrentLevel > Level)
+		{
+			SetLevel(_upgradeInfo.CurrentLevel);
+		}
+	}
 
 	[Export]
 	public int Cost { get; set; } = 1;
