@@ -186,16 +186,29 @@ namespace FishEatFish.Battle.HexMap
             if (allHoles.Count == 0)
                 return true;
 
-            var testTiles = new Dictionary<HexCoord, HexTile>(tiles);
-            foreach (var hole in allHoles)
+            // 验证任意洞穴触发组合（尤其是2个hole同时消失的情况）后，起点依旧可以到达boss。
+            // 关卡最高只有4个洞穴，组合数最多 2^4-1=15，穷举成本可控。
+            int totalCombinations = 1 << allHoles.Count;
+            for (int mask = 1; mask < totalCombinations; mask++)
             {
-                testTiles.Remove(hole);
-            }
+                var removedHoles = new List<HexCoord>();
+                var testTiles = new Dictionary<HexCoord, HexTile>(tiles);
 
-            if (!CanReach(testTiles, startCoord, endCoord))
-            {
-                GD.Print($"[HexMapGenerator] 最终验证失败: 移除所有洞穴后起点无法到达boss");
-                return false;
+                for (int i = 0; i < allHoles.Count; i++)
+                {
+                    if ((mask & (1 << i)) == 0)
+                        continue;
+
+                    var hole = allHoles[i];
+                    testTiles.Remove(hole);
+                    removedHoles.Add(hole);
+                }
+
+                if (!CanReach(testTiles, startCoord, endCoord))
+                {
+                    GD.Print($"[HexMapGenerator] 最终验证失败: 移除洞穴组合 {string.Join(", ", removedHoles)} 后起点无法到达boss");
+                    return false;
+                }
             }
 
             return true;
