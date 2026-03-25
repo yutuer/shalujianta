@@ -415,7 +415,331 @@ public partial class CharacterDefinition : Resource
             CreateMonkey(),
             CreateRooster(),
             CreateDog(),
-            CreatePig()
+            CreatePig(),
+            CreateMu(),
+            CreateAldebaran(),
+            CreateSaga(),
+            CreateDeathmask(),
+            CreateAiolia(),
+            CreateShaka(),
+            CreateDochiki(),
+            CreateMilo(),
+            CreateAiolos(),
+            CreateShura(),
+            CreateCamus(),
+            CreateAphrodite()
         };
+    }
+
+    public static CharacterDefinition CreateMu()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "mu",
+            Name = "牡羊座·穆",
+            NameEn = "Mu",
+            Race = CharacterRace.Chaos,
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 50,
+            BaseEnergy = 2,
+            BaseDrawCount = 1,
+            BaseAttack = 8,
+            BaseDefense = 6,
+            BaseConstitution = 14,
+            BaseCritRate = 5,
+            BaseCritDamage = 150,
+            AttackCardId = "mu_attack",
+            DefenseCardId = "mu_defense",
+            SpecialCardIds = new string[] { "mu_special" },
+            UltimateSkillId = "mu_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateAldebaran()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "aldebaran",
+            Name = "金牛座·阿鲁迪巴",
+            NameEn = "Aldebaran",
+            Race = CharacterRace.Chaos,
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 55,
+            BaseEnergy = 2,
+            BaseDrawCount = 1,
+            BaseAttack = 10,
+            BaseDefense = 7,
+            BaseConstitution = 15,
+            BaseCritRate = 5,
+            BaseCritDamage = 150,
+            AttackCardId = "aldebaran_attack",
+            DefenseCardId = "aldebaran_defense",
+            SpecialCardIds = new string[] { "aldebaran_special" },
+            UltimateSkillId = "aldebaran_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateSaga()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "saga",
+            Name = "双子座·撒加",
+            NameEn = "Saga",
+            Race = CharacterRace.Chaos,
+            Archetype = CharacterArchetype.Mage,
+            BaseHealth = 45,
+            BaseEnergy = 3,
+            BaseDrawCount = 2,
+            BaseAttack = 9,
+            BaseDefense = 4,
+            BaseConstitution = 12,
+            BaseCritRate = 8,
+            BaseCritDamage = 165,
+            AttackCardId = "saga_attack",
+            DefenseCardId = "saga_defense",
+            SpecialCardIds = new string[] { "saga_special" },
+            UltimateSkillId = "saga_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateDeathmask()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "deathmask",
+            Name = "巨蟹座·迪斯马斯克",
+            NameEn = "Deathmask",
+            Race = CharacterRace.Abyss,
+            Archetype = CharacterArchetype.Debuffer,
+            BaseHealth = 35,
+            BaseEnergy = 3,
+            BaseDrawCount = 2,
+            BaseAttack = 7,
+            BaseDefense = 3,
+            BaseConstitution = 10,
+            BaseCritRate = 10,
+            BaseCritDamage = 170,
+            AttackCardId = "deathmask_attack",
+            DefenseCardId = "deathmask_defense",
+            SpecialCardIds = new string[] { "deathmask_special" },
+            UltimateSkillId = "deathmask_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateAiolia()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "aiolia",
+            Name = "狮子座·艾欧里亚",
+            NameEn = "Aiolia",
+            Race = CharacterRace.Hyperdimension,
+            Archetype = CharacterArchetype.Striker,
+            BaseHealth = 40,
+            BaseEnergy = 3,
+            BaseDrawCount = 2,
+            BaseAttack = 10,
+            BaseDefense = 4,
+            BaseConstitution = 11,
+            BaseCritRate = 12,
+            BaseCritDamage = 180,
+            AttackCardId = "aiolia_attack",
+            DefenseCardId = "aiolia_defense",
+            SpecialCardIds = new string[] { "aiolia_special" },
+            UltimateSkillId = "aiolia_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateShaka()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "shaka",
+            Name = "处女座·沙加",
+            NameEn = "Shaka",
+            Race = CharacterRace.Hyperdimension,
+            Archetype = CharacterArchetype.Healer,
+            BaseHealth = 40,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 6,
+            BaseDefense = 5,
+            BaseConstitution = 12,
+            BaseCritRate = 5,
+            BaseCritDamage = 150,
+            AttackCardId = "shaka_attack",
+            DefenseCardId = "shaka_defense",
+            SpecialCardIds = new string[] { "shaka_special" },
+            UltimateSkillId = "shaka_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateDochiki()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "dochiki",
+            Name = "天秤座·童虎",
+            NameEn = "Dochiki",
+            Race = CharacterRace.Flesh,
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 55,
+            BaseEnergy = 2,
+            BaseDrawCount = 1,
+            BaseAttack = 9,
+            BaseDefense = 7,
+            BaseConstitution = 15,
+            BaseCritRate = 5,
+            BaseCritDamage = 150,
+            AttackCardId = "dochiki_attack",
+            DefenseCardId = "dochiki_defense",
+            SpecialCardIds = new string[] { "dochiki_special" },
+            UltimateSkillId = "dochiki_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateMilo()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "milo",
+            Name = "天蝎座·米罗",
+            NameEn = "Milo",
+            Race = CharacterRace.Abyss,
+            Archetype = CharacterArchetype.Striker,
+            BaseHealth = 35,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 9,
+            BaseDefense = 3,
+            BaseConstitution = 10,
+            BaseCritRate = 15,
+            BaseCritDamage = 185,
+            AttackCardId = "milo_attack",
+            DefenseCardId = "milo_defense",
+            SpecialCardIds = new string[] { "milo_special" },
+            UltimateSkillId = "milo_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateAiolos()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "aiolos",
+            Name = "射手座·艾俄洛斯",
+            NameEn = "Aiolos",
+            Race = CharacterRace.Hyperdimension,
+            Archetype = CharacterArchetype.Striker,
+            BaseHealth = 40,
+            BaseEnergy = 3,
+            BaseDrawCount = 2,
+            BaseAttack = 10,
+            BaseDefense = 4,
+            BaseConstitution = 11,
+            BaseCritRate = 12,
+            BaseCritDamage = 180,
+            AttackCardId = "aiolos_attack",
+            DefenseCardId = "aiolos_defense",
+            SpecialCardIds = new string[] { "aiolos_special" },
+            UltimateSkillId = "aiolos_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateShura()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "shura",
+            Name = "摩羯座·修罗",
+            NameEn = "Shura",
+            Race = CharacterRace.Flesh,
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 50,
+            BaseEnergy = 2,
+            BaseDrawCount = 1,
+            BaseAttack = 10,
+            BaseDefense = 6,
+            BaseConstitution = 14,
+            BaseCritRate = 5,
+            BaseCritDamage = 150,
+            AttackCardId = "shura_attack",
+            DefenseCardId = "shura_defense",
+            SpecialCardIds = new string[] { "shura_special" },
+            UltimateSkillId = "shura_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateCamus()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "camus",
+            Name = "水瓶座·卡妙",
+            NameEn = "Camus",
+            Race = CharacterRace.Abyss,
+            Archetype = CharacterArchetype.Mage,
+            BaseHealth = 45,
+            BaseEnergy = 3,
+            BaseDrawCount = 2,
+            BaseAttack = 8,
+            BaseDefense = 5,
+            BaseConstitution = 12,
+            BaseCritRate = 8,
+            BaseCritDamage = 165,
+            AttackCardId = "camus_attack",
+            DefenseCardId = "camus_defense",
+            SpecialCardIds = new string[] { "camus_special" },
+            UltimateSkillId = "camus_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    public static CharacterDefinition CreateAphrodite()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "aphrodite",
+            Name = "双鱼座·阿布罗狄",
+            NameEn = "Aphrodite",
+            Race = CharacterRace.Flesh,
+            Archetype = CharacterArchetype.Poison,
+            BaseHealth = 35,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 7,
+            BaseDefense = 3,
+            BaseConstitution = 10,
+            BaseCritRate = 10,
+            BaseCritDamage = 175,
+            AttackCardId = "aphrodite_attack",
+            DefenseCardId = "aphrodite_defense",
+            SpecialCardIds = new string[] { "aphrodite_special" },
+            UltimateSkillId = "aphrodite_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
     }
 }

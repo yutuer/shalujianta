@@ -1,0 +1,255 @@
+{
+    "ultimates": [
+        {
+            "skillId": "rat_ultimate",
+            "characterId": "rat",
+            "name": "鼠群来袭",
+            "rageCost": 100,
+            "damage": 20,
+            "damageBaseCoefficient": 1.0,
+            "drawCount": 3,
+            "drawCountPerLevel": 0,
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "ox_ultimate",
+            "characterId": "ox",
+            "name": "震天蛮牛冲",
+            "rageCost": 100,
+            "damage": 50,
+            "damageBaseCoefficient": 1.0,
+            "target": "front"
+        },
+        {
+            "skillId": "tiger_ultimate",
+            "characterId": "tiger",
+            "name": "猛虎灭世斩",
+            "rageCost": 100,
+            "damage": 30,
+            "damageBaseCoefficient": 1.0,
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "rabbit_ultimate",
+            "characterId": "rabbit",
+            "name": "疾风连蹬",
+            "rageCost": 100,
+            "damage": 10,
+            "damageBaseCoefficient": 1.0,
+            "buffValue": 4,
+            "buffValuePerLevel": 1,
+            "target": "random"
+        },
+        {
+            "skillId": "dragon_ultimate",
+            "characterId": "dragon",
+            "name": "龙王咆哮",
+            "rageCost": 100,
+            "damage": 25,
+            "damageBaseCoefficient": 1.0,
+            "buffValue": 3,
+            "buffValuePerLevel": 0,
+            "buffDuration": 3,
+            "applyDebuffName": "poison",
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "snake_ultimate",
+            "characterId": "snake",
+            "name": "万蛇噬咬",
+            "rageCost": 100,
+            "damage": 15,
+            "damageBaseCoefficient": 1.0,
+            "buffValue": 5,
+            "buffValuePerLevel": 0,
+            "buffDuration": 3,
+            "applyDebuffName": "poison",
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "horse_ultimate",
+            "characterId": "horse",
+            "name": "踏雪飞驹",
+            "rageCost": 100,
+            "damage": 20,
+            "damageBaseCoefficient": 1.0,
+            "buffValue": 2,
+            "buffValuePerLevel": 0,
+            "energyGain": 2
+        },
+        {
+            "skillId": "goat_ultimate",
+            "characterId": "goat",
+            "name": "羊灵祝福",
+            "rageCost": 100,
+            "heal": 15,
+            "healBaseCoefficient": 1.0,
+            "shield": 10,
+            "shieldBaseCoefficient": 1.0
+        },
+        {
+            "skillId": "monkey_ultimate",
+            "characterId": "monkey",
+            "name": "齐天大圣",
+            "rageCost": 100,
+            "drawCount": 3,
+            "drawCountPerLevel": 0,
+            "buffValue": 999,
+            "buffValuePerLevel": 0,
+            "buffDuration": 999
+        },
+        {
+            "skillId": "rooster_ultimate",
+            "characterId": "rooster",
+            "name": "雄鸡一唱天下白",
+            "rageCost": 100,
+            "buffDuration": 1,
+            "target": "enemy"
+        },
+        {
+            "skillId": "dog_ultimate",
+            "characterId": "dog",
+            "name": "忠犬护主",
+            "rageCost": 100,
+            "shield": 25,
+            "shieldBaseCoefficient": 1.0
+        },
+        {
+            "skillId": "pig_ultimate",
+            "characterId": "pig",
+            "name": "猪刚鬣冲击",
+            "rageCost": 100,
+            "damage": 35,
+            "damageBaseCoefficient": 1.0,
+            "heal": 10,
+            "healBaseCoefficient": 1.0,
+            "target": "front"
+        },
+        {
+            "skillId": "mu_ultimate",
+            "characterId": "mu",
+            "name": "星光灭绝冲击",
+            "rageCost": 100,
+            "damage": 40,
+            "damageBaseCoefficient": 1.0,
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "aldebaran_ultimate",
+            "characterId": "aldebaran",
+            "name": "泰坦新星",
+            "rageCost": 100,
+            "damage": 60,
+            "damageBaseCoefficient": 1.0,
+            "target": "front"
+        },
+        {
+            "skillId": "saga_ultimate",
+            "characterId": "saga",
+            "name": "罪恶降临",
+            "rageCost": 100,
+            "damage": 35,
+            "damageBaseCoefficient": 1.0,
+            "buffValue": 2,
+            "buffValuePerLevel": 0,
+            "buffDuration": 2,
+            "applyDebuffName": "weak",
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "deathmask_ultimate",
+            "characterId": "deathmask",
+            "name": "死亡极限",
+            "rageCost": 100,
+            "buffValue": 5,
+            "buffValuePerLevel": 0,
+            "buffDuration": 3,
+            "applyDebuffName": "weak",
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "aiolia_ultimate",
+            "characterId": "aiolia",
+            "name": "等离子闪电波",
+            "rageCost": 100,
+            "damage": 50,
+            "damageBaseCoefficient": 1.0,
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "shaka_ultimate",
+            "characterId": "shaka",
+            "name": "八感觉醒",
+            "rageCost": 100,
+            "heal": 20,
+            "healBaseCoefficient": 1.0
+        },
+        {
+            "skillId": "dochiki_ultimate",
+            "characterId": "dochiki",
+            "name": "庐山龙飞翔",
+            "rageCost": 100,
+            "damage": 45,
+            "damageBaseCoefficient": 1.0,
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "milo_ultimate",
+            "characterId": "milo",
+            "name": "猩红毒针·真红之星",
+            "rageCost": 100,
+            "damage": 25,
+            "damageBaseCoefficient": 1.0,
+            "buffValue": 5,
+            "buffValuePerLevel": 0,
+            "buffDuration": 3,
+            "applyDebuffName": "poison",
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "aiolos_ultimate",
+            "characterId": "aiolos",
+            "name": "黄金之箭·天马",
+            "rageCost": 100,
+            "damage": 40,
+            "damageBaseCoefficient": 1.0,
+            "energyGain": 3,
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "shura_ultimate",
+            "characterId": "shura",
+            "name": "圣剑·最终奥义",
+            "rageCost": 100,
+            "damage": 70,
+            "damageBaseCoefficient": 1.0,
+            "target": "front"
+        },
+        {
+            "skillId": "camus_ultimate",
+            "characterId": "camus",
+            "name": "极光处刑",
+            "rageCost": 100,
+            "damage": 30,
+            "damageBaseCoefficient": 1.0,
+            "buffValue": 3,
+            "buffValuePerLevel": 0,
+            "buffDuration": 3,
+            "applyDebuffName": "slow",
+            "isAreaAttack": true
+        },
+        {
+            "skillId": "aphrodite_ultimate",
+            "characterId": "aphrodite",
+            "name": "魔宫玫瑰",
+            "rageCost": 100,
+            "damage": 20,
+            "damageBaseCoefficient": 1.0,
+            "buffValue": 6,
+            "buffValuePerLevel": 0,
+            "buffDuration": 3,
+            "applyDebuffName": "poison",
+            "isAreaAttack": true
+        }
+    ]
+}

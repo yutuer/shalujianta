@@ -1,0 +1,92 @@
+{
+    "buffEngravings": [
+        {
+            "engravingId": "engraving_001",
+            "name": "烈火刻印",
+            "icon": "res://Assets/Icons/engravings/fire.png",
+            "description": "攻击力+10%",
+            "price": 25,
+            "effect": {
+                "type": "attack_buff",
+                "value": 0.10
+            }
+        },
+        {
+            "engravingId": "engraving_002",
+            "name": "磐石刻印",
+            "icon": "res://Assets/Icons/engravings/earth.png",
+            "description": "防御力+10%",
+            "price": 25,
+            "effect": {
+                "type": "defense_buff",
+                "value": 0.10
+            }
+        },
+        {
+            "engravingId": "engraving_003",
+            "name": "生命刻印",
+            "icon": "res://Assets/Icons/engravings/life.png",
+            "description": "生命上限+15%",
+            "price": 25,
+            "effect": {
+                "type": "health_buff",
+                "value": 0.15
+            }
+        },
+        {
+            "engravingId": "engraving_004",
+            "name": "疾风刻印",
+            "icon": "res://Assets/Icons/engravings/wind.png",
+            "description": "速度+10%",
+            "price": 25,
+            "effect": {
+                "type": "speed_buff",
+                "value": 0.10
+            }
+        },
+        {
+            "engravingId": "engraving_005",
+            "name": "寒冰刻印",
+            "icon": "res://Assets/Icons/engravings/ice.png",
+            "description": "攻击附带减速效果",
+            "price": 25,
+            "effect": {
+                "type": "slow_on_attack",
+                "value": 0.20
+            }
+        },
+        {
+            "engravingId": "engraving_006",
+            "name": "雷霆刻印",
+            "icon": "res://Assets/Icons/engravings/thunder.png",
+            "description": "暴击率+8%",
+            "price": 25,
+            "effect": {
+                "type": "crit_buff",
+                "value": 0.08
+            }
+        },
+        {
+            "engravingId": "engraving_007",
+            "name": "治疗刻印",
+            "icon": "res://Assets/Icons/engravings/heal.png",
+            "description": "治疗效果+15%",
+            "price": 25,
+            "effect": {
+                "type": "heal_buff",
+                "value": 0.15
+            }
+        },
+        {
+            "engravingId": "engraving_008",
+            "name": "护盾刻印",
+            "icon": "res://Assets/Icons/engravings/shield.png",
+            "description": "护盾效果+15%",
+            "price": 25,
+            "effect": {
+                "type": "shield_buff",
+                "value": 0.15
+            }
+        }
+    ]
+}
