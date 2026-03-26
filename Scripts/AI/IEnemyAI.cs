@@ -2,32 +2,35 @@ using Godot;
 using System.Collections.Generic;
 using FishEatFish.Battle.Core;
 
-public enum AIActionType
+namespace FishEatFish.AI
 {
-    Attack,
-    Defend,
-    Buff,
-    Heal
-}
-
-public class AIAction
-{
-    public AIActionType Type { get; set; }
-    public int TargetPosition { get; set; } = -1;
-    public int Value { get; set; }
-    public float Priority { get; set; }
-
-    public AIAction(AIActionType type, int value = 0, int targetPosition = -1, float priority = 0f)
+    public enum AIActionType
     {
-        Type = type;
-        Value = value;
-        TargetPosition = targetPosition;
-        Priority = priority;
+        Attack,
+        Defend,
+        Buff,
+        Heal
     }
-}
 
-public interface IEnemyAI
-{
-    AIAction ChooseAction(Enemy enemy, Player player, List<Enemy> allEnemies);
-    float CalculateActionPriority(Enemy enemy, Player player, AIActionType actionType);
+    public class AIAction
+    {
+        public AIActionType Type { get; set; }
+        public int TargetPosition { get; set; } = -1;
+        public int Value { get; set; }
+        public float Priority { get; set; }
+
+        public AIAction(AIActionType type, int value = 0, int targetPosition = -1, float priority = 0f)
+        {
+            Type = type;
+            Value = value;
+            TargetPosition = targetPosition;
+            Priority = priority;
+        }
+    }
+
+    public interface IEnemyAI
+    {
+        AIAction ChooseAction(Enemy enemy, Player player, List<Enemy> allEnemies);
+        float CalculateActionPriority(Enemy enemy, Player player, AIActionType actionType);
+    }
 }

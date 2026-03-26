@@ -56,7 +56,7 @@ namespace FishEatFish.UI.HexMap
         private Dictionary<HexCoord, HexTileView> _tileViews = new Dictionary<HexCoord, HexTileView>();
         private List<RageCircle> _rageCircles = new List<RageCircle>();
 
-        private Vector2 _hexSize = new Vector2(120, 104);
+        private Vector2 _hexSize = new Vector2(180, 156);
 
         public override void _Ready()
         {
@@ -120,13 +120,12 @@ namespace FishEatFish.UI.HexMap
             _tileViewsContainer = GetNodeOrNull<Control>("MapContainer/TileViews");
             if (_tileViewsContainer != null)
             {
-                var screenCenter = GetViewportRect().Size / 2;
-                _tileViewsContainer.Position = screenCenter;
-                GD.Print($"[HexMapUI] TileViewsContainer position set to: {screenCenter}");
+                _tileViewsContainer.Position = Vector2.Zero;
+                GD.Print($"[HexMapUI] TileViewsContainer position reset to: (0, 0)");
             }
             GD.Print($"[HexMapUI] _tileViewsContainer: {_tileViewsContainer}, position: {_tileViewsContainer?.Position}");
 
-            var playerIconControl = GetNodeOrNull<Control>("MapContainer/PlayerIcon");
+            var playerIconControl = GetNodeOrNull<Control>("MapContainer/TileViews/PlayerIcon");
             GD.Print($"[HexMapUI] Get PlayerIcon as Control: {playerIconControl}");
             if (playerIconControl != null)
             {
@@ -361,8 +360,37 @@ namespace FishEatFish.UI.HexMap
             }
             GD.Print($"[HexMapUI] Created {tileCount} tile views, tileViews count={_tileViews.Count}");
 
+            if (_playerIcon != null)
+            {
+                _tileViewsContainer.MoveChild(_playerIcon, -1);
+            }
+
+            CenterOnPlayer(_controller.CurrentPosition, false);
             UpdatePlayerPosition();
             GD.Print("[HexMapUI] RefreshMap completed");
+        }
+
+        private void CenterOnPlayer(HexCoord playerCoord, bool animate = true)
+        {
+            if (_tileViewsContainer == null) return;
+
+            var screenCenter = GetViewportRect().Size / 2;
+            var playerWorldPos = HexToWorld(playerCoord) + _hexSize / 2;
+            var targetOffset = screenCenter - playerWorldPos;
+
+            GD.Print($"[HexMapUI] CenterOnPlayer: playerCoord={playerCoord}, playerWorldPos={playerWorldPos}, targetOffset={targetOffset}");
+
+            if (animate)
+            {
+                var tween = CreateTween();
+                tween.SetEase(Tween.EaseType.Out);
+                tween.SetTrans(Tween.TransitionType.Quad);
+                tween.TweenProperty(_tileViewsContainer, "position", targetOffset, 0.3f);
+            }
+            else
+            {
+                _tileViewsContainer.Position = targetOffset;
+            }
         }
 
         private void ClearTileViews()
@@ -388,8 +416,6 @@ namespace FishEatFish.UI.HexMap
             tileView.Position = worldPos;
             tileView.SetHexWorldPosition(worldPos + _hexSize / 2);
 
-            GD.Print($"[HexMapUI] CreateTileView: coord={tile.Coord}, worldPos={worldPos}, tileView.Position={tileView.Position}, isStart={tile.IsStart}");
-
             tileView.OnTileClicked += OnTileClicked;
             tileView.OnTileHovered += OnTileHovered;
 
@@ -401,8 +427,8 @@ namespace FishEatFish.UI.HexMap
 
         private Vector2 HexToWorld(HexCoord coord)
         {
-            float x = 100f * coord.Q + 50f * coord.R;
-            float y = 78f * coord.R;
+            float x = 150f * coord.Q + 75f * coord.R;
+            float y = 117f * coord.R;
             return new Vector2(x, y);
         }
 
@@ -411,8 +437,8 @@ namespace FishEatFish.UI.HexMap
             var screenCenter = GetViewportRect().Size / 2;
             var pos = worldPos - screenCenter;
 
-            int r = (int)Mathf.Round(pos.Y / 78f);
-            int q = (int)Mathf.Round((pos.X - 50f * r) / 100f);
+            int r = (int)Mathf.Round(pos.Y / 117f);
+            int q = (int)Mathf.Round((pos.X - 75f * r) / 150f);
 
             return new HexCoord(q, r);
         }
@@ -516,20 +542,12 @@ namespace FishEatFish.UI.HexMap
             var currentPos = _controller.CurrentPosition;
             GD.Print($"[HexMapUI] UpdatePlayerPosition: currentPos={currentPos}");
 
-            if (_tileViews.ContainsKey(currentPos))
-            {
-                var tileView = _tileViews[currentPos];
-                GD.Print($"[HexMapUI] TileView: pos={tileView.Position}, size={tileView.Size}, containerPos={_tileViewsContainer.Position}");
-                var tileWorldPos = _tileViewsContainer.Position + tileView.Position + tileView.Size / 2;
-                GD.Print($"[HexMapUI] UpdatePlayerPosition: teleport to {tileWorldPos}");
-                GD.Print($"[HexMapUI] Calling _playerIcon.TeleportTo... _playerIcon={_playerIcon}");
-                _playerIcon.TeleportTo(tileWorldPos);
-                GD.Print($"[HexMapUI] TeleportTo called, _playerIcon.Position now: {_playerIcon.Position}");
-            }
-            else
-            {
-                GD.PrintErr($"[HexMapUI] UpdatePlayerPosition: TileView not found for {currentPos}!");
-            }
+            CenterOnPlayer(currentPos, true);
+
+            var playerWorldPos = HexToWorld(currentPos);
+            var tileCenterPos = playerWorldPos + _hexSize / 2 - _playerIcon.Size / 2;
+            GD.Print($"[HexMapUI] UpdatePlayerPosition: playerWorldPos={playerWorldPos}, tileCenterPos={tileCenterPos}, _playerIcon.Size={_playerIcon.Size}");
+            _playerIcon.TeleportTo(tileCenterPos);
         }
 
         private void OnTileTriggered(HexTile tile)

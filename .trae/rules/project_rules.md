@@ -8,12 +8,12 @@
 
 ### 顶点定义（相对于 Control 左上角）
 ```
-V0 = (60, 0)   - 顶部
-V1 = (110, 26) - 右上
-V2 = (110, 78) - 右下
-V3 = (60, 104) - 底部
-V4 = (10, 78)  - 左下
-V5 = (10, 26)  - 左上
+V0 = (90, 0)    - 顶部
+V1 = (165, 39)  - 右上
+V2 = (165, 117) - 右下
+V3 = (90, 156)  - 底部
+V4 = (15, 117)  - 左下
+V5 = (15, 39)   - 左上
 ```
 
 ### 边的定义
@@ -28,8 +28,8 @@ f = V0→V1 (右上)
 
 ### 坐标转换公式
 ```
-x = 100 * Q + 50 * R
-y = 78 * R
+x = 150 * Q + 75 * R
+y = 117 * R
 ```
 
 ### HexCoord 方向向量
@@ -43,24 +43,44 @@ y = 78 * R
 | SouthWest | (-1, 1) |
 
 ### 六边形尺寸
-- 宽：120px
-- 高：104px
-- 中心：(60, 52)
-- 水平间距：100
-- 垂直间距：78
+- 宽：180px
+- 高：156px
+- 中心：(90, 78)
+- 水平间距：150
+- 垂直间距：117
+
+### 地图配置
+- 默认半径：5（生成 11x11 = 121 个格子）
+- 相机跟随：玩家所在格子始终居中
+- 移动动画：0.3秒平滑过渡
 
 ### 关键文件
-- `Scripts/UI/HexMapUI/HexMapUI.cs` - 坐标转换逻辑
+- `Scripts/UI/HexMapUI/HexMapUI.cs` - 坐标转换逻辑、相机跟随
 - `Scripts/UI/HexMapUI/HexTileView.cs` - 六边形绘制
 - `Scripts/Battle/HexMap/HexCoord.cs` - 坐标定义
-- `Scenes/HexMapTest.tscn` - 测试场景
+- `Scripts/Battle/HexMap/HexMapController.cs` - 地图控制器
+- `Scripts/Battle/HexMap/HexMapGenerator.cs` - 地图生成器
 
 ### 快速使用
 ```csharp
 // Axial坐标转屏幕坐标
 Vector2 HexToWorld(HexCoord coord) {
-    float x = 100f * coord.Q + 50f * coord.R;
-    float y = 78f * coord.R;
+    float x = 150f * coord.Q + 75f * coord.R;
+    float y = 117f * coord.R;
     return new Vector2(x, y);
+}
+
+// 相机跟随玩家
+void CenterOnPlayer(HexCoord playerCoord, bool animate = true) {
+    var screenCenter = GetViewportRect().Size / 2;
+    var playerWorldPos = HexToWorld(playerCoord) + _hexSize / 2;
+    var targetOffset = screenCenter - playerWorldPos;
+    
+    if (animate) {
+        var tween = CreateTween();
+        tween.TweenProperty(_tileViewsContainer, "position", targetOffset, 0.3f);
+    } else {
+        _tileViewsContainer.Position = targetOffset;
+    }
 }
 ```

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=4]
 
-[ext_resource type="Script" path="res://Scripts/CharacterSelection.cs" id="1_charsel"]
+[ext_resource type="Script" path="res://Scripts/Scenes/CharacterSelection.cs" id="1_charsel"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.07, 0.09, 0.15, 1)

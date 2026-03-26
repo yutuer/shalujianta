@@ -26,13 +26,13 @@ grow_vertical = 2
 layout_mode = 1
 anchors_preset = 0
 
-[node name="PlayerIcon" type="Control" parent="MapContainer" unique_id=2084732158]
+[node name="PlayerIcon" type="Control" parent="MapContainer/TileViews" unique_id=2084732158]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 1
 anchors_preset = 0
 script = ExtResource("3_playericon")
 
-[node name="Background" type="ColorRect" parent="MapContainer/PlayerIcon" unique_id=1163941972]
+[node name="Background" type="ColorRect" parent="MapContainer/TileViews/PlayerIcon" unique_id=1163941972]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -41,7 +41,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.2, 0.8, 1, 0.9)
 
-[node name="IconLabel" type="Label" parent="MapContainer/PlayerIcon" unique_id=2099326507]
+[node name="IconLabel" type="Label" parent="MapContainer/TileViews/PlayerIcon" unique_id=2099326507]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

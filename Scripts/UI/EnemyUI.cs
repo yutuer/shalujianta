@@ -1,5 +1,6 @@
 using Godot;
 using FishEatFish.Battle.Core;
+using FishEatFish.AI;
 
 public partial class EnemyUI : Panel
 {

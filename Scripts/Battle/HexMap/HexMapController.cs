@@ -26,7 +26,7 @@ namespace FishEatFish.Battle.HexMap
         private int _playerLevel = 1;
 
         [Export]
-        private int _mapRadius = 3;
+        private int _mapRadius = 5;
 
         private HexMap _currentMap;
         public HexMap CurrentMap => _currentMap;

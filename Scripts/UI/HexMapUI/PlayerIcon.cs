@@ -21,6 +21,11 @@ namespace FishEatFish.UI.HexMap
             {
                 GD.Print("[PlayerIcon] _Ready started");
 
+                if (Size == Vector2.Zero)
+                {
+                    Size = CustomMinimumSize;
+                }
+
                 _background = GetNodeOrNull<ColorRect>("Background");
                 _iconLabel = GetNodeOrNull<Label>("IconLabel");
 
@@ -35,7 +40,7 @@ namespace FishEatFish.UI.HexMap
 
                 _currentPosition = Position;
                 _targetPosition = Position;
-                GD.Print($"[PlayerIcon] _Ready complete: Position={Position}, Size={Size}");
+                GD.Print($"[PlayerIcon] _Ready complete: Position={Position}, Size={Size}, CustomMinimumSize={CustomMinimumSize}");
             }
             catch (System.Exception ex)
             {

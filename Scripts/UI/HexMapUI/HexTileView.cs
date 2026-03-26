@@ -62,12 +62,12 @@ namespace FishEatFish.UI.HexMap
             if (_hexShape == null) return;
 
             var points = new Vector2[6];
-            points[0] = new Vector2(60, 0);
-            points[1] = new Vector2(110, 26);
-            points[2] = new Vector2(110, 78);
-            points[3] = new Vector2(60, 104);
-            points[4] = new Vector2(10, 78);
-            points[5] = new Vector2(10, 26);
+            points[0] = new Vector2(90, 0);
+            points[1] = new Vector2(165, 39);
+            points[2] = new Vector2(165, 117);
+            points[3] = new Vector2(90, 156);
+            points[4] = new Vector2(15, 117);
+            points[5] = new Vector2(15, 39);
 
             _hexShape.Polygon = points;
             _background.Color = Colors.Transparent;

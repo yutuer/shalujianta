@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=4]
 
-[ext_resource type="Script" path="res://Scripts/MainMenu.cs" id="1_2k3j5"]
+[ext_resource type="Script" path="res://Scripts/Scenes/MainMenu.cs" id="1_2k3j5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0"]
 bg_color = Color(0.2, 0.2, 0.2, 1)

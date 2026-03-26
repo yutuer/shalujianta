@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=4]
 
-[ext_resource type="Script" path="res://Scripts/LevelMap.cs" id="1_levelmap"]
+[ext_resource type="Script" path="res://Scripts/Scenes/LevelMap.cs" id="1_levelmap"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.07, 0.09, 0.15, 1)

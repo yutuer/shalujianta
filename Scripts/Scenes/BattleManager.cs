@@ -4,14 +4,18 @@ using FishEatFish.Battle.Core;
 using FishEatFish.Battle.Card;
 using FishEatFish.Battle.Effects.Buffs;
 using FishEatFish.Battle.CharacterSystem;
+using FishEatFish.Scenes;
+using FishEatFish.AI;
 
-/// <summary>
-/// 战斗管理器 - 核心战斗系统
-/// 功能：管理战斗流程、玩家/敌人状态、卡牌系统、银钥/怒气系统
-/// 初始化顺序：Attacker → Managers → UI → Player → Enemies → Cards → StartBattle
-/// </summary>
-public partial class BattleManager : Node2D
+namespace FishEatFish.Scenes
 {
+    /// <summary>
+    /// 战斗管理器 - 核心战斗系统
+    /// 功能：管理战斗流程、玩家/敌人状态、卡牌系统、银钥/怒气系统
+    /// 初始化顺序：Attacker → Managers → UI → Player → Enemies → Cards → StartBattle
+    /// </summary>
+    public partial class BattleManager : Node2D
+    {
 	// ========== 核心战斗数据 ==========
 	private Player player;
 	private List<Enemy> enemies = new List<Enemy>();
@@ -1170,4 +1174,6 @@ public partial class BattleManager : Node2D
 	{
 		GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
 	}
+    }
 }
+

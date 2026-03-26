@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=4]
 
-[ext_resource type="Script" path="res://Scripts/HexMapScene.cs" id="1_hexmap"]
+[ext_resource type="Script" path="res://Scripts/Scenes/HexMapScene.cs" id="1_hexmap"]
 
 [node name="HexMapScene" type="Control"]
 layout_mode = 3

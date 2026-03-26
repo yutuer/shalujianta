@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cg7pfcricr231"]
 
-[ext_resource type="Script" uid="uid://g0n4d8440ta4" path="res://Scripts/BattleManager.cs" id="1_battle"]
+[ext_resource type="Script" uid="uid://g0n4d8440ta4" path="res://Scripts/Scenes/BattleManager.cs" id="1_battle"]
 [ext_resource type="Script" uid="uid://dofgf2yjjym2n" path="res://Scripts/UI/HandCardPreview.cs" id="2_preview"]
 [ext_resource type="Script" uid="uid://0k25fywn32tc" path="res://Scripts/Battle/CardLayoutManager.cs" id="3_card_layout"]
 
