@@ -17,7 +17,8 @@ namespace FishEatFish.Battle.HexMap
         public HexMap Generate(int radius, int playerLevel)
         {
             var tiles = GenerateHexGrid(radius);
-            var startCoord = new HexCoord(0, 0);
+
+            var startCoord = SelectRandomEdgeTile(tiles, radius);
             var endCoord = FindFarthestTile(tiles, startCoord);
 
             tiles[startCoord].IsStart = true;
@@ -65,18 +66,62 @@ namespace FishEatFish.Battle.HexMap
         {
             var tiles = new Dictionary<HexCoord, HexTile>();
 
-            for (int q = -radius; q <= radius; q++)
+            int width = radius * 2 + 1;
+            int height = radius * 2 + 1;
+
+            GD.Print($"[HexMapGenerator] 生成矩形网格: 宽度{width}, 高度{height}");
+
+            for (int col = 0; col < width; col++)
             {
-                int r1 = Math.Max(-radius, -q - radius);
-                int r2 = Math.Min(radius, -q + radius);
-                for (int r = r1; r <= r2; r++)
+                for (int row = 0; row < height; row++)
                 {
-                    var coord = new HexCoord(q, r);
+                    var coord = HexCoord.FromOffset(col, row);
                     tiles[coord] = new HexTile(coord, HexEventType.Empty);
+                    var (q, r) = coord.ToAxial();
+                    GD.Print($"[HexMapGenerator] 格子 ({col},{row}) -> 轴坐标 ({q},{r})");
                 }
             }
 
+            GD.Print($"[HexMapGenerator] 总格子{tiles.Count}");
+
             return tiles;
+        }
+
+        private bool IsEdgeTile(HexCoord coord, int radius)
+        {
+            int halfSize = radius;
+            var (col, row) = coord.ToOffset();
+            int width = halfSize * 2 + 1;
+            int height = halfSize * 2 + 1;
+            return col == 0 || col == width - 1 || row == 0 || row == height - 1;
+        }
+
+        private HexCoord SelectRandomEdgeTile(Dictionary<HexCoord, HexTile> tiles, int radius)
+        {
+            int width = radius * 2 + 1;
+            int height = radius * 2 + 1;
+            var edgeTiles = new List<HexCoord>();
+
+            for (int col = 0; col < width; col++)
+            {
+                edgeTiles.Add(HexCoord.FromOffset(col, 0));
+                edgeTiles.Add(HexCoord.FromOffset(col, height - 1));
+            }
+            for (int row = 1; row < height - 1; row++)
+            {
+                edgeTiles.Add(HexCoord.FromOffset(0, row));
+                edgeTiles.Add(HexCoord.FromOffset(width - 1, row));
+            }
+
+            edgeTiles = edgeTiles.Where(t => tiles.ContainsKey(t)).ToList();
+
+            if (edgeTiles.Count == 0)
+            {
+                return HexCoord.FromOffset(0, 0);
+            }
+
+            int index = _random.Next(edgeTiles.Count);
+            return edgeTiles[index];
         }
 
         private HexCoord FindFarthestTile(Dictionary<HexCoord, HexTile> tiles, HexCoord start)

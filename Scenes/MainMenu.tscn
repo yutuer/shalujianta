@@ -27,6 +27,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2k3j5")
 
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.17, 0.2, 1)
+
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 8
@@ -71,6 +80,14 @@ layout_mode = 2
 layout_mode = 2
 text = "开始冒险"
 
+[node name="HexMapButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "地图行走模式"
+
+[node name="LevelSelectButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "选择关卡"
+
 [node name="HSeparator2" type="HSeparator" parent="Panel/VBoxContainer"]
 layout_mode = 2
 
@@ -78,8 +95,11 @@ layout_mode = 2
 layout_mode = 2
 text = "直接战斗测试"
 
-[node name="ContinueButton" type="Button" parent="Panel/VBoxContainer"]
+[node name="HoleTestButton" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
+text = "洞穴地图验证测试"
+
+[node name="ContinueButton" type="Button" parent="Panel/VBoxContainer"]
 disabled = true
 text = "继续游戏 (即将开放)"
 

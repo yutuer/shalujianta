@@ -7,6 +7,14 @@
 [node name="BattleScene" type="Node2D" unique_id=1960259589]
 script = ExtResource("1_battle")
 
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.17, 0.2, 1)
+
 [node name="CardLayoutManager" type="Node" parent="." unique_id=123456789]
 script = ExtResource("3_card_layout")
 _handArcAngleMinDegrees = 0.0

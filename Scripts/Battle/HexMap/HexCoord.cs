@@ -177,5 +177,19 @@ namespace FishEatFish.Battle.HexMap
 
             return -1;
         }
+
+        public (int col, int row) ToOffset()
+        {
+            int col = Q + (R + (R & 1)) / 2;
+            int row = R;
+            return (col, row);
+        }
+
+        public static HexCoord FromOffset(int col, int row)
+        {
+            int q = col - (row - (row & 1)) / 2;
+            int r = row;
+            return new HexCoord(q, r);
+        }
     }
 }

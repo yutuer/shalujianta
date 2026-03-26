@@ -1,0 +1,326 @@
+[gd_scene format=3 uid="uid://dhynr33kc8wor"]
+
+[ext_resource type="Script" uid="uid://dfjdfykoin51t" path="res://Scripts/UI/HexMapUI/HexMapUI.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://bfjsdiwyn8lbo" path="res://Scripts/UI/HexMapUI/HealthBar.cs" id="2_healthbar"]
+[ext_resource type="Script" uid="uid://bof7a1u7j5lnw" path="res://Scripts/UI/HexMapUI/PlayerIcon.cs" id="3_playericon"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/RageCircle.tscn" id="4_ragecircle"]
+
+[node name="HexMapUI" type="Control" unique_id=1648921053]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="MapContainer" type="Control" parent="." unique_id=260089882]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TileViews" type="Control" parent="MapContainer" unique_id=571070893]
+layout_mode = 1
+anchors_preset = 0
+
+[node name="PlayerIcon" type="Control" parent="MapContainer" unique_id=2084732158]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 1
+anchors_preset = 0
+script = ExtResource("3_playericon")
+
+[node name="Background" type="ColorRect" parent="MapContainer/PlayerIcon" unique_id=1163941972]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.8, 1, 0.9)
+
+[node name="IconLabel" type="Label" parent="MapContainer/PlayerIcon" unique_id=2099326507]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "🎮"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HealthBar" type="Control" parent="." unique_id=1395366219]
+custom_minimum_size = Vector2(200, 30)
+layout_mode = 1
+anchors_preset = 0
+script = ExtResource("2_healthbar")
+
+[node name="Background" type="PanelContainer" parent="HealthBar" unique_id=1242762911]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DamageBar" type="ColorRect" parent="HealthBar/Background" unique_id=860207085]
+layout_mode = 2
+color = Color(0.8, 0.2, 0.2, 1)
+
+[node name="HealthBarFill" type="ColorRect" parent="HealthBar/Background" unique_id=854683818]
+layout_mode = 2
+color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="HealthLabel" type="Label" parent="HealthBar/Background" unique_id=1220757804]
+layout_mode = 2
+text = "100/100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RageCircles" type="HBoxContainer" parent="." unique_id=49143379]
+custom_minimum_size = Vector2(220, 50)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 0.0
+anchor_right = 0.0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 230.0
+offset_bottom = 60.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="RageCircle0" parent="RageCircles" unique_id=1516808772 instance=ExtResource("4_ragecircle")]
+layout_mode = 2
+
+[node name="RageCircle1" parent="RageCircles" unique_id=1737420671 instance=ExtResource("4_ragecircle")]
+layout_mode = 2
+
+[node name="RageCircle2" parent="RageCircles" unique_id=850945533 instance=ExtResource("4_ragecircle")]
+layout_mode = 2
+
+[node name="RageCircle3" parent="RageCircles" unique_id=465282740 instance=ExtResource("4_ragecircle")]
+layout_mode = 2
+
+[node name="TopRightButtons" type="HBoxContainer" parent="." unique_id=1291612023]
+layout_mode = 1
+theme_override_constants/separation = 10
+
+[node name="SkipButton" type="Button" parent="TopRightButtons" unique_id=1957558303]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "跳过地图"
+
+[node name="DeathResistanceButton" type="Button" parent="TopRightButtons" unique_id=1732116692]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "死亡抵抗"
+
+[node name="BlackMarkButton" type="Button" parent="TopRightButtons" unique_id=1375344674]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+text = "黑印"
+
+[node name="SettingsButton" type="Button" parent="TopRightButtons" unique_id=1421021339]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "⚙"
+
+[node name="BlackMarkLabel" type="Label" parent="." unique_id=68175127]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -100.0
+offset_bottom = 26.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 24
+
+[node name="TeleportDialog" type="PanelContainer" parent="." unique_id=1581754140]
+visible = false
+custom_minimum_size = Vector2(300, 150)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -75.0
+offset_right = 150.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TeleportDialog" unique_id=1880067883]
+layout_mode = 2
+
+[node name="Message" type="Label" parent="TeleportDialog/VBoxContainer" unique_id=1832054018]
+layout_mode = 2
+text = "是否要开始传送？"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonBox" type="HBoxContainer" parent="TeleportDialog/VBoxContainer" unique_id=1778689385]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="CancelButton" type="Button" parent="TeleportDialog/VBoxContainer/ButtonBox" unique_id=1357458762]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "否"
+
+[node name="ConfirmButton" type="Button" parent="TeleportDialog/VBoxContainer/ButtonBox" unique_id=217071083]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "是"
+
+[node name="ShopContainer" type="PanelContainer" parent="." unique_id=1139321107]
+visible = false
+custom_minimum_size = Vector2(700, 500)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -250.0
+offset_right = 350.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ShopContainer" unique_id=1818605994]
+layout_mode = 2
+
+[node name="HeaderBox" type="HBoxContainer" parent="ShopContainer/VBoxContainer" unique_id=1814120053]
+layout_mode = 2
+alignment = 2
+
+[node name="CloseButton" type="Button" parent="ShopContainer/VBoxContainer/HeaderBox" unique_id=568103644]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "X"
+
+[node name="ShopTitle" type="Label" parent="ShopContainer/VBoxContainer" unique_id=1900891852]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "神秘商店"
+horizontal_alignment = 1
+
+[node name="ShopItems" type="GridContainer" parent="ShopContainer/VBoxContainer" unique_id=386107936]
+layout_mode = 2
+columns = 3
+
+[node name="EngravingSelectContainer" type="PanelContainer" parent="." unique_id=1466989650]
+visible = false
+custom_minimum_size = Vector2(800, 600)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 400.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="EngravingSelectContainer" unique_id=1583354321]
+layout_mode = 2
+
+[node name="HeaderBox" type="HBoxContainer" parent="EngravingSelectContainer/VBoxContainer" unique_id=834625563]
+layout_mode = 2
+alignment = 2
+
+[node name="CloseButton" type="Button" parent="EngravingSelectContainer/VBoxContainer/HeaderBox" unique_id=2088217969]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+text = "X"
+
+[node name="SelectTitle" type="Label" parent="EngravingSelectContainer/VBoxContainer" unique_id=199480190]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "选择要刻印的卡牌"
+horizontal_alignment = 1
+
+[node name="EngravingCards" type="GridContainer" parent="EngravingSelectContainer/VBoxContainer" unique_id=1983190009]
+layout_mode = 2
+columns = 4
+
+[node name="ButtonBox" type="HBoxContainer" parent="EngravingSelectContainer/VBoxContainer" unique_id=697784459]
+layout_mode = 2
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="EngravingSelectContainer/VBoxContainer/ButtonBox" unique_id=722139937]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "返回"
+
+[node name="ConfirmButton" type="Button" parent="EngravingSelectContainer/VBoxContainer/ButtonBox" unique_id=1406966766]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+
+[node name="FailurePanel" type="PanelContainer" parent="." unique_id=225193617]
+visible = false
+custom_minimum_size = Vector2(400, 200)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="FailurePanel" unique_id=2085061850]
+layout_mode = 2
+
+[node name="FailureMessage" type="Label" parent="FailurePanel/VBoxContainer" unique_id=1999505001]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "挑战失败！"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OkButton" type="Button" parent="FailurePanel/VBoxContainer" unique_id=1491645431]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "确定"
+
+[node name="BackpackContainer" type="PanelContainer" parent="." unique_id=1092098961]
+custom_minimum_size = Vector2(300, 60)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 20.0
+offset_right = 150.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BackpackContainer" unique_id=1049386001]
+layout_mode = 2
+
+[node name="BackpackLabel" type="Label" parent="BackpackContainer/HBoxContainer" unique_id=915797507]
+layout_mode = 2
+text = "背包:"
+
+[node name="BackpackItems" type="HBoxContainer" parent="BackpackContainer/HBoxContainer" unique_id=364336870]
+layout_mode = 2
+theme_override_constants/separation = 5

@@ -150,4 +150,5 @@ public static class GlobalData
     public static MapDefinition CurrentMap { get; set; }
     public static CharacterDefinition[] SelectedCharacters { get; set; }
     public static KeyOrder EquippedKeyOrder { get; set; }
+    public static bool EnterHexMapMode { get; set; } = false;
 }

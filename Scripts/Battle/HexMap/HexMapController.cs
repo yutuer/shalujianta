@@ -66,11 +66,6 @@ namespace FishEatFish.Battle.HexMap
 
         public override void _Ready()
         {
-            if (_instance != null && _instance != this)
-            {
-                QueueFree();
-                return;
-            }
             _instance = this;
 
             _generator = new HexMapGenerator();

@@ -4,76 +4,42 @@ namespace FishEatFish.UI.HexMap
 {
     public partial class PlayerIcon : Control
     {
-        [Export]
         private float _moveSpeed = 5.0f;
-
-        [Export]
         private float _bobAmplitude = 3.0f;
-
-        [Export]
         private float _bobFrequency = 2.0f;
 
-        private TextureRect _balloonIcon;
-        private TextureRect _playerAvatar;
-        private ColorRect _shadow;
-
+        private ColorRect _background;
+        private Label _iconLabel;
         private Vector2 _targetPosition;
         private Vector2 _currentPosition;
         private bool _isMoving;
-
         private float _bobTimer;
-        private float _baseY;
 
         public override void _Ready()
         {
-            InitializeComponents();
-            _currentPosition = Position;
-            _targetPosition = Position;
-        }
-
-        private void InitializeComponents()
-        {
-            _shadow = new ColorRect();
-            AddChild(_shadow);
-            _shadow.Color = new Color(0, 0, 0, 0.3f);
-            _shadow.Size = new Vector2(40, 10);
-            _shadow.Position = new Vector2(-20, 35);
-            _shadow.ZIndex = 0;
-
-            _balloonIcon = new TextureRect();
-            AddChild(_balloonIcon);
-            _balloonIcon.Size = new Vector2(50, 50);
-            _balloonIcon.Position = new Vector2(-25, -15);
-            _balloonIcon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-            _balloonIcon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-            _balloonIcon.ZIndex = 1;
-
-            var defaultTexture = GD.Load<Texture2D>("res://Assets/Icons/player_balloon.png");
-            if (defaultTexture != null)
+            try
             {
-                _balloonIcon.Texture = defaultTexture;
+                GD.Print("[PlayerIcon] _Ready started");
+
+                _background = GetNodeOrNull<ColorRect>("Background");
+                _iconLabel = GetNodeOrNull<Label>("IconLabel");
+
+                if (_background == null)
+                {
+                    GD.PrintErr("[PlayerIcon] Background not found!");
+                }
+                if (_iconLabel == null)
+                {
+                    GD.PrintErr("[PlayerIcon] IconLabel not found!");
+                }
+
+                _currentPosition = Position;
+                _targetPosition = Position;
+                GD.Print($"[PlayerIcon] _Ready complete: Position={Position}, Size={Size}");
             }
-            else
+            catch (System.Exception ex)
             {
-                _balloonIcon.Modulate = new Color(0.2f, 0.8f, 1f);
-            }
-
-            _playerAvatar = new TextureRect();
-            AddChild(_playerAvatar);
-            _playerAvatar.Size = new Vector2(30, 30);
-            _playerAvatar.Position = new Vector2(-15, -10);
-            _playerAvatar.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-            _playerAvatar.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-            _playerAvatar.ZIndex = 2;
-
-            var avatarTexture = GD.Load<Texture2D>("res://Assets/UI/avatar_default.png");
-            if (avatarTexture != null)
-            {
-                _playerAvatar.Texture = avatarTexture;
-            }
-            else
-            {
-                _playerAvatar.Modulate = new Color(1f, 0.9f, 0.7f);
+                GD.PrintErr($"[PlayerIcon] _Ready exception: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
@@ -118,73 +84,24 @@ namespace FishEatFish.UI.HexMap
             {
                 _bobTimer += delta * _bobFrequency;
                 float offset = Mathf.Sin(_bobTimer * Mathf.Pi * 2) * _bobAmplitude;
-                _balloonIcon.Position = new Vector2(-25, -15 + offset);
-                _playerAvatar.Position = new Vector2(-15, -10 + offset * 0.8f);
-            }
-            else
-            {
-                _bobTimer = 0;
+                _iconLabel.Position = new Vector2(0, offset);
             }
         }
 
         public void MoveTo(Vector2 target)
         {
-            _targetPosition = target - Size / 2;
+            _targetPosition = target;
             _isMoving = true;
-            _baseY = _targetPosition.Y;
         }
 
         public void TeleportTo(Vector2 target)
         {
-            _targetPosition = target - Size / 2;
-            _currentPosition = _targetPosition;
+            GD.Print($"[PlayerIcon] TeleportTo: target={target}");
+            _targetPosition = target;
+            _currentPosition = target;
             Position = _currentPosition;
+            GD.Print($"[PlayerIcon] Position after teleport: {Position}");
             _isMoving = false;
-        }
-
-        public bool IsMoving => _isMoving;
-
-        public void SetBalloonTexture(Texture2D texture)
-        {
-            if (texture != null)
-            {
-                _balloonIcon.Texture = texture;
-            }
-        }
-
-        public void SetAvatarTexture(Texture2D texture)
-        {
-            if (texture != null)
-            {
-                _playerAvatar.Texture = texture;
-            }
-        }
-
-        public void PlayArriveAnimation()
-        {
-            var tween = CreateTween();
-            tween.TweenProperty(_balloonIcon, "scale", new Vector2(1.2f, 1.2f), 0.1f);
-            tween.TweenProperty(_balloonIcon, "scale", new Vector2(1f, 1f), 0.1f);
-        }
-
-        public void PlayDisappearAnimation(System.Action onComplete = null)
-        {
-            var tween = CreateTween();
-            tween.TweenProperty(this, "modulate:a", 0f, 0.3f);
-            if (onComplete != null)
-            {
-                tween.TweenCallback(Callable.From(() => onComplete()));
-            }
-        }
-
-        public void PlayAppearAnimation()
-        {
-            Modulate = new Color(1, 1, 1, 0);
-            Scale = new Vector2(0.5f, 0.5f);
-
-            var tween = CreateTween();
-            tween.TweenProperty(this, "modulate:a", 1f, 0.3f);
-            tween.Parallel().TweenProperty(this, "scale", new Vector2(1f, 1f), 0.3f);
         }
     }
 }

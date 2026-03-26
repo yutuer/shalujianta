@@ -1,0 +1,1170 @@
+[gd_scene format=3 uid="uid://craj2y5bymvw8"]
+
+[ext_resource type="Script" uid="uid://noiotuys62q7" path="res://Scripts/UI/HexMapUI/HexMapTest.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://bojm88lmv72q7" path="res://Scripts/UI/HexMapUI/DraggableHexView.cs" id="2_script"]
+
+[node name="HexMapTest" type="Control" unique_id=1795459308]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1513190100]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.15, 1)
+
+[node name="Label" type="Label" parent="." unique_id=1588160960]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 10.0
+offset_right = 200.0
+offset_bottom = 40.0
+grow_horizontal = 2
+text = "拖动六边形到正确位置，按空格打印位置"
+horizontal_alignment = 1
+
+[node name="Instructions" type="Label" parent="." unique_id=605643707]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 40.0
+offset_right = 200.0
+offset_bottom = 70.0
+grow_horizontal = 2
+text = "7个六边形，摆成蜂窝状，Hex0是中心"
+horizontal_alignment = 1
+
+[node name="Hex0" type="Control" parent="." unique_id=751946356]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 400.0
+offset_top = 300.0
+offset_right = 520.0
+offset_bottom = 404.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex0" unique_id=1602194692]
+position = Vector2(0, 0)
+color = Color(0.75, 0.75, 0.75, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex0" unique_id=1785394713]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex0" unique_id=1285935785]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex0" unique_id=1996300704]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "中心"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex1" type="Control" parent="." unique_id=582024417]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 350.0
+offset_top = 222.0
+offset_right = 470.0
+offset_bottom = 326.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex1" unique_id=1748809605]
+position = Vector2(0, 0)
+color = Color(0.9, 0.3, 0.3, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex1" unique_id=860651163]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex1" unique_id=1380263157]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex1" unique_id=1835206581]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex2" type="Control" parent="." unique_id=1032561807]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 450.0
+offset_top = 222.0
+offset_right = 570.0
+offset_bottom = 326.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex2" unique_id=35495398]
+position = Vector2(0, 0)
+color = Color(0.8, 0.2, 0.6, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex2" unique_id=368783676]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex2" unique_id=1756778394]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex2" unique_id=643639227]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex3" type="Control" parent="." unique_id=1272927984]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 350.0
+offset_top = 378.0
+offset_right = 470.0
+offset_bottom = 482.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex3" unique_id=369715971]
+position = Vector2(0, 0)
+color = Color(1, 0.8, 0.2, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex3" unique_id=1853591161]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex3" unique_id=298155424]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex3" unique_id=1415518257]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex4" type="Control" parent="." unique_id=1375670472]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 450.0
+offset_top = 378.0
+offset_right = 570.0
+offset_bottom = 482.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex4" unique_id=164889966]
+position = Vector2(0, 0)
+color = Color(0.3, 0.9, 0.5, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex4" unique_id=1630139548]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex4" unique_id=1074614061]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "4"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex4" unique_id=51183906]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex5" type="Control" parent="." unique_id=1553140099]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 300.0
+offset_top = 300.0
+offset_right = 420.0
+offset_bottom = 404.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex5" unique_id=1925494632]
+position = Vector2(0, 0)
+color = Color(0.3, 0.6, 0.9, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex5" unique_id=128233032]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex5" unique_id=2109430600]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex5" unique_id=987777457]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex6" type="Control" parent="." unique_id=343625213]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 500.0
+offset_top = 300.0
+offset_right = 620.0
+offset_bottom = 404.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex6" unique_id=1682977525]
+position = Vector2(0, 0)
+color = Color(0.5, 0.3, 0.8, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex6" unique_id=426004246]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex6" unique_id=707262893]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "6"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex6" unique_id=1167963936]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex7" type="Control" parent="." unique_id=1111111111]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 500.0
+offset_top = 144.0
+offset_right = 620.0
+offset_bottom = 248.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex7" unique_id=2222222222]
+position = Vector2(0, 0)
+color = Color(0.9, 0.5, 0.3, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex7" unique_id=3333333333]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex7" unique_id=4444444444]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "7"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex7" unique_id=5555555555]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "2右上"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex8" type="Control" parent="." unique_id=6666666666]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 600.0
+offset_top = 300.0
+offset_right = 720.0
+offset_bottom = 404.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex8" unique_id=7777777777]
+position = Vector2(0, 0)
+color = Color(0.5, 0.9, 0.3, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex8" unique_id=8888888888]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex8" unique_id=9999999999]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "8"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex8" unique_id=1010101010]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "6右中"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex9" type="Control" parent="." unique_id=1111111112]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 400.0
+offset_top = 456.0
+offset_right = 520.0
+offset_bottom = 560.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex9" unique_id=1212121212]
+position = Vector2(0, 0)
+color = Color(0.3, 0.5, 0.9, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex9" unique_id=1313131313]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex9" unique_id=1414141414]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "9"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex9" unique_id=1515151515]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "4左下"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex10" type="Control" parent="." unique_id=1616161616]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 400.0
+offset_top = 144.0
+offset_right = 520.0
+offset_bottom = 248.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex10" unique_id=1717171717]
+position = Vector2(0, 0)
+color = Color(0.7, 0.3, 0.7, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex10" unique_id=1818181818]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex10" unique_id=1919191919]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "10"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex10" unique_id=2020202020]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "1右上"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex11" type="Control" parent="." unique_id=2121212121]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 550.0
+offset_top = 66.0
+offset_right = 670.0
+offset_bottom = 170.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex11" unique_id=2222222223]
+position = Vector2(0, 0)
+color = Color(0.8, 0.4, 0.4, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex11" unique_id=2323232323]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex11" unique_id=2424242424]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "11"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex11" unique_id=2525252525]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "7右上"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex12" type="Control" parent="." unique_id=2626262626]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 200.0
+offset_top = 300.0
+offset_right = 320.0
+offset_bottom = 404.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex12" unique_id=2727272727]
+position = Vector2(0, 0)
+color = Color(0.4, 0.8, 0.6, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex12" unique_id=2828282828]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex12" unique_id=2929292929]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "12"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex12" unique_id=3030303030]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "5左中"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex13" type="Control" parent="." unique_id=3131313131]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 300.0
+offset_top = 456.0
+offset_right = 420.0
+offset_bottom = 560.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex13" unique_id=3232323232]
+position = Vector2(0, 0)
+color = Color(0.6, 0.4, 0.8, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex13" unique_id=3333333334]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex13" unique_id=3434343434]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "13"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex13" unique_id=3535353535]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "3左下"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex14" type="Control" parent="." unique_id=3636363636]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 350.0
+offset_top = 66.0
+offset_right = 470.0
+offset_bottom = 170.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex14" unique_id=3737373737]
+position = Vector2(0, 0)
+color = Color(0.9, 0.2, 0.5, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex14" unique_id=3838383838]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex14" unique_id=3939393939]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "14"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex14" unique_id=4040404040]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "1北"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex15" type="Control" parent="." unique_id=4141414141]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 450.0
+offset_top = 66.0
+offset_right = 570.0
+offset_bottom = 170.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex15" unique_id=4242424242]
+position = Vector2(0, 0)
+color = Color(0.2, 0.8, 0.7, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex15" unique_id=4343434343]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex15" unique_id=4444444444]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "15"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex15" unique_id=4545454545]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "2北"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex16" type="Control" parent="." unique_id=4646464646]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 650.0
+offset_top = 222.0
+offset_right = 770.0
+offset_bottom = 326.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex16" unique_id=4747474747]
+position = Vector2(0, 0)
+color = Color(0.7, 0.6, 0.3, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex16" unique_id=4848484848]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex16" unique_id=4949494949]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "16"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex16" unique_id=5050505050]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "7东"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex17" type="Control" parent="." unique_id=5151515151]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 700.0
+offset_top = 300.0
+offset_right = 820.0
+offset_bottom = 404.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex17" unique_id=5252525252]
+position = Vector2(0, 0)
+color = Color(0.3, 0.5, 0.8, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex17" unique_id=5353535353]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex17" unique_id=5454545454]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "17"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex17" unique_id=5555555556]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "8东"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex18" type="Control" parent="." unique_id=5656565656]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 550.0
+offset_top = 222.0
+offset_right = 670.0
+offset_bottom = 326.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex18" unique_id=5757575757]
+position = Vector2(0, 0)
+color = Color(0.5, 0.3, 0.5, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex18" unique_id=5858585858]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex18" unique_id=5959595959]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "18"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex18" unique_id=6060606060]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "6北"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex19" type="Control" parent="." unique_id=6161616161]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 350.0
+offset_top = 534.0
+offset_right = 470.0
+offset_bottom = 638.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex19" unique_id=6262626262]
+position = Vector2(0, 0)
+color = Color(0.8, 0.3, 0.6, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex19" unique_id=6363636363]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex19" unique_id=6464646464]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "19"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex19" unique_id=6565656565]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "4南"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex20" type="Control" parent="." unique_id=6661616161]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 250.0
+offset_top = 534.0
+offset_right = 370.0
+offset_bottom = 638.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex20" unique_id=6762626262]
+position = Vector2(0, 0)
+color = Color(0.4, 0.7, 0.5, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex20" unique_id=6863636363]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex20" unique_id=6964646464]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "20"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex20" unique_id=7070707070]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "9南"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex21" type="Control" parent="." unique_id=7171717171]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 150.0
+offset_top = 378.0
+offset_right = 270.0
+offset_bottom = 482.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex21" unique_id=7272727272]
+position = Vector2(0, 0)
+color = Color(0.6, 0.2, 0.8, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex21" unique_id=7373737373]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex21" unique_id=7474747474]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "21"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex21" unique_id=7575757575]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "5西"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex22" type="Control" parent="." unique_id=7676767676]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 100.0
+offset_top = 300.0
+offset_right = 220.0
+offset_bottom = 404.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex22" unique_id=7776767676]
+position = Vector2(0, 0)
+color = Color(0.3, 0.9, 0.4, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex22" unique_id=7878787878]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex22" unique_id=7979797979]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "22"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex22" unique_id=8080808080]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "12西"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Hex23" type="Control" parent="." unique_id=8181818181]
+custom_minimum_size = Vector2(120, 104)
+anchors_preset = 0
+offset_left = 50.0
+offset_top = 222.0
+offset_right = 170.0
+offset_bottom = 326.0
+script = ExtResource("2_script")
+
+[node name="HexShape" type="Polygon2D" parent="Hex23" unique_id=8282828282]
+position = Vector2(0, 0)
+color = Color(0.9, 0.7, 0.2, 1)
+polygon = PackedVector2Array(60, 0, 110, 26, 110, 78, 60, 104, 10, 78, 10, 26)
+
+[node name="Background" type="ColorRect" parent="Hex23" unique_id=8383838383]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="IconLabel" type="Label" parent="Hex23" unique_id=8484848484]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "23"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Hex23" unique_id=8585858585]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "11西"
+horizontal_alignment = 1
+vertical_alignment = 1

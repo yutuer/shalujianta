@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using FishEatFish.Battle.HexMap;
 using FishEatFish.Shop;
@@ -12,7 +13,10 @@ namespace FishEatFish.UI.HexMap
         private PackedScene _tileViewScene;
 
         [Export]
-        private PackedScene _shopItemScene;
+        private PackedScene _shopItemCardScene;
+
+        [Export]
+        private PackedScene _engravingCardSlotScene;
 
         private HexMapController _controller;
 
@@ -20,7 +24,7 @@ namespace FishEatFish.UI.HexMap
         private Control _tileViewsContainer;
         private PlayerIcon _playerIcon;
         private HealthBar _healthBar;
-        private VBoxContainer _rageCirclesContainer;
+        private HBoxContainer _rageCirclesContainer;
 
         private Button _skipButton;
         private Button _deathResistanceButton;
@@ -32,7 +36,6 @@ namespace FishEatFish.UI.HexMap
         private Control _teleportDialog;
         private Button _teleportConfirmButton;
         private Button _teleportCancelButton;
-        private Label _teleportMessage;
 
         private Control _shopContainer;
         private Control _shopItemsContainer;
@@ -53,273 +56,268 @@ namespace FishEatFish.UI.HexMap
         private Dictionary<HexCoord, HexTileView> _tileViews = new Dictionary<HexCoord, HexTileView>();
         private List<RageCircle> _rageCircles = new List<RageCircle>();
 
-        private Vector2 _hexSize = new Vector2(80, 70);
-        private Vector2 _mapCenter = new Vector2(600, 400);
+        private Vector2 _hexSize = new Vector2(120, 104);
 
         public override void _Ready()
         {
+            GD.Print("[HexMapUI] _Ready called");
+
+            if (_tileViewScene == null)
+            {
+                _tileViewScene = GD.Load<PackedScene>("res://Scenes/UI/HexTileView.tscn");
+            }
+            if (_shopItemCardScene == null)
+            {
+                _shopItemCardScene = GD.Load<PackedScene>("res://Scenes/UI/ShopItemCard.tscn");
+            }
+            if (_engravingCardSlotScene == null)
+            {
+                _engravingCardSlotScene = GD.Load<PackedScene>("res://Scenes/UI/EngravingCardSlot.tscn");
+            }
+
+            if (_tileViewScene == null)
+            {
+                GD.PrintErr("[HexMapUI] HexTileView scene not found!");
+            }
+            else
+            {
+                GD.Print("[HexMapUI] HexTileView scene loaded");
+            }
+
             InitializeComponents();
+            GD.Print("[HexMapUI] Components initialized");
             SetupEventConnections();
+            GD.Print("[HexMapUI] Events connected");
 
             _controller = HexMapController.Instance;
+            GD.Print($"[HexMapUI] Controller Instance: {_controller}");
             if (_controller != null)
             {
+                GD.Print($"[HexMapUI] Controller found, refreshing map...");
                 RefreshMap();
             }
+            else
+            {
+                GD.PrintErr("[HexMapUI] Controller is null!");
+            }
+            GD.Print("[HexMapUI] _Ready complete");
         }
 
         private void InitializeComponents()
         {
-            _mapContainer = new Control();
-            _mapContainer.Name = "MapContainer";
-            AddChild(_mapContainer);
+            GD.Print("[HexMapUI] InitializeComponents started");
 
-            _tileViewsContainer = new Control();
-            _tileViewsContainer.Name = "TileViews";
-            _mapContainer.AddChild(_tileViewsContainer);
+            var viewportSize = GetViewportRect().Size;
+            GD.Print($"[HexMapUI] Viewport size: {viewportSize}, screenCenter: {viewportSize / 2}");
 
-            _playerIcon = new PlayerIcon();
-            _playerIcon.Name = "PlayerIcon";
-            _mapContainer.AddChild(_playerIcon);
+            GD.Print($"[HexMapUI] Has HealthBar: {HasNode("HealthBar")}");
+            GD.Print($"[HexMapUI] Has MapContainer: {HasNode("MapContainer")}");
+            GD.Print($"[HexMapUI] Has RageCircles: {HasNode("RageCircles")}");
 
-            _healthBar = new HealthBar();
-            _healthBar.Name = "HealthBar";
-            _healthBar.Position = new Vector2(20, 20);
-            AddChild(_healthBar);
+            _mapContainer = GetNodeOrNull<Control>("MapContainer");
+            GD.Print($"[HexMapUI] _mapContainer: {_mapContainer}");
 
-            _rageCirclesContainer = new VBoxContainer();
-            _rageCirclesContainer.Name = "RageCircles";
-            _rageCirclesContainer.Position = new Vector2(20, 150);
-            _rageCirclesContainer.AddThemeConstantOverride("separation", 10);
-            AddChild(_rageCirclesContainer);
-
-            for (int i = 0; i < 4; i++)
+            _tileViewsContainer = GetNodeOrNull<Control>("MapContainer/TileViews");
+            if (_tileViewsContainer != null)
             {
-                var rageCircle = new RageCircle();
-                rageCircle.Name = $"RageCircle{i}";
-                rageCircle.SetCharacterName($"角色{i + 1}");
-                _rageCircles.Add(rageCircle);
-                _rageCirclesContainer.AddChild(rageCircle);
+                var screenCenter = GetViewportRect().Size / 2;
+                _tileViewsContainer.Position = screenCenter;
+                GD.Print($"[HexMapUI] TileViewsContainer position set to: {screenCenter}");
+            }
+            GD.Print($"[HexMapUI] _tileViewsContainer: {_tileViewsContainer}, position: {_tileViewsContainer?.Position}");
+
+            var playerIconControl = GetNodeOrNull<Control>("MapContainer/PlayerIcon");
+            GD.Print($"[HexMapUI] Get PlayerIcon as Control: {playerIconControl}");
+            if (playerIconControl != null)
+            {
+                GD.Print($"[HexMapUI] PlayerIcon Script: {playerIconControl.GetScript()}");
+                GD.Print($"[HexMapUI] PlayerIcon HasScript: {playerIconControl.HasMethod("_Ready")}");
+            }
+            _playerIcon = playerIconControl as PlayerIcon;
+            if (_playerIcon == null && playerIconControl != null)
+            {
+                GD.PrintErr($"[HexMapUI] PlayerIcon control found but cast failed! Type: {playerIconControl.GetType()}");
+            }
+            else if (_playerIcon != null)
+            {
+                GD.Print($"[HexMapUI] _playerIcon found: {_playerIcon}, initial Position: {_playerIcon.Position}, Size: {_playerIcon.Size}");
+            }
+            else
+            {
+                GD.PrintErr("[HexMapUI] PlayerIcon not found!");
             }
 
-            var topRightContainer = new HBoxContainer();
-            topRightContainer.Name = "TopRightButtons";
-            topRightContainer.Position = new Vector2(900, 20);
-            topRightContainer.Alignment = BoxContainer.AlignmentMode.End;
-            topRightContainer.AddThemeConstantOverride("separation", 10);
-            AddChild(topRightContainer);
+            var healthBarControl = GetNodeOrNull<Control>("HealthBar");
+            GD.Print($"[HexMapUI] Get HealthBar as Control: {healthBarControl}");
+            if (healthBarControl != null)
+            {
+                GD.Print($"[HexMapUI] HealthBar Script: {healthBarControl.GetScript()}");
+                GD.Print($"[HexMapUI] HealthBar HasScript: {healthBarControl.HasMethod("_Ready")}");
+            }
+            _healthBar = healthBarControl as HealthBar;
+            if (_healthBar == null && healthBarControl != null)
+            {
+                GD.PrintErr($"[HexMapUI] HealthBar control found but cast failed! Type: {healthBarControl.GetType()}");
+            }
+            else if (_healthBar != null)
+            {
+                GD.Print($"[HexMapUI] _healthBar found: {_healthBar}, Size: {_healthBar.CustomMinimumSize}");
+            }
+            else
+            {
+                GD.PrintErr("[HexMapUI] HealthBar not found!");
+            }
 
-            _skipButton = new Button();
-            _skipButton.Text = "跳过地图";
-            _skipButton.CustomMinimumSize = new Vector2(100, 40);
-            _skipButton.Pressed += OnSkipButtonPressed;
-            topRightContainer.AddChild(_skipButton);
+            if (_healthBar != null)
+            {
+                PositionHealthBar();
+            }
 
-            _deathResistanceButton = new Button();
-            _deathResistanceButton.Text = "死亡抵抗";
-            _deathResistanceButton.CustomMinimumSize = new Vector2(100, 40);
-            _deathResistanceButton.Pressed += OnDeathResistanceButtonPressed;
-            topRightContainer.AddChild(_deathResistanceButton);
+            _rageCirclesContainer = GetNodeOrNull<HBoxContainer>("RageCircles");
+            GD.Print($"[HexMapUI] RageCircles container: {_rageCirclesContainer}, Visible: {_rageCirclesContainer?.Visible}, GlobalPos: {_rageCirclesContainer?.GlobalPosition}, Size: {_rageCirclesContainer?.Size}");
+            _rageCircles.Clear();
+            for (int i = 0; i < 4; i++)
+            {
+                var rageCircleAsControl = GetNodeOrNull<Control>($"RageCircles/RageCircle{i}");
+                GD.Print($"[HexMapUI] RageCircle{i} as Control: {rageCircleAsControl}, Script: {rageCircleAsControl?.GetScript()}");
+                var rageCircle = rageCircleAsControl as RageCircle;
+                if (rageCircle != null)
+                {
+                    GD.Print($"[HexMapUI] RageCircle{i} cast SUCCESS: {rageCircle}, Visible: {rageCircle.Visible}, Size: {rageCircle.Size}, MinSize: {rageCircle.CustomMinimumSize}, GlobalPos: {rageCircle.GlobalPosition}, Scale: {rageCircle.Scale}");
+                    rageCircle.SetCharacterName($"角色{i + 1}");
+                    rageCircle.SetRage(0, 100);
+                    _rageCircles.Add(rageCircle);
+                }
+                else
+                {
+                    GD.PrintErr($"[HexMapUI] RageCircle{i} cast FAILED! Is Control: {rageCircleAsControl != null}, Type: {rageCircleAsControl?.GetType()}");
+                }
+            }
+            if (_rageCirclesContainer != null)
+            {
+                PositionRageCircles();
+                GD.Print($"[HexMapUI] After PositionRageCircles - Container GlobalPos: {_rageCirclesContainer.GlobalPosition}, Size: {_rageCirclesContainer.Size}");
+            }
+            GD.Print($"[HexMapUI] _rageCircles: {_rageCircles.Count} circles");
 
-            _blackMarkButton = new Button();
-            _blackMarkButton.Text = "黑印";
-            _blackMarkButton.CustomMinimumSize = new Vector2(80, 40);
-            _blackMarkButton.Pressed += OnBlackMarkButtonPressed;
-            topRightContainer.AddChild(_blackMarkButton);
+            ConnectButton("TopRightButtons/SkipButton", OnSkipButtonPressed);
+            ConnectButton("TopRightButtons/DeathResistanceButton", OnDeathResistanceButtonPressed);
+            ConnectButton("TopRightButtons/BlackMarkButton", OnBlackMarkButtonPressed);
+            ConnectButton("TopRightButtons/SettingsButton", OnSettingsButtonPressed);
+            if (HasNode("TopRightButtons"))
+            {
+                PositionTopRightButtons();
+            }
+            GD.Print("[HexMapUI] TopRightButtons connected");
 
-            _settingsButton = new Button();
-            _settingsButton.Text = "⚙";
-            _settingsButton.CustomMinimumSize = new Vector2(40, 40);
-            _settingsButton.Pressed += OnSettingsButtonPressed;
-            topRightContainer.AddChild(_settingsButton);
+            _blackMarkLabel = GetNodeOrNull<Label>("BlackMarkLabel");
+            GD.Print($"[HexMapUI] _blackMarkLabel: {_blackMarkLabel}");
 
-            _blackMarkLabel = new Label();
-            _blackMarkLabel.Name = "BlackMarkLabel";
-            _blackMarkLabel.Position = new Vector2(20, 500);
-            _blackMarkLabel.AddThemeFontSizeOverride("font_size", 24);
-            AddChild(_blackMarkLabel);
+            _teleportDialog = GetNodeOrNull<Control>("TeleportDialog");
+            if (_teleportDialog != null)
+            {
+                ConnectButton("TeleportDialog/VBoxContainer/ButtonBox/CancelButton", OnTeleportCancelPressed);
+                ConnectButton("TeleportDialog/VBoxContainer/ButtonBox/ConfirmButton", OnTeleportConfirmPressed);
+            }
+            GD.Print($"[HexMapUI] TeleportDialog: {_teleportDialog}");
 
-            InitializeTeleportDialog();
-            InitializeShopUI();
-            InitializeEngravingSelectUI();
-            InitializeFailurePanel();
-            InitializeBackpack();
+            _shopContainer = GetNodeOrNull<Control>("ShopContainer");
+            if (_shopContainer != null)
+            {
+                _shopItemsContainer = GetNodeOrNull<Control>("ShopContainer/VBoxContainer/ShopItems");
+                ConnectButton("ShopContainer/VBoxContainer/HeaderBox/CloseButton", OnShopClosePressed);
+            }
+            GD.Print($"[HexMapUI] ShopContainer: {_shopContainer}");
+
+            _engravingSelectContainer = GetNodeOrNull<Control>("EngravingSelectContainer");
+            if (_engravingSelectContainer != null)
+            {
+                _engravingCardsContainer = GetNodeOrNull<Control>("EngravingSelectContainer/VBoxContainer/EngravingCards");
+                ConnectButton("EngravingSelectContainer/VBoxContainer/ButtonBox/CancelButton", OnEngravingCancelPressed);
+                ConnectButton("EngravingSelectContainer/VBoxContainer/ButtonBox/ConfirmButton", OnEngravingConfirmPressed);
+                ConnectButton("EngravingSelectContainer/VBoxContainer/HeaderBox/CloseButton", OnEngravingClosePressed);
+            }
+            GD.Print($"[HexMapUI] EngravingSelectContainer: {_engravingSelectContainer}");
+
+            _failurePanel = GetNodeOrNull<Control>("FailurePanel");
+            if (_failurePanel != null)
+            {
+                _failureMessage = GetNodeOrNull<Label>("FailurePanel/VBoxContainer/FailureMessage");
+                ConnectButton("FailurePanel/VBoxContainer/OkButton", OnFailureOkPressed);
+            }
+            GD.Print($"[HexMapUI] FailurePanel: {_failurePanel}");
+
+            _backpackContainer = GetNodeOrNull<Control>("BackpackContainer");
+            if (_backpackContainer != null)
+            {
+                _backpackItemsContainer = GetNodeOrNull<Control>("BackpackContainer/HBoxContainer/BackpackItems");
+            }
+            GD.Print($"[HexMapUI] BackpackContainer: {_backpackContainer}");
+
+            GD.Print("[HexMapUI] InitializeComponents completed!");
         }
 
-        private void InitializeTeleportDialog()
+        private void ConnectButton(string path, Action handler)
         {
-            _teleportDialog = new PanelContainer();
-            _teleportDialog.Name = "TeleportDialog";
-            _teleportDialog.Visible = false;
-            _teleportDialog.CustomMinimumSize = new Vector2(300, 150);
-            _teleportDialog.Position = (GetViewportRect().Size - _teleportDialog.CustomMinimumSize) / 2;
-            AddChild(_teleportDialog);
-
-            var vBox = new VBoxContainer();
-            vBox.CustomMinimumSize = _teleportDialog.CustomMinimumSize;
-            _teleportDialog.AddChild(vBox);
-
-            _teleportMessage = new Label();
-            _teleportMessage.Text = "是否要开始传送？";
-            _teleportMessage.HorizontalAlignment = HorizontalAlignment.Center;
-            _teleportMessage.VerticalAlignment = VerticalAlignment.Center;
-            vBox.AddChild(_teleportMessage);
-
-            var buttonBox = new HBoxContainer();
-            buttonBox.Alignment = BoxContainer.AlignmentMode.Center;
-            buttonBox.AddThemeConstantOverride("separation", 20);
-            vBox.AddChild(buttonBox);
-
-            _teleportCancelButton = new Button();
-            _teleportCancelButton.Text = "否";
-            _teleportCancelButton.CustomMinimumSize = new Vector2(100, 40);
-            _teleportCancelButton.Pressed += OnTeleportCancelPressed;
-            buttonBox.AddChild(_teleportCancelButton);
-
-            _teleportConfirmButton = new Button();
-            _teleportConfirmButton.Text = "是";
-            _teleportConfirmButton.CustomMinimumSize = new Vector2(100, 40);
-            _teleportConfirmButton.Pressed += OnTeleportConfirmPressed;
-            buttonBox.AddChild(_teleportConfirmButton);
+            var button = GetNodeOrNull<Button>(path);
+            if (button != null)
+            {
+                button.Pressed += handler;
+            }
+            else
+            {
+                GD.PrintErr($"[HexMapUI] Button not found: {path}");
+            }
         }
 
-        private void InitializeShopUI()
+        private void PositionHealthBar()
         {
-            _shopContainer = new PanelContainer();
-            _shopContainer.Name = "ShopContainer";
-            _shopContainer.Visible = false;
-            _shopContainer.CustomMinimumSize = new Vector2(700, 500);
-            _shopContainer.Position = (GetViewportRect().Size - _shopContainer.CustomMinimumSize) / 2;
-            AddChild(_shopContainer);
-
-            var vBox = new VBoxContainer();
-            vBox.CustomMinimumSize = _shopContainer.CustomMinimumSize;
-            _shopContainer.AddChild(vBox);
-
-            var headerBox = new HBoxContainer();
-            headerBox.Alignment = BoxContainer.AlignmentMode.End;
-            vBox.AddChild(headerBox);
-
-            _shopCloseButton = new Button();
-            _shopCloseButton.Text = "X";
-            _shopCloseButton.CustomMinimumSize = new Vector2(40, 40);
-            _shopCloseButton.Pressed += OnShopClosePressed;
-            headerBox.AddChild(_shopCloseButton);
-
-            var shopTitle = new Label();
-            shopTitle.Text = "神秘商店";
-            shopTitle.HorizontalAlignment = HorizontalAlignment.Center;
-            shopTitle.AddThemeFontSizeOverride("font_size", 24);
-            vBox.AddChild(shopTitle);
-
-            _shopItemsContainer = new GridContainer();
-            _shopItemsContainer.Name = "ShopItems";
-            _shopItemsContainer.Set("columns", 3);
-            _shopItemsContainer.AddThemeConstantOverride("h_separation", 20);
-            _shopItemsContainer.AddThemeConstantOverride("v_separation", 20);
-            vBox.AddChild(_shopItemsContainer);
+            if (_healthBar == null) return;
+            var screenSize = GetViewportRect().Size;
+            var targetPos = new Vector2(20, screenSize.Y - _healthBar.CustomMinimumSize.Y - 20);
+            GD.Print($"[HexMapUI] PositionHealthBar: screenSize={screenSize}, customSize={_healthBar.CustomMinimumSize}, targetPos={targetPos}");
+            _healthBar.GlobalPosition = targetPos;
+            GD.Print($"[HexMapUI] HealthBar GlobalPosition after set: {_healthBar.GlobalPosition}");
         }
 
-        private void InitializeEngravingSelectUI()
+        private void PositionRageCircles()
         {
-            _engravingSelectContainer = new PanelContainer();
-            _engravingSelectContainer.Name = "EngravingSelectContainer";
-            _engravingSelectContainer.Visible = false;
-            _engravingSelectContainer.CustomMinimumSize = new Vector2(800, 600);
-            _engravingSelectContainer.Position = (GetViewportRect().Size - _engravingSelectContainer.CustomMinimumSize) / 2;
-            AddChild(_engravingSelectContainer);
-
-            var vBox = new VBoxContainer();
-            vBox.CustomMinimumSize = _engravingSelectContainer.CustomMinimumSize;
-            _engravingSelectContainer.AddChild(vBox);
-
-            var headerBox = new HBoxContainer();
-            headerBox.Alignment = BoxContainer.AlignmentMode.End;
-            vBox.AddChild(headerBox);
-
-            var closeButton = new Button();
-            closeButton.Text = "X";
-            closeButton.CustomMinimumSize = new Vector2(40, 40);
-            closeButton.Pressed += OnEngravingClosePressed;
-            headerBox.AddChild(closeButton);
-
-            var selectTitle = new Label();
-            selectTitle.Text = "选择要刻印的卡牌";
-            selectTitle.HorizontalAlignment = HorizontalAlignment.Center;
-            selectTitle.AddThemeFontSizeOverride("font_size", 24);
-            vBox.AddChild(selectTitle);
-
-            _engravingCardsContainer = new GridContainer();
-            _engravingCardsContainer.Name = "EngravingCards";
-            _engravingCardsContainer.Set("columns", 4);
-            vBox.AddChild(_engravingCardsContainer);
-
-            var buttonBox = new HBoxContainer();
-            buttonBox.Alignment = BoxContainer.AlignmentMode.Center;
-            vBox.AddChild(buttonBox);
-
-            _engravingCancelButton = new Button();
-            _engravingCancelButton.Text = "返回";
-            _engravingCancelButton.CustomMinimumSize = new Vector2(100, 40);
-            _engravingCancelButton.Pressed += OnEngravingCancelPressed;
-            buttonBox.AddChild(_engravingCancelButton);
-
-            _engravingConfirmButton = new Button();
-            _engravingConfirmButton.Text = "确定刻印";
-            _engravingConfirmButton.CustomMinimumSize = new Vector2(100, 40);
-            _engravingConfirmButton.Pressed += OnEngravingConfirmPressed;
-            _engravingConfirmButton.Disabled = true;
-            buttonBox.AddChild(_engravingConfirmButton);
+            if (_rageCirclesContainer == null) return;
+            GD.Print($"[HexMapUI] PositionRageCircles: using anchor positioning (no code position needed)");
         }
 
-        private void InitializeFailurePanel()
+        public override void _Process(double delta)
         {
-            _failurePanel = new PanelContainer();
-            _failurePanel.Name = "FailurePanel";
-            _failurePanel.Visible = false;
-            _failurePanel.CustomMinimumSize = new Vector2(400, 200);
-            _failurePanel.Position = (GetViewportRect().Size - _failurePanel.CustomMinimumSize) / 2;
-            AddChild(_failurePanel);
-
-            var vBox = new VBoxContainer();
-            vBox.CustomMinimumSize = _failurePanel.CustomMinimumSize;
-            _failurePanel.AddChild(vBox);
-
-            _failureMessage = new Label();
-            _failureMessage.Text = "挑战失败！";
-            _failureMessage.HorizontalAlignment = HorizontalAlignment.Center;
-            _failureMessage.VerticalAlignment = VerticalAlignment.Center;
-            _failureMessage.AddThemeFontSizeOverride("font_size", 32);
-            vBox.AddChild(_failureMessage);
-
-            _failureOkButton = new Button();
-            _failureOkButton.Text = "确定";
-            _failureOkButton.CustomMinimumSize = new Vector2(100, 40);
-            _failureOkButton.Pressed += OnFailureOkPressed;
-            vBox.AddChild(_failureOkButton);
+            if (_rageCirclesContainer != null && Input.IsKeyPressed(Key.D))
+            {
+                GD.Print($"[DEBUG] RageCircles: Visible={_rageCirclesContainer.Visible}, GlobalPos={_rageCirclesContainer.GlobalPosition}, Size={_rageCirclesContainer.Size}");
+                foreach (var circle in _rageCircles)
+                {
+                    GD.Print($"[DEBUG] Circle: Name={circle.Name}, Visible={circle.Visible}, GlobalPos={circle.GlobalPosition}, Size={circle.Size}, CustomMin={circle.CustomMinimumSize}");
+                }
+            }
         }
 
-        private void InitializeBackpack()
+        private void PositionTopRightButtons()
         {
-            _backpackContainer = new PanelContainer();
-            _backpackContainer.Name = "BackpackContainer";
-            _backpackContainer.CustomMinimumSize = new Vector2(300, 60);
-            _backpackContainer.Position = new Vector2((GetViewportRect().Size.X - 300) / 2, 20);
-            AddChild(_backpackContainer);
+            var topRightContainer = GetNodeOrNull<HBoxContainer>("TopRightButtons");
+            if (topRightContainer == null) return;
+            var screenSize = GetViewportRect().Size;
+            float buttonContainerWidth = 100 * 4 + 10 * 3 + 40;
+            topRightContainer.GlobalPosition = new Vector2(screenSize.X - buttonContainerWidth - 20, 20);
+        }
 
-            var hBox = new HBoxContainer();
-            hBox.CustomMinimumSize = _backpackContainer.CustomMinimumSize;
-            hBox.Alignment = BoxContainer.AlignmentMode.Center;
-            hBox.AddThemeConstantOverride("separation", 10);
-            _backpackContainer.AddChild(hBox);
+        public override void _EnterTree()
+        {
+            base._EnterTree();
+            GetTree().Connect("screen_resized", new Callable(this, nameof(OnScreenResized)));
+        }
 
-            var backpackLabel = new Label();
-            backpackLabel.Text = "背包:";
-            hBox.AddChild(backpackLabel);
-
-            _backpackItemsContainer = new HBoxContainer();
-            _backpackItemsContainer.AddThemeConstantOverride("separation", 5);
-            hBox.AddChild(_backpackItemsContainer);
+        private void OnScreenResized()
+        {
+            PositionHealthBar();
+            PositionRageCircles();
+            PositionTopRightButtons();
         }
 
         private void SetupEventConnections()
@@ -345,16 +343,26 @@ namespace FishEatFish.UI.HexMap
 
         private void RefreshMap()
         {
+            GD.Print("[HexMapUI] RefreshMap started");
             ClearTileViews();
 
-            if (_controller?.CurrentMap == null) return;
+            if (_controller?.CurrentMap == null)
+            {
+                GD.PrintErr("[HexMapUI] CurrentMap is null!");
+                return;
+            }
 
+            GD.Print($"[HexMapUI] Creating tile views...");
+            int tileCount = 0;
             foreach (var tile in _controller.CurrentMap.GetAllTiles())
             {
                 CreateTileView(tile);
+                tileCount++;
             }
+            GD.Print($"[HexMapUI] Created {tileCount} tile views, tileViews count={_tileViews.Count}");
 
             UpdatePlayerPosition();
+            GD.Print("[HexMapUI] RefreshMap completed");
         }
 
         private void ClearTileViews()
@@ -368,36 +376,45 @@ namespace FishEatFish.UI.HexMap
 
         private void CreateTileView(HexTile tile)
         {
-            var tileView = new HexTileView();
-            tileView.SetTile(tile);
-            tileView.Size = _hexSize;
+            if (_tileViewScene == null)
+            {
+                GD.PrintErr("[HexMapUI] _tileViewScene is null!");
+                return;
+            }
 
+            var tileView = (HexTileView)_tileViewScene.Instantiate();
+            tileView.Size = _hexSize;
             var worldPos = HexToWorld(tile.Coord);
             tileView.Position = worldPos;
+            tileView.SetHexWorldPosition(worldPos + _hexSize / 2);
+
+            GD.Print($"[HexMapUI] CreateTileView: coord={tile.Coord}, worldPos={worldPos}, tileView.Position={tileView.Position}, isStart={tile.IsStart}");
 
             tileView.OnTileClicked += OnTileClicked;
             tileView.OnTileHovered += OnTileHovered;
 
             _tileViewsContainer.AddChild(tileView);
+            tileView.SetTile(tile);
+
             _tileViews[tile.Coord] = tileView;
         }
 
         private Vector2 HexToWorld(HexCoord coord)
         {
-            float x = _hexSize.X * (3f / 2f * coord.Q);
-            float y = _hexSize.Y * (Mathf.Sqrt(3f) / 2f * coord.Q + Mathf.Sqrt(3f) * coord.R);
-
-            return new Vector2(x, y) + _mapCenter - _hexSize / 2;
+            float x = 100f * coord.Q + 50f * coord.R;
+            float y = 78f * coord.R;
+            return new Vector2(x, y);
         }
 
         private HexCoord WorldToHex(Vector2 worldPos)
         {
-            var pos = worldPos - _mapCenter + _hexSize / 2;
+            var screenCenter = GetViewportRect().Size / 2;
+            var pos = worldPos - screenCenter;
 
-            float q = (2f / 3f * pos.X) / _hexSize.X;
-            float r = (-1f / 3f * pos.X + Mathf.Sqrt(3f) / 3f * pos.Y) / _hexSize.Y;
+            int r = (int)Mathf.Round(pos.Y / 78f);
+            int q = (int)Mathf.Round((pos.X - 50f * r) / 100f);
 
-            return HexCoord.Round(q, r);
+            return new HexCoord(q, r);
         }
 
         private void OnTileClicked(HexTileView tileView)
@@ -405,16 +422,28 @@ namespace FishEatFish.UI.HexMap
             if (_controller == null) return;
 
             var tile = tileView.Tile;
-            if (tile == null || !tile.CanEnter) return;
+            if (tile == null) return;
+
+            if (!tile.CanEnter) return;
 
             var currentPos = _controller.CurrentPosition;
-            if (tile.Coord.ContainsInArray(currentPos.GetNeighbors()))
+            var neighbors = currentPos.GetNeighbors();
+
+            GD.Print($"[HexMapUI] OnTileClicked: current={currentPos}, clicked={tile.Coord}");
+
+            if (tile.Coord.ContainsInArray(neighbors))
             {
+                GD.Print($"[HexMapUI] Moving to {tile.Coord}");
                 _controller.MoveTo(tile.Coord);
             }
             else if (tile.Coord == _controller.CurrentMap.End)
             {
+                GD.Print($"[HexMapUI] Quick moving to end {tile.Coord}");
                 _controller.QuickMoveTo(tile.Coord);
+            }
+            else
+            {
+                GD.Print($"[HexMapUI] Clicked tile is not adjacent to current position");
             }
         }
 
@@ -453,12 +482,23 @@ namespace FishEatFish.UI.HexMap
 
         private void OnPlayerMoved(HexCoord newPos)
         {
-            UpdatePlayerPosition();
-
+            GD.Print($"[HexMapUI] OnPlayerMoved: newPos={newPos}");
+            if (_playerIcon == null)
+            {
+                GD.PrintErr("[HexMapUI] OnPlayerMoved: _playerIcon is null!");
+                return;
+            }
             if (_tileViews.ContainsKey(newPos))
             {
                 var tileView = _tileViews[newPos];
-                _playerIcon.MoveTo(tileView.GetHexWorldPosition());
+                GD.Print($"[HexMapUI] TileView found: pos={tileView.Position}, size={tileView.Size}");
+                var tileWorldPos = _tileViewsContainer.Position + tileView.Position + tileView.Size / 2;
+                GD.Print($"[HexMapUI] Moving player to: {tileWorldPos}");
+                _playerIcon.MoveTo(tileWorldPos);
+            }
+            else
+            {
+                GD.PrintErr($"[HexMapUI] TileView not found for {newPos}!");
             }
 
             ClearPathHighlights();
@@ -467,12 +507,28 @@ namespace FishEatFish.UI.HexMap
         private void UpdatePlayerPosition()
         {
             if (_controller == null) return;
+            if (_playerIcon == null)
+            {
+                GD.PrintErr("[HexMapUI] UpdatePlayerPosition: _playerIcon is null!");
+                return;
+            }
 
             var currentPos = _controller.CurrentPosition;
+            GD.Print($"[HexMapUI] UpdatePlayerPosition: currentPos={currentPos}");
+
             if (_tileViews.ContainsKey(currentPos))
             {
                 var tileView = _tileViews[currentPos];
-                _playerIcon.TeleportTo(tileView.GetHexWorldPosition());
+                GD.Print($"[HexMapUI] TileView: pos={tileView.Position}, size={tileView.Size}, containerPos={_tileViewsContainer.Position}");
+                var tileWorldPos = _tileViewsContainer.Position + tileView.Position + tileView.Size / 2;
+                GD.Print($"[HexMapUI] UpdatePlayerPosition: teleport to {tileWorldPos}");
+                GD.Print($"[HexMapUI] Calling _playerIcon.TeleportTo... _playerIcon={_playerIcon}");
+                _playerIcon.TeleportTo(tileWorldPos);
+                GD.Print($"[HexMapUI] TeleportTo called, _playerIcon.Position now: {_playerIcon.Position}");
+            }
+            else
+            {
+                GD.PrintErr($"[HexMapUI] UpdatePlayerPosition: TileView not found for {currentPos}!");
             }
         }
 
@@ -614,74 +670,13 @@ namespace FishEatFish.UI.HexMap
             }
         }
 
-        private Control CreateShopItemCard(ShopItem item)
+        private ShopItemCard CreateShopItemCard(ShopItem item)
         {
-            var card = new PanelContainer();
-            card.CustomMinimumSize = new Vector2(200, 280);
-            card.AddThemeStyleboxOverride("panel", CreateCardStyle());
-
-            var vBox = new VBoxContainer();
-            vBox.CustomMinimumSize = card.CustomMinimumSize;
-            card.AddChild(vBox);
-
-            var nameLabel = new Label();
-            nameLabel.Text = item.Name;
-            nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            nameLabel.AddThemeFontSizeOverride("font_size", 18);
-            vBox.AddChild(nameLabel);
-
-            var iconRect = new TextureRect();
-            iconRect.CustomMinimumSize = new Vector2(100, 100);
-            iconRect.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-            if (item.Icon != null)
-            {
-                iconRect.Texture = GD.Load<Texture2D>(item.Icon);
-            }
-            vBox.AddChild(iconRect);
-
-            var descLabel = new Label();
-            descLabel.Text = item.Description;
-            descLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            descLabel.AutowrapMode = TextServer.AutowrapMode.Word;
-            descLabel.CustomMinimumSize = new Vector2(180, 60);
-            vBox.AddChild(descLabel);
-
-            var priceLabel = new Label();
-            priceLabel.Text = $"💰 {item.Price}";
-            priceLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            priceLabel.AddThemeColorOverride("font_color", new Color(1, 0.8f, 0));
-            priceLabel.AddThemeFontSizeOverride("font_size", 20);
-            vBox.AddChild(priceLabel);
-
-            var buyButton = new Button();
-            buyButton.Text = "购买";
-            buyButton.CustomMinimumSize = new Vector2(180, 40);
-            buyButton.Pressed += () => OnShopItemClicked(item);
-            vBox.AddChild(buyButton);
-
-            if (!BlackMarkShopManager.Instance.CanAfford(item))
-            {
-                buyButton.Disabled = true;
-                priceLabel.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.5f));
-            }
-
+            var card = (ShopItemCard)_shopItemCardScene.Instantiate();
+            bool canAfford = BlackMarkShopManager.Instance?.CanAfford(item) ?? false;
+            card.SetItem(item, canAfford);
+            card.OnBuyClicked += OnShopItemClicked;
             return card;
-        }
-
-        private StyleBoxFlat CreateCardStyle()
-        {
-            var style = new StyleBoxFlat();
-            style.BgColor = new Color(0.2f, 0.2f, 0.3f);
-            style.BorderWidthLeft = 2;
-            style.BorderWidthRight = 2;
-            style.BorderWidthTop = 2;
-            style.BorderWidthBottom = 2;
-            style.BorderColor = new Color(0.4f, 0.4f, 0.5f);
-            style.CornerRadiusTopLeft = 10;
-            style.CornerRadiusTopRight = 10;
-            style.CornerRadiusBottomLeft = 10;
-            style.CornerRadiusBottomRight = 10;
-            return style;
         }
 
         private void OnShopItemClicked(ShopItem item)
@@ -735,43 +730,26 @@ namespace FishEatFish.UI.HexMap
             }
         }
 
-        private Control CreateEngravingCardSlot(string cardId, string cardName)
+        private EngravingCardSlot CreateEngravingCardSlot(string cardId, string cardName)
         {
-            var slot = new PanelContainer();
-            slot.CustomMinimumSize = new Vector2(150, 200);
-            slot.AddThemeStyleboxOverride("panel", CreateCardStyle());
-
-            var vBox = new VBoxContainer();
-            vBox.CustomMinimumSize = slot.CustomMinimumSize;
-            slot.AddChild(vBox);
-
-            var nameLabel = new Label();
-            nameLabel.Text = cardName;
-            nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            vBox.AddChild(nameLabel);
-
-            var selectButton = new Button();
-            selectButton.Text = "选择";
-            selectButton.CustomMinimumSize = new Vector2(130, 40);
-            selectButton.Pressed += () => OnEngravingCardSelected(slot, cardId);
-            vBox.AddChild(selectButton);
-
+            var slot = (EngravingCardSlot)_engravingCardSlotScene.Instantiate();
+            slot.SetCard(cardId, cardName);
+            slot.OnSelected += OnEngravingCardSelected;
             return slot;
         }
 
         private string _selectedEngravingCardId = null;
 
-        private void OnEngravingCardSelected(Control cardSlot, string cardId)
+        private void OnEngravingCardSelected(EngravingCardSlot cardSlot, string cardId)
         {
             _selectedEngravingCardId = cardId;
             _engravingConfirmButton.Disabled = false;
 
             foreach (var child in _engravingCardsContainer.GetChildren())
             {
-                var panel = child as PanelContainer;
-                if (panel != null)
+                if (child is EngravingCardSlot slot)
                 {
-                    panel.Modulate = child == cardSlot ? new Color(1, 1, 0) : Colors.White;
+                    slot.SetSelected(child == cardSlot);
                 }
             }
         }

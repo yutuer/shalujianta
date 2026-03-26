@@ -362,8 +362,16 @@ public partial class CharacterSelection : Control
 
         GlobalData.SelectedCharacters = _selectedCharacters.ToArray();
         GlobalData.EquippedKeyOrder = _selectedKeyOrder;
-        GD.Print($"开始战斗，角色: {string.Join(", ", _selectedCharacters.ConvertAll(c => c.Name))}, 钥令: {_selectedKeyOrder.Name}");
+        GD.Print($"选择完成，角色: {string.Join(", ", _selectedCharacters.ConvertAll(c => c.Name))}, 钥令: {_selectedKeyOrder.Name}");
 
-        GetTree().ChangeSceneToFile("res://Scenes/BattleScene.tscn");
+        if (GlobalData.EnterHexMapMode)
+        {
+            GlobalData.EnterHexMapMode = false;
+            GetTree().ChangeSceneToFile("res://Scenes/HexMapScene.tscn");
+        }
+        else
+        {
+            GetTree().ChangeSceneToFile("res://Scenes/BattleScene.tscn");
+        }
     }
 }

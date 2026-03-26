@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using FishEatFish.Battle.HexMap;
 
@@ -5,31 +6,32 @@ namespace FishEatFish.UI.HexMap
 {
     public partial class HexTileView : Control
     {
-        [Export]
-        private Color _normalColor = new Color(0.3f, 0.3f, 0.3f);
-
-        [Export]
+        private Color _normalColor = new Color(0.75f, 0.75f, 0.75f);
         private Color _startColor = new Color(0.2f, 0.8f, 0.2f);
-
-        [Export]
         private Color _endColor = new Color(0.8f, 0.2f, 0.2f);
-
-        [Export]
-        private Color _visitedColor = new Color(0.4f, 0.4f, 0.4f);
-
-        [Export]
+        private Color _visitedColor = new Color(0.6f, 0.6f, 0.6f);
+        private Color _pathColor = new Color(0.6f, 0.6f, 0.2f);
         private Color _disappearedColor = new Color(0.1f, 0.1f, 0.1f, 0.3f);
 
-        [Export]
-        private Color _hoverColor = new Color(0.5f, 0.5f, 0.5f);
+        private static readonly Dictionary<HexEventType, Color> EventColors = new Dictionary<HexEventType, Color>
+        {
+            { HexEventType.Empty, new Color(0.75f, 0.75f, 0.75f) },
+            { HexEventType.BattleNormal, new Color(0.9f, 0.3f, 0.3f) },
+            { HexEventType.BattleElite, new Color(0.8f, 0.2f, 0.6f) },
+            { HexEventType.BattleBoss, new Color(0.6f, 0.1f, 0.1f) },
+            { HexEventType.Shop, new Color(1.0f, 0.8f, 0.2f) },
+            { HexEventType.Heal, new Color(0.3f, 0.9f, 0.5f) },
+            { HexEventType.Hole, new Color(0.3f, 0.3f, 0.3f) },
+            { HexEventType.GainBlackMark, new Color(0.2f, 0.2f, 0.5f) },
+            { HexEventType.Swamp, new Color(0.5f, 0.4f, 0.2f) },
+            { HexEventType.TwoWayTeleport, new Color(0.3f, 0.6f, 0.9f) },
+            { HexEventType.OneDirectionTele, new Color(0.5f, 0.3f, 0.8f) }
+        };
 
-        [Export]
-        private Color _pathColor = new Color(0.6f, 0.6f, 0.2f);
-
-        private ColorRect _background;
-        private TextureRect _icon;
-        private Label _label;
         private Polygon2D _hexShape;
+        private ColorRect _background;
+        private Label _iconLabel;
+        private Label _debugLabel;
 
         private HexTile _tile;
         public HexTile Tile => _tile;
@@ -37,53 +39,58 @@ namespace FishEatFish.UI.HexMap
         private bool _isHovered;
         private bool _isPath;
         private bool _isClickable = true;
+        private Vector2 _hexWorldPosition;
 
         public System.Action<HexTileView> OnTileClicked;
         public System.Action<HexTileView> OnTileHovered;
 
         public override void _Ready()
         {
-            InitializeComponents();
-            UpdateVisuals();
-        }
+            _hexShape = GetNode<Polygon2D>("HexShape");
+            _background = GetNode<ColorRect>("Background");
+            _iconLabel = GetNode<Label>("IconLabel");
+            _debugLabel = GetNode<Label>("DebugLabel");
 
-        private void InitializeComponents()
-        {
-            _hexShape = new Polygon2D();
-            AddChild(_hexShape);
-            _hexShape.ZIndex = 0;
-
-            _background = new ColorRect();
-            AddChild(_background);
-            _background.ZIndex = 1;
-
-            _icon = new TextureRect();
-            AddChild(_icon);
-            _icon.ZIndex = 2;
-            _icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-            _icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-            _icon.Modulate = new Color(1, 1, 1, 0.8f);
-
-            _label = new Label();
-            AddChild(_label);
-            _label.ZIndex = 3;
-            _label.HorizontalAlignment = HorizontalAlignment.Center;
-            _label.VerticalAlignment = VerticalAlignment.Bottom;
-            _label.Modulate = Colors.White;
+            UpdateHexShape();
 
             MouseEntered += OnMouseEntered;
             MouseExited += OnMouseExited;
         }
 
+        private void UpdateHexShape()
+        {
+            if (_hexShape == null) return;
+
+            var points = new Vector2[6];
+            points[0] = new Vector2(60, 0);
+            points[1] = new Vector2(110, 26);
+            points[2] = new Vector2(110, 78);
+            points[3] = new Vector2(60, 104);
+            points[4] = new Vector2(10, 78);
+            points[5] = new Vector2(10, 26);
+
+            _hexShape.Polygon = points;
+            _background.Color = Colors.Transparent;
+        }
+
         public void SetTile(HexTile tile)
         {
             _tile = tile;
-            UpdateVisuals();
+            if (_background != null && _iconLabel != null && _debugLabel != null)
+            {
+                UpdateHexShape();
+                UpdateVisuals();
+            }
         }
 
-        public void SetClickable(bool clickable)
+        public void SetHexWorldPosition(Vector2 worldPos)
         {
-            _isClickable = clickable;
+            _hexWorldPosition = worldPos;
+        }
+
+        public Vector2 GetHexWorldPosition()
+        {
+            return GetGlobalPosition() + Size / 2;
         }
 
         public void SetAsPath(bool isPath)
@@ -92,119 +99,122 @@ namespace FishEatFish.UI.HexMap
             UpdateVisuals();
         }
 
-        public override void _Draw()
+        public void SetClickable(bool clickable)
         {
-            base._Draw();
-
-            var hexPoints = GetHexPoints(Size / 2);
-            _hexShape.Polygon = hexPoints;
-
-            var iconSize = Mathf.Min(Size.X, Size.Y) * 0.5f;
-            _icon.Size = new Vector2(iconSize, iconSize);
-            _icon.Position = (Size - _icon.Size) / 2;
-
-            _label.Size = new Vector2(Size.X, 20);
-            _label.Position = new Vector2(0, Size.Y - 25);
-        }
-
-        private Vector2[] GetHexPoints(Vector2 center)
-        {
-            var points = new Vector2[6];
-            var radius = Mathf.Min(center.X, center.Y);
-
-            for (int i = 0; i < 6; i++)
-            {
-                float angle = Mathf.DegToRad(60 * i - 30);
-                points[i] = new Vector2(
-                    center.X + radius * Mathf.Cos(angle),
-                    center.Y + radius * Mathf.Sin(angle)
-                );
-            }
-
-            return points;
+            _isClickable = clickable;
         }
 
         private void UpdateVisuals()
         {
-            if (_tile == null) return;
+            if (_tile == null || _hexShape == null) return;
 
-            Color bgColor;
+            Color tileColor;
+            string icon = "";
 
-            if (_tile.IsDisappeared)
+            if (_tile.IsStart)
             {
-                bgColor = _disappearedColor;
+                tileColor = _startColor;
+                icon = "S";
             }
             else if (_tile.IsEnd)
             {
-                bgColor = _endColor;
+                tileColor = _endColor;
+                icon = "B";
             }
-            else if (_tile.IsStart)
+            else if (_tile.IsDisappeared)
             {
-                bgColor = _startColor;
-            }
-            else if (_isPath)
-            {
-                bgColor = _pathColor;
-            }
-            else if (_isHovered)
-            {
-                bgColor = _hoverColor;
-            }
-            else if (_tile.IsVisited)
-            {
-                bgColor = _visitedColor;
+                tileColor = _disappearedColor;
+                icon = "X";
             }
             else
             {
-                bgColor = _normalColor;
+                tileColor = EventColors.GetValueOrDefault(_tile.EventType, _normalColor);
+
+                if (_tile.IsVisited)
+                {
+                    tileColor = new Color(tileColor.R * 0.7f, tileColor.G * 0.7f, tileColor.B * 0.7f);
+                }
+
+                if (_isPath && !_tile.IsVisited)
+                {
+                    tileColor = _pathColor;
+                }
             }
 
-            _background.Color = bgColor;
+            switch (_tile.EventType)
+            {
+                case HexEventType.BattleNormal:
+                    icon = "⚔";
+                    break;
+                case HexEventType.BattleElite:
+                    icon = "⚔!";
+                    break;
+                case HexEventType.BattleBoss:
+                    icon = "👹";
+                    break;
+                case HexEventType.Shop:
+                    icon = "$";
+                    break;
+                case HexEventType.Heal:
+                    icon = "+";
+                    break;
+                case HexEventType.Hole:
+                    icon = "O";
+                    break;
+                case HexEventType.GainBlackMark:
+                    icon = "💎";
+                    break;
+                case HexEventType.Swamp:
+                    icon = "~";
+                    break;
+                case HexEventType.TwoWayTeleport:
+                    icon = "⇄";
+                    break;
+                case HexEventType.OneDirectionTele:
+                    icon = "→";
+                    break;
+                case HexEventType.Empty:
+                    icon = "";
+                    break;
+            }
 
-            if (!string.IsNullOrEmpty(_tile.IconPath) && !_tile.IsDisappeared)
-            {
-                var texture = GD.Load<Texture2D>(_tile.IconPath);
-                _icon.Texture = texture;
-                _icon.Visible = true;
-            }
-            else
-            {
-                _icon.Visible = false;
-            }
+            _hexShape.Color = tileColor;
+            _iconLabel.Text = icon;
+            _debugLabel.Text = $"{_tile.Coord}";
+        }
 
-            if (!string.IsNullOrEmpty(_tile.DisplayName) && !_tile.IsDisappeared)
-            {
-                _label.Text = _tile.DisplayName;
-                _label.Visible = true;
-            }
-            else
-            {
-                _label.Visible = false;
-            }
+        public void AnimateDisappear()
+        {
+            var tween = CreateTween();
+            tween.TweenProperty(this, "modulate:a", 0.3f, 0.5f);
+            tween.TweenCallback(new Callable(this, nameof(OnDisappearComplete)));
+        }
 
-            _hexShape.Modulate = _tile.IsDisappeared ? new Color(1, 1, 1, 0.2f) : Colors.White;
+        private void OnDisappearComplete()
+        {
+            if (_tile != null)
+            {
+                _tile.IsDisappeared = true;
+            }
+            Modulate = new Color(1, 1, 1, 0.3f);
         }
 
         private void OnMouseEntered()
         {
-            if (!_isClickable || (_tile != null && !_tile.CanEnter)) return;
-
             _isHovered = true;
-            UpdateVisuals();
             OnTileHovered?.Invoke(this);
         }
 
         private void OnMouseExited()
         {
             _isHovered = false;
-            UpdateVisuals();
         }
 
-        public override void _Input(InputEvent @event)
+        public override void _GuiInput(InputEvent @event)
         {
             if (@event is InputEventMouseButton mouseEvent)
             {
-                if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
+                if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
                 {
                     if (_isClickable && _tile != null && _tile.CanEnter)
                     {
@@ -212,31 +222,6 @@ namespace FishEatFish.UI.HexMap
                     }
                 }
             }
-        }
-
-        public Vector2 GetHexWorldPosition()
-        {
-            return GlobalPosition + Size / 2;
-        }
-
-        public void AnimateDisappear()
-        {
-            var tween = CreateTween();
-            tween.TweenProperty(this, "modulate:a", 0f, 0.3f);
-            tween.TweenCallback(Callable.From(() =>
-            {
-                Visible = false;
-                QueueFree();
-            }));
-        }
-
-        public void AnimateAppear()
-        {
-            Modulate = new Color(1, 1, 1, 0);
-            Visible = true;
-
-            var tween = CreateTween();
-            tween.TweenProperty(this, "modulate:a", 1f, 0.3f);
         }
     }
 }
