@@ -16,6 +16,7 @@ namespace FishEatFish.UI.HexMap
 
         private bool _isReady = false;
         private bool _isHovered = false;
+        private bool _clickEnabled = true;
         private StyleBoxFlat _normalStyle;
         private StyleBoxFlat _hoverStyle;
 
@@ -170,10 +171,21 @@ namespace FishEatFish.UI.HexMap
             {
                 if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
                 {
+                    if (!_clickEnabled)
+                    {
+                        GD.Print($"[ShopItemCard] Card click ignored: _clickEnabled={_clickEnabled}");
+                        return;
+                    }
                     GD.Print($"[ShopItemCard] Card clicked: {Item?.Name}");
                     OnCardClicked?.Invoke(Item);
                 }
             }
+        }
+
+        public void SetClickEnabled(bool enabled)
+        {
+            _clickEnabled = enabled;
+            GD.Print($"[ShopItemCard] SetClickEnabled: {enabled}, Name={Name}");
         }
     }
 }

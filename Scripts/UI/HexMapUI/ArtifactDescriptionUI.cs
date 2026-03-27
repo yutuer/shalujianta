@@ -45,10 +45,9 @@ namespace FishEatFish.UI.HexMap
             GD.Print($"[ArtifactDescriptionUI] ShowArtifact: {item.Name}");
             _currentItem = item;
 
-            _titleLabel.Text = "造物详情";
-            _nameLabel.Text = item.Name;
+            _titleLabel.Text = item.Name;
             _effectLabel.Text = item.Description;
-            _costLabel.Text = $"💰 价格: {item.Price} 黑印";
+            _costLabel.Text = $"💰 {item.Price}";
 
             bool hasTexture = false;
             if (!string.IsNullOrEmpty(item.Icon))
@@ -81,7 +80,7 @@ namespace FishEatFish.UI.HexMap
             }
             else
             {
-                _buyButton.Text = "购买";
+                _buyButton.Text = "确定";
             }
 
             Visible = true;

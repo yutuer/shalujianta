@@ -1,4 +1,6 @@
 using Godot;
+using System.Collections.Generic;
+using FishEatFish.Shop;
 
 namespace FishEatFish.Battle.HexMap
 {
@@ -42,6 +44,8 @@ namespace FishEatFish.Battle.HexMap
         public string TeleportPairId { get; set; }
         public bool HasTriggeredThisVisit { get; set; }
         public TeleportDirection TeleportDirection { get; set; }
+        public int ShopRefreshCount { get; set; }
+        public List<ShopItem> ShopItems { get; set; }
 
         public string IconPath { get; set; }
         public string DisplayName { get; set; }
@@ -60,6 +64,8 @@ namespace FishEatFish.Battle.HexMap
             IsDisappeared = false;
             HasTriggeredThisVisit = false;
             TeleportDirection = TeleportDirection.Forward;
+            ShopRefreshCount = 2;
+            ShopItems = new List<ShopItem>();
         }
 
         public bool CanEnter => !IsDisappeared;
@@ -150,7 +156,7 @@ namespace FishEatFish.Battle.HexMap
 
         public HexTile Clone()
         {
-            return new HexTile(Coord, EventType)
+            var clone = new HexTile(Coord, EventType)
             {
                 IsStart = IsStart,
                 IsEnd = IsEnd,
@@ -165,8 +171,25 @@ namespace FishEatFish.Battle.HexMap
                 HasTriggeredThisVisit = HasTriggeredThisVisit,
                 TeleportDirection = TeleportDirection,
                 IconPath = IconPath,
-                DisplayName = DisplayName
+                DisplayName = DisplayName,
+                ShopRefreshCount = ShopRefreshCount
             };
+
+            foreach (var item in ShopItems)
+            {
+                clone.ShopItems.Add(new ShopItem
+                {
+                    ItemType = item.ItemType,
+                    ItemId = item.ItemId,
+                    Name = item.Name,
+                    Icon = item.Icon,
+                    Description = item.Description,
+                    Price = item.Price,
+                    Purchased = item.Purchased
+                });
+            }
+
+            return clone;
         }
     }
 }

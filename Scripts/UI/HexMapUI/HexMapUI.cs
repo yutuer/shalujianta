@@ -4,6 +4,7 @@ using System.Linq;
 using Godot;
 using FishEatFish.Battle.HexMap;
 using FishEatFish.Shop;
+using FishEatFish.Scenes;
 
 namespace FishEatFish.UI.HexMap
 {
@@ -40,6 +41,7 @@ namespace FishEatFish.UI.HexMap
         private Control _shopContainer;
         private Control _shopItemsContainer;
         private Button _shopCloseButton;
+        private Button _refreshButton;
 
         private Control _engravingSelectContainer;
         private Control _engravingCardsContainer;
@@ -52,6 +54,12 @@ namespace FishEatFish.UI.HexMap
 
         private Control _backpackContainer;
         private Control _backpackItemsContainer;
+
+        private Label _costLabel;
+        private int _currentRefreshCount = 2;
+        private const int MaxRefreshCount = 2;
+        private const int RefreshCost = 5;
+        private HexTile _currentShopTile;
 
         private ArtifactDescriptionUI _artifactDescriptionUI;
         private KeyOrderDescriptionUI _keyOrderDescriptionUI;
@@ -104,6 +112,7 @@ namespace FishEatFish.UI.HexMap
             if (_artifactDescriptionUI != null)
             {
                 GD.Print($"[HexMapUI] ArtifactDescriptionUI found");
+                _artifactDescriptionUI.Visible = false;
                 _artifactDescriptionUI.OnPurchaseCompleted += OnArtifactPurchased;
                 _artifactDescriptionUI.OnCancel += OnArtifactDescriptionCancelled;
             }
@@ -116,6 +125,7 @@ namespace FishEatFish.UI.HexMap
             if (_keyOrderDescriptionUI != null)
             {
                 GD.Print($"[HexMapUI] KeyOrderDescriptionUI found");
+                _keyOrderDescriptionUI.Visible = false;
             }
             else
             {
@@ -134,6 +144,7 @@ namespace FishEatFish.UI.HexMap
             if (_engravingCardSelectionUI != null)
             {
                 GD.Print($"[HexMapUI] EngravingCardSelectionUI found");
+                _engravingCardSelectionUI.Visible = false;
                 _engravingCardSelectionUI.OnEngravingCompleted += OnEngravingCompleted;
                 _engravingCardSelectionUI.OnCancel += OnEngravingSelectionCancelled;
             }
@@ -148,6 +159,7 @@ namespace FishEatFish.UI.HexMap
         private void OnArtifactPurchased()
         {
             GD.Print($"[HexMapUI] OnArtifactPurchased");
+            SetShopInteractionEnabled(true);
             RefreshShopItems();
             UpdateBlackMarkDisplay(BlackMarkShopManager.Instance?.BlackMarkCount ?? 0);
             RefreshBackpack();
@@ -156,6 +168,7 @@ namespace FishEatFish.UI.HexMap
         private void OnArtifactDescriptionCancelled()
         {
             GD.Print($"[HexMapUI] OnArtifactDescriptionCancelled");
+            SetShopInteractionEnabled(true);
         }
 
         private void OnEngravingSelectionCancelled()
@@ -223,8 +236,15 @@ namespace FishEatFish.UI.HexMap
             _shopContainer = GetNodeOrNull<Control>("ShopContainer");
             if (_shopContainer != null)
             {
-                _shopItemsContainer = GetNodeOrNull<Control>("ShopContainer/VBoxContainer/ShopItems");
+                _shopItemsContainer = GetNodeOrNull<Control>("ShopContainer/VBoxContainer/ShopItemsMargin/ShopItems");
+                _shopCloseButton = GetNodeOrNull<Button>("ShopContainer/VBoxContainer/HeaderBox/CloseButton");
                 ConnectButton("ShopContainer/VBoxContainer/HeaderBox/CloseButton", OnShopClosePressed);
+                _refreshButton = GetNodeOrNull<Button>("ShopContainer/VBoxContainer/RefreshBar/RefreshButton");
+                _costLabel = GetNodeOrNull<Label>("ShopContainer/VBoxContainer/RefreshBar/CostLabel");
+                if (_refreshButton != null)
+                {
+                    _refreshButton.Pressed += OnRefreshPressed;
+                }
             }
 
             _engravingSelectContainer = GetNodeOrNull<Control>("EngravingSelectContainer");
@@ -615,26 +635,94 @@ namespace FishEatFish.UI.HexMap
         private void OnShopOpened()
         {
             GD.Print($"[HexMapUI] OnShopOpened called: _shopContainer={_shopContainer}");
-            GD.Print($"[HexMapUI] Before Refresh: ShopContainer.Size={_shopContainer.Size}, CustomMinimumSize={_shopContainer.CustomMinimumSize}");
-            GD.Print($"[HexMapUI] Before Refresh: VBoxContainer.Size={_shopContainer.GetNode("VBoxContainer").GetChildCount()} children");
+
+            if (_controller?.CurrentMap != null)
+            {
+                var currentTile = _controller.CurrentMap.GetTile(_controller.CurrentPosition);
+                if (currentTile != null && currentTile.EventType == HexEventType.Shop)
+                {
+                    _currentShopTile = currentTile;
+                    _currentRefreshCount = _currentShopTile.ShopRefreshCount;
+                }
+                else
+                {
+                    _currentShopTile = null;
+                    _currentRefreshCount = 0;
+                }
+            }
+            else
+            {
+                _currentShopTile = null;
+                _currentRefreshCount = 0;
+            }
+
+            UpdateRefreshUI();
             RefreshShopItems();
-            GD.Print($"[HexMapUI] After Refresh: ShopContainer.Size={_shopContainer.Size}, CustomMinimumSize={_shopContainer.CustomMinimumSize}");
-            GD.Print($"[HexMapUI] After Refresh: ShopItems children count={_shopItemsContainer.GetChildCount()}");
             _shopContainer.Visible = true;
-            GD.Print($"[HexMapUI] After Show: ShopContainer.Size={_shopContainer.Size}");
-            GD.Print($"[HexMapUI] OnShopOpened completed");
+            GD.Print($"[HexMapUI] OnShopOpened completed, refreshCount={_currentRefreshCount}");
         }
 
         private void OnShopClosed()
         {
-            GD.Print($"[HexMapUI] OnShopClosed: ShopContainer.Size={_shopContainer.Size} before hide");
+            if (_currentShopTile != null)
+            {
+                _currentShopTile.ShopRefreshCount = _currentRefreshCount;
+            }
             _shopContainer.Visible = false;
-            GD.Print($"[HexMapUI] OnShopClosed: ShopContainer.Size={_shopContainer.Size} after hide");
         }
 
         private void OnShopClosePressed()
         {
             _controller?.CloseShop();
+        }
+
+        private void OnRefreshPressed()
+        {
+            GD.Print($"[HexMapUI] OnRefreshPressed: _currentRefreshCount={_currentRefreshCount}");
+
+            if (_currentRefreshCount <= 0)
+            {
+                GD.Print($"[HexMapUI] No refreshes left!");
+                return;
+            }
+
+            if (BlackMarkShopManager.Instance.BlackMarkCount < RefreshCost)
+            {
+                GD.Print($"[HexMapUI] Not enough black marks! Need {RefreshCost}, have {BlackMarkShopManager.Instance.BlackMarkCount}");
+                return;
+            }
+
+            bool spent = BlackMarkShopManager.Instance.SpendBlackMark(RefreshCost);
+            if (!spent)
+            {
+                GD.Print($"[HexMapUI] Failed to spend black marks!");
+                return;
+            }
+
+            _currentRefreshCount--;
+            UpdateRefreshUI();
+
+            if (_currentShopTile != null)
+            {
+                BlackMarkShopManager.Instance.RegenerateShopItems();
+                RefreshShopItems();
+            }
+
+            GD.Print($"[HexMapUI] Shop refreshed! Remaining: {_currentRefreshCount}");
+        }
+
+        private void UpdateRefreshUI()
+        {
+            if (_refreshButton != null)
+            {
+                _refreshButton.Text = $"刷新 {_currentRefreshCount}/{MaxRefreshCount}";
+                _refreshButton.Disabled = _currentRefreshCount <= 0;
+            }
+
+            if (_costLabel != null)
+            {
+                _costLabel.Text = $"花费 {RefreshCost}点";
+            }
         }
 
         private void RefreshShopItems()
@@ -686,6 +774,38 @@ namespace FishEatFish.UI.HexMap
             GD.Print($"[HexMapUI] RefreshShopItems completed. Container has {_shopItemsContainer.GetChildCount()} children");
         }
 
+        private void SetShopInteractionEnabled(bool enabled)
+        {
+            GD.Print($"[HexMapUI] SetShopInteractionEnabled called: enabled={enabled}, _shopCloseButton={_shopCloseButton != null}, _refreshButton={_refreshButton != null}");
+
+            if (_shopCloseButton != null)
+            {
+                _shopCloseButton.Disabled = !enabled;
+                GD.Print($"[HexMapUI] _shopCloseButton.Disabled set to {!enabled}");
+            }
+            else
+            {
+                GD.PrintErr($"[HexMapUI] _shopCloseButton is null!");
+            }
+
+            if (_refreshButton != null)
+            {
+                _refreshButton.Disabled = !enabled || _currentRefreshCount <= 0;
+                GD.Print($"[HexMapUI] _refreshButton.Disabled set to {!enabled || _currentRefreshCount <= 0}");
+            }
+            if (_shopItemsContainer != null)
+            {
+                foreach (var child in _shopItemsContainer.GetChildren())
+                {
+                    if (child is ShopItemCard card)
+                    {
+                        card.SetClickEnabled(enabled);
+                    }
+                }
+            }
+            GD.Print($"[HexMapUI] SetShopInteractionEnabled: enabled={enabled} completed");
+        }
+
         private ShopItemCard CreateShopItemCard(ShopItem item)
         {
             GD.Print($"[HexMapUI] CreateShopItemCard: Instantiating card...");
@@ -726,33 +846,93 @@ namespace FishEatFish.UI.HexMap
         private void ShowArtifactDescription(ShopItem item)
         {
             GD.Print($"[HexMapUI] ShowArtifactDescription: {item.Name}");
+            SetShopInteractionEnabled(false);
             _artifactDescriptionUI.ShowArtifact(item);
         }
 
         private void ShowEngravingDescription(ShopItem item)
         {
             GD.Print($"[HexMapUI] ShowEngravingDescription: {item.Name}");
+            SetShopInteractionEnabled(false);
             _keyOrderDescriptionUI.ShowEngravingDescription(item, OnEngravingItemConfirmed, OnEngravingItemCancelled);
         }
 
         private void OnEngravingItemConfirmed(ShopItem engravingItem)
         {
-            GD.Print($"[HexMapUI] OnEngravingItemConfirmed: {engravingItem.Name}");
+            GD.Print($"[HexMapUI] OnEngravingItemConfirmed called: {engravingItem?.Name}");
 
-            var cardDataList = new List<Battle.Card.CardData>();
+            if (_engravingCardSelectionUI == null)
+            {
+                GD.PrintErr($"[HexMapUI] _engravingCardSelectionUI is null!");
+                return;
+            }
 
-            GD.Print($"[HexMapUI] Showing card selection for {cardDataList.Count} cards");
-            _engravingCardSelectionUI.ShowCardSelection(engravingItem, cardDataList);
+            if (!BlackMarkShopManager.Instance.StartEngravingPurchase(engravingItem))
+            {
+                GD.PrintErr($"[HexMapUI] Failed to start engraving purchase!");
+                SetShopInteractionEnabled(true);
+                return;
+            }
+
+            var cardList = new List<Battle.Card.Card>();
+
+            if (GlobalData.SelectedCharacters != null)
+            {
+                foreach (var character in GlobalData.SelectedCharacters)
+                {
+                    if (character != null)
+                    {
+                        if (!string.IsNullOrEmpty(character.AttackCardId))
+                        {
+                            var attackCard = Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(character.AttackCardId);
+                            if (attackCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(attackCard.CardId)) cardList.Add(attackCard);
+                        }
+
+                        if (!string.IsNullOrEmpty(character.DefenseCardId))
+                        {
+                            var defenseCard = Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(character.DefenseCardId);
+                            if (defenseCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(defenseCard.CardId)) cardList.Add(defenseCard);
+                        }
+
+                        if (character.SpecialCardIds != null)
+                        {
+                            foreach (var specialCardId in character.SpecialCardIds)
+                            {
+                                if (!string.IsNullOrEmpty(specialCardId))
+                                {
+                                    var specialCard = Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(specialCardId);
+                                    if (specialCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(specialCard.CardId))
+                                    {
+                                        cardList.Add(specialCard);
+                                    }
+                                    else if (specialCard == null)
+                                    {
+                                        var baseSpecialCardId = specialCardId.Replace("1", "").Replace("2", "").Replace("3", "");
+                                        specialCard = Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(baseSpecialCardId);
+                                        if (specialCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(specialCard.CardId)) cardList.Add(specialCard);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            GD.Print($"[HexMapUI] Showing card selection for {cardList.Count} cards");
+            _engravingCardSelectionUI.ShowCardSelection(engravingItem, cardList);
         }
 
         private void OnEngravingItemCancelled()
         {
-            GD.Print($"[HexMapUI] OnEngravingItemCancelled");
+            GD.Print($"[HexMapUI] OnEngravingItemCancelled called");
+            SetShopInteractionEnabled(true);
+            GD.Print($"[HexMapUI] OnEngravingItemCancelled completed");
         }
 
         private void OnEngravingCompleted()
         {
             GD.Print($"[HexMapUI] OnEngravingCompleted");
+            SetShopInteractionEnabled(true);
             RefreshShopItems();
             UpdateBlackMarkDisplay(BlackMarkShopManager.Instance?.BlackMarkCount ?? 0);
         }

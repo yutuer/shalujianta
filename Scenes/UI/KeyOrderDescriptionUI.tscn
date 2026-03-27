@@ -34,6 +34,7 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPanel"]
 layout_mode = 2
 alignment = 1
+theme_override_constants/separation = 0
 
 [node name="TitleLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
 layout_mode = 2
@@ -44,19 +45,16 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(300, 2)
 layout_mode = 2
 
-[node name="NameLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
+[node name="IconContainer" type="CenterContainer" parent="BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-text = "钥令名称"
-horizontal_alignment = 1
+size_flags_vertical = 4
 
-[node name="TypeLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
+[node name="EmojiLabel" type="Label" parent="BackgroundPanel/VBoxContainer/IconContainer"]
 layout_mode = 2
-text = "类型"
 horizontal_alignment = 1
-
-[node name="Separator2" type="HSeparator" parent="BackgroundPanel/VBoxContainer"]
-custom_minimum_size = Vector2(300, 2)
-layout_mode = 2
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 40
 
 [node name="DescLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
 layout_mode = 2
@@ -66,13 +64,8 @@ autowrap_mode = 2
 
 [node name="CostLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
 layout_mode = 2
-text = "消耗: 0 银钥"
+text = "💰 0"
 horizontal_alignment = 1
-
-[node name="Spacer" type="Control" parent="BackgroundPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 20)
-layout_mode = 2
-size_flags_vertical = 4
 
 [node name="ButtonContainer" type="HBoxContainer" parent="BackgroundPanel/VBoxContainer"]
 layout_mode = 2

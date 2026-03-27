@@ -312,18 +312,33 @@ namespace FishEatFish.Shop
 
         public void OpenShop()
         {
-            GenerateShopItems();
             GD.Print($"[BlackMarkShopManager] 商店已开放，当前黑印: {_blackMarkCount}");
+        }
+
+        public void LoadShopItems(List<ShopItem> shopItems)
+        {
+            CurrentShopItems.Clear();
+            if (shopItems != null && shopItems.Count > 0)
+            {
+                foreach (var item in shopItems)
+                {
+                    CurrentShopItems.Add(item);
+                }
+                GD.Print($"[BlackMarkShopManager] 加载商店物品: {CurrentShopItems.Count} 个");
+            }
+            else
+            {
+                GenerateShopItems();
+            }
+        }
+
+        public List<ShopItem> SaveShopItems()
+        {
+            return new List<ShopItem>(CurrentShopItems);
         }
 
         private void GenerateShopItems()
         {
-            if (CurrentShopItems.Count > 0)
-            {
-                GD.Print($"[BlackMarkShopManager] 商店已有物品: {CurrentShopItems.Count} 个，跳过生成");
-                return;
-            }
-
             if (_allArtifacts.Count == 0 || _allEngravings.Count == 0)
             {
                 GD.PrintErr("[BlackMarkShopManager] 无法生成商店: 物品数据为空");
@@ -464,8 +479,16 @@ namespace FishEatFish.Shop
         {
             PendingEngraving = null;
             CurrentShopPrice = 0;
+            CurrentShopItems.Clear();
             OnShopClosed?.Invoke();
-            GD.Print($"[BlackMarkShopManager] 商店已关闭，当前物品数: {CurrentShopItems.Count}");
+        }
+
+        public void RegenerateShopItems()
+        {
+            GD.Print($"[BlackMarkShopManager] RegenerateShopItems called");
+            CurrentShopItems.Clear();
+            GenerateShopItems();
+            GD.Print($"[BlackMarkShopManager] RegenerateShopItems: regenerated {CurrentShopItems.Count} items");
         }
 
         public void ResetForNewRun()

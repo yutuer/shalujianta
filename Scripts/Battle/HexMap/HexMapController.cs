@@ -365,39 +365,39 @@ namespace FishEatFish.Battle.HexMap
 
         public void OpenShop()
         {
-            GD.Print($"[HexMapController] OpenShop called: currentState={_currentState}");
-            if (_currentState == HexMapState.ShopOpen)
-            {
-                GD.Print("[HexMapController] 商店已在打开状态，直接返回");
-                return;
-            }
+            if (_currentState == HexMapState.ShopOpen) return;
 
             _currentState = HexMapState.ShopOpen;
-            GD.Print($"[HexMapController] 状态设置为 ShopOpen");
 
             if (BlackMarkShopManager.Instance != null)
             {
-                BlackMarkShopManager.Instance.OpenShop();
+                var currentTile = CurrentMap?.GetTile(CurrentPosition);
+                if (currentTile != null && currentTile.EventType == HexEventType.Shop)
+                {
+                    BlackMarkShopManager.Instance.OpenShop();
+                    BlackMarkShopManager.Instance.LoadShopItems(currentTile.ShopItems);
+                }
             }
 
-            GD.Print("[HexMapController] 调用 OnShopOpened?.Invoke()");
             OnShopOpened?.Invoke();
-            GD.Print("[HexMapController] 商店已打开");
         }
 
         public void CloseShop()
         {
-            if (_currentState != HexMapState.ShopOpen)
-                return;
+            if (_currentState != HexMapState.ShopOpen) return;
 
             if (BlackMarkShopManager.Instance != null)
             {
+                var currentTile = CurrentMap?.GetTile(CurrentPosition);
+                if (currentTile != null && currentTile.EventType == HexEventType.Shop)
+                {
+                    currentTile.ShopItems = BlackMarkShopManager.Instance.SaveShopItems();
+                }
                 BlackMarkShopManager.Instance.CloseShop();
             }
 
             _currentState = HexMapState.Idle;
             OnShopClosed?.Invoke();
-            GD.Print("[HexMapController] 商店已关闭");
         }
 
         public void AddBlackMark(int amount)

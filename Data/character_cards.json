@@ -36,6 +36,30 @@
             "rageGainPerLevel": 1
         },
         {
+            "cardId": "rat_special2",
+            "characterId": "rat",
+            "name": "鼠胆龙威",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 14,
+            "damageBaseCoefficient": 0.6,
+            "rageGainPerLevel": 2
+        },
+        {
+            "cardId": "rat_special3",
+            "characterId": "rat",
+            "name": "鼠窜逃奔",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldGain": 4,
+            "shieldBaseCoefficient": 0.6,
+            "drawCountBase": 2,
+            "drawCountPerLevel": 0,
+            "rageGainPerLevel": 1
+        },
+        {
             "cardId": "ox_attack",
             "characterId": "ox",
             "name": "野蛮冲撞",
@@ -69,6 +93,28 @@
             "energyGainBase": 3,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "ox_special2",
+            "characterId": "ox",
+            "name": "蛮牛冲撞",
+            "style": "tank",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 15,
+            "damageBaseCoefficient": 0.6,
+            "rageGainPerLevel": 2
+        },
+        {
+            "cardId": "ox_special3",
+            "characterId": "ox",
+            "name": "铜墙铁壁",
+            "style": "tank",
+            "cost": 2,
+            "isAttack": false,
+            "shieldGain": 15,
+            "shieldBaseCoefficient": 0.8,
+            "rageGainPerLevel": 2
         },
         {
             "cardId": "tiger_attack",
@@ -105,6 +151,30 @@
             "isAreaAttack": true
         },
         {
+            "cardId": "tiger_special2",
+            "characterId": "tiger",
+            "name": "猛虎下山",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 16,
+            "damageBaseCoefficient": 0.6,
+            "rageGainPerLevel": 2
+        },
+        {
+            "cardId": "tiger_special3",
+            "characterId": "tiger",
+            "name": "虎视眈眈",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damage": 8,
+            "damageBaseCoefficient": 0.6,
+            "energyGainBase": 1,
+            "energyGainPerLevel": 0,
+            "rageGainPerLevel": 1
+        },
+        {
             "cardId": "rabbit_attack",
             "characterId": "rabbit",
             "name": "蹬鹰一脚",
@@ -139,6 +209,30 @@
             "applyBuffName": "strength",
             "applyBuffDuration": 1,
             "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "rabbit_special2",
+            "characterId": "rabbit",
+            "name": "静若处子",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldGain": 5,
+            "shieldBaseCoefficient": 0.6,
+            "drawCountBase": 1,
+            "drawCountPerLevel": 0,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "rabbit_special3",
+            "characterId": "rabbit",
+            "name": "兔起凫举",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 12,
+            "damageBaseCoefficient": 0.6,
+            "rageGainPerLevel": 2
         },
         {
             "cardId": "dragon_attack",
@@ -179,6 +273,33 @@
             "applyDebuffName": "poison",
             "applyDebuffDuration": 2,
             "debuffValueBase": 1,
+            "debuffValuePerLevel": 0,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "dragon_special2",
+            "characterId": "dragon",
+            "name": "龙腾四海",
+            "style": "mage",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 14,
+            "damageBaseCoefficient": 0.6,
+            "rageGainPerLevel": 2
+        },
+        {
+            "cardId": "dragon_special3",
+            "characterId": "dragon",
+            "name": "龙战于野",
+            "style": "mage",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 8,
+            "damageBaseCoefficient": 0.6,
+            "isAreaAttack": true,
+            "applyDebuffName": "poison",
+            "applyDebuffDuration": 3,
+            "debuffValueBase": 2,
             "debuffValuePerLevel": 0,
             "rageGainPerLevel": 1
         },
@@ -226,6 +347,36 @@
             "rageGainPerLevel": 1
         },
         {
+            "cardId": "snake_special2",
+            "characterId": "snake",
+            "name": "蛇蝎心肠",
+            "style": "poison",
+            "cost": 1,
+            "isAttack": true,
+            "damage": 8,
+            "damageBaseCoefficient": 0.6,
+            "applyDebuffName": "poison",
+            "applyDebuffDuration": 2,
+            "debuffValueBase": 2,
+            "debuffValuePerLevel": 0,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "snake_special3",
+            "characterId": "snake",
+            "name": "杯弓蛇影",
+            "style": "poison",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 12,
+            "damageBaseCoefficient": 0.6,
+            "applyDebuffName": "poison",
+            "applyDebuffDuration": 3,
+            "debuffValueBase": 3,
+            "debuffValuePerLevel": 1,
+            "rageGainPerLevel": 2
+        },
+        {
             "cardId": "horse_attack",
             "characterId": "horse",
             "name": "踏雪无痕",
@@ -259,6 +410,30 @@
             "damage": 6,
             "damageBaseCoefficient": 0.6,
             "energyGainBase": 2,
+            "energyGainPerLevel": 0,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "horse_special2",
+            "characterId": "horse",
+            "name": "万马奔腾",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 12,
+            "damageBaseCoefficient": 0.6,
+            "rageGainPerLevel": 2
+        },
+        {
+            "cardId": "horse_special3",
+            "characterId": "horse",
+            "name": "马踏飞燕",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damage": 8,
+            "damageBaseCoefficient": 0.6,
+            "energyGainBase": 1,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
         },
@@ -298,6 +473,30 @@
             "rageGainPerLevel": 1
         },
         {
+            "cardId": "goat_special2",
+            "characterId": "goat",
+            "name": "羊毛护盾",
+            "style": "healer",
+            "cost": 1,
+            "isAttack": false,
+            "shieldGain": 10,
+            "shieldBaseCoefficient": 0.6,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "goat_special3",
+            "characterId": "goat",
+            "name": "神羊赐福",
+            "style": "healer",
+            "cost": 2,
+            "isAttack": false,
+            "healAmount": 15,
+            "healBaseCoefficient": 0.6,
+            "shieldGain": 8,
+            "shieldBaseCoefficient": 0.6,
+            "rageGainPerLevel": 2
+        },
+        {
             "cardId": "monkey_attack",
             "characterId": "monkey",
             "name": "猴拳",
@@ -335,6 +534,36 @@
             "rageGainPerLevel": 1
         },
         {
+            "cardId": "monkey_special2",
+            "characterId": "monkey",
+            "name": "猴王戏法",
+            "style": "debuffer",
+            "cost": 1,
+            "isAttack": false,
+            "damage": 4,
+            "damageBaseCoefficient": 0.6,
+            "applyDebuffName": "weak",
+            "applyDebuffDuration": 2,
+            "debuffValueBase": 2,
+            "debuffValuePerLevel": 1,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "monkey_special3",
+            "characterId": "monkey",
+            "name": "千变万化",
+            "style": "debuffer",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 10,
+            "damageBaseCoefficient": 0.6,
+            "applyDebuffName": "poison",
+            "applyDebuffDuration": 3,
+            "debuffValueBase": 3,
+            "debuffValuePerLevel": 1,
+            "rageGainPerLevel": 2
+        },
+        {
             "cardId": "rooster_attack",
             "characterId": "rooster",
             "name": "啄击",
@@ -368,6 +597,32 @@
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "rooster_special2",
+            "characterId": "rooster",
+            "name": "金鸡独立",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damage": 7,
+            "damageBaseCoefficient": 0.6,
+            "energyGainBase": 1,
+            "energyGainPerLevel": 0,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "rooster_special3",
+            "characterId": "rooster",
+            "name": "凤凰展翅",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 12,
+            "damageBaseCoefficient": 0.6,
+            "energyGainBase": 2,
+            "energyGainPerLevel": 0,
+            "rageGainPerLevel": 2
         },
         {
             "cardId": "dog_attack",
@@ -405,9 +660,33 @@
             "rageGainPerLevel": 1
         },
         {
+            "cardId": "dog_special2",
+            "characterId": "dog",
+            "name": "忠诚守护",
+            "style": "tank",
+            "cost": 1,
+            "isAttack": false,
+            "shieldGain": 10,
+            "shieldBaseCoefficient": 0.6,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "dog_special3",
+            "characterId": "dog",
+            "name": "义犬护主",
+            "style": "tank",
+            "cost": 2,
+            "isAttack": false,
+            "shieldGain": 15,
+            "shieldBaseCoefficient": 0.6,
+            "energyGainBase": 1,
+            "energyGainPerLevel": 0,
+            "rageGainPerLevel": 2
+        },
+        {
             "cardId": "pig_attack",
             "characterId": "pig",
-            "name": "猪突猛进",
+            "name": "蛮横冲撞",
             "style": "counter",
             "cost": 2,
             "isAttack": true,
@@ -437,6 +716,30 @@
             "shieldBaseCoefficient": 0.6,
             "healAmount": 5,
             "healBaseCoefficient": 0.4,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "pig_special2",
+            "characterId": "pig",
+            "name": "横冲直撞",
+            "style": "counter",
+            "cost": 2,
+            "isAttack": true,
+            "damage": 10,
+            "damageBaseCoefficient": 0.6,
+            "counterBaseCoefficient": 0.5,
+            "rageGainPerLevel": 2
+        },
+        {
+            "cardId": "pig_special3",
+            "characterId": "pig",
+            "name": "猪笼草",
+            "style": "counter",
+            "cost": 1,
+            "isAttack": false,
+            "shieldGain": 8,
+            "shieldBaseCoefficient": 0.6,
+            "counterBaseCoefficient": 0.3,
             "rageGainPerLevel": 1
         },
         {

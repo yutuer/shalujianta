@@ -11,7 +11,7 @@
             "baseDefense": 2,
             "attackCardId": "rat_attack",
             "defenseCardId": "rat_defense",
-            "specialCardIds": ["rat_special1", "rat_special2", "rat_special3"],
+            "specialCardIds": ["rat_special", "rat_special2", "rat_special3"],
             "ultimateSkillId": "rat_ultimate",
             "ultimateSkill": {
                 "skillId": "rat_ultimate",
@@ -37,7 +37,7 @@
             "baseDefense": 5,
             "attackCardId": "ox_attack",
             "defenseCardId": "ox_defense",
-            "specialCardIds": ["ox_special1", "ox_special2", "ox_special3"],
+            "specialCardIds": ["ox_special", "ox_special2", "ox_special3"],
             "ultimateSkillId": "ox_ultimate",
             "ultimateSkill": {
                 "skillId": "ox_ultimate",
@@ -63,7 +63,7 @@
             "baseDefense": 3,
             "attackCardId": "tiger_attack",
             "defenseCardId": "tiger_defense",
-            "specialCardIds": ["tiger_special1", "tiger_special2", "tiger_special3"],
+            "specialCardIds": ["tiger_special", "tiger_special2", "tiger_special3"],
             "ultimateSkillId": "tiger_ultimate",
             "ultimateSkill": {
                 "skillId": "tiger_ultimate",
@@ -89,7 +89,7 @@
             "baseDefense": 2,
             "attackCardId": "rabbit_attack",
             "defenseCardId": "rabbit_defense",
-            "specialCardIds": ["rabbit_special1", "rabbit_special2", "rabbit_special3"],
+            "specialCardIds": ["rabbit_special", "rabbit_special2", "rabbit_special3"],
             "ultimateSkillId": "rabbit_ultimate",
             "ultimateSkill": {
                 "skillId": "rabbit_ultimate",
@@ -115,7 +115,7 @@
             "baseDefense": 4,
             "attackCardId": "dragon_attack",
             "defenseCardId": "dragon_defense",
-            "specialCardIds": ["dragon_special1", "dragon_special2", "dragon_special3"],
+            "specialCardIds": ["dragon_special", "dragon_special2", "dragon_special3"],
             "ultimateSkillId": "dragon_ultimate",
             "ultimateSkill": {
                 "skillId": "dragon_ultimate",
@@ -141,7 +141,7 @@
             "baseDefense": 2,
             "attackCardId": "snake_attack",
             "defenseCardId": "snake_defense",
-            "specialCardIds": ["snake_special1", "snake_special2", "snake_special3"],
+            "specialCardIds": ["snake_special", "snake_special2", "snake_special3"],
             "ultimateSkillId": "snake_ultimate",
             "ultimateSkill": {
                 "skillId": "snake_ultimate",
@@ -167,7 +167,7 @@
             "baseDefense": 3,
             "attackCardId": "horse_attack",
             "defenseCardId": "horse_defense",
-            "specialCardIds": ["horse_special1", "horse_special2", "horse_special3"],
+            "specialCardIds": ["horse_special", "horse_special2", "horse_special3"],
             "ultimateSkillId": "horse_ultimate",
             "ultimateSkill": {
                 "skillId": "horse_ultimate",
@@ -193,7 +193,7 @@
             "baseDefense": 4,
             "attackCardId": "goat_attack",
             "defenseCardId": "goat_defense",
-            "specialCardIds": ["goat_special1", "goat_special2", "goat_special3"],
+            "specialCardIds": ["goat_special", "goat_special2", "goat_special3"],
             "ultimateSkillId": "goat_ultimate",
             "ultimateSkill": {
                 "skillId": "goat_ultimate",
@@ -219,7 +219,7 @@
             "baseDefense": 2,
             "attackCardId": "monkey_attack",
             "defenseCardId": "monkey_defense",
-            "specialCardIds": ["monkey_special1", "monkey_special2", "monkey_special3"],
+            "specialCardIds": ["monkey_special", "monkey_special2", "monkey_special3"],
             "ultimateSkillId": "monkey_ultimate",
             "ultimateSkill": {
                 "skillId": "monkey_ultimate",
@@ -245,7 +245,7 @@
             "baseDefense": 2,
             "attackCardId": "rooster_attack",
             "defenseCardId": "rooster_defense",
-            "specialCardIds": ["rooster_special1", "rooster_special2", "rooster_special3"],
+            "specialCardIds": ["rooster_special", "rooster_special2", "rooster_special3"],
             "ultimateSkillId": "rooster_ultimate",
             "ultimateSkill": {
                 "skillId": "rooster_ultimate",
@@ -271,7 +271,7 @@
             "baseDefense": 4,
             "attackCardId": "dog_attack",
             "defenseCardId": "dog_defense",
-            "specialCardIds": ["dog_special1", "dog_special2", "dog_special3"],
+            "specialCardIds": ["dog_special", "dog_special2", "dog_special3"],
             "ultimateSkillId": "dog_ultimate",
             "ultimateSkill": {
                 "skillId": "dog_ultimate",
@@ -297,7 +297,7 @@
             "baseDefense": 5,
             "attackCardId": "pig_attack",
             "defenseCardId": "pig_defense",
-            "specialCardIds": ["pig_special1", "pig_special2", "pig_special3"],
+            "specialCardIds": ["pig_special", "pig_special2", "pig_special3"],
             "ultimateSkillId": "pig_ultimate",
             "ultimateSkill": {
                 "skillId": "pig_ultimate",

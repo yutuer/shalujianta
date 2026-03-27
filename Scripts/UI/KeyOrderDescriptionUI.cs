@@ -12,6 +12,8 @@ public partial class KeyOrderDescriptionUI : Control
     private Label _typeLabel;
     private Label _descLabel;
     private Label _costLabel;
+    private CenterContainer _iconContainer;
+    private Label _emojiLabel;
     private Button _useButton;
     private Button _cancelButton;
 
@@ -25,7 +27,6 @@ public partial class KeyOrderDescriptionUI : Control
     {
         SetupUI();
         Visible = false;
-        GD.Print("[KeyOrderDescriptionUI] KeyOrderDescriptionUI initialized");
     }
 
     private void SetupUI()
@@ -37,6 +38,8 @@ public partial class KeyOrderDescriptionUI : Control
         _typeLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/TypeLabel");
         _descLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/DescLabel");
         _costLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/CostLabel");
+        _iconContainer = GetNode<CenterContainer>("BackgroundPanel/VBoxContainer/IconContainer");
+        _emojiLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/IconContainer/EmojiLabel");
         _useButton = GetNode<Button>("BackgroundPanel/VBoxContainer/ButtonContainer/UseButton");
         _cancelButton = GetNode<Button>("BackgroundPanel/VBoxContainer/ButtonContainer/CancelButton");
 
@@ -53,11 +56,7 @@ public partial class KeyOrderDescriptionUI : Control
 
     public void ShowKeyOrderDescription(KeyOrder keyOrder, bool useButtonEnabled, System.Action<KeyOrder> onUseConfirmed, System.Action onCancelled = null)
     {
-        if (keyOrder == null)
-        {
-            GD.PrintErr("[KeyOrderDescriptionUI] KeyOrder is null");
-            return;
-        }
+        if (keyOrder == null) return;
 
         _onUseConfirmed = onUseConfirmed;
         _onCancelled = onCancelled;
@@ -81,19 +80,11 @@ public partial class KeyOrderDescriptionUI : Control
             _useButton.Disabled = !useButtonEnabled;
             _useButton.Text = "使用";
         }
-
-        GD.Print($"[KeyOrderDescriptionUI] Showing KeyOrder: {keyOrder.Name}");
     }
 
     public void ShowEngravingDescription(ShopItem engraving, System.Action<ShopItem> onConfirm, System.Action onCancelled = null)
     {
-        if (engraving == null)
-        {
-            GD.PrintErr("[KeyOrderDescriptionUI] Engraving item is null");
-            return;
-        }
-
-        GD.Print($"[KeyOrderDescriptionUI] ShowEngravingDescription: {engraving.Name}, Purchased={engraving.Purchased}");
+        if (engraving == null) return;
 
         _onEngravingConfirm = onConfirm;
         _onCancelled = onCancelled;
@@ -102,15 +93,14 @@ public partial class KeyOrderDescriptionUI : Control
         Visible = true;
 
         if (_titleLabel != null)
-            _titleLabel.Text = "刻印详情";
-        if (_nameLabel != null)
-            _nameLabel.Text = engraving.Name;
-        if (_typeLabel != null)
-            _typeLabel.Text = "刻印类型";
+            _titleLabel.Text = engraving.Name;
+        if (_emojiLabel != null)
+            _emojiLabel.Text = "⚔️";
+
         if (_descLabel != null)
             _descLabel.Text = engraving.Description;
         if (_costLabel != null)
-            _costLabel.Text = $"💰 价格: {engraving.Price} 黑印";
+            _costLabel.Text = $"💰 {engraving.Price}";
 
         if (_useButton != null)
         {
@@ -129,13 +119,11 @@ public partial class KeyOrderDescriptionUI : Control
                 }
                 else
                 {
-                    _useButton.Text = "选择卡牌";
+                    _useButton.Text = "确定";
                     _useButton.Disabled = false;
                 }
             }
         }
-
-        GD.Print($"[KeyOrderDescriptionUI] Showing Engraving: {engraving.Name}");
     }
 
     public void HideDescription()
@@ -160,14 +148,17 @@ public partial class KeyOrderDescriptionUI : Control
 
         if (_currentEngravingItem != null)
         {
+            var confirmCallback = _onEngravingConfirm;
+            var itemToPass = _currentEngravingItem;
             HideDescription();
-            _onEngravingConfirm?.Invoke(_currentEngravingItem);
+            confirmCallback?.Invoke(itemToPass);
         }
         else
         {
             KeyOrder equippedOrder = GlobalData.EquippedKeyOrder;
+            var useCallback = _onUseConfirmed;
             HideDescription();
-            _onUseConfirmed?.Invoke(equippedOrder);
+            useCallback?.Invoke(equippedOrder);
         }
     }
 
@@ -175,8 +166,9 @@ public partial class KeyOrderDescriptionUI : Control
     {
         if (!_isVisible) return;
 
+        var cancelledCallback = _onCancelled;
         HideDescription();
-        _onCancelled?.Invoke();
+        cancelledCallback?.Invoke();
     }
 
     public void ShowPrompt(string message, System.Action onConfirmed, System.Action onCancelled = null)
@@ -205,8 +197,6 @@ public partial class KeyOrderDescriptionUI : Control
         {
             _cancelButton.Text = "取消";
         }
-
-        GD.Print($"[KeyOrderDescriptionUI] Showing prompt: {message}");
     }
 
     private string GetEffectTypeName(KeyOrderEffectType effectType)
