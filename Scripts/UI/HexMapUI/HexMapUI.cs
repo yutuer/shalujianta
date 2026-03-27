@@ -535,15 +535,21 @@ namespace FishEatFish.UI.HexMap
         private void OnShopOpened()
         {
             GD.Print($"[HexMapUI] OnShopOpened called: _shopContainer={_shopContainer}");
+            GD.Print($"[HexMapUI] Before Refresh: ShopContainer.Size={_shopContainer.Size}, CustomMinimumSize={_shopContainer.CustomMinimumSize}");
+            GD.Print($"[HexMapUI] Before Refresh: VBoxContainer.Size={_shopContainer.GetNode("VBoxContainer").GetChildCount()} children");
             RefreshShopItems();
-            GD.Print($"[HexMapUI] Setting _shopContainer.Visible = true");
+            GD.Print($"[HexMapUI] After Refresh: ShopContainer.Size={_shopContainer.Size}, CustomMinimumSize={_shopContainer.CustomMinimumSize}");
+            GD.Print($"[HexMapUI] After Refresh: ShopItems children count={_shopItemsContainer.GetChildCount()}");
             _shopContainer.Visible = true;
-            GD.Print($"[HexMapUI] _shopContainer.Visible after set = {_shopContainer.Visible}");
+            GD.Print($"[HexMapUI] After Show: ShopContainer.Size={_shopContainer.Size}");
+            GD.Print($"[HexMapUI] OnShopOpened completed");
         }
 
         private void OnShopClosed()
         {
+            GD.Print($"[HexMapUI] OnShopClosed: ShopContainer.Size={_shopContainer.Size} before hide");
             _shopContainer.Visible = false;
+            GD.Print($"[HexMapUI] OnShopClosed: ShopContainer.Size={_shopContainer.Size} after hide");
         }
 
         private void OnShopClosePressed()
@@ -555,10 +561,15 @@ namespace FishEatFish.UI.HexMap
         {
             GD.Print($"[HexMapUI] RefreshShopItems called: _shopContainer={_shopContainer}, _shopItemsContainer={_shopItemsContainer}");
 
-            foreach (var child in _shopItemsContainer.GetChildren())
+            var childrenToRemove = _shopItemsContainer.GetChildren().ToList();
+            GD.Print($"[HexMapUI] RefreshShopItems: found {childrenToRemove.Count} children to remove");
+            foreach (var child in childrenToRemove)
             {
-                child.QueueFree();
+                GD.Print($"[HexMapUI] RefreshShopItems: removing child {child.Name}");
+                _shopItemsContainer.RemoveChild(child);
+                GD.Print($"[HexMapUI] RefreshShopItems: after RemoveChild, child={child}, parent={child.GetParent()}");
             }
+            GD.Print($"[HexMapUI] RefreshShopItems: after ALL removals, container has {_shopItemsContainer.GetChildCount()} children");
 
             GD.Print($"[HexMapUI] BlackMarkShopManager.Instance={BlackMarkShopManager.Instance}");
             if (BlackMarkShopManager.Instance == null)
