@@ -1033,7 +1033,7 @@ namespace FishEatFish.Scenes
 			return;
 		}
 
-		keyOrderDescriptionUI.ShowDescription(
+		keyOrderDescriptionUI.ShowKeyOrderDescription(
 			GlobalData.EquippedKeyOrder,
 			useButtonEnabled,
 			(keyOrder) =>

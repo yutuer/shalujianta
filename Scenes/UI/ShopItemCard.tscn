@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=4]
+[gd_scene load_steps=4 format=4]
 
 [ext_resource type="Script" path="res://Scripts/UI/HexMapUI/ShopItemCard.cs" id="1_script"]
 
@@ -14,11 +14,24 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hover"]
+bg_color = Color(0.25, 0.25, 0.4, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.8, 0.7, 0.3, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [node name="ShopItemCard" type="PanelContainer"]
-custom_minimum_size = Vector2(180, 260)
+custom_minimum_size = Vector2(160, 200)
 layout_mode = 3
 anchors_preset = 0
 size_flags_horizontal = 3
+mouse_filter = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_1")
 script = ExtResource("1_script")
 
@@ -27,35 +40,38 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="NameLabel" type="Label" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+size_flags_vertical = 0
 horizontal_alignment = 1
-vertical_alignment = 0
-theme_override_font_sizes/font_size = 16
+vertical_alignment = 1
+theme_override_colors/font_color = Color(1, 0.95, 0.9, 1)
+theme_override_font_sizes/font_size = 14
 
-[node name="IconRect" type="TextureRect" parent="VBoxContainer"]
-custom_minimum_size = Vector2(80, 80)
+[node name="IconContainer" type="CenterContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="IconRect" type="TextureRect" parent="VBoxContainer/IconContainer"]
+custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 4
 
-[node name="EmojiLabel" type="Label" parent="VBoxContainer/IconRect"]
+[node name="EmojiLabel" type="Label" parent="VBoxContainer/IconContainer"]
 layout_mode = 2
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 64
 
-[node name="DescLabel" type="Label" parent="VBoxContainer"]
+[node name="PriceContainer" type="HBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 35)
 layout_mode = 2
-size_flags_vertical = 3
-autowrap_mode = 2
+size_flags_vertical = 0
+alignment = 1
 
-[node name="PriceLabel" type="Label" parent="VBoxContainer"]
+[node name="PriceLabel" type="Label" parent="VBoxContainer/PriceContainer"]
 layout_mode = 2
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(1, 0.8, 0, 1)
-theme_override_font_sizes/font_size = 18
-
-[node name="BuyButton" type="Button" parent="VBoxContainer"]
-custom_minimum_size = Vector2(0, 36)
-layout_mode = 2
-text = "购买"
+theme_override_font_sizes/font_size = 16

@@ -1,11 +1,8 @@
 using Godot;
 using System.Collections.Generic;
 using FishEatFish.Scenes;
+using FishEatFish.Shop;
 
-/// <summary>
-/// 钥令说明界面组件
-/// 功能：展示钥令详情，支持使用/取消操作
-/// </summary>
 public partial class KeyOrderDescriptionUI : Control
 {
     private PanelContainer _backgroundPanel;
@@ -20,13 +17,15 @@ public partial class KeyOrderDescriptionUI : Control
 
     private bool _isVisible = false;
     private System.Action<KeyOrder> _onUseConfirmed;
+    private System.Action<ShopItem> _onEngravingConfirm;
     private System.Action _onCancelled;
+    private ShopItem _currentEngravingItem;
 
     public override void _Ready()
     {
         SetupUI();
         Visible = false;
-        GD.Print("[KeyOrderDescriptionUI] 钥令说明UI初始化完成");
+        GD.Print("[KeyOrderDescriptionUI] KeyOrderDescriptionUI initialized");
     }
 
     private void SetupUI()
@@ -52,26 +51,22 @@ public partial class KeyOrderDescriptionUI : Control
         }
     }
 
-    /// <summary>
-    /// 显示钥令说明界面
-    /// </summary>
-    /// <param name="keyOrder">钥令数据</param>
-    /// <param name="useButtonEnabled">使用按钮是否启用</param>
-    /// <param name="onUseConfirmed">确认使用回调</param>
-    /// <param name="onCancelled">取消回调</param>
-    public void ShowDescription(KeyOrder keyOrder, bool useButtonEnabled, System.Action<KeyOrder> onUseConfirmed, System.Action onCancelled = null)
+    public void ShowKeyOrderDescription(KeyOrder keyOrder, bool useButtonEnabled, System.Action<KeyOrder> onUseConfirmed, System.Action onCancelled = null)
     {
         if (keyOrder == null)
         {
-            GD.PrintErr("[KeyOrderDescriptionUI] 钥令数据为空");
+            GD.PrintErr("[KeyOrderDescriptionUI] KeyOrder is null");
             return;
         }
 
         _onUseConfirmed = onUseConfirmed;
         _onCancelled = onCancelled;
+        _currentEngravingItem = null;
         _isVisible = true;
         Visible = true;
 
+        if (_titleLabel != null)
+            _titleLabel.Text = "钥令详情";
         if (_nameLabel != null)
             _nameLabel.Text = keyOrder.Name;
         if (_typeLabel != null)
@@ -84,24 +79,106 @@ public partial class KeyOrderDescriptionUI : Control
         if (_useButton != null)
         {
             _useButton.Disabled = !useButtonEnabled;
+            _useButton.Text = "使用";
+        }
 
-            if (!useButtonEnabled)
+        GD.Print($"[KeyOrderDescriptionUI] Showing KeyOrder: {keyOrder.Name}");
+    }
+
+    public void ShowEngravingDescription(ShopItem engraving, System.Action<ShopItem> onConfirm, System.Action onCancelled = null)
+    {
+        if (engraving == null)
+        {
+            GD.PrintErr("[KeyOrderDescriptionUI] Engraving item is null");
+            return;
+        }
+
+        GD.Print($"[KeyOrderDescriptionUI] ShowEngravingDescription: {engraving.Name}, Purchased={engraving.Purchased}");
+
+        _onEngravingConfirm = onConfirm;
+        _onCancelled = onCancelled;
+        _currentEngravingItem = engraving;
+        _isVisible = true;
+        Visible = true;
+
+        if (_titleLabel != null)
+            _titleLabel.Text = "刻印详情";
+        if (_nameLabel != null)
+            _nameLabel.Text = engraving.Name;
+        if (_typeLabel != null)
+            _typeLabel.Text = "刻印类型";
+        if (_descLabel != null)
+            _descLabel.Text = engraving.Description;
+        if (_costLabel != null)
+            _costLabel.Text = $"💰 价格: {engraving.Price} 黑印";
+
+        if (_useButton != null)
+        {
+            if (engraving.Purchased)
             {
-                _useButton.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.5f));
+                _useButton.Text = "已购买";
+                _useButton.Disabled = true;
             }
             else
             {
-                _useButton.AddThemeColorOverride("font_color", new Color(1f, 0.9f, 0.6f));
+                bool canAfford = BlackMarkShopManager.Instance?.CanAfford(engraving) ?? false;
+                if (!canAfford)
+                {
+                    _useButton.Text = "黑印不足";
+                    _useButton.Disabled = true;
+                }
+                else
+                {
+                    _useButton.Text = "选择卡牌";
+                    _useButton.Disabled = false;
+                }
             }
         }
 
-        PlayShowAnimation();
-        GD.Print($"[KeyOrderDescriptionUI] 显示钥令说明: {keyOrder.Name}, 按钮启用: {useButtonEnabled}");
+        GD.Print($"[KeyOrderDescriptionUI] Showing Engraving: {engraving.Name}");
     }
 
-    /// <summary>
-    /// 显示提示消息
-    /// </summary>
+    public void HideDescription()
+    {
+        _isVisible = false;
+        Visible = false;
+
+        if (_useButton != null)
+            _useButton.Text = "使用";
+        if (_cancelButton != null)
+            _cancelButton.Text = "取消";
+
+        _onUseConfirmed = null;
+        _onEngravingConfirm = null;
+        _onCancelled = null;
+        _currentEngravingItem = null;
+    }
+
+    private void OnUsePressed()
+    {
+        if (!_isVisible) return;
+
+        if (_currentEngravingItem != null)
+        {
+            HideDescription();
+            _onEngravingConfirm?.Invoke(_currentEngravingItem);
+        }
+        else
+        {
+            KeyOrder equippedOrder = GlobalData.EquippedKeyOrder;
+            HideDescription();
+            _onUseConfirmed?.Invoke(equippedOrder);
+        }
+    }
+
+    private void OnCancelPressed()
+    {
+        if (!_isVisible) return;
+
+        HideDescription();
+        _onCancelled?.Invoke();
+    }
+
     public void ShowPrompt(string message, System.Action onConfirmed, System.Action onCancelled = null)
     {
         _onUseConfirmed = (_) => onConfirmed?.Invoke();
@@ -129,57 +206,7 @@ public partial class KeyOrderDescriptionUI : Control
             _cancelButton.Text = "取消";
         }
 
-        PlayShowAnimation();
-        GD.Print($"[KeyOrderDescriptionUI] 显示提示: {message}");
-    }
-
-    /// <summary>
-    /// 隐藏界面
-    /// </summary>
-    public void HideDescription()
-    {
-        _isVisible = false;
-        Visible = false;
-
-        if (_useButton != null)
-            _useButton.Text = "使用";
-        if (_cancelButton != null)
-            _cancelButton.Text = "取消";
-
-        _onUseConfirmed = null;
-        _onCancelled = null;
-    }
-
-    private void OnUsePressed()
-    {
-        if (!_isVisible) return;
-
-        KeyOrder equippedOrder = GlobalData.EquippedKeyOrder;
-        HideDescription();
-        _onUseConfirmed?.Invoke(equippedOrder);
-    }
-
-    private void OnCancelPressed()
-    {
-        if (!_isVisible) return;
-
-        HideDescription();
-        _onCancelled?.Invoke();
-    }
-
-    private void PlayShowAnimation()
-    {
-        var tween = CreateTween();
-
-        var origPos = Position;
-        Position = new Vector2(origPos.X, origPos.Y - 30);
-        Modulate = new Color(1f, 1f, 1f, 0f);
-
-        tween.TweenProperty(this, "position", origPos, 0.25f)
-            .SetTrans(Tween.TransitionType.Back);
-        tween.TweenProperty(this, "modulate:a", 1f, 0.15f);
-
-        tween.Play();
+        GD.Print($"[KeyOrderDescriptionUI] Showing prompt: {message}");
     }
 
     private string GetEffectTypeName(KeyOrderEffectType effectType)

@@ -1,0 +1,106 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/HexMapUI/ArtifactDescriptionUI.cs" id="1"]
+
+[node name="ArtifactDescriptionUI" type="Control"]
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+text = "造物详情"
+horizontal_alignment = 1
+
+[node name="Separator1" type="HSeparator" parent="BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(300, 2)
+layout_mode = 2
+
+[node name="IconContainer" type="CenterContainer" parent="BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="IconRect" type="TextureRect" parent="BackgroundPanel/VBoxContainer/IconContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 4
+
+[node name="EmojiLabel" type="Label" parent="BackgroundPanel/VBoxContainer/IconContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 48
+
+[node name="NameLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+text = "造物名称"
+horizontal_alignment = 1
+
+[node name="Separator2" type="HSeparator" parent="BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(300, 2)
+layout_mode = 2
+
+[node name="EffectLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+text = "效果"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CostLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+text = "价格: 0 黑印"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="ButtonContainer" type="HBoxContainer" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="BuyButton" type="Button" parent="BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "购买"
+
+[node name="ButtonSpacer" type="Control" parent="BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="CancelButton" type="Button" parent="BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "取消"
