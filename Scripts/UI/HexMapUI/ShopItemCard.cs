@@ -8,6 +8,7 @@ namespace FishEatFish.UI.HexMap
     {
         private Label _nameLabel;
         private TextureRect _iconRect;
+        private Label _emojiLabel;
         private Label _descLabel;
         private Label _priceLabel;
         private Button _buyButton;
@@ -28,11 +29,12 @@ namespace FishEatFish.UI.HexMap
 
                 _nameLabel = GetNodeOrNull<Label>("VBoxContainer/NameLabel");
                 _iconRect = GetNodeOrNull<TextureRect>("VBoxContainer/IconRect");
+                _emojiLabel = GetNodeOrNull<Label>("VBoxContainer/IconRect/EmojiLabel");
                 _descLabel = GetNodeOrNull<Label>("VBoxContainer/DescLabel");
                 _priceLabel = GetNodeOrNull<Label>("VBoxContainer/PriceLabel");
                 _buyButton = GetNodeOrNull<Button>("VBoxContainer/BuyButton");
 
-                GD.Print($"[ShopItemCard] _Ready: labels found, name={_nameLabel}, icon={_iconRect}, desc={_descLabel}, price={_priceLabel}, button={_buyButton}");
+                GD.Print($"[ShopItemCard] _Ready: labels found, name={_nameLabel}, icon={_iconRect}, emoji={_emojiLabel}, desc={_descLabel}, price={_priceLabel}, button={_buyButton}");
 
                 if (_buyButton != null)
                 {
@@ -51,7 +53,7 @@ namespace FishEatFish.UI.HexMap
 
         public void SetItem(ShopItem item, bool canAfford)
         {
-            GD.Print($"[ShopItemCard] SetItem called: item={item.Name}, canAfford={canAfford}, _isReady={_isReady}");
+            GD.Print($"[ShopItemCard] SetItem called: item={item.Name}, canAfford={canAfford}, Purchased={item.Purchased}, _isReady={_isReady}");
             Item = item;
 
             if (!_isReady)
@@ -68,26 +70,63 @@ namespace FishEatFish.UI.HexMap
             _descLabel.Text = item.Description;
             GD.Print($"[ShopItemCard] SetItem: desc set");
 
-            GD.Print($"[ShopItemCard] SetItem: _priceLabel={_priceLabel}");
-            _priceLabel.Text = $"💰 {item.Price}";
-            GD.Print($"[ShopItemCard] SetItem: price set to {item.Price}");
-
             GD.Print($"[ShopItemCard] SetItem: icon path = {item.Icon}");
-            if (!string.IsNullOrEmpty(item.Icon) && GD.Load<Texture2D>(item.Icon) != null)
+            bool hasTexture = false;
+            if (!string.IsNullOrEmpty(item.Icon))
             {
-                GD.Print($"[ShopItemCard] SetItem: loading icon from {item.Icon}");
-                _iconRect.Texture = GD.Load<Texture2D>(item.Icon);
-                GD.Print($"[ShopItemCard] SetItem: icon loaded");
+                var texture = GD.Load<Texture2D>(item.Icon);
+                if (texture != null)
+                {
+                    GD.Print($"[ShopItemCard] SetItem: loading icon from {item.Icon}");
+                    _iconRect.Texture = texture;
+                    hasTexture = true;
+                    GD.Print($"[ShopItemCard] SetItem: icon loaded");
+                }
             }
-            else
+
+            if (_emojiLabel != null)
             {
-                GD.Print($"[ShopItemCard] SetItem: icon is null or invalid, skipping");
+                if (hasTexture)
+                {
+                    _emojiLabel.Visible = false;
+                }
+                else
+                {
+                    string emoji = GetItemEmoji(item);
+                    _emojiLabel.Text = emoji;
+                    _emojiLabel.Visible = true;
+                    GD.Print($"[ShopItemCard] SetItem: showing emoji '{emoji}' as fallback");
+                }
             }
 
             GD.Print($"[ShopItemCard] SetItem: _buyButton={_buyButton}");
-            _buyButton.Disabled = !canAfford;
-            _priceLabel.Modulate = canAfford ? new Color(1, 0.8f, 0) : new Color(0.5f, 0.5f, 0.5f);
-            GD.Print($"[ShopItemCard] SetItem completed, button disabled={!canAfford}");
+            if (item.Purchased)
+            {
+                _buyButton.Disabled = true;
+                _buyButton.Text = "已售出";
+                _priceLabel.Text = "已售出";
+                _priceLabel.Modulate = new Color(0.5f, 0.5f, 0.5f);
+                _descLabel.Text = item.Description + "\n[已售出]";
+                GD.Print($"[ShopItemCard] SetItem: item is purchased, showing sold out state");
+            }
+            else
+            {
+                _buyButton.Text = "购买";
+                _priceLabel.Text = $"💰 {item.Price}";
+                _buyButton.Disabled = !canAfford;
+                _priceLabel.Modulate = canAfford ? new Color(1, 0.8f, 0) : new Color(0.5f, 0.5f, 0.5f);
+            }
+            GD.Print($"[ShopItemCard] SetItem completed, button disabled={_buyButton.Disabled}");
+        }
+
+        private string GetItemEmoji(ShopItem item)
+        {
+            return item.ItemType switch
+            {
+                ShopItemType.Artifact => "💎",
+                ShopItemType.Engraving => "✨",
+                _ => "🎁"
+            };
         }
 
         private void OnBuyPressed()

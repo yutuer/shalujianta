@@ -718,25 +718,99 @@ namespace FishEatFish.UI.HexMap
 
         private void RefreshBackpack()
         {
+            GD.Print($"[HexMapUI] RefreshBackpack called: _backpackItemsContainer={_backpackItemsContainer}");
+
+            if (_backpackItemsContainer == null)
+            {
+                GD.PrintErr("[HexMapUI] _backpackItemsContainer is null!");
+                return;
+            }
+
             foreach (var child in _backpackItemsContainer.GetChildren())
             {
+                GD.Print($"[HexMapUI] RefreshBackpack: removing child {child.Name}");
                 child.QueueFree();
             }
 
-            if (BlackMarkShopManager.Instance == null) return;
-
-            foreach (var artifact in BlackMarkShopManager.Instance.GetOwnedArtifacts())
+            if (BlackMarkShopManager.Instance == null)
             {
-                var icon = new TextureRect();
-                icon.CustomMinimumSize = new Vector2(40, 40);
-                icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-                if (artifact.icon != null)
-                {
-                    icon.Texture = GD.Load<Texture2D>(artifact.icon);
-                }
-                icon.TooltipText = $"{artifact.name}: {artifact.description}";
-                _backpackItemsContainer.AddChild(icon);
+                GD.PrintErr("[HexMapUI] BlackMarkShopManager.Instance is null!");
+                return;
             }
+
+            var ownedArtifacts = BlackMarkShopManager.Instance.GetOwnedArtifacts();
+            GD.Print($"[HexMapUI] RefreshBackpack: owned artifacts count = {ownedArtifacts.Count}");
+
+            foreach (var artifact in ownedArtifacts)
+            {
+                GD.Print($"[HexMapUI] RefreshBackpack: creating icon for {artifact.name}, icon path = '{artifact.icon}'");
+
+                TextureRect icon = null;
+                bool hasValidTexture = false;
+
+                if (!string.IsNullOrEmpty(artifact.icon))
+                {
+                    var texture = GD.Load<Texture2D>(artifact.icon);
+                    if (texture != null)
+                    {
+                        icon = new TextureRect();
+                        icon.Name = $"Icon_{artifact.artifactId}";
+                        icon.CustomMinimumSize = new Vector2(40, 40);
+                        icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+                        icon.Texture = texture;
+                        icon.TooltipText = $"{artifact.name}: {artifact.description}";
+                        hasValidTexture = true;
+                        GD.Print($"[HexMapUI] RefreshBackpack: icon loaded successfully");
+                    }
+                    else
+                    {
+                        GD.Print($"[HexMapUI] RefreshBackpack: icon path '{artifact.icon}' failed to load, using emoji fallback");
+                    }
+                }
+
+                if (!hasValidTexture)
+                {
+                    icon = CreateEmojiBackpackItem(artifact);
+                }
+
+                _backpackItemsContainer.AddChild(icon);
+                GD.Print($"[HexMapUI] RefreshBackpack: icon added for {artifact.name}");
+            }
+
+            GD.Print($"[HexMapUI] RefreshBackpack completed. Container has {_backpackItemsContainer.GetChildCount()} children");
+        }
+
+        private TextureRect CreateEmojiBackpackItem(ArtifactData artifact)
+        {
+            GD.Print($"[HexMapUI] CreateEmojiBackpackItem: creating icon for {artifact.name}");
+
+            var container = new TextureRect();
+            container.Name = $"Icon_{artifact.artifactId}";
+            container.CustomMinimumSize = new Vector2(40, 40);
+            container.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+            container.TooltipText = $"{artifact.name}: {artifact.description}";
+
+            if (!string.IsNullOrEmpty(artifact.icon))
+            {
+                var texture = GD.Load<Texture2D>(artifact.icon);
+                if (texture != null)
+                {
+                    container.Texture = texture;
+                    GD.Print($"[HexMapUI] CreateEmojiBackpackItem: icon loaded from {artifact.icon}");
+                    return container;
+                }
+            }
+
+            var emojiLabel = new Label();
+            emojiLabel.Name = "EmojiLabel";
+            emojiLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            emojiLabel.VerticalAlignment = VerticalAlignment.Center;
+            emojiLabel.AddThemeFontSizeOverride("font_size", 24);
+            emojiLabel.Text = "💎";
+            container.AddChild(emojiLabel);
+
+            GD.Print($"[HexMapUI] CreateEmojiBackpackItem: using emoji fallback for {artifact.name}");
+            return container;
         }
 
         private void OnMapCompleted()

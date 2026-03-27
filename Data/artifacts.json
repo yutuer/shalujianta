@@ -3,7 +3,7 @@
         {
             "artifactId": "artifact_001",
             "name": "神圣衣碎片",
-            "icon": "res://Assets/Icons/artifacts/sacred_cloth.png",
+            "icon": "res://Assets/Icons/relic_anchor.svg",
             "description": "装备后攻击力+15%",
             "price": 30,
             "effect": {
@@ -14,7 +14,7 @@
         {
             "artifactId": "artifact_002",
             "name": "冥王之剑",
-            "icon": "res://Assets/Icons/artifacts/hades_sword.png",
+            "icon": "res://Assets/Icons/relic_whetstone.svg",
             "description": "攻击时有20%几率造成双倍伤害",
             "price": 50,
             "effect": {
@@ -25,7 +25,7 @@
         {
             "artifactId": "artifact_003",
             "name": "凤凰之翼",
-            "icon": "res://Assets/Icons/artifacts/phoenix_wing.png",
+            "icon": "res://Assets/Icons/relic_lantern.svg",
             "description": "每回合回复5%生命值",
             "price": 40,
             "effect": {
@@ -36,7 +36,7 @@
         {
             "artifactId": "artifact_004",
             "name": "冰晶护腕",
-            "icon": "res://Assets/Icons/artifacts/ice_bracer.png",
+            "icon": "res://Assets/Icons/relic_charm.svg",
             "description": "受到伤害时减少10%",
             "price": 35,
             "effect": {
@@ -47,7 +47,7 @@
         {
             "artifactId": "artifact_005",
             "name": "雷霆之锤",
-            "icon": "res://Assets/Icons/artifacts/thunder_hammer.png",
+            "icon": "res://Assets/Icons/relic_whetstone.svg",
             "description": "攻击附带10%几率麻痹敌人1回合",
             "price": 45,
             "effect": {
@@ -58,7 +58,7 @@
         {
             "artifactId": "artifact_006",
             "name": "生命圣杯",
-            "icon": "res://Assets/Icons/artifacts/life_chalice.png",
+            "icon": "res://Assets/Icons/relic_lantern.svg",
             "description": "生命上限+20%",
             "price": 55,
             "effect": {
@@ -69,7 +69,7 @@
         {
             "artifactId": "artifact_007",
             "name": "怒气项链",
-            "icon": "res://Assets/Icons/artifacts/rage_necklace.png",
+            "icon": "res://Assets/Icons/relic_anchor.svg",
             "description": "每次攻击获得额外5点怒气",
             "price": 25,
             "effect": {
@@ -80,7 +80,7 @@
         {
             "artifactId": "artifact_008",
             "name": "闪避披风",
-            "icon": "res://Assets/Icons/artifacts/dodge_cloak.png",
+            "icon": "res://Assets/Icons/relic_charm.svg",
             "description": "15%几率闪避敌人攻击",
             "price": 40,
             "effect": {
@@ -91,7 +91,7 @@
         {
             "artifactId": "artifact_009",
             "name": "爆裂宝石",
-            "icon": "res://Assets/Icons/artifacts/explosion_gem.png",
+            "icon": "res://Assets/Icons/relic_whetstone.svg",
             "description": "击杀敌人时对周围造成30%伤害",
             "price": 60,
             "effect": {
@@ -102,7 +102,7 @@
         {
             "artifactId": "artifact_010",
             "name": "护盾护符",
-            "icon": "res://Assets/Icons/artifacts/shield_amulet.png",
+            "icon": "res://Assets/Icons/relic_anchor.svg",
             "description": "战斗开始时获得20%生命值的护盾",
             "price": 35,
             "effect": {

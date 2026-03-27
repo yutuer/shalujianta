@@ -35,6 +35,12 @@ layout_mode = 2
 expand_mode = 1
 stretch_mode = 4
 
+[node name="EmojiLabel" type="Label" parent="VBoxContainer/IconRect"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 48
+
 [node name="DescLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 autowrap_mode = 2

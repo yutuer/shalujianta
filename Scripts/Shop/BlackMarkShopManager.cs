@@ -19,6 +19,7 @@ namespace FishEatFish.Shop
         public string Icon { get; set; }
         public string Description { get; set; }
         public int Price { get; set; }
+        public bool Purchased { get; set; }
 
         public static ShopItem FromArtifact(ArtifactData artifact)
         {
@@ -317,7 +318,11 @@ namespace FishEatFish.Shop
 
         private void GenerateShopItems()
         {
-            CurrentShopItems.Clear();
+            if (CurrentShopItems.Count > 0)
+            {
+                GD.Print($"[BlackMarkShopManager] 商店已有物品: {CurrentShopItems.Count} 个，跳过生成");
+                return;
+            }
 
             if (_allArtifacts.Count == 0 || _allEngravings.Count == 0)
             {
@@ -327,23 +332,23 @@ namespace FishEatFish.Shop
 
             var random = new Random();
 
-            var shuffledArtifacts = _allArtifacts.OrderBy(_ => random.Next()).ToList();
+            var availableArtifacts = _allArtifacts.Where(a => !_ownedArtifacts.Contains(a)).ToList();
+            var shuffledArtifacts = availableArtifacts.OrderBy(_ => random.Next()).ToList();
             int artifactCount = Math.Min(2, shuffledArtifacts.Count);
             for (int i = 0; i < artifactCount; i++)
             {
-                var availableArtifacts = shuffledArtifacts.Where(a => !_ownedArtifacts.Contains(a)).ToList();
-                if (availableArtifacts.Count > 0)
-                {
-                    var artifact = availableArtifacts[random.Next(availableArtifacts.Count)];
-                    CurrentShopItems.Add(ShopItem.FromArtifact(artifact));
-                }
+                var artifact = shuffledArtifacts[i];
+                CurrentShopItems.Add(ShopItem.FromArtifact(artifact));
+                GD.Print($"[BlackMarkShopManager] 添加造物到商店: {artifact.name}");
             }
 
-            var shuffledEngravings = _allEngravings.OrderBy(_ => random.Next()).ToList();
+            var availableEngravings = _allEngravings.ToList();
+            var shuffledEngravings = availableEngravings.OrderBy(_ => random.Next()).ToList();
             if (shuffledEngravings.Count > 0)
             {
                 var engraving = shuffledEngravings[0];
                 CurrentShopItems.Add(ShopItem.FromEngraving(engraving));
+                GD.Print($"[BlackMarkShopManager] 添加刻印到商店: {engraving.name}");
             }
 
             GD.Print($"[BlackMarkShopManager] 生成商店物品: {CurrentShopItems.Count} 个");
@@ -362,6 +367,12 @@ namespace FishEatFish.Shop
                 return false;
             }
 
+            if (item.Purchased)
+            {
+                GD.Print($"[BlackMarkShopManager] 物品已购买: {item.Name}");
+                return false;
+            }
+
             if (!CanAfford(item))
             {
                 GD.Print($"[BlackMarkShopManager] 黑印不足，无法购买: {item.Name}");
@@ -377,8 +388,8 @@ namespace FishEatFish.Shop
             if (artifact != null)
             {
                 _ownedArtifacts.Add(artifact);
-                CurrentShopItems.Remove(item);
-                GD.Print($"[BlackMarkShopManager] 购买成功: {item.Name}");
+                item.Purchased = true;
+                GD.Print($"[BlackMarkShopManager] 购买成功: {item.Name}，物品保留在商店但标记为已售");
                 return true;
             }
 
@@ -413,17 +424,23 @@ namespace FishEatFish.Shop
                 return false;
             }
 
+            if (PendingEngraving.Purchased)
+            {
+                GD.Print($"[BlackMarkShopManager] 刻印已购买: {PendingEngraving.Name}");
+                return false;
+            }
+
             if (!SpendBlackMark(PendingEngraving.Price))
             {
                 return false;
             }
 
             _engravedCardIds.Add(cardId);
-            CurrentShopItems.Remove(PendingEngraving);
+            PendingEngraving.Purchased = true;
             PendingEngraving = null;
             CurrentShopPrice = 0;
 
-            GD.Print($"[BlackMarkShopManager] 刻印成功: {cardId}");
+            GD.Print($"[BlackMarkShopManager] 刻印成功: {cardId}，刻印保留在商店但标记为已售");
             return true;
         }
 
@@ -445,11 +462,10 @@ namespace FishEatFish.Shop
 
         public void CloseShop()
         {
-            CurrentShopItems.Clear();
             PendingEngraving = null;
             CurrentShopPrice = 0;
             OnShopClosed?.Invoke();
-            GD.Print("[BlackMarkShopManager] 商店已关闭");
+            GD.Print($"[BlackMarkShopManager] 商店已关闭，当前物品数: {CurrentShopItems.Count}");
         }
 
         public void ResetForNewRun()
