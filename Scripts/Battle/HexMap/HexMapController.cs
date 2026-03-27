@@ -45,8 +45,7 @@ namespace FishEatFish.Battle.HexMap
         public float PlayerCurrentHealth => _playerCurrentHealth;
         public float PlayerMaxHealth => _playerMaxHealth;
 
-        private int _blackMarkCount = 0;
-        public int BlackMarkCount => _blackMarkCount;
+        public int BlackMarkCount => BlackMarkShopManager.Instance?.BlackMarkCount ?? 0;
 
         private bool _hasSkipped = false;
         public bool HasSkipped => _hasSkipped;
@@ -299,25 +298,24 @@ namespace FishEatFish.Battle.HexMap
 
         private void TriggerTileEvent(HexTile tile)
         {
-            if (tile.IsVisited && tile.TriggerType == EventTriggerType.OneTime)
+            if (!tile.CanTrigger)
             {
+                return;
+            }
+
+            if (tile.EventType == HexEventType.Hole)
+            {
+                tile.TriggerHole();
+                OnTileTriggered?.Invoke(tile);
                 return;
             }
 
             _eventManager.ProcessEvent(tile, this);
 
+            tile.Trigger();
             tile.OnPlayerEnter();
 
             OnTileTriggered?.Invoke(tile);
-
-            if (tile.EventType == HexEventType.Hole)
-            {
-                tile.TriggerHole();
-            }
-            else
-            {
-                tile.Trigger();
-            }
         }
 
         public void SkipMap()
@@ -367,16 +365,22 @@ namespace FishEatFish.Battle.HexMap
 
         public void OpenShop()
         {
+            GD.Print($"[HexMapController] OpenShop called: currentState={_currentState}");
             if (_currentState == HexMapState.ShopOpen)
+            {
+                GD.Print("[HexMapController] 商店已在打开状态，直接返回");
                 return;
+            }
 
             _currentState = HexMapState.ShopOpen;
+            GD.Print($"[HexMapController] 状态设置为 ShopOpen");
 
             if (BlackMarkShopManager.Instance != null)
             {
                 BlackMarkShopManager.Instance.OpenShop();
             }
 
+            GD.Print("[HexMapController] 调用 OnShopOpened?.Invoke()");
             OnShopOpened?.Invoke();
             GD.Print("[HexMapController] 商店已打开");
         }
@@ -398,22 +402,13 @@ namespace FishEatFish.Battle.HexMap
 
         public void AddBlackMark(int amount)
         {
-            _blackMarkCount += amount;
-            OnBlackMarkChanged?.Invoke(_blackMarkCount);
-            GD.Print($"[HexMapController] 获得 {amount} 黑印，当前: {_blackMarkCount}");
+            BlackMarkShopManager.Instance?.AddBlackMark(amount);
         }
 
         public bool SpendBlackMark(int amount)
         {
-            if (_blackMarkCount < amount)
-            {
-                GD.Print($"[HexMapController] 黑印不足: 需要 {amount}，现有 {_blackMarkCount}");
-                return false;
-            }
-
-            _blackMarkCount -= amount;
-            OnBlackMarkChanged?.Invoke(_blackMarkCount);
-            return true;
+            if (BlackMarkShopManager.Instance == null) return false;
+            return BlackMarkShopManager.Instance.SpendBlackMark(amount);
         }
 
         public List<HexCoord> GetReachableNeighbors()

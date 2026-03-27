@@ -17,12 +17,6 @@ namespace FishEatFish.Battle.HexMap
         OneDirectionTele
     }
 
-    public enum EventTriggerType
-    {
-        OneTime,
-        Terrain
-    }
-
     public enum TeleportDirection
     {
         Forward,
@@ -31,13 +25,15 @@ namespace FishEatFish.Battle.HexMap
 
     public partial class HexTile
     {
+        public const int InfiniteTriggers = -1;
+
         public HexCoord Coord { get; }
         public HexEventType EventType { get; set; }
-        public EventTriggerType TriggerType { get; set; }
         public bool IsStart { get; set; }
         public bool IsEnd { get; set; }
         public bool IsVisited { get; set; }
         public bool IsDisappeared { get; set; }
+        public int TriggerCount { get; set; }
 
         public int Damage { get; set; }
         public int HealAmount { get; set; }
@@ -57,7 +53,7 @@ namespace FishEatFish.Battle.HexMap
         {
             Coord = coord;
             EventType = eventType;
-            TriggerType = EventTriggerType.OneTime;
+            TriggerCount = 1;
             IsStart = false;
             IsEnd = false;
             IsVisited = false;
@@ -67,8 +63,6 @@ namespace FishEatFish.Battle.HexMap
         }
 
         public bool CanEnter => !IsDisappeared;
-
-        public bool CanTrigger => !IsDisappeared && !IsVisited;
 
         public bool ShouldShowTeleportPrompt
         {
@@ -115,18 +109,27 @@ namespace FishEatFish.Battle.HexMap
             OnExit?.Invoke(this);
         }
 
+        public bool CanTrigger
+        {
+            get
+            {
+                if (IsDisappeared) return false;
+                if (TriggerCount == 0) return false;
+                return true;
+            }
+        }
+
         public void Trigger()
         {
             if (!CanTrigger) return;
 
-            switch (TriggerType)
+            if (TriggerCount > 0)
             {
-                case EventTriggerType.OneTime:
+                TriggerCount--;
+                if (TriggerCount == 0)
+                {
                     EventType = HexEventType.Empty;
-                    break;
-
-                case EventTriggerType.Terrain:
-                    break;
+                }
             }
         }
 
@@ -149,11 +152,11 @@ namespace FishEatFish.Battle.HexMap
         {
             return new HexTile(Coord, EventType)
             {
-                TriggerType = TriggerType,
                 IsStart = IsStart,
                 IsEnd = IsEnd,
                 IsVisited = IsVisited,
                 IsDisappeared = IsDisappeared,
+                TriggerCount = TriggerCount,
                 Damage = Damage,
                 HealAmount = HealAmount,
                 BlackMarkGain = BlackMarkGain,

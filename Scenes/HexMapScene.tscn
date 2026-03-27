@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=4]
+[gd_scene load_steps=3 format=4]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/HexMapScene.cs" id="1_hexmap"]
+[ext_resource type="Script" uid="uid://xkao6daykbb1" path="res://Scripts/Shop/BlackMarkShopManager.cs" id="2_shop"]
 
 [node name="HexMapScene" type="Control"]
 layout_mode = 3
@@ -19,3 +20,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.15, 0.17, 0.2, 1)
+
+[node name="BlackMarkShopManager" type="Node" parent="."]
+script = ExtResource("2_shop")

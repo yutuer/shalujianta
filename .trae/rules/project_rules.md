@@ -75,7 +75,7 @@ void CenterOnPlayer(HexCoord playerCoord, bool animate = true) {
     var screenCenter = GetViewportRect().Size / 2;
     var playerWorldPos = HexToWorld(playerCoord) + _hexSize / 2;
     var targetOffset = screenCenter - playerWorldPos;
-    
+
     if (animate) {
         var tween = CreateTween();
         tween.TweenProperty(_tileViewsContainer, "position", targetOffset, 0.3f);
@@ -84,3 +84,20 @@ void CenterOnPlayer(HexCoord playerCoord, bool animate = true) {
     }
 }
 ```
+
+## 调试日志规则 (重要)
+
+### UI 问题调试
+当出现 UI 显示问题时（如商店空白、组件不显示等），**一次性**在所有相关的 UI 组件中添加完整的调试日志，包括：
+- `_Ready()` 方法调用和组件初始化
+- 数据设置方法（如 `SetItem`、`SetData` 等）中的每一步
+- 子节点的获取结果
+- 事件绑定结果
+- UI 可见性设置
+
+**不要让用户多次测试，每次都要完整添加所有相关日志。**
+
+### 编译规则
+- 修改代码后必须运行 `dotnet build` 编译确认
+- 编译成功后再让用户测试
+

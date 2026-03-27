@@ -60,8 +60,6 @@ namespace FishEatFish.UI.HexMap
 
         public override void _Ready()
         {
-            GD.Print("[HexMapUI] _Ready called");
-
             if (_tileViewScene == null)
             {
                 _tileViewScene = GD.Load<PackedScene>("res://Scenes/UI/HexTileView.tscn");
@@ -75,97 +73,31 @@ namespace FishEatFish.UI.HexMap
                 _engravingCardSlotScene = GD.Load<PackedScene>("res://Scenes/UI/EngravingCardSlot.tscn");
             }
 
-            if (_tileViewScene == null)
-            {
-                GD.PrintErr("[HexMapUI] HexTileView scene not found!");
-            }
-            else
-            {
-                GD.Print("[HexMapUI] HexTileView scene loaded");
-            }
-
-            InitializeComponents();
-            GD.Print("[HexMapUI] Components initialized");
-            SetupEventConnections();
-            GD.Print("[HexMapUI] Events connected");
-
             _controller = HexMapController.Instance;
-            GD.Print($"[HexMapUI] Controller Instance: {_controller}");
+            InitializeComponents();
+            SetupEventConnections();
+
             if (_controller != null)
             {
-                GD.Print($"[HexMapUI] Controller found, refreshing map...");
                 RefreshMap();
             }
-            else
-            {
-                GD.PrintErr("[HexMapUI] Controller is null!");
-            }
-            GD.Print("[HexMapUI] _Ready complete");
         }
 
         private void InitializeComponents()
         {
-            GD.Print("[HexMapUI] InitializeComponents started");
-
-            var viewportSize = GetViewportRect().Size;
-            GD.Print($"[HexMapUI] Viewport size: {viewportSize}, screenCenter: {viewportSize / 2}");
-
-            GD.Print($"[HexMapUI] Has HealthBar: {HasNode("HealthBar")}");
-            GD.Print($"[HexMapUI] Has MapContainer: {HasNode("MapContainer")}");
-            GD.Print($"[HexMapUI] Has RageCircles: {HasNode("RageCircles")}");
-
             _mapContainer = GetNodeOrNull<Control>("MapContainer");
-            GD.Print($"[HexMapUI] _mapContainer: {_mapContainer}");
 
             _tileViewsContainer = GetNodeOrNull<Control>("MapContainer/TileViews");
             if (_tileViewsContainer != null)
             {
                 _tileViewsContainer.Position = Vector2.Zero;
-                GD.Print($"[HexMapUI] TileViewsContainer position reset to: (0, 0)");
             }
-            GD.Print($"[HexMapUI] _tileViewsContainer: {_tileViewsContainer}, position: {_tileViewsContainer?.Position}");
 
             var playerIconControl = GetNodeOrNull<Control>("MapContainer/TileViews/PlayerIcon");
-            GD.Print($"[HexMapUI] Get PlayerIcon as Control: {playerIconControl}");
-            if (playerIconControl != null)
-            {
-                GD.Print($"[HexMapUI] PlayerIcon Script: {playerIconControl.GetScript()}");
-                GD.Print($"[HexMapUI] PlayerIcon HasScript: {playerIconControl.HasMethod("_Ready")}");
-            }
             _playerIcon = playerIconControl as PlayerIcon;
-            if (_playerIcon == null && playerIconControl != null)
-            {
-                GD.PrintErr($"[HexMapUI] PlayerIcon control found but cast failed! Type: {playerIconControl.GetType()}");
-            }
-            else if (_playerIcon != null)
-            {
-                GD.Print($"[HexMapUI] _playerIcon found: {_playerIcon}, initial Position: {_playerIcon.Position}, Size: {_playerIcon.Size}");
-            }
-            else
-            {
-                GD.PrintErr("[HexMapUI] PlayerIcon not found!");
-            }
 
             var healthBarControl = GetNodeOrNull<Control>("HealthBar");
-            GD.Print($"[HexMapUI] Get HealthBar as Control: {healthBarControl}");
-            if (healthBarControl != null)
-            {
-                GD.Print($"[HexMapUI] HealthBar Script: {healthBarControl.GetScript()}");
-                GD.Print($"[HexMapUI] HealthBar HasScript: {healthBarControl.HasMethod("_Ready")}");
-            }
             _healthBar = healthBarControl as HealthBar;
-            if (_healthBar == null && healthBarControl != null)
-            {
-                GD.PrintErr($"[HexMapUI] HealthBar control found but cast failed! Type: {healthBarControl.GetType()}");
-            }
-            else if (_healthBar != null)
-            {
-                GD.Print($"[HexMapUI] _healthBar found: {_healthBar}, Size: {_healthBar.CustomMinimumSize}");
-            }
-            else
-            {
-                GD.PrintErr("[HexMapUI] HealthBar not found!");
-            }
 
             if (_healthBar != null)
             {
@@ -173,31 +105,22 @@ namespace FishEatFish.UI.HexMap
             }
 
             _rageCirclesContainer = GetNodeOrNull<HBoxContainer>("RageCircles");
-            GD.Print($"[HexMapUI] RageCircles container: {_rageCirclesContainer}, Visible: {_rageCirclesContainer?.Visible}, GlobalPos: {_rageCirclesContainer?.GlobalPosition}, Size: {_rageCirclesContainer?.Size}");
             _rageCircles.Clear();
             for (int i = 0; i < 4; i++)
             {
                 var rageCircleAsControl = GetNodeOrNull<Control>($"RageCircles/RageCircle{i}");
-                GD.Print($"[HexMapUI] RageCircle{i} as Control: {rageCircleAsControl}, Script: {rageCircleAsControl?.GetScript()}");
                 var rageCircle = rageCircleAsControl as RageCircle;
                 if (rageCircle != null)
                 {
-                    GD.Print($"[HexMapUI] RageCircle{i} cast SUCCESS: {rageCircle}, Visible: {rageCircle.Visible}, Size: {rageCircle.Size}, MinSize: {rageCircle.CustomMinimumSize}, GlobalPos: {rageCircle.GlobalPosition}, Scale: {rageCircle.Scale}");
                     rageCircle.SetCharacterName($"角色{i + 1}");
                     rageCircle.SetRage(0, 100);
                     _rageCircles.Add(rageCircle);
-                }
-                else
-                {
-                    GD.PrintErr($"[HexMapUI] RageCircle{i} cast FAILED! Is Control: {rageCircleAsControl != null}, Type: {rageCircleAsControl?.GetType()}");
                 }
             }
             if (_rageCirclesContainer != null)
             {
                 PositionRageCircles();
-                GD.Print($"[HexMapUI] After PositionRageCircles - Container GlobalPos: {_rageCirclesContainer.GlobalPosition}, Size: {_rageCirclesContainer.Size}");
             }
-            GD.Print($"[HexMapUI] _rageCircles: {_rageCircles.Count} circles");
 
             ConnectButton("TopRightButtons/SkipButton", OnSkipButtonPressed);
             ConnectButton("TopRightButtons/DeathResistanceButton", OnDeathResistanceButtonPressed);
@@ -207,10 +130,8 @@ namespace FishEatFish.UI.HexMap
             {
                 PositionTopRightButtons();
             }
-            GD.Print("[HexMapUI] TopRightButtons connected");
 
             _blackMarkLabel = GetNodeOrNull<Label>("BlackMarkLabel");
-            GD.Print($"[HexMapUI] _blackMarkLabel: {_blackMarkLabel}");
 
             _teleportDialog = GetNodeOrNull<Control>("TeleportDialog");
             if (_teleportDialog != null)
@@ -218,7 +139,6 @@ namespace FishEatFish.UI.HexMap
                 ConnectButton("TeleportDialog/VBoxContainer/ButtonBox/CancelButton", OnTeleportCancelPressed);
                 ConnectButton("TeleportDialog/VBoxContainer/ButtonBox/ConfirmButton", OnTeleportConfirmPressed);
             }
-            GD.Print($"[HexMapUI] TeleportDialog: {_teleportDialog}");
 
             _shopContainer = GetNodeOrNull<Control>("ShopContainer");
             if (_shopContainer != null)
@@ -226,7 +146,6 @@ namespace FishEatFish.UI.HexMap
                 _shopItemsContainer = GetNodeOrNull<Control>("ShopContainer/VBoxContainer/ShopItems");
                 ConnectButton("ShopContainer/VBoxContainer/HeaderBox/CloseButton", OnShopClosePressed);
             }
-            GD.Print($"[HexMapUI] ShopContainer: {_shopContainer}");
 
             _engravingSelectContainer = GetNodeOrNull<Control>("EngravingSelectContainer");
             if (_engravingSelectContainer != null)
@@ -236,7 +155,6 @@ namespace FishEatFish.UI.HexMap
                 ConnectButton("EngravingSelectContainer/VBoxContainer/ButtonBox/ConfirmButton", OnEngravingConfirmPressed);
                 ConnectButton("EngravingSelectContainer/VBoxContainer/HeaderBox/CloseButton", OnEngravingClosePressed);
             }
-            GD.Print($"[HexMapUI] EngravingSelectContainer: {_engravingSelectContainer}");
 
             _failurePanel = GetNodeOrNull<Control>("FailurePanel");
             if (_failurePanel != null)
@@ -244,16 +162,12 @@ namespace FishEatFish.UI.HexMap
                 _failureMessage = GetNodeOrNull<Label>("FailurePanel/VBoxContainer/FailureMessage");
                 ConnectButton("FailurePanel/VBoxContainer/OkButton", OnFailureOkPressed);
             }
-            GD.Print($"[HexMapUI] FailurePanel: {_failurePanel}");
 
             _backpackContainer = GetNodeOrNull<Control>("BackpackContainer");
             if (_backpackContainer != null)
             {
                 _backpackItemsContainer = GetNodeOrNull<Control>("BackpackContainer/HBoxContainer/BackpackItems");
             }
-            GD.Print($"[HexMapUI] BackpackContainer: {_backpackContainer}");
-
-            GD.Print("[HexMapUI] InitializeComponents completed!");
         }
 
         private void ConnectButton(string path, Action handler)
@@ -274,27 +188,16 @@ namespace FishEatFish.UI.HexMap
             if (_healthBar == null) return;
             var screenSize = GetViewportRect().Size;
             var targetPos = new Vector2(20, screenSize.Y - _healthBar.CustomMinimumSize.Y - 20);
-            GD.Print($"[HexMapUI] PositionHealthBar: screenSize={screenSize}, customSize={_healthBar.CustomMinimumSize}, targetPos={targetPos}");
             _healthBar.GlobalPosition = targetPos;
-            GD.Print($"[HexMapUI] HealthBar GlobalPosition after set: {_healthBar.GlobalPosition}");
         }
 
         private void PositionRageCircles()
         {
             if (_rageCirclesContainer == null) return;
-            GD.Print($"[HexMapUI] PositionRageCircles: using anchor positioning (no code position needed)");
         }
 
         public override void _Process(double delta)
         {
-            if (_rageCirclesContainer != null && Input.IsKeyPressed(Key.D))
-            {
-                GD.Print($"[DEBUG] RageCircles: Visible={_rageCirclesContainer.Visible}, GlobalPos={_rageCirclesContainer.GlobalPosition}, Size={_rageCirclesContainer.Size}");
-                foreach (var circle in _rageCircles)
-                {
-                    GD.Print($"[DEBUG] Circle: Name={circle.Name}, Visible={circle.Visible}, GlobalPos={circle.GlobalPosition}, Size={circle.Size}, CustomMin={circle.CustomMinimumSize}");
-                }
-            }
         }
 
         private void PositionTopRightButtons()
@@ -342,32 +245,22 @@ namespace FishEatFish.UI.HexMap
 
         private void RefreshMap()
         {
-            GD.Print("[HexMapUI] RefreshMap started");
             ClearTileViews();
 
-            if (_controller?.CurrentMap == null)
-            {
-                GD.PrintErr("[HexMapUI] CurrentMap is null!");
-                return;
-            }
+            if (_controller?.CurrentMap == null) return;
 
-            GD.Print($"[HexMapUI] Creating tile views...");
-            int tileCount = 0;
             foreach (var tile in _controller.CurrentMap.GetAllTiles())
             {
                 CreateTileView(tile);
-                tileCount++;
             }
-            GD.Print($"[HexMapUI] Created {tileCount} tile views, tileViews count={_tileViews.Count}");
 
             if (_playerIcon != null)
             {
-                _tileViewsContainer.MoveChild(_playerIcon, -1);
+                _playerIcon.GetParent().MoveChild(_playerIcon, -1);
             }
 
             CenterOnPlayer(_controller.CurrentPosition, false);
             UpdatePlayerPosition();
-            GD.Print("[HexMapUI] RefreshMap completed");
         }
 
         private void CenterOnPlayer(HexCoord playerCoord, bool animate = true)
@@ -377,8 +270,6 @@ namespace FishEatFish.UI.HexMap
             var screenCenter = GetViewportRect().Size / 2;
             var playerWorldPos = HexToWorld(playerCoord) + _hexSize / 2;
             var targetOffset = screenCenter - playerWorldPos;
-
-            GD.Print($"[HexMapUI] CenterOnPlayer: playerCoord={playerCoord}, playerWorldPos={playerWorldPos}, targetOffset={targetOffset}");
 
             if (animate)
             {
@@ -404,11 +295,7 @@ namespace FishEatFish.UI.HexMap
 
         private void CreateTileView(HexTile tile)
         {
-            if (_tileViewScene == null)
-            {
-                GD.PrintErr("[HexMapUI] _tileViewScene is null!");
-                return;
-            }
+            if (_tileViewScene == null) return;
 
             var tileView = (HexTileView)_tileViewScene.Instantiate();
             tileView.Size = _hexSize;
@@ -455,21 +342,13 @@ namespace FishEatFish.UI.HexMap
             var currentPos = _controller.CurrentPosition;
             var neighbors = currentPos.GetNeighbors();
 
-            GD.Print($"[HexMapUI] OnTileClicked: current={currentPos}, clicked={tile.Coord}");
-
             if (tile.Coord.ContainsInArray(neighbors))
             {
-                GD.Print($"[HexMapUI] Moving to {tile.Coord}");
                 _controller.MoveTo(tile.Coord);
             }
             else if (tile.Coord == _controller.CurrentMap.End)
             {
-                GD.Print($"[HexMapUI] Quick moving to end {tile.Coord}");
                 _controller.QuickMoveTo(tile.Coord);
-            }
-            else
-            {
-                GD.Print($"[HexMapUI] Clicked tile is not adjacent to current position");
             }
         }
 
@@ -508,24 +387,17 @@ namespace FishEatFish.UI.HexMap
 
         private void OnPlayerMoved(HexCoord newPos)
         {
-            GD.Print($"[HexMapUI] OnPlayerMoved: newPos={newPos}");
-            if (_playerIcon == null)
-            {
-                GD.PrintErr("[HexMapUI] OnPlayerMoved: _playerIcon is null!");
-                return;
-            }
-            if (_tileViews.ContainsKey(newPos))
-            {
-                var tileView = _tileViews[newPos];
-                GD.Print($"[HexMapUI] TileView found: pos={tileView.Position}, size={tileView.Size}");
-                var tileWorldPos = _tileViewsContainer.Position + tileView.Position + tileView.Size / 2;
-                GD.Print($"[HexMapUI] Moving player to: {tileWorldPos}");
-                _playerIcon.MoveTo(tileWorldPos);
-            }
-            else
-            {
-                GD.PrintErr($"[HexMapUI] TileView not found for {newPos}!");
-            }
+            if (_playerIcon == null) return;
+
+            CenterOnPlayer(newPos, true);
+
+            var iconSize = _playerIcon.Size == Vector2.Zero
+                ? _playerIcon.CustomMinimumSize
+                : _playerIcon.Size;
+
+            var playerWorldPos = HexToWorld(newPos);
+            var tileCenterPos = playerWorldPos + _hexSize / 2 - iconSize / 2;
+            _playerIcon.MoveTo(tileCenterPos);
 
             ClearPathHighlights();
         }
@@ -533,28 +405,28 @@ namespace FishEatFish.UI.HexMap
         private void UpdatePlayerPosition()
         {
             if (_controller == null) return;
-            if (_playerIcon == null)
-            {
-                GD.PrintErr("[HexMapUI] UpdatePlayerPosition: _playerIcon is null!");
-                return;
-            }
+            if (_playerIcon == null) return;
 
             var currentPos = _controller.CurrentPosition;
-            GD.Print($"[HexMapUI] UpdatePlayerPosition: currentPos={currentPos}");
 
-            CenterOnPlayer(currentPos, true);
+            CenterOnPlayer(currentPos, false);
+
+            var iconSize = _playerIcon.Size == Vector2.Zero
+                ? _playerIcon.CustomMinimumSize
+                : _playerIcon.Size;
 
             var playerWorldPos = HexToWorld(currentPos);
-            var tileCenterPos = playerWorldPos + _hexSize / 2 - _playerIcon.Size / 2;
-            GD.Print($"[HexMapUI] UpdatePlayerPosition: playerWorldPos={playerWorldPos}, tileCenterPos={tileCenterPos}, _playerIcon.Size={_playerIcon.Size}");
+            var tileCenterPos = playerWorldPos + _hexSize / 2 - iconSize / 2;
             _playerIcon.TeleportTo(tileCenterPos);
         }
 
         private void OnTileTriggered(HexTile tile)
         {
+            GD.Print($"[HexMapUI] OnTileTriggered: tile={tile.Coord}, EventType={tile.EventType}");
             if (_tileViews.ContainsKey(tile.Coord))
             {
                 var tileView = _tileViews[tile.Coord];
+                GD.Print($"[HexMapUI] OnTileTriggered: found tileView, calling SetTile");
                 tileView.SetTile(tile);
 
                 if (tile.EventType == HexEventType.Hole && tile.IsDisappeared)
@@ -562,6 +434,10 @@ namespace FishEatFish.UI.HexMap
                     tileView.AnimateDisappear();
                     _tileViews.Remove(tile.Coord);
                 }
+            }
+            else
+            {
+                GD.Print($"[HexMapUI] OnTileTriggered: tileView not found for {tile.Coord}");
             }
 
             ShowEventNotification(tile);
@@ -658,8 +534,11 @@ namespace FishEatFish.UI.HexMap
 
         private void OnShopOpened()
         {
+            GD.Print($"[HexMapUI] OnShopOpened called: _shopContainer={_shopContainer}");
             RefreshShopItems();
+            GD.Print($"[HexMapUI] Setting _shopContainer.Visible = true");
             _shopContainer.Visible = true;
+            GD.Print($"[HexMapUI] _shopContainer.Visible after set = {_shopContainer.Visible}");
         }
 
         private void OnShopClosed()
@@ -674,26 +553,62 @@ namespace FishEatFish.UI.HexMap
 
         private void RefreshShopItems()
         {
+            GD.Print($"[HexMapUI] RefreshShopItems called: _shopContainer={_shopContainer}, _shopItemsContainer={_shopItemsContainer}");
+
             foreach (var child in _shopItemsContainer.GetChildren())
             {
                 child.QueueFree();
             }
 
-            if (BlackMarkShopManager.Instance == null) return;
+            GD.Print($"[HexMapUI] BlackMarkShopManager.Instance={BlackMarkShopManager.Instance}");
+            if (BlackMarkShopManager.Instance == null)
+            {
+                GD.PrintErr("[HexMapUI] BlackMarkShopManager.Instance is null!");
+                return;
+            }
+
+            GD.Print($"[HexMapUI] CurrentShopItems count={BlackMarkShopManager.Instance.CurrentShopItems.Count}");
+            if (_shopItemCardScene == null)
+            {
+                GD.PrintErr("[HexMapUI] _shopItemCardScene is null!");
+                return;
+            }
 
             foreach (var item in BlackMarkShopManager.Instance.CurrentShopItems)
             {
+                GD.Print($"[HexMapUI] Creating card for: {item.Name}, Icon={item.Icon}");
                 var itemCard = CreateShopItemCard(item);
+                if (itemCard == null)
+                {
+                    GD.PrintErr("[HexMapUI] CreateShopItemCard returned null!");
+                    continue;
+                }
+                GD.Print($"[HexMapUI] Adding card to container...");
                 _shopItemsContainer.AddChild(itemCard);
+                GD.Print($"[HexMapUI] Card added successfully, calling SetItem...");
+                itemCard.SetItem(item, BlackMarkShopManager.Instance.CanAfford(item));
+                GD.Print($"[HexMapUI] SetItem called successfully");
+                GD.Print($"[HexMapUI] Binding OnBuyClicked event...");
+                itemCard.OnBuyClicked += OnShopItemClicked;
+                GD.Print($"[HexMapUI] Event bound successfully");
             }
+            GD.Print($"[HexMapUI] RefreshShopItems completed. Container has {_shopItemsContainer.GetChildCount()} children");
         }
 
         private ShopItemCard CreateShopItemCard(ShopItem item)
         {
+            GD.Print($"[HexMapUI] CreateShopItemCard: Instantiating card...");
             var card = (ShopItemCard)_shopItemCardScene.Instantiate();
-            bool canAfford = BlackMarkShopManager.Instance?.CanAfford(item) ?? false;
-            card.SetItem(item, canAfford);
-            card.OnBuyClicked += OnShopItemClicked;
+            GD.Print($"[HexMapUI] CreateShopItemCard: card={card}, IsInstanceValid={card != null}, Script={card?.GetScript()}");
+
+            if (card == null)
+            {
+                GD.PrintErr("[HexMapUI] CreateShopItemCard: card is null!");
+                return null;
+            }
+
+            GD.Print($"[HexMapUI] CreateShopItemCard: card type={card.GetType()}, name={card.Name}");
+            GD.Print($"[HexMapUI] CreateShopItemCard: returning card...");
             return card;
         }
 

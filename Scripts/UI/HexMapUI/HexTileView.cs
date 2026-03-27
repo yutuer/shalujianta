@@ -46,6 +46,8 @@ namespace FishEatFish.UI.HexMap
 
         public override void _Ready()
         {
+            MouseFilter = MouseFilterEnum.Stop;
+
             _hexShape = GetNode<Polygon2D>("HexShape");
             _background = GetNode<ColorRect>("Background");
             _iconLabel = GetNode<Label>("IconLabel");
@@ -210,11 +212,13 @@ namespace FishEatFish.UI.HexMap
             _isHovered = false;
         }
 
-        public override void _GuiInput(InputEvent @event)
+        public override void _Input(InputEvent @event)
         {
-            if (@event is InputEventMouseButton mouseEvent)
+            if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
             {
-                if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
+                var localPos = GetLocalMousePosition();
+                var rect = new Rect2(Vector2.Zero, Size);
+                if (rect.HasPoint(localPos))
                 {
                     if (_isClickable && _tile != null && _tile.CanEnter)
                     {

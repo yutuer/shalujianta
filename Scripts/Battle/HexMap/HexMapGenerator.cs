@@ -24,7 +24,7 @@ namespace FishEatFish.Battle.HexMap
             tiles[startCoord].IsStart = true;
             tiles[endCoord].IsEnd = true;
             tiles[endCoord].EventType = HexEventType.BattleBoss;
-            tiles[endCoord].TriggerType = EventTriggerType.OneTime;
+            tiles[endCoord].TriggerCount = 1;
             tiles[endCoord].DisplayName = "BOSS";
             tiles[endCoord].IconPath = "res://Assets/Icons/boss.png";
 
@@ -208,7 +208,7 @@ namespace FishEatFish.Battle.HexMap
                     if (VerifyHolePlacement(tiles, coord, neighbors, criticalSet))
                     {
                         tiles[coord].EventType = HexEventType.Hole;
-                        tiles[coord].TriggerType = EventTriggerType.Terrain;
+                        tiles[coord].TriggerCount = 1;
                         tiles[coord].DisplayName = "洞穴";
                         tiles[coord].IconPath = "res://Assets/Icons/hole.png";
                         placed++;
@@ -546,14 +546,14 @@ namespace FishEatFish.Battle.HexMap
                     var pairId = $"one_dir_tele_{pairsPlaced}";
 
                     tiles[coord1].EventType = HexEventType.OneDirectionTele;
-                    tiles[coord1].TriggerType = EventTriggerType.Terrain;
+                    tiles[coord1].TriggerCount = HexTile.InfiniteTriggers;
                     tiles[coord1].TeleportPairId = pairId;
                     tiles[coord1].TeleportDirection = TeleportDirection.Forward;
                     tiles[coord1].DisplayName = "单向传送门1→2";
                     tiles[coord1].IconPath = "res://Assets/Icons/one_dir_tele.png";
 
                     tiles[coord2].EventType = HexEventType.OneDirectionTele;
-                    tiles[coord2].TriggerType = EventTriggerType.Terrain;
+                    tiles[coord2].TriggerCount = HexTile.InfiniteTriggers;
                     tiles[coord2].TeleportPairId = pairId;
                     tiles[coord2].TeleportDirection = TeleportDirection.Backward;
                     tiles[coord2].DisplayName = "单向传送门2→1";
@@ -604,7 +604,7 @@ namespace FishEatFish.Battle.HexMap
             {
                 var coord = candidates[i];
                 tiles[coord].EventType = HexEventType.Swamp;
-                tiles[coord].TriggerType = EventTriggerType.Terrain;
+                tiles[coord].TriggerCount = HexTile.InfiniteTriggers;
                 tiles[coord].Damage = 10;
                 tiles[coord].DisplayName = "沼泽";
                 tiles[coord].IconPath = "res://Assets/Icons/swamp.png";
@@ -645,13 +645,13 @@ namespace FishEatFish.Battle.HexMap
                     var pairId = $"twoway_teleport_{pairsPlaced}";
 
                     tiles[coord1].EventType = HexEventType.TwoWayTeleport;
-                    tiles[coord1].TriggerType = EventTriggerType.Terrain;
+                    tiles[coord1].TriggerCount = HexTile.InfiniteTriggers;
                     tiles[coord1].TeleportPairId = pairId;
                     tiles[coord1].DisplayName = "双向传送门A";
                     tiles[coord1].IconPath = "res://Assets/Icons/teleport_two_way.png";
 
                     tiles[coord2].EventType = HexEventType.TwoWayTeleport;
-                    tiles[coord2].TriggerType = EventTriggerType.Terrain;
+                    tiles[coord2].TriggerCount = HexTile.InfiniteTriggers;
                     tiles[coord2].TeleportPairId = pairId;
                     tiles[coord2].DisplayName = "双向传送门B";
                     tiles[coord2].IconPath = "res://Assets/Icons/teleport_two_way.png";
@@ -732,7 +732,7 @@ namespace FishEatFish.Battle.HexMap
             {
                 var coord = candidates[i];
                 tiles[coord].EventType = eventType;
-                tiles[coord].TriggerType = GetTriggerTypeForEvent(eventType);
+                tiles[coord].TriggerCount = GetTriggerCountForEvent(eventType);
 
                 switch (eventType)
                 {
@@ -754,7 +754,7 @@ namespace FishEatFish.Battle.HexMap
                     case HexEventType.GainBlackMark:
                         tiles[coord].DisplayName = "黑印碎片";
                         tiles[coord].IconPath = "res://Assets/Icons/black_mark.png";
-                        tiles[coord].BlackMarkGain = 5;
+                        tiles[coord].BlackMarkGain = 50;
                         break;
                     case HexEventType.Shop:
                         tiles[coord].DisplayName = "神秘商店";
@@ -764,24 +764,16 @@ namespace FishEatFish.Battle.HexMap
             }
         }
 
-        private EventTriggerType GetTriggerTypeForEvent(HexEventType eventType)
+        private int GetTriggerCountForEvent(HexEventType eventType)
         {
             switch (eventType)
             {
                 case HexEventType.Shop:
-                case HexEventType.BattleNormal:
-                case HexEventType.BattleElite:
-                case HexEventType.BattleBoss:
-                case HexEventType.Heal:
-                case HexEventType.GainBlackMark:
-                    return EventTriggerType.OneTime;
-                case HexEventType.Swamp:
                 case HexEventType.TwoWayTeleport:
                 case HexEventType.OneDirectionTele:
-                case HexEventType.Hole:
-                    return EventTriggerType.Terrain;
+                    return HexTile.InfiniteTriggers;
                 default:
-                    return EventTriggerType.OneTime;
+                    return 1;
             }
         }
 
