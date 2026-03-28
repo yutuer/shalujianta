@@ -1,10 +1,7 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI/ShopUI/ShopUI.cs" id="1_script"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/ShopItemCard.tscn" id="2_shopitemcard"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/EngravingDescriptionUI.tscn" id="3_engravingdesc"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/ArtifactDescriptionUI.tscn" id="4_artifactdesc"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/EngravingCardSelectionUI.tscn" id="5_engravingselection"]
 
 [node name="ShopUI" type="Control"]
 script = ExtResource("1_script")
@@ -95,9 +92,3 @@ theme_override_constants/v_separation = 15
 [node name="BottomSpacer" type="Control" parent="ShopContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
-
-[node name="EngravingDescriptionUI" parent="." instance=ExtResource("3_engravingdesc")]
-
-[node name="ArtifactDescriptionUI" parent="." instance=ExtResource("4_artifactdesc")]
-
-[node name="EngravingCardSelectionUI" parent="." instance=ExtResource("5_engravingselection")]

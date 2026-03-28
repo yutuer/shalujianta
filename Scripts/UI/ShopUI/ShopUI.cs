@@ -22,6 +22,10 @@ namespace FishEatFish.UI.ShopUI
         private int _currentRefreshCount = 2;
         private const int MaxRefreshCount = 2;
 
+        private PackedScene _engravingDescriptionScene;
+        private PackedScene _artifactDescriptionScene;
+        private PackedScene _engravingCardSelectionScene;
+
         private FishEatFish.UI.EngravingDescriptionUI.EngravingDescriptionUI _engravingDescriptionUI;
         private FishEatFish.UI.ArtifactDescriptionUI.ArtifactDescriptionUI _artifactDescriptionUI;
         private FishEatFish.UI.EngravingCardSelectionUI.EngravingCardSelectionUI _engravingCardSelectionUI;
@@ -42,7 +46,6 @@ namespace FishEatFish.UI.ShopUI
             }
 
             InitializeNodes();
-            InitializeSubComponents();
 
             GD.Print($"[ShopUI] _Ready completed");
         }
@@ -109,36 +112,71 @@ namespace FishEatFish.UI.ShopUI
             GD.Print($"[ShopUI] InitializeNodes completed");
         }
 
-        private void InitializeSubComponents()
+        private FishEatFish.UI.EngravingDescriptionUI.EngravingDescriptionUI GetOrCreateEngravingDescriptionUI()
         {
-            GD.Print($"[ShopUI] InitializeSubComponents called");
-
-            _engravingDescriptionUI = GetNodeOrNull<FishEatFish.UI.EngravingDescriptionUI.EngravingDescriptionUI>("EngravingDescriptionUI");
             if (_engravingDescriptionUI != null)
+                return _engravingDescriptionUI;
+
+            if (_engravingDescriptionScene == null)
             {
-                _engravingDescriptionUI.Visible = false;
-                GD.Print("[ShopUI] EngravingDescriptionUI initialized");
+                _engravingDescriptionScene = GD.Load<PackedScene>("res://Scenes/UI/EngravingDescriptionUI.tscn");
             }
 
-            _artifactDescriptionUI = GetNodeOrNull<FishEatFish.UI.ArtifactDescriptionUI.ArtifactDescriptionUI>("ArtifactDescriptionUI");
-            if (_artifactDescriptionUI != null)
+            if (_engravingDescriptionScene != null)
             {
+                _engravingDescriptionUI = _engravingDescriptionScene.Instantiate<FishEatFish.UI.EngravingDescriptionUI.EngravingDescriptionUI>();
+                AddChild(_engravingDescriptionUI);
+                _engravingDescriptionUI.Visible = false;
+                GD.Print("[ShopUI] EngravingDescriptionUI created on demand");
+            }
+
+            return _engravingDescriptionUI;
+        }
+
+        private FishEatFish.UI.ArtifactDescriptionUI.ArtifactDescriptionUI GetOrCreateArtifactDescriptionUI()
+        {
+            if (_artifactDescriptionUI != null)
+                return _artifactDescriptionUI;
+
+            if (_artifactDescriptionScene == null)
+            {
+                _artifactDescriptionScene = GD.Load<PackedScene>("res://Scenes/UI/ArtifactDescriptionUI.tscn");
+            }
+
+            if (_artifactDescriptionScene != null)
+            {
+                _artifactDescriptionUI = _artifactDescriptionScene.Instantiate<FishEatFish.UI.ArtifactDescriptionUI.ArtifactDescriptionUI>();
+                AddChild(_artifactDescriptionUI);
                 _artifactDescriptionUI.Visible = false;
                 _artifactDescriptionUI.OnPurchaseCompleted += OnArtifactPurchased;
                 _artifactDescriptionUI.OnCancel += OnArtifactCancelled;
-                GD.Print("[ShopUI] ArtifactDescriptionUI initialized");
+                GD.Print("[ShopUI] ArtifactDescriptionUI created on demand");
             }
 
-            _engravingCardSelectionUI = GetNodeOrNull<FishEatFish.UI.EngravingCardSelectionUI.EngravingCardSelectionUI>("EngravingCardSelectionUI");
+            return _artifactDescriptionUI;
+        }
+
+        private FishEatFish.UI.EngravingCardSelectionUI.EngravingCardSelectionUI GetOrCreateEngravingCardSelectionUI()
+        {
             if (_engravingCardSelectionUI != null)
+                return _engravingCardSelectionUI;
+
+            if (_engravingCardSelectionScene == null)
             {
+                _engravingCardSelectionScene = GD.Load<PackedScene>("res://Scenes/UI/EngravingCardSelectionUI.tscn");
+            }
+
+            if (_engravingCardSelectionScene != null)
+            {
+                _engravingCardSelectionUI = _engravingCardSelectionScene.Instantiate<FishEatFish.UI.EngravingCardSelectionUI.EngravingCardSelectionUI>();
+                AddChild(_engravingCardSelectionUI);
                 _engravingCardSelectionUI.Visible = false;
                 _engravingCardSelectionUI.OnEngravingCompleted += OnEngravingSelectionCompleted;
                 _engravingCardSelectionUI.OnCancel += OnEngravingSelectionCancelled;
-                GD.Print("[ShopUI] EngravingCardSelectionUI initialized");
+                GD.Print("[ShopUI] EngravingCardSelectionUI created on demand");
             }
 
-            GD.Print($"[ShopUI] InitializeSubComponents completed");
+            return _engravingCardSelectionUI;
         }
 
         public void SetRefreshCount(int count)
@@ -297,10 +335,11 @@ namespace FishEatFish.UI.ShopUI
         {
             GD.Print($"[ShopUI] ShowArtifactDescription called: {item.Name}");
 
-            if (_artifactDescriptionUI != null)
+            var ui = GetOrCreateArtifactDescriptionUI();
+            if (ui != null)
             {
                 SetInteractionEnabled(false);
-                _artifactDescriptionUI.ShowArtifact(item);
+                ui.ShowArtifact(item);
             }
 
             GD.Print($"[ShopUI] ShowArtifactDescription completed");
@@ -310,10 +349,11 @@ namespace FishEatFish.UI.ShopUI
         {
             GD.Print($"[ShopUI] ShowEngravingDescription called: {item.Name}");
 
-            if (_engravingDescriptionUI != null)
+            var ui = GetOrCreateEngravingDescriptionUI();
+            if (ui != null)
             {
                 SetInteractionEnabled(false);
-                _engravingDescriptionUI.ShowEngravingDescription(item, OnEngravingItemConfirmed, OnEngravingDescriptionCancelled);
+                ui.ShowEngravingDescription(item, OnEngravingItemConfirmed, OnEngravingDescriptionCancelled);
             }
 
             GD.Print($"[ShopUI] ShowEngravingDescription completed");
@@ -323,9 +363,10 @@ namespace FishEatFish.UI.ShopUI
         {
             GD.Print($"[ShopUI] ShowEngravingCardSelection called: item={engravingItem?.Name}, cardCount={availableCards?.Count ?? 0}");
 
-            if (_engravingCardSelectionUI != null)
+            var ui = GetOrCreateEngravingCardSelectionUI();
+            if (ui != null)
             {
-                _engravingCardSelectionUI.ShowCardSelection(engravingItem, availableCards);
+                ui.ShowCardSelection(engravingItem, availableCards);
             }
 
             GD.Print($"[ShopUI] ShowEngravingCardSelection completed");
