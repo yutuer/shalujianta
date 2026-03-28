@@ -15,7 +15,7 @@ namespace FishEatFish.UI.ArtifactDescriptionUI
 
         private ShopItem _currentItem;
 
-        public System.Action OnPurchaseCompleted;
+        public System.Action<ShopItem> OnPurchaseCompleted;
         public System.Action OnCancel;
 
         public override void _Ready()
@@ -134,8 +134,8 @@ namespace FishEatFish.UI.ArtifactDescriptionUI
             if (success)
             {
                 Visible = false;
-                OnPurchaseCompleted?.Invoke();
-                GD.Print("[ArtifactDescriptionUI] OnBuyPressed: purchase successful");
+                OnPurchaseCompleted?.Invoke(_currentItem);
+                GD.Print($"[ArtifactDescriptionUI] OnBuyPressed: purchase successful for {_currentItem?.Name}");
             }
             else
             {

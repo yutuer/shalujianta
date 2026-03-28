@@ -338,10 +338,10 @@ namespace FishEatFish.UI.ShopUI
             GD.Print($"[ShopUI] OnEngravingDescriptionCancelled completed");
         }
 
-        private void OnArtifactPurchased()
+        private void OnArtifactPurchased(ShopItem item)
         {
-            GD.Print($"[ShopUI] OnArtifactPurchased called");
-            OnArtifactItemConfirmed?.Invoke(null);
+            GD.Print($"[ShopUI] OnArtifactPurchased called: {item?.Name}");
+            OnArtifactItemConfirmed?.Invoke(item);
             SetInteractionEnabled(true);
             GD.Print($"[ShopUI] OnArtifactPurchased completed");
         }

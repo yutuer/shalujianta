@@ -123,21 +123,19 @@ namespace FishEatFish.UI.HexMap
         {
             GD.Print($"[HexMapUI] OnArtifactItemConfirmed called: {artifactItem?.Name}");
 
-            if (BlackMarkShopManager.Instance.PurchaseArtifact(artifactItem))
+            if (artifactItem == null)
             {
-                GD.Print($"[HexMapUI] OnArtifactItemConfirmed: PurchaseArtifact succeeded");
-                _shopUI?.HideArtifactDescription();
-                _shopUI?.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
-                UpdateBlackMarkDisplay(BlackMarkShopManager.Instance?.BlackMarkCount ?? 0);
-                GD.Print($"[HexMapUI] OnArtifactItemConfirmed: _backpackUI={_backpackUI}");
-                _backpackUI?.Refresh();
-                var ownedArtifacts = BlackMarkShopManager.Instance?.GetOwnedArtifacts();
-                GD.Print($"[HexMapUI] OnArtifactItemConfirmed: ownedArtifacts count={ownedArtifacts?.Count ?? 0}");
+                GD.PrintErr("[HexMapUI] OnArtifactItemConfirmed: artifactItem is null!");
+                return;
             }
-            else
-            {
-                GD.PrintErr($"[HexMapUI] OnArtifactItemConfirmed: PurchaseArtifact failed!");
-            }
+
+            GD.Print($"[HexMapUI] OnArtifactItemConfirmed: _backpackUI={_backpackUI}");
+            _shopUI?.HideArtifactDescription();
+            _shopUI?.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
+            UpdateBlackMarkDisplay(BlackMarkShopManager.Instance?.BlackMarkCount ?? 0);
+            _backpackUI?.Refresh();
+            var ownedArtifacts = BlackMarkShopManager.Instance?.GetOwnedArtifacts();
+            GD.Print($"[HexMapUI] OnArtifactItemConfirmed: ownedArtifacts count={ownedArtifacts?.Count ?? 0}");
         }
 
         private void OnEngravingCompleted()
