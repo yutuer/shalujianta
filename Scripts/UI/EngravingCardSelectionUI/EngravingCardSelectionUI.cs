@@ -15,6 +15,9 @@ namespace FishEatFish.UI.EngravingCardSelectionUI
         private GridContainer _cardGrid;
         private Button _confirmButton;
         private Button _cancelButton;
+        private TextureRect _engravingIcon;
+        private Label _engravingNameLabel;
+        private Label _engravingEffectLabel;
 
         private ShopItem _engravingItem;
         private Card _selectedCard;
@@ -28,10 +31,30 @@ namespace FishEatFish.UI.EngravingCardSelectionUI
         {
             GD.Print($"[EngravingCardSelectionUI] _Ready called");
 
+            var bottomContainer = GetNodeOrNull<HBoxContainer>("BackgroundPanel/VBoxContainer/BottomContainer");
+            GD.Print($"[EngravingCardSelectionUI] _Ready: bottomContainer={bottomContainer != null}");
+
+            if (bottomContainer != null)
+            {
+                GD.Print($"[EngravingCardSelectionUI] _Ready: bottomContainer.GetChildCount={bottomContainer.GetChildCount()}");
+                for (int i = 0; i < bottomContainer.GetChildCount(); i++)
+                {
+                    var child = bottomContainer.GetChild(i);
+                    GD.Print($"[EngravingCardSelectionUI] _Ready: bottomContainer child[{i}] name={child.Name}, type={child.GetType().Name}");
+                }
+            }
+
             _titleLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/TitleLabel");
             _cardGrid = GetNodeOrNull<GridContainer>("BackgroundPanel/VBoxContainer/CardScrollMargin/CardScrollContainer/CardGrid");
             _confirmButton = GetNodeOrNull<Button>("BackgroundPanel/VBoxContainer/BottomContainer/ConfirmButton");
             _cancelButton = GetNodeOrNull<Button>("BackgroundPanel/VBoxContainer/BottomContainer/CancelButton");
+            _engravingIcon = GetNodeOrNull<TextureRect>("BackgroundPanel/VBoxContainer/BottomContainer/EngravingInfoContainer/EngravingIcon");
+            _engravingNameLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/BottomContainer/EngravingInfoContainer/EngravingNameLabel");
+            _engravingEffectLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/BottomContainer/EngravingInfoContainer/EngravingEffectLabel");
+
+            GD.Print($"[EngravingCardSelectionUI] _Ready: _engravingIcon={_engravingIcon != null}");
+            GD.Print($"[EngravingCardSelectionUI] _Ready: _engravingNameLabel={_engravingNameLabel != null}");
+            GD.Print($"[EngravingCardSelectionUI] _Ready: _engravingEffectLabel={_engravingEffectLabel != null}");
 
             if (_confirmButton != null)
             {
@@ -100,9 +123,93 @@ namespace FishEatFish.UI.EngravingCardSelectionUI
             {
                 _titleLabel.Text = $"选择要刻印的卡牌 - {_engravingItem?.Name ?? "刻印"}";
             }
+
+            UpdateEngravingInfo();
+
             Visible = true;
 
             GD.Print($"[EngravingCardSelectionUI] ShowCardSelection completed");
+        }
+
+        private void UpdateEngravingInfo()
+        {
+            GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo called: item={_engravingItem?.Name}");
+            GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo: _engravingNameLabel={_engravingNameLabel != null}");
+            GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo: _engravingEffectLabel={_engravingEffectLabel != null}");
+            GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo: _engravingItem.EngravingEffect={_engravingItem?.EngravingEffect != null}");
+
+            if (_engravingItem == null)
+            {
+                GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo: _engravingItem is null!");
+                if (_engravingNameLabel != null)
+                    _engravingNameLabel.Text = "";
+                if (_engravingEffectLabel != null)
+                    _engravingEffectLabel.Text = "";
+                return;
+            }
+
+            if (_engravingNameLabel != null)
+            {
+                _engravingNameLabel.Text = _engravingItem.Name ?? "未知刻印";
+                GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo: set name to '{_engravingNameLabel.Text}'");
+            }
+            else
+            {
+                GD.PrintErr($"[EngravingCardSelectionUI] UpdateEngravingInfo: _engravingNameLabel is null!");
+            }
+
+            if (_engravingIcon != null && !string.IsNullOrEmpty(_engravingItem.Icon))
+            {
+                var texture = GD.Load<Texture2D>(_engravingItem.Icon);
+                if (texture != null)
+                {
+                    _engravingIcon.Texture = texture;
+                    GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo: set icon texture");
+                }
+            }
+
+            if (_engravingEffectLabel != null)
+            {
+                if (_engravingItem.EngravingEffect != null)
+                {
+                    string effectText = GetEffectDescription(_engravingItem.EngravingEffect);
+                    _engravingEffectLabel.Text = effectText;
+                    GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo: set effect to '{effectText}'");
+                }
+                else
+                {
+                    _engravingEffectLabel.Text = "无效果";
+                    GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo: EngravingEffect is null, set to '无效果'");
+                }
+            }
+            else
+            {
+                GD.PrintErr($"[EngravingCardSelectionUI] UpdateEngravingInfo: _engravingEffectLabel is null!");
+            }
+
+            GD.Print($"[EngravingCardSelectionUI] UpdateEngravingInfo completed");
+        }
+
+        private string GetEffectDescription(EngravingEffect effect)
+        {
+            if (effect == null)
+                return "";
+
+            string valueStr = effect.value > 0 ? $"+{effect.value}" : effect.value.ToString();
+            string percentStr = effect.value < 1 ? $"{(int)(effect.value * 100)}%" : valueStr;
+
+            return effect.GetEffectType() switch
+            {
+                EngravingEffectType.AttackBuff => $"攻击力 {percentStr}",
+                EngravingEffectType.DefenseBuff => $"防御力 {percentStr}",
+                EngravingEffectType.HealthBuff => $"生命值 {percentStr}",
+                EngravingEffectType.SpeedBuff => $"速度 {percentStr}",
+                EngravingEffectType.CritBuff => $"暴击率 {percentStr}",
+                EngravingEffectType.HealBuff => $"治疗效果 {percentStr}",
+                EngravingEffectType.ShieldBuff => $"护盾 {percentStr}",
+                EngravingEffectType.SlowOnAttack => $"攻击附带减速 {percentStr}",
+                _ => $"效果: {valueStr}"
+            };
         }
 
         private FishEatFish.UI.CardSelectionItem.CardSelectionItem CreateCardItem(Card card)

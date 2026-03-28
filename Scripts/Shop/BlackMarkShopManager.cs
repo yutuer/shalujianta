@@ -20,6 +20,7 @@ namespace FishEatFish.Shop
 		public string Description { get; set; }
 		public int Price { get; set; }
 		public bool Purchased { get; set; }
+		public EngravingEffect EngravingEffect { get; set; }
 
 		public static ShopItem FromArtifact(ArtifactData artifact)
 		{
@@ -43,7 +44,8 @@ namespace FishEatFish.Shop
 				Name = engraving.name,
 				Icon = engraving.icon,
 				Description = engraving.description,
-				Price = engraving.price
+				Price = engraving.price,
+				EngravingEffect = engraving.effect
 			};
 		}
 	}

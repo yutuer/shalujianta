@@ -71,7 +71,29 @@ layout_mode = 2
 
 [node name="BottomContainer" type="HBoxContainer" parent="BackgroundPanel/VBoxContainer"]
 layout_mode = 2
-alignment = 2
+alignment = 0
+
+[node name="EngravingInfoContainer" type="HBoxContainer" parent="BackgroundPanel/VBoxContainer/BottomContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EngravingIcon" type="TextureRect" parent="BackgroundPanel/VBoxContainer/BottomContainer/EngravingInfoContainer"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="EngravingNameLabel" type="Label" parent="BackgroundPanel/VBoxContainer/BottomContainer/EngravingInfoContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+
+[node name="EngravingEffectLabel" type="Label" parent="BackgroundPanel/VBoxContainer/BottomContainer/EngravingInfoContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.6, 0.2, 1)
+
+[node name="BottomSpacer" type="Control" parent="BackgroundPanel/VBoxContainer/BottomContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="ConfirmButton" type="Button" parent="BackgroundPanel/VBoxContainer/BottomContainer"]
 custom_minimum_size = Vector2(150, 50)
