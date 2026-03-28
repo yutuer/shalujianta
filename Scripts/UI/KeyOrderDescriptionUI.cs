@@ -8,8 +8,6 @@ public partial class KeyOrderDescriptionUI : Control
     private PanelContainer _backgroundPanel;
     private VBoxContainer _mainContainer;
     private Label _titleLabel;
-    private Label _nameLabel;
-    private Label _typeLabel;
     private Label _descLabel;
     private Label _costLabel;
     private CenterContainer _iconContainer;
@@ -34,8 +32,6 @@ public partial class KeyOrderDescriptionUI : Control
         _backgroundPanel = GetNode<PanelContainer>("BackgroundPanel");
         _mainContainer = GetNode<VBoxContainer>("BackgroundPanel/VBoxContainer");
         _titleLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/TitleLabel");
-        _nameLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/NameLabel");
-        _typeLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/TypeLabel");
         _descLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/DescLabel");
         _costLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/CostLabel");
         _iconContainer = GetNode<CenterContainer>("BackgroundPanel/VBoxContainer/IconContainer");
@@ -65,13 +61,9 @@ public partial class KeyOrderDescriptionUI : Control
         Visible = true;
 
         if (_titleLabel != null)
-            _titleLabel.Text = "钥令详情";
-        if (_nameLabel != null)
-            _nameLabel.Text = keyOrder.Name;
-        if (_typeLabel != null)
-            _typeLabel.Text = GetEffectTypeName(keyOrder.EffectType);
+            _titleLabel.Text = keyOrder.Name;
         if (_descLabel != null)
-            _descLabel.Text = GetEffectDescription(keyOrder);
+            _descLabel.Text = $"{GetEffectTypeName(keyOrder.EffectType)}\n{GetEffectDescription(keyOrder)}";
         if (_costLabel != null)
             _costLabel.Text = $"消耗: {keyOrder.SilverKeyCost} 银钥";
 
@@ -178,12 +170,10 @@ public partial class KeyOrderDescriptionUI : Control
         _isVisible = true;
         Visible = true;
 
-        if (_nameLabel != null)
-            _nameLabel.Text = message;
-        if (_typeLabel != null)
-            _typeLabel.Text = "";
+        if (_titleLabel != null)
+            _titleLabel.Text = "提示";
         if (_descLabel != null)
-            _descLabel.Text = "";
+            _descLabel.Text = message;
         if (_costLabel != null)
             _costLabel.Text = "";
 

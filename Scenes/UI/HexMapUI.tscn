@@ -199,28 +199,41 @@ offset_right = 350.0
 offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ShopContainer" unique_id=1818605994]
 layout_mode = 2
-size_flags_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 14
+
+[node name="TopSpacer" type="Control" parent="ShopContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
 
 [node name="HeaderBox" type="HBoxContainer" parent="ShopContainer/VBoxContainer" unique_id=1814120053]
 layout_mode = 2
-alignment = 2
+size_flags_horizontal = 3
 
 [node name="CloseButton" type="Button" parent="ShopContainer/VBoxContainer/HeaderBox" unique_id=568103644]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 text = "X"
 
+[node name="HeaderSpacer" type="Control" parent="ShopContainer/VBoxContainer/HeaderBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="ShopTitle" type="Label" parent="ShopContainer/VBoxContainer" unique_id=1900891852]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 text = "神秘商店"
 horizontal_alignment = 1
 
 [node name="RefreshBar" type="HBoxContainer" parent="ShopContainer/VBoxContainer" unique_id=386107938]
 layout_mode = 2
+size_flags_horizontal = 3
 alignment = 2
 
 [node name="CostLabel" type="Label" parent="ShopContainer/VBoxContainer/RefreshBar" unique_id=386107939]
@@ -236,14 +249,21 @@ text = "刷新 2/2"
 
 [node name="ShopItemsMargin" type="MarginContainer" parent="ShopContainer/VBoxContainer" unique_id=386107936]
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/margin_left = 40
 theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 20
 
 [node name="ShopItems" type="GridContainer" parent="ShopContainer/VBoxContainer/ShopItemsMargin" unique_id=386107937]
 layout_mode = 2
+size_flags_horizontal = 4
 columns = 3
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 15
+
+[node name="BottomSpacer" type="Control" parent="ShopContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
 
 [node name="EngravingSelectContainer" type="PanelContainer" parent="." unique_id=1466989650]
 visible = false
@@ -365,6 +385,7 @@ offset_right = 200.0
 offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("5_keyorder")
 
 [node name="BackgroundPanel" type="PanelContainer" parent="KeyOrderDescriptionUI"]
@@ -383,11 +404,14 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="KeyOrderDescriptionUI/BackgroundPanel"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 alignment = 1
-theme_override_constants/separation = 0
+theme_override_constants/separation = 10
 
 [node name="TitleLabel" type="Label" parent="KeyOrderDescriptionUI/BackgroundPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "钥令详情"
 horizontal_alignment = 1
 
@@ -408,6 +432,7 @@ theme_override_font_sizes/font_size = 40
 
 [node name="DescLabel" type="Label" parent="KeyOrderDescriptionUI/BackgroundPanel/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 3
 text = "描述"
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -416,6 +441,8 @@ autowrap_mode = 2
 layout_mode = 2
 text = "💰 0"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.8, 0, 1)
+theme_override_font_sizes/font_size = 18
 
 [node name="ButtonContainer" type="HBoxContainer" parent="KeyOrderDescriptionUI/BackgroundPanel/VBoxContainer"]
 layout_mode = 2
@@ -450,6 +477,7 @@ offset_right = 200.0
 offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("6_artifact")
 
 [node name="BackgroundPanel" type="PanelContainer" parent="ArtifactDescriptionUI"]
@@ -468,11 +496,14 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ArtifactDescriptionUI/BackgroundPanel"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 alignment = 1
-theme_override_constants/separation = 0
+theme_override_constants/separation = 10
 
 [node name="TitleLabel" type="Label" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 
 [node name="Separator1" type="HSeparator" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
@@ -498,6 +529,7 @@ theme_override_font_sizes/font_size = 48
 
 [node name="EffectLabel" type="Label" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 3
 text = "效果"
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -506,6 +538,8 @@ autowrap_mode = 2
 layout_mode = 2
 text = "💰 0"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.8, 0, 1)
+theme_override_font_sizes/font_size = 18
 
 [node name="ButtonContainer" type="HBoxContainer" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
 layout_mode = 2
@@ -529,6 +563,7 @@ text = "取消"
 [node name="EngravingCardSelectionUI" type="Control" parent="."]
 custom_minimum_size = Vector2(800, 500)
 layout_mode = 1
+mouse_filter = 2
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -558,12 +593,16 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="EngravingCardSelectionUI/BackgroundPanel"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 alignment = 1
+theme_override_constants/separation = 10
 
 [node name="TitleLabel" type="Label" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer"]
 layout_mode = 2
 text = "选择要刻印的卡牌"
 horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
 
 [node name="Separator1" type="HSeparator" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer"]
 custom_minimum_size = Vector2(700, 2)
@@ -572,6 +611,7 @@ layout_mode = 2
 [node name="CardScrollContainer" type="ScrollContainer" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 350)
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 4
 horizontal_scroll_mode = 2
 
@@ -579,7 +619,7 @@ horizontal_scroll_mode = 2
 custom_minimum_size = Vector2(750, 0)
 layout_mode = 1
 size_flags_horizontal = 3
-size_flags_vertical = 3
+size_flags_vertical = 1
 columns = 5
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
