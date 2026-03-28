@@ -29,7 +29,7 @@ namespace FishEatFish.UI.EngravingCardSelectionUI
             GD.Print($"[EngravingCardSelectionUI] _Ready called");
 
             _titleLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/TitleLabel");
-            _cardGrid = GetNodeOrNull<GridContainer>("BackgroundPanel/VBoxContainer/CardScrollMargin/CardScrollContainer/CardGridContainer/CardGrid");
+            _cardGrid = GetNodeOrNull<GridContainer>("BackgroundPanel/VBoxContainer/CardScrollMargin/CardScrollContainer/CardGrid");
             _confirmButton = GetNodeOrNull<Button>("BackgroundPanel/VBoxContainer/BottomContainer/ConfirmButton");
             _cancelButton = GetNodeOrNull<Button>("BackgroundPanel/VBoxContainer/BottomContainer/CancelButton");
 
