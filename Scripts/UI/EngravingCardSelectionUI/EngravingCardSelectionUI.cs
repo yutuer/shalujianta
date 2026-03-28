@@ -62,8 +62,11 @@ namespace FishEatFish.UI.EngravingCardSelectionUI
             }
             _cardItems.Clear();
 
+            GD.Print($"[EngravingCardSelectionUI] ShowCardSelection: _cardGrid={_cardGrid != null}");
+
             if (_cardGrid != null)
             {
+                GD.Print($"[EngravingCardSelectionUI] ShowCardSelection: clearing existing children, count={_cardGrid.GetChildCount()}");
                 foreach (var child in _cardGrid.GetChildren())
                 {
                     child.QueueFree();
@@ -79,13 +82,24 @@ namespace FishEatFish.UI.EngravingCardSelectionUI
                     _cardGrid.AddChild(cardItem);
                     cardItem.SetCardData(card);
                     _cardItems.Add(cardItem);
+                    GD.Print($"[EngravingCardSelectionUI] ShowCardSelection: card item added to grid");
+                }
+                else
+                {
+                    GD.PrintErr($"[EngravingCardSelectionUI] ShowCardSelection: failed to add card item (cardItem={cardItem != null}, _cardGrid={_cardGrid != null})");
                 }
             }
 
+            GD.Print($"[EngravingCardSelectionUI] ShowCardSelection: total card items added={_cardItems.Count}");
+
             if (_confirmButton != null)
+            {
                 _confirmButton.Disabled = true;
+            }
             if (_titleLabel != null)
+            {
                 _titleLabel.Text = $"选择要刻印的卡牌 - {_engravingItem?.Name ?? "刻印"}";
+            }
             Visible = true;
 
             GD.Print($"[EngravingCardSelectionUI] ShowCardSelection completed");
