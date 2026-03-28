@@ -1,8 +1,10 @@
-[gd_scene load_steps=3 format=4]
+[gd_scene load_steps=8 format=4]
 
 [ext_resource type="Script" path="res://Scripts/UI/ShopUI/ShopUI.cs" id="1_script"]
-
 [ext_resource type="PackedScene" uid="uid://b8xvqyjw8yx6o" path="res://Scenes/UI/ShopItemCard.tscn" id="2_shopitemcard"]
+[ext_resource type="Script" path="res://Scripts/UI/EngravingDescriptionUI/EngravingDescriptionUI.cs" id="3_engravingdesc"]
+[ext_resource type="Script" path="res://Scripts/UI/ArtifactDescriptionUI/ArtifactDescriptionUI.cs" id="4_artifactdesc"]
+[ext_resource type="Script" path="res://Scripts/UI/EngravingCardSelectionUI/EngravingCardSelectionUI.cs" id="5_engravingselection"]
 
 [node name="ShopContainer" type="PanelContainer"]
 visible = false
@@ -85,3 +87,274 @@ theme_override_constants/v_separation = 15
 [node name="BottomSpacer" type="Control" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
+
+[node name="EngravingDescriptionUI" type="Control" parent="."]
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_engravingdesc")
+
+[node name="BackgroundPanel" type="PanelContainer" parent="EngravingDescriptionUI"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="EngravingDescriptionUI/BackgroundPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "刻印详情"
+horizontal_alignment = 1
+
+[node name="Separator1" type="HSeparator" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(300, 2)
+layout_mode = 2
+
+[node name="IconContainer" type="CenterContainer" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="EmojiLabel" type="Label" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer/IconContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 40
+
+[node name="DescLabel" type="Label" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "描述"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CostLabel" type="Label" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+text = "💰 0"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.8, 0, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="ButtonContainer" type="HBoxContainer" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="UseButton" type="Button" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "确定"
+
+[node name="ButtonSpacer" type="Control" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="CancelButton" type="Button" parent="EngravingDescriptionUI/BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "取消"
+
+[node name="ArtifactDescriptionUI" type="Control" parent="."]
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_artifactdesc")
+
+[node name="BackgroundPanel" type="PanelContainer" parent="ArtifactDescriptionUI"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ArtifactDescriptionUI/BackgroundPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+
+[node name="Separator1" type="HSeparator" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(300, 2)
+layout_mode = 2
+
+[node name="IconContainer" type="CenterContainer" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="IconRect" type="TextureRect" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer/IconContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 4
+
+[node name="EmojiLabel" type="Label" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer/IconContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 48
+
+[node name="EffectLabel" type="Label" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "效果"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CostLabel" type="Label" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+text = "💰 0"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.8, 0, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="ButtonContainer" type="HBoxContainer" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="BuyButton" type="Button" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "确定"
+
+[node name="ButtonSpacer" type="Control" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="CancelButton" type="Button" parent="ArtifactDescriptionUI/BackgroundPanel/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "取消"
+
+[node name="EngravingCardSelectionUI" type="Control" parent="."]
+visible = false
+custom_minimum_size = Vector2(800, 500)
+layout_mode = 1
+mouse_filter = 2
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -250.0
+offset_right = 400.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_engravingselection")
+
+[node name="BackgroundPanel" type="PanelContainer" parent="EngravingCardSelectionUI"]
+layout_mode = 1
+mouse_filter = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="EngravingCardSelectionUI/BackgroundPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+text = "选择要刻印的卡牌"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+
+[node name="Separator1" type="HSeparator" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(700, 2)
+layout_mode = 2
+
+[node name="CardScrollMargin" type="MarginContainer" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_right = 30
+
+[node name="CardScrollContainer" type="ScrollContainer" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer/CardScrollMargin"]
+custom_minimum_size = Vector2(0, 350)
+layout_mode = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CardGrid" type="GridContainer" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer/CardScrollMargin/CardScrollContainer"]
+custom_minimum_size = Vector2(720, 0)
+layout_mode = 1
+size_flags_horizontal = 4
+columns = 5
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="Separator2" type="HSeparator" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer"]
+custom_minimum_size = Vector2(700, 2)
+layout_mode = 2
+
+[node name="BottomContainer" type="HBoxContainer" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="ConfirmButton" type="Button" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer/BottomContainer"]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+disabled = true
+text = "确定"
+
+[node name="CancelButton" type="Button" parent="EngravingCardSelectionUI/BackgroundPanel/VBoxContainer/BottomContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "取消"

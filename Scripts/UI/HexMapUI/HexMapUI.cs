@@ -36,9 +36,6 @@ namespace FishEatFish.UI.HexMap
         private Control _failurePanel;
 
         private FishEatFish.UI.ShopUI.ShopUI _shopUI;
-        private FishEatFish.UI.ArtifactDescriptionUI.ArtifactDescriptionUI _artifactDescriptionUI;
-        private FishEatFish.UI.EngravingDescriptionUI.EngravingDescriptionUI _keyOrderDescriptionUI;
-        private FishEatFish.UI.EngravingCardSelectionUI.EngravingCardSelectionUI _engravingCardSelectionUI;
         private FishEatFish.UI.BackpackUI.BackpackUI _backpackUI;
 
         private Dictionary<HexCoord, HexTileView> _tileViews = new Dictionary<HexCoord, HexTileView>();
@@ -76,108 +73,108 @@ namespace FishEatFish.UI.HexMap
                     var shopNode = shopScene.Instantiate();
                     AddChild(shopNode);
                     _shopUI = shopNode as FishEatFish.UI.ShopUI.ShopUI;
-                    if (_shopUI != null)
-                    {
-                        _shopUI.OnShopItemClicked += OnShopItemCardClicked;
-                        _shopUI.OnCloseClicked += OnShopClosePressed;
-                        _shopUI.OnRefreshClicked += OnShopRefreshClicked;
-                        GD.Print($"[HexMapUI] ShopUI loaded successfully");
-                    }
-                }
-                else
-                {
-                    GD.PrintErr($"[HexMapUI] Failed to load ShopUI scene!");
                 }
             }
 
-            _artifactDescriptionUI = GetNodeOrNull<FishEatFish.UI.ArtifactDescriptionUI.ArtifactDescriptionUI>("ArtifactDescriptionUI");
-            if (_artifactDescriptionUI == null)
+            if (_shopUI != null)
             {
-                var artifactUI = GetNodeOrNull<Control>("ArtifactDescriptionUI");
-                if (artifactUI != null)
-                {
-                    _artifactDescriptionUI = artifactUI as FishEatFish.UI.ArtifactDescriptionUI.ArtifactDescriptionUI;
-                }
-            }
-            if (_artifactDescriptionUI != null)
-            {
-                GD.Print($"[HexMapUI] ArtifactDescriptionUI found");
-                _artifactDescriptionUI.Visible = false;
-                _artifactDescriptionUI.OnPurchaseCompleted += OnArtifactPurchased;
-                _artifactDescriptionUI.OnCancel += OnArtifactDescriptionCancelled;
+                _shopUI.OnShopItemClicked += OnShopItemClicked;
+                _shopUI.OnEngravingItemConfirmed += OnEngravingItemConfirmed;
+                _shopUI.OnArtifactItemConfirmed += OnArtifactItemConfirmed;
+                _shopUI.OnEngravingCompleted += OnEngravingCompleted;
+                _shopUI.OnCloseClicked += OnShopClosePressed;
+                _shopUI.OnRefreshClicked += OnShopRefreshClicked;
+                GD.Print($"[HexMapUI] ShopUI loaded successfully with sub-components");
             }
             else
             {
-                GD.PrintErr($"[HexMapUI] ArtifactDescriptionUI not found!");
-            }
-
-            _keyOrderDescriptionUI = GetNodeOrNull<FishEatFish.UI.EngravingDescriptionUI.EngravingDescriptionUI>("KeyOrderDescriptionUI");
-            if (_keyOrderDescriptionUI != null)
-            {
-                GD.Print($"[HexMapUI] KeyOrderDescriptionUI found");
-                _keyOrderDescriptionUI.Visible = false;
-            }
-            else
-            {
-                GD.PrintErr($"[HexMapUI] KeyOrderDescriptionUI not found!");
-            }
-
-            _engravingCardSelectionUI = GetNodeOrNull<FishEatFish.UI.EngravingCardSelectionUI.EngravingCardSelectionUI>("EngravingCardSelectionUI");
-            if (_engravingCardSelectionUI == null)
-            {
-                GD.Print($"[HexMapUI] EngravingCardSelectionUI not in tree, trying to load from scene");
-                var engravingScene = GD.Load<PackedScene>("res://Scenes/UI/EngravingCardSelectionUI.tscn");
-                if (engravingScene != null)
-                {
-                    GD.Print($"[HexMapUI] Scene loaded successfully");
-                    var engravingNode = engravingScene.Instantiate();
-                    AddChild(engravingNode);
-                    GD.Print($"[HexMapUI] Node instantiated and added");
-                    if (engravingNode is Control control)
-                    {
-                        control.Position = Vector2.Zero;
-                    }
-                    _engravingCardSelectionUI = engravingNode as FishEatFish.UI.EngravingCardSelectionUI.EngravingCardSelectionUI;
-                    GD.Print($"[HexMapUI] _engravingCardSelectionUI cast result: {_engravingCardSelectionUI != null}");
-                }
-                else
-                {
-                    GD.PrintErr($"[HexMapUI] Failed to load EngravingCardSelectionUI scene!");
-                }
-            }
-            if (_engravingCardSelectionUI != null)
-            {
-                GD.Print($"[HexMapUI] EngravingCardSelectionUI found");
-                _engravingCardSelectionUI.Visible = false;
-                _engravingCardSelectionUI.OnEngravingCompleted += OnEngravingCompleted;
-                _engravingCardSelectionUI.OnCancel += OnEngravingSelectionCancelled;
-            }
-            else
-            {
-                GD.PrintErr($"[HexMapUI] EngravingCardSelectionUI not found!");
+                GD.PrintErr($"[HexMapUI] Failed to load ShopUI scene!");
             }
 
             GD.Print($"[HexMapUI] InitializeShopUI completed");
         }
 
-        private void OnArtifactPurchased()
+        private void OnShopItemClicked(ShopItem item)
         {
-            GD.Print($"[HexMapUI] OnArtifactPurchased");
-            _shopUI?.SetInteractionEnabled(true);
+            GD.Print($"[HexMapUI] OnShopItemClicked: {item.Name}");
+        }
+
+        private void OnEngravingItemConfirmed(ShopItem engravingItem)
+        {
+            GD.Print($"[HexMapUI] OnEngravingItemConfirmed called: {engravingItem?.Name}");
+
+            if (!BlackMarkShopManager.Instance.StartEngravingPurchase(engravingItem))
+            {
+                GD.PrintErr($"[HexMapUI] Failed to start engraving purchase!");
+                return;
+            }
+
+            var cardList = new List<FishEatFish.Battle.Card.Card>();
+
+            if (GlobalData.SelectedCharacters != null)
+            {
+                foreach (var character in GlobalData.SelectedCharacters)
+                {
+                    if (character != null)
+                    {
+                        if (!string.IsNullOrEmpty(character.AttackCardId))
+                        {
+                            var attackCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(character.AttackCardId);
+                            if (attackCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(attackCard.CardId)) cardList.Add(attackCard);
+                        }
+
+                        if (!string.IsNullOrEmpty(character.DefenseCardId))
+                        {
+                            var defenseCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(character.DefenseCardId);
+                            if (defenseCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(defenseCard.CardId)) cardList.Add(defenseCard);
+                        }
+
+                        if (character.SpecialCardIds != null)
+                        {
+                            foreach (var specialCardId in character.SpecialCardIds)
+                            {
+                                if (!string.IsNullOrEmpty(specialCardId))
+                                {
+                                    var specialCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(specialCardId);
+                                    if (specialCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(specialCard.CardId))
+                                    {
+                                        cardList.Add(specialCard);
+                                    }
+                                    else if (specialCard == null)
+                                    {
+                                        var baseSpecialCardId = specialCardId.Replace("1", "").Replace("2", "").Replace("3", "");
+                                        specialCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(baseSpecialCardId);
+                                        if (specialCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(specialCard.CardId)) cardList.Add(specialCard);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            GD.Print($"[HexMapUI] Showing card selection for {cardList.Count} cards");
+            _shopUI?.ShowEngravingCardSelection(engravingItem, cardList);
+        }
+
+        private void OnArtifactItemConfirmed(ShopItem artifactItem)
+        {
+            GD.Print($"[HexMapUI] OnArtifactItemConfirmed called: {artifactItem?.Name}");
+
+            if (BlackMarkShopManager.Instance.PurchaseArtifact(artifactItem))
+            {
+                _shopUI?.HideArtifactDescription();
+                _shopUI?.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
+                UpdateBlackMarkDisplay(BlackMarkShopManager.Instance?.BlackMarkCount ?? 0);
+                _backpackUI?.Refresh();
+            }
+        }
+
+        private void OnEngravingCompleted()
+        {
+            GD.Print($"[HexMapUI] OnEngravingCompleted");
             _shopUI?.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
             UpdateBlackMarkDisplay(BlackMarkShopManager.Instance?.BlackMarkCount ?? 0);
-            _backpackUI?.Refresh();
-        }
-
-        private void OnArtifactDescriptionCancelled()
-        {
-            GD.Print($"[HexMapUI] OnArtifactDescriptionCancelled");
-            _shopUI?.SetInteractionEnabled(true);
-        }
-
-        private void OnEngravingSelectionCancelled()
-        {
-            GD.Print($"[HexMapUI] OnEngravingSelectionCancelled");
         }
 
         private void InitializeComponents()
@@ -726,152 +723,6 @@ namespace FishEatFish.UI.HexMap
                 BlackMarkShopManager.Instance.RegenerateShopItems();
                 _shopUI.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
                 UpdateBlackMarkDisplay(BlackMarkShopManager.Instance?.BlackMarkCount ?? 0);
-            }
-        }
-
-        private void OnShopItemCardClicked(ShopItem item)
-        {
-            GD.Print($"[HexMapUI] OnShopItemCardClicked: {item.Name}, Purchased={item.Purchased}");
-
-            if (item.Purchased)
-            {
-                GD.Print($"[HexMapUI] Item already purchased, ignoring click");
-                return;
-            }
-
-            if (item.ItemType == ShopItemType.Artifact)
-            {
-                ShowArtifactDescription(item);
-            }
-            else if (item.ItemType == ShopItemType.Engraving)
-            {
-                ShowEngravingDescription(item);
-            }
-        }
-
-        private void ShowArtifactDescription(ShopItem item)
-        {
-            GD.Print($"[HexMapUI] ShowArtifactDescription: {item.Name}");
-            _shopUI?.SetInteractionEnabled(false);
-            _artifactDescriptionUI.ShowArtifact(item);
-        }
-
-        private void ShowEngravingDescription(ShopItem item)
-        {
-            GD.Print($"[HexMapUI] ShowEngravingDescription: {item.Name}");
-            _shopUI?.SetInteractionEnabled(false);
-            _keyOrderDescriptionUI.ShowEngravingDescription(item, OnEngravingItemConfirmed, OnEngravingItemCancelled);
-        }
-
-        private void OnEngravingItemConfirmed(ShopItem engravingItem)
-        {
-            GD.Print($"[HexMapUI] OnEngravingItemConfirmed called: {engravingItem?.Name}");
-
-            if (_engravingCardSelectionUI == null)
-            {
-                GD.Print($"[HexMapUI] _engravingCardSelectionUI is null, trying to load...");
-                var engravingScene = GD.Load<PackedScene>("res://Scenes/UI/EngravingCardSelectionUI.tscn");
-                GD.Print($"[HexMapUI] engravingScene = {engravingScene}");
-                if (engravingScene != null)
-                {
-                    var engravingNode = engravingScene.Instantiate();
-                    GD.Print($"[HexMapUI] engravingNode = {engravingNode}, type = {engravingNode?.GetType().Name}");
-                    AddChild(engravingNode);
-                    _engravingCardSelectionUI = engravingNode as FishEatFish.UI.EngravingCardSelectionUI.EngravingCardSelectionUI;
-                    GD.Print($"[HexMapUI] _engravingCardSelectionUI after cast = {_engravingCardSelectionUI}");
-                    if (_engravingCardSelectionUI != null)
-                    {
-                        _engravingCardSelectionUI.OnEngravingCompleted += OnEngravingCompleted;
-                        _engravingCardSelectionUI.OnCancel += OnEngravingSelectionCancelled;
-                        GD.Print($"[HexMapUI] EngravingCardSelectionUI loaded successfully");
-                    }
-                }
-            }
-
-            if (_engravingCardSelectionUI == null)
-            {
-                GD.PrintErr($"[HexMapUI] _engravingCardSelectionUI is still null!");
-                return;
-            }
-
-            if (!BlackMarkShopManager.Instance.StartEngravingPurchase(engravingItem))
-            {
-                GD.PrintErr($"[HexMapUI] Failed to start engraving purchase!");
-                _shopUI?.SetInteractionEnabled(true);
-                return;
-            }
-
-            var cardList = new List<Battle.Card.Card>();
-
-            if (GlobalData.SelectedCharacters != null)
-            {
-                foreach (var character in GlobalData.SelectedCharacters)
-                {
-                    if (character != null)
-                    {
-                        if (!string.IsNullOrEmpty(character.AttackCardId))
-                        {
-                            var attackCard = Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(character.AttackCardId);
-                            if (attackCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(attackCard.CardId)) cardList.Add(attackCard);
-                        }
-
-                        if (!string.IsNullOrEmpty(character.DefenseCardId))
-                        {
-                            var defenseCard = Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(character.DefenseCardId);
-                            if (defenseCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(defenseCard.CardId)) cardList.Add(defenseCard);
-                        }
-
-                        if (character.SpecialCardIds != null)
-                        {
-                            foreach (var specialCardId in character.SpecialCardIds)
-                            {
-                                if (!string.IsNullOrEmpty(specialCardId))
-                                {
-                                    var specialCard = Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(specialCardId);
-                                    if (specialCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(specialCard.CardId))
-                                    {
-                                        cardList.Add(specialCard);
-                                    }
-                                    else if (specialCard == null)
-                                    {
-                                        var baseSpecialCardId = specialCardId.Replace("1", "").Replace("2", "").Replace("3", "");
-                                        specialCard = Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(baseSpecialCardId);
-                                        if (specialCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(specialCard.CardId)) cardList.Add(specialCard);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            GD.Print($"[HexMapUI] Showing card selection for {cardList.Count} cards");
-            _engravingCardSelectionUI.ShowCardSelection(engravingItem, cardList);
-        }
-
-        private void OnEngravingItemCancelled()
-        {
-            GD.Print($"[HexMapUI] OnEngravingItemCancelled called");
-            _shopUI?.SetInteractionEnabled(true);
-            GD.Print($"[HexMapUI] OnEngravingItemCancelled completed");
-        }
-
-        private void OnEngravingCompleted()
-        {
-            GD.Print($"[HexMapUI] OnEngravingCompleted");
-            _shopUI?.SetInteractionEnabled(true);
-            _shopUI?.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
-            UpdateBlackMarkDisplay(BlackMarkShopManager.Instance?.BlackMarkCount ?? 0);
-        }
-
-        private void BuyArtifact(ShopItem item)
-        {
-            if (BlackMarkShopManager.Instance == null) return;
-
-            if (BlackMarkShopManager.Instance.PurchaseArtifact(item))
-            {
-                _shopUI?.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
-                _backpackUI?.Refresh();
             }
         }
 
