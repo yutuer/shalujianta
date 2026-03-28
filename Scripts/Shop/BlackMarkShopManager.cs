@@ -81,7 +81,7 @@ namespace FishEatFish.Shop
 
             _ownedArtifacts = new List<ArtifactData>();
             _engravedCardIds = new List<string>();
-            _blackMarkCount = 0;
+            _blackMarkCount = 1000;
             CurrentShopItems = new List<ShopItem>();
 
             LoadData();

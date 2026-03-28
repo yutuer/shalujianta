@@ -135,10 +135,24 @@ namespace FishEatFish.UI.HexMap
             _engravingCardSelectionUI = GetNodeOrNull<EngravingCardSelectionUI>("EngravingCardSelectionUI");
             if (_engravingCardSelectionUI == null)
             {
-                var engravingUI = GetNodeOrNull<Control>("EngravingCardSelectionUI");
-                if (engravingUI != null)
+                GD.Print($"[HexMapUI] EngravingCardSelectionUI not in tree, trying to load from scene");
+                var engravingScene = GD.Load<PackedScene>("res://Scenes/UI/EngravingCardSelectionUI.tscn");
+                if (engravingScene != null)
                 {
-                    _engravingCardSelectionUI = engravingUI as EngravingCardSelectionUI;
+                    GD.Print($"[HexMapUI] Scene loaded successfully");
+                    var engravingNode = engravingScene.Instantiate();
+                    AddChild(engravingNode);
+                    GD.Print($"[HexMapUI] Node instantiated and added");
+                    if (engravingNode is Control control)
+                    {
+                        control.Position = Vector2.Zero;
+                    }
+                    _engravingCardSelectionUI = engravingNode as EngravingCardSelectionUI;
+                    GD.Print($"[HexMapUI] _engravingCardSelectionUI cast result: {_engravingCardSelectionUI != null}");
+                }
+                else
+                {
+                    GD.PrintErr($"[HexMapUI] Failed to load EngravingCardSelectionUI scene!");
                 }
             }
             if (_engravingCardSelectionUI != null)
@@ -217,14 +231,14 @@ namespace FishEatFish.UI.HexMap
 
             ConnectButton("TopRightButtons/SkipButton", OnSkipButtonPressed);
             ConnectButton("TopRightButtons/DeathResistanceButton", OnDeathResistanceButtonPressed);
-            ConnectButton("TopRightButtons/BlackMarkButton", OnBlackMarkButtonPressed);
+            ConnectButton("TopRightButtons/BlackMarkButtonContainer/BlackMarkButton", OnBlackMarkButtonPressed);
             ConnectButton("TopRightButtons/SettingsButton", OnSettingsButtonPressed);
             if (HasNode("TopRightButtons"))
             {
                 PositionTopRightButtons();
             }
 
-            _blackMarkLabel = GetNodeOrNull<Label>("BlackMarkLabel");
+            _blackMarkLabel = GetNodeOrNull<Label>("TopRightButtons/BlackMarkButtonContainer/BlackMarkLabel");
 
             _teleportDialog = GetNodeOrNull<Control>("TeleportDialog");
             if (_teleportDialog != null)
@@ -340,6 +354,7 @@ namespace FishEatFish.UI.HexMap
             if (BlackMarkShopManager.Instance != null)
             {
                 BlackMarkShopManager.Instance.OnBlackMarkChanged += UpdateBlackMarkDisplay;
+                UpdateBlackMarkDisplay(BlackMarkShopManager.Instance.BlackMarkCount);
             }
         }
 
@@ -608,7 +623,7 @@ namespace FishEatFish.UI.HexMap
         {
             if (_blackMarkLabel != null)
             {
-                _blackMarkLabel.Text = $"黑印: {amount}";
+                _blackMarkLabel.Text = $"{amount}";
             }
         }
 
@@ -863,7 +878,28 @@ namespace FishEatFish.UI.HexMap
 
             if (_engravingCardSelectionUI == null)
             {
-                GD.PrintErr($"[HexMapUI] _engravingCardSelectionUI is null!");
+                GD.Print($"[HexMapUI] _engravingCardSelectionUI is null, trying to load...");
+                var engravingScene = GD.Load<PackedScene>("res://Scenes/UI/EngravingCardSelectionUI.tscn");
+                GD.Print($"[HexMapUI] engravingScene = {engravingScene}");
+                if (engravingScene != null)
+                {
+                    var engravingNode = engravingScene.Instantiate();
+                    GD.Print($"[HexMapUI] engravingNode = {engravingNode}, type = {engravingNode?.GetType().Name}");
+                    AddChild(engravingNode);
+                    _engravingCardSelectionUI = engravingNode as EngravingCardSelectionUI;
+                    GD.Print($"[HexMapUI] _engravingCardSelectionUI after cast = {_engravingCardSelectionUI}");
+                    if (_engravingCardSelectionUI != null)
+                    {
+                        _engravingCardSelectionUI.OnEngravingCompleted += OnEngravingCompleted;
+                        _engravingCardSelectionUI.OnCancel += OnEngravingSelectionCancelled;
+                        GD.Print($"[HexMapUI] EngravingCardSelectionUI loaded successfully");
+                    }
+                }
+            }
+
+            if (_engravingCardSelectionUI == null)
+            {
+                GD.PrintErr($"[HexMapUI] _engravingCardSelectionUI is still null!");
                 return;
             }
 

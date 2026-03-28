@@ -26,7 +26,7 @@ namespace FishEatFish.UI.HexMap
         public override void _Ready()
         {
             _titleLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/TitleLabel");
-            _cardGrid = GetNode<GridContainer>("BackgroundPanel/VBoxContainer/CardScrollContainer/CardGridContainer");
+            _cardGrid = GetNode<GridContainer>("BackgroundPanel/VBoxContainer/CardScrollMargin/CardScrollContainer/CardGridContainer/CardGrid");
             _confirmButton = GetNode<Button>("BackgroundPanel/VBoxContainer/BottomContainer/ConfirmButton");
             _cancelButton = GetNode<Button>("BackgroundPanel/VBoxContainer/BottomContainer/CancelButton");
 
