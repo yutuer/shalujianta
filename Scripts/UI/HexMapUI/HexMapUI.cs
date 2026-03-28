@@ -5,6 +5,7 @@ using Godot;
 using FishEatFish.Battle.HexMap;
 using FishEatFish.Shop;
 using FishEatFish.Scenes;
+using FishEatFish.UI.ShopItemCard;
 
 namespace FishEatFish.UI.HexMap
 {
@@ -812,7 +813,7 @@ namespace FishEatFish.UI.HexMap
             {
                 foreach (var child in _shopItemsContainer.GetChildren())
                 {
-                    if (child is ShopItemCard card)
+                    if (child is FishEatFish.UI.ShopItemCard.ShopItemCard card)
                     {
                         card.SetClickEnabled(enabled);
                     }
@@ -821,10 +822,10 @@ namespace FishEatFish.UI.HexMap
             GD.Print($"[HexMapUI] SetShopInteractionEnabled: enabled={enabled} completed");
         }
 
-        private ShopItemCard CreateShopItemCard(ShopItem item)
+        private FishEatFish.UI.ShopItemCard.ShopItemCard CreateShopItemCard(ShopItem item)
         {
             GD.Print($"[HexMapUI] CreateShopItemCard: Instantiating card...");
-            var card = (ShopItemCard)_shopItemCardScene.Instantiate();
+            var card = (FishEatFish.UI.ShopItemCard.ShopItemCard)_shopItemCardScene.Instantiate();
             GD.Print($"[HexMapUI] CreateShopItemCard: card={card}, IsInstanceValid={card != null}, Script={card?.GetScript()}");
 
             if (card == null)

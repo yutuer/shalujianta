@@ -380,7 +380,7 @@ Scripts/Battle/
 
 **点击事件**：
 - 点击任意卡牌（造物/刻印）→ 跳转到对应的详情页面
-- 刻印卡牌详情页面：复用现有 `KeyOrderDescriptionUI.tscn` 界面
+- 刻印卡牌详情页面：复用现有 `EngravingDescriptionUI.tscn` 界面
 - 造物卡牌详情页面：新建 `ArtifactDescriptionUI.tscn`，布局与刻印详情页完全一致
 
 ### 11.5 详情页面交互逻辑
@@ -424,7 +424,7 @@ Scripts/Battle/
 | 确定 | 扣除对应数量黑印 → 执行购买逻辑 → 恢复商店页面 → 返回商店页面 |
 | 取消 | 恢复商店页面 → 返回商店页面 |
 
-**刻印详情页面 (KeyOrderDescriptionUI)**：
+**刻印详情页面 (EngravingDescriptionUI)**：
 
 ```
 ┌────────────────────────────────────────────┐
