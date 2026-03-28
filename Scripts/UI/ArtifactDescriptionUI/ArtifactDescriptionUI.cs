@@ -20,6 +20,8 @@ namespace FishEatFish.UI.ArtifactDescriptionUI
 
         public override void _Ready()
         {
+            GD.Print($"[ArtifactDescriptionUI] _Ready called");
+
             _titleLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/TitleLabel");
             _effectLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/EffectLabel");
             _costLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/CostLabel");
@@ -37,11 +39,19 @@ namespace FishEatFish.UI.ArtifactDescriptionUI
             {
                 _cancelButton.Pressed += OnCancelPressed;
             }
+
+            GD.Print($"[ArtifactDescriptionUI] _Ready completed");
         }
 
         public void ShowArtifact(ShopItem item)
         {
-            if (item == null) return;
+            GD.Print($"[ArtifactDescriptionUI] ShowArtifact called: item={item?.Name}");
+
+            if (item == null)
+            {
+                GD.PrintErr("[ArtifactDescriptionUI] ShowArtifact: item is null!");
+                return;
+            }
 
             _currentItem = item;
 
@@ -90,23 +100,33 @@ namespace FishEatFish.UI.ArtifactDescriptionUI
             }
 
             Visible = true;
+
+            GD.Print($"[ArtifactDescriptionUI] ShowArtifact completed");
         }
 
         public void HideArtifact()
         {
+            GD.Print($"[ArtifactDescriptionUI] HideArtifact called");
+
             Visible = false;
             _currentItem = null;
+
+            GD.Print($"[ArtifactDescriptionUI] HideArtifact completed");
         }
 
         private void OnBuyPressed()
         {
+            GD.Print($"[ArtifactDescriptionUI] OnBuyPressed called");
+
             if (_currentItem == null || _currentItem.Purchased)
             {
+                GD.Print("[ArtifactDescriptionUI] OnBuyPressed: item is null or already purchased");
                 return;
             }
 
             if (!BlackMarkShopManager.Instance.CanAfford(_currentItem))
             {
+                GD.Print("[ArtifactDescriptionUI] OnBuyPressed: cannot afford item");
                 return;
             }
 
@@ -115,13 +135,24 @@ namespace FishEatFish.UI.ArtifactDescriptionUI
             {
                 Visible = false;
                 OnPurchaseCompleted?.Invoke();
+                GD.Print("[ArtifactDescriptionUI] OnBuyPressed: purchase successful");
             }
+            else
+            {
+                GD.Print("[ArtifactDescriptionUI] OnBuyPressed: purchase failed");
+            }
+
+            GD.Print($"[ArtifactDescriptionUI] OnBuyPressed completed");
         }
 
         private void OnCancelPressed()
         {
+            GD.Print($"[ArtifactDescriptionUI] OnCancelPressed called");
+
             Visible = false;
             OnCancel?.Invoke();
+
+            GD.Print($"[ArtifactDescriptionUI] OnCancelPressed completed");
         }
     }
 }

@@ -45,58 +45,20 @@ namespace FishEatFish.UI.HexMap
 
         public override void _Ready()
         {
+            GD.Print($"[HexMapUI] _Ready called");
+
             if (_tileViewScene == null)
             {
                 _tileViewScene = GD.Load<PackedScene>("res://Scenes/UI/HexTileView.tscn");
             }
             _controller = HexMapController.Instance;
             InitializeComponents();
-            InitializeShopUI();
             SetupEventConnections();
 
             if (_controller != null)
             {
                 RefreshMap();
             }
-        }
-
-        private void InitializeShopUI()
-        {
-            GD.Print($"[HexMapUI] InitializeShopUI called");
-
-            _shopUI = GetNodeOrNull<FishEatFish.UI.ShopUI.ShopUI>("ShopContainer");
-            if (_shopUI == null)
-            {
-                var shopScene = GD.Load<PackedScene>("res://Scenes/UI/ShopUI.tscn");
-                if (shopScene != null)
-                {
-                    var shopNode = shopScene.Instantiate();
-                    AddChild(shopNode);
-                    _shopUI = shopNode as FishEatFish.UI.ShopUI.ShopUI;
-                }
-            }
-
-            if (_shopUI != null)
-            {
-                _shopUI.OnShopItemClicked += OnShopItemClicked;
-                _shopUI.OnEngravingItemConfirmed += OnEngravingItemConfirmed;
-                _shopUI.OnArtifactItemConfirmed += OnArtifactItemConfirmed;
-                _shopUI.OnEngravingCompleted += OnEngravingCompleted;
-                _shopUI.OnCloseClicked += OnShopClosePressed;
-                _shopUI.OnRefreshClicked += OnShopRefreshClicked;
-                GD.Print($"[HexMapUI] ShopUI loaded successfully with sub-components");
-            }
-            else
-            {
-                GD.PrintErr($"[HexMapUI] Failed to load ShopUI scene!");
-            }
-
-            GD.Print($"[HexMapUI] InitializeShopUI completed");
-        }
-
-        private void OnShopItemClicked(ShopItem item)
-        {
-            GD.Print($"[HexMapUI] OnShopItemClicked: {item.Name}");
         }
 
         private void OnEngravingItemConfirmed(ShopItem engravingItem)
@@ -673,6 +635,44 @@ namespace FishEatFish.UI.HexMap
         {
             GD.Print($"[HexMapUI] OnShopOpened called: _shopUI={_shopUI}");
 
+            if (_shopUI == null)
+            {
+                GD.Print($"[HexMapUI] OnShopOpened: ShopUI not initialized, loading now...");
+                GD.Print($"[HexMapUI] OnShopOpened: Loading ShopUI.tscn...");
+                var shopScene = GD.Load<PackedScene>("res://Scenes/UI/ShopUI.tscn");
+                GD.Print($"[HexMapUI] OnShopOpened: shopScene loaded: {shopScene != null}");
+
+                if (shopScene != null)
+                {
+                    GD.Print($"[HexMapUI] OnShopOpened: Instantiating scene...");
+                    var shopNode = shopScene.Instantiate();
+                    GD.Print($"[HexMapUI] OnShopOpened: shopNode instantiated: {shopNode != null}, type={shopNode?.GetType().Name}");
+
+                    if (shopNode != null)
+                    {
+                        GD.Print($"[HexMapUI] OnShopOpened: Adding to tree...");
+                        AddChild(shopNode);
+                        _shopUI = shopNode as FishEatFish.UI.ShopUI.ShopUI;
+                        GD.Print($"[HexMapUI] OnShopOpened: ShopUI loaded: {_shopUI != null}");
+
+                        if (_shopUI != null)
+                        {
+                            _shopUI.OnEngravingItemConfirmed += OnEngravingItemConfirmed;
+                            _shopUI.OnArtifactItemConfirmed += OnArtifactItemConfirmed;
+                            _shopUI.OnEngravingCompleted += OnEngravingCompleted;
+                            _shopUI.OnCloseClicked += OnShopClosePressed;
+                            _shopUI.OnRefreshClicked += OnShopRefreshClicked;
+                        }
+                    }
+                }
+            }
+
+            if (_shopUI == null)
+            {
+                GD.PrintErr($"[HexMapUI] OnShopOpened: Failed to load ShopUI!");
+                return;
+            }
+
             int refreshCount = 2;
             if (_controller?.CurrentMap != null)
             {
@@ -683,12 +683,9 @@ namespace FishEatFish.UI.HexMap
                 }
             }
 
-            if (_shopUI != null)
-            {
-                _shopUI.SetRefreshCount(refreshCount);
-                _shopUI.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
-                _shopUI.ShowShop();
-            }
+            _shopUI.SetRefreshCount(refreshCount);
+            _shopUI.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
+            _shopUI.ShowShop();
 
             GD.Print($"[HexMapUI] OnShopOpened completed, refreshCount={refreshCount}");
         }

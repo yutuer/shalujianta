@@ -19,6 +19,8 @@ namespace FishEatFish.UI.EngravingDescriptionUI
 
         public override void _Ready()
         {
+            GD.Print($"[EngravingDescriptionUI] _Ready called");
+
             _titleLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/TitleLabel");
             _descLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/DescLabel");
             _costLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/CostLabel");
@@ -35,11 +37,19 @@ namespace FishEatFish.UI.EngravingDescriptionUI
             {
                 _cancelButton.Pressed += OnCancelPressed;
             }
+
+            GD.Print($"[EngravingDescriptionUI] _Ready completed");
         }
 
         public void ShowEngravingDescription(ShopItem engraving, System.Action<ShopItem> onConfirm, System.Action onCancelled = null)
         {
-            if (engraving == null) return;
+            GD.Print($"[EngravingDescriptionUI] ShowEngravingDescription called: engraving={engraving?.Name}");
+
+            if (engraving == null)
+            {
+                GD.PrintErr("[EngravingDescriptionUI] ShowEngravingDescription: engraving is null!");
+                return;
+            }
 
             _onEngravingConfirm = onConfirm;
             _onCancelled = onCancelled;
@@ -80,10 +90,14 @@ namespace FishEatFish.UI.EngravingDescriptionUI
             }
 
             Visible = true;
+
+            GD.Print($"[EngravingDescriptionUI] ShowEngravingDescription completed");
         }
 
         public void HideDescription()
         {
+            GD.Print($"[EngravingDescriptionUI] HideDescription called");
+
             _isVisible = false;
             Visible = false;
 
@@ -95,25 +109,43 @@ namespace FishEatFish.UI.EngravingDescriptionUI
             _onEngravingConfirm = null;
             _onCancelled = null;
             _currentEngravingItem = null;
+
+            GD.Print($"[EngravingDescriptionUI] HideDescription completed");
         }
 
         private void OnUsePressed()
         {
-            if (!_isVisible) return;
+            GD.Print($"[EngravingDescriptionUI] OnUsePressed called");
+
+            if (!_isVisible)
+            {
+                GD.Print("[EngravingDescriptionUI] OnUsePressed: not visible, ignoring");
+                return;
+            }
 
             var confirmCallback = _onEngravingConfirm;
             var itemToPass = _currentEngravingItem;
             HideDescription();
             confirmCallback?.Invoke(itemToPass);
+
+            GD.Print($"[EngravingDescriptionUI] OnUsePressed completed");
         }
 
         private void OnCancelPressed()
         {
-            if (!_isVisible) return;
+            GD.Print($"[EngravingDescriptionUI] OnCancelPressed called");
+
+            if (!_isVisible)
+            {
+                GD.Print("[EngravingDescriptionUI] OnCancelPressed: not visible, ignoring");
+                return;
+            }
 
             var cancelledCallback = _onCancelled;
             HideDescription();
             cancelledCallback?.Invoke();
+
+            GD.Print($"[EngravingDescriptionUI] OnCancelPressed completed");
         }
 
         public bool IsDescriptionVisible() => _isVisible;
