@@ -7,7 +7,6 @@ namespace FishEatFish.UI.HexMap
     public partial class ArtifactDescriptionUI : Control
     {
         private Label _titleLabel;
-        private Label _nameLabel;
         private Label _effectLabel;
         private Label _costLabel;
         private TextureRect _iconRect;
@@ -25,7 +24,6 @@ namespace FishEatFish.UI.HexMap
             GD.Print($"[ArtifactDescriptionUI] _Ready called");
 
             _titleLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/TitleLabel");
-            _nameLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/NameLabel");
             _effectLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/EffectLabel");
             _costLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/CostLabel");
             _iconRect = GetNode<TextureRect>("BackgroundPanel/VBoxContainer/IconContainer/IconRect");
