@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://Scripts/UI/HexMapUI/CardSelectionItem.cs" id="1"]
+[ext_resource type="Script" path="res://Scripts/UI/CardSelectionItem/CardSelectionItem.cs" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
 bg_color = Color(0.2, 0.2, 0.3, 1)

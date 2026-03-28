@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using Godot;
 using FishEatFish.Shop;
 using FishEatFish.Battle.Card;
+using FishEatFish.UI.CardSelectionItem;
 
-namespace FishEatFish.UI.HexMap
+namespace FishEatFish.UI.EngravingCardSelectionUI
 {
     public partial class EngravingCardSelectionUI : Control
     {
@@ -18,20 +19,27 @@ namespace FishEatFish.UI.HexMap
         private ShopItem _engravingItem;
         private Card _selectedCard;
         private List<Card> _availableCards = new List<Card>();
-        private List<CardSelectionItem> _cardItems = new List<CardSelectionItem>();
+        private List<FishEatFish.UI.CardSelectionItem.CardSelectionItem> _cardItems = new List<FishEatFish.UI.CardSelectionItem.CardSelectionItem>();
 
         public System.Action OnEngravingCompleted;
         public System.Action OnCancel;
 
         public override void _Ready()
         {
-            _titleLabel = GetNode<Label>("BackgroundPanel/VBoxContainer/TitleLabel");
-            _cardGrid = GetNode<GridContainer>("BackgroundPanel/VBoxContainer/CardScrollMargin/CardScrollContainer/CardGridContainer/CardGrid");
-            _confirmButton = GetNode<Button>("BackgroundPanel/VBoxContainer/BottomContainer/ConfirmButton");
-            _cancelButton = GetNode<Button>("BackgroundPanel/VBoxContainer/BottomContainer/CancelButton");
+            _titleLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/TitleLabel");
+            _cardGrid = GetNodeOrNull<GridContainer>("BackgroundPanel/VBoxContainer/CardScrollMargin/CardScrollContainer/CardGridContainer/CardGrid");
+            _confirmButton = GetNodeOrNull<Button>("BackgroundPanel/VBoxContainer/BottomContainer/ConfirmButton");
+            _cancelButton = GetNodeOrNull<Button>("BackgroundPanel/VBoxContainer/BottomContainer/CancelButton");
 
-            _confirmButton.Pressed += OnConfirmPressed;
-            _cancelButton.Pressed += OnCancelPressed;
+            if (_confirmButton != null)
+            {
+                _confirmButton.Pressed += OnConfirmPressed;
+            }
+
+            if (_cancelButton != null)
+            {
+                _cancelButton.Pressed += OnCancelPressed;
+            }
 
             Visible = false;
         }
@@ -48,15 +56,18 @@ namespace FishEatFish.UI.HexMap
             }
             _cardItems.Clear();
 
-            foreach (var child in _cardGrid.GetChildren())
+            if (_cardGrid != null)
             {
-                child.QueueFree();
+                foreach (var child in _cardGrid.GetChildren())
+                {
+                    child.QueueFree();
+                }
             }
 
             foreach (var card in _availableCards)
             {
                 var cardItem = CreateCardItem(card);
-                if (cardItem != null)
+                if (cardItem != null && _cardGrid != null)
                 {
                     _cardGrid.AddChild(cardItem);
                     cardItem.SetCardData(card);
@@ -64,14 +75,16 @@ namespace FishEatFish.UI.HexMap
                 }
             }
 
-            _confirmButton.Disabled = true;
-            _titleLabel.Text = $"选择要刻印的卡牌 - {_engravingItem?.Name ?? "刻印"}";
+            if (_confirmButton != null)
+                _confirmButton.Disabled = true;
+            if (_titleLabel != null)
+                _titleLabel.Text = $"选择要刻印的卡牌 - {_engravingItem?.Name ?? "刻印"}";
             Visible = true;
         }
 
-        private CardSelectionItem CreateCardItem(Card card)
+        private FishEatFish.UI.CardSelectionItem.CardSelectionItem CreateCardItem(Card card)
         {
-            var cardItem = CardSelectionItemScene.Instantiate<CardSelectionItem>();
+            var cardItem = CardSelectionItemScene.Instantiate<FishEatFish.UI.CardSelectionItem.CardSelectionItem>();
             if (cardItem == null) return null;
 
             cardItem.Card = card;
@@ -79,7 +92,7 @@ namespace FishEatFish.UI.HexMap
             return cardItem;
         }
 
-        private void OnCardItemSelected(CardSelectionItem item)
+        private void OnCardItemSelected(FishEatFish.UI.CardSelectionItem.CardSelectionItem item)
         {
             foreach (var cardItem in _cardItems)
             {
@@ -87,7 +100,8 @@ namespace FishEatFish.UI.HexMap
             }
 
             _selectedCard = item.Card;
-            _confirmButton.Disabled = false;
+            if (_confirmButton != null)
+                _confirmButton.Disabled = false;
         }
 
         private void OnConfirmPressed()

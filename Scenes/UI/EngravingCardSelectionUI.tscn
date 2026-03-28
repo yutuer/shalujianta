@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://Scripts/UI/HexMapUI/EngravingCardSelectionUI.cs" id="1"]
+[ext_resource type="Script" path="res://Scripts/UI/EngravingCardSelectionUI/EngravingCardSelectionUI.cs" id="1"]
 
 [node name="EngravingCardSelectionUI" type="Control"]
 visible = false

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using FishEatFish.Battle.Card;
 
-namespace FishEatFish.UI.HexMap
+namespace FishEatFish.UI.CardSelectionItem
 {
     public partial class CardSelectionItem : Control
     {
@@ -22,12 +22,12 @@ namespace FishEatFish.UI.HexMap
 
         public override void _Ready()
         {
-            _panelContainer = GetNode<PanelContainer>("PanelContainer");
+            _panelContainer = GetNodeOrNull<PanelContainer>("PanelContainer");
             if (_panelContainer == null) return;
 
-            _nameLabel = _panelContainer.GetNode<Label>("VBoxContainer/NameLabel");
-            _costLabel = _panelContainer.GetNode<Label>("VBoxContainer/CostLabel");
-            _effectLabel = _panelContainer.GetNode<Label>("VBoxContainer/EffectLabel");
+            _nameLabel = _panelContainer.GetNodeOrNull<Label>("VBoxContainer/NameLabel");
+            _costLabel = _panelContainer.GetNodeOrNull<Label>("VBoxContainer/CostLabel");
+            _effectLabel = _panelContainer.GetNodeOrNull<Label>("VBoxContainer/EffectLabel");
 
             _normalStyle = new StyleBoxFlat();
             _normalStyle.BgColor = new Color(0.2f, 0.2f, 0.3f);
@@ -87,12 +87,12 @@ namespace FishEatFish.UI.HexMap
         {
             if (_panelContainer == null)
             {
-                _panelContainer = GetNode<PanelContainer>("PanelContainer");
+                _panelContainer = GetNodeOrNull<PanelContainer>("PanelContainer");
                 if (_panelContainer != null)
                 {
-                    _nameLabel = _panelContainer.GetNode<Label>("VBoxContainer/NameLabel");
-                    _costLabel = _panelContainer.GetNode<Label>("VBoxContainer/CostLabel");
-                    _effectLabel = _panelContainer.GetNode<Label>("VBoxContainer/EffectLabel");
+                    _nameLabel = _panelContainer.GetNodeOrNull<Label>("VBoxContainer/NameLabel");
+                    _costLabel = _panelContainer.GetNodeOrNull<Label>("VBoxContainer/CostLabel");
+                    _effectLabel = _panelContainer.GetNodeOrNull<Label>("VBoxContainer/EffectLabel");
                 }
             }
         }

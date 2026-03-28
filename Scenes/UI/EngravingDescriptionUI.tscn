@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/UI/ArtifactDescriptionUI/ArtifactDescriptionUI.cs" id="1"]
+[ext_resource type="Script" path="res://Scripts/UI/EngravingDescriptionUI/EngravingDescriptionUI.cs" id="1"]
 
-[node name="ArtifactDescriptionUI" type="Control"]
+[node name="EngravingDescriptionUI" type="Control"]
 custom_minimum_size = Vector2(400, 300)
 layout_mode = 1
 anchors_preset = 8
@@ -43,6 +43,7 @@ theme_override_constants/separation = 10
 [node name="TitleLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
+text = "刻印详情"
 horizontal_alignment = 1
 
 [node name="Separator1" type="HSeparator" parent="BackgroundPanel/VBoxContainer"]
@@ -50,26 +51,20 @@ custom_minimum_size = Vector2(300, 2)
 layout_mode = 2
 
 [node name="IconContainer" type="CenterContainer" parent="BackgroundPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 80)
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 size_flags_vertical = 4
-
-[node name="IconRect" type="TextureRect" parent="BackgroundPanel/VBoxContainer/IconContainer"]
-custom_minimum_size = Vector2(60, 60)
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 4
 
 [node name="EmojiLabel" type="Label" parent="BackgroundPanel/VBoxContainer/IconContainer"]
 layout_mode = 2
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 40
 
-[node name="EffectLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
+[node name="DescLabel" type="Label" parent="BackgroundPanel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-text = "效果"
+text = "描述"
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -84,7 +79,7 @@ theme_override_font_sizes/font_size = 18
 layout_mode = 2
 alignment = 1
 
-[node name="BuyButton" type="Button" parent="BackgroundPanel/VBoxContainer/ButtonContainer"]
+[node name="UseButton" type="Button" parent="BackgroundPanel/VBoxContainer/ButtonContainer"]
 custom_minimum_size = Vector2(120, 40)
 layout_mode = 2
 text = "确定"
