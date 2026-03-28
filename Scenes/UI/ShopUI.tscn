@@ -1,13 +1,19 @@
 [gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI/ShopUI/ShopUI.cs" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://b8xvqyjw8yx6o" path="res://Scenes/UI/ShopItemCard.tscn" id="2_shopitemcard"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/ShopItemCard.tscn" id="2_shopitemcard"]
 [ext_resource type="Script" path="res://Scripts/UI/EngravingDescriptionUI/EngravingDescriptionUI.cs" id="3_engravingdesc"]
 [ext_resource type="Script" path="res://Scripts/UI/ArtifactDescriptionUI/ArtifactDescriptionUI.cs" id="4_artifactdesc"]
 [ext_resource type="Script" path="res://Scripts/UI/EngravingCardSelectionUI/EngravingCardSelectionUI.cs" id="5_engravingselection"]
 
 [node name="ShopUI" type="Control"]
 script = ExtResource("1_script")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1
+anchor_bottom = 1
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="ShopContainer" type="PanelContainer" parent="."]
 visible = false
@@ -40,14 +46,14 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="HeaderSpacer" type="Control" parent="ShopContainer/VBoxContainer/HeaderBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="CloseButton" type="Button" parent="ShopContainer/VBoxContainer/HeaderBox"]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 text = "X"
-
-[node name="HeaderSpacer" type="Control" parent="ShopContainer/VBoxContainer/HeaderBox"]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="ShopTitle" type="Label" parent="ShopContainer/VBoxContainer"]
 layout_mode = 2
