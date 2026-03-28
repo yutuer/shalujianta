@@ -125,10 +125,18 @@ namespace FishEatFish.UI.HexMap
 
             if (BlackMarkShopManager.Instance.PurchaseArtifact(artifactItem))
             {
+                GD.Print($"[HexMapUI] OnArtifactItemConfirmed: PurchaseArtifact succeeded");
                 _shopUI?.HideArtifactDescription();
                 _shopUI?.RefreshShopItems(BlackMarkShopManager.Instance?.CurrentShopItems ?? new List<ShopItem>());
                 UpdateBlackMarkDisplay(BlackMarkShopManager.Instance?.BlackMarkCount ?? 0);
+                GD.Print($"[HexMapUI] OnArtifactItemConfirmed: _backpackUI={_backpackUI}");
                 _backpackUI?.Refresh();
+                var ownedArtifacts = BlackMarkShopManager.Instance?.GetOwnedArtifacts();
+                GD.Print($"[HexMapUI] OnArtifactItemConfirmed: ownedArtifacts count={ownedArtifacts?.Count ?? 0}");
+            }
+            else
+            {
+                GD.PrintErr($"[HexMapUI] OnArtifactItemConfirmed: PurchaseArtifact failed!");
             }
         }
 
