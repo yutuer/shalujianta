@@ -14,6 +14,8 @@ namespace FishEatFish.UI.BackpackUI
 
         public void Refresh()
         {
+            GD.Print($"[BackpackUI] Refresh called");
+
             if (_itemsContainer == null)
             {
                 GD.PrintErr("[BackpackUI] _itemsContainer is null!");
@@ -32,9 +34,11 @@ namespace FishEatFish.UI.BackpackUI
             }
 
             var ownedArtifacts = FishEatFish.Shop.BlackMarkShopManager.Instance.GetOwnedArtifacts();
+            GD.Print($"[BackpackUI] Refresh: ownedArtifacts count={ownedArtifacts?.Count ?? 0}");
 
             foreach (var artifact in ownedArtifacts)
             {
+                GD.Print($"[BackpackUI] Refresh: adding artifact {artifact.name}");
                 TextureRect icon = null;
                 bool hasValidTexture = false;
 
@@ -58,8 +62,14 @@ namespace FishEatFish.UI.BackpackUI
                     icon = CreateEmojiBackpackItem(artifact);
                 }
 
-                _itemsContainer.AddChild(icon);
+                if (icon != null)
+                {
+                    _itemsContainer.AddChild(icon);
+                    GD.Print($"[BackpackUI] Refresh: added icon to container");
+                }
             }
+
+            GD.Print($"[BackpackUI] Refresh completed");
         }
 
         private TextureRect CreateEmojiBackpackItem(ArtifactData artifact)

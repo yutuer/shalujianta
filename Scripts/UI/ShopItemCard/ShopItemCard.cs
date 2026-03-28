@@ -40,6 +40,8 @@ namespace FishEatFish.UI.ShopItemCard
 
         public void SetItem(ShopItem item)
         {
+            GD.Print($"[ShopItemCard] SetItem called: {item?.Name}, Purchased={item?.Purchased}");
+            
             if (item == null || _nameLabel == null) return;
 
             Item = item;
@@ -67,12 +69,14 @@ namespace FishEatFish.UI.ShopItemCard
             {
                 if (item.Purchased)
                 {
+                    GD.Print($"[ShopItemCard] SetItem: setting purchased state for {item.Name}");
                     _priceLabel.Text = "已售出";
                     _priceLabel.Modulate = new Color(0.5f, 0.5f, 0.5f);
                     _nameLabel.Modulate = new Color(0.6f, 0.6f, 0.6f);
                 }
                 else
                 {
+                    GD.Print($"[ShopItemCard] SetItem: setting available state for {item.Name}");
                     _priceLabel.Text = $"💰 {item.Price}";
                     _priceLabel.Modulate = new Color(1, 0.8f, 0);
                     _nameLabel.Modulate = new Color(1, 0.95f, 0.9f);
