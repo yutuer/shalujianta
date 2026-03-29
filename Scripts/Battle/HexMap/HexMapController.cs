@@ -58,6 +58,7 @@ namespace FishEatFish.Battle.HexMap
         public System.Action<HexCoord> OnTeleportTriggered;
         public System.Action<float, float> OnHealthChanged;
         public System.Action<int> OnBlackMarkChanged;
+        public System.Action<int, int> OnSilverKeyChanged;
         public System.Action OnMapCompleted;
         public System.Action OnChallengeFailed;
         public System.Action OnShopOpened;

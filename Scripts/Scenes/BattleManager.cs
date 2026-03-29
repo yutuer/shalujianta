@@ -52,6 +52,7 @@ namespace FishEatFish.Scenes
 	private KeyOrderManager keyOrderManager;
 	private int currentSilverKey = 0;
 	private bool isKeyOrderSelectionOpen = false;
+	public System.Action<int, int> OnSilverKeyChanged;
 
 	// ========== 其他 ==========
 	private int hoveredCardIndex = -1;
@@ -943,6 +944,8 @@ namespace FishEatFish.Scenes
 						 keyOrderManager.CanUseKeyOrder();
 			keyOrderButton.Disabled = !canUse;
 		}
+
+		OnSilverKeyChanged?.Invoke(currentSilverKey, silverKeyConfig.BaseMaxSilverKey);
 	}
 
 	/// <summary>

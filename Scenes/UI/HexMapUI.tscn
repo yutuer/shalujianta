@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bfjsdiwyn8lbo" path="res://Scripts/UI/HexMapUI/HealthBar.cs" id="2_healthbar"]
 [ext_resource type="Script" uid="uid://bof7a1u7j5lnw" path="res://Scripts/UI/HexMapUI/PlayerIcon.cs" id="3_playericon"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/RageCircle.tscn" id="4_ragecircle"]
+[ext_resource type="PackedScene" uid="uid://silver_key_progress" path="res://Scenes/UI/SilverKeyProgressIndicator.tscn" id="5_silverkey"]
 
 [node name="HexMapUI" type="Control"]
 layout_mode = 3
@@ -107,6 +108,21 @@ layout_mode = 2
 
 [node name="RageCircle3" parent="RageCircles" instance=ExtResource("4_ragecircle")]
 layout_mode = 2
+
+[node name="SilverKeyProgressIndicator" parent="." instance=ExtResource("5_silverkey")]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 10.0
+offset_bottom = 10.0
+grow_horizontal = 0
+grow_vertical = 0
 
 [node name="TopRightButtons" type="HBoxContainer" parent="."]
 layout_mode = 1

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public partial class SilverKeyProgressIndicator : Control
 {
     [Export]
-    public int Diameter = 80;
+    public int Diameter = 120;
 
     [Export]
     public Color BaseProgressColor = new Color("#C0C0C0");
@@ -35,6 +35,10 @@ public partial class SilverKeyProgressIndicator : Control
 
     public override void _Ready()
     {
+        GD.Print($"[SilverKeyProgressIndicator] _Ready called - Name: {Name}");
+        GD.Print($"[SilverKeyProgressIndicator] Initial Size: {Size}");
+        GD.Print($"[SilverKeyProgressIndicator] CustomMinimumSize: {CustomMinimumSize}");
+
         _valueLabel = GetNode<Label>("ValueLabel");
         _maxLabel = GetNode<Label>("MaxLabel");
 
@@ -44,6 +48,7 @@ public partial class SilverKeyProgressIndicator : Control
         }
 
         UpdateDisplay();
+        GD.Print($"[SilverKeyProgressIndicator] _Ready completed");
     }
 
     public void SetValue(int value, bool animate = true)
@@ -178,11 +183,11 @@ public partial class SilverKeyProgressIndicator : Control
 
     public override void _Draw()
     {
-        base._Draw();
+        if (Size == Vector2.Zero) return;
 
-        Vector2 center = new Vector2(Diameter / 2f, Diameter / 2f);
-        float radius = Diameter / 2f - 4f;
-        float lineWidth = 6f;
+        Vector2 center = Size / 2f;
+        float radius = Mathf.Min(Size.X, Size.Y) / 2f - 6f;
+        float lineWidth = 8f;
 
         DrawCircle(center, radius, BackgroundColor);
 
@@ -194,7 +199,7 @@ public partial class SilverKeyProgressIndicator : Control
             float startAngle = -90f;
             float endAngle = startAngle + (360f * baseProgress);
 
-            DrawArc(center, radius, Mathf.DegToRad(startAngle), Mathf.DegToRad(endAngle), 32, BaseProgressColor, lineWidth, true);
+            DrawArc(center, radius - 2f, Mathf.DegToRad(startAngle), Mathf.DegToRad(endAngle), 32, BaseProgressColor, lineWidth, true);
         }
 
         if (_currentValue > _maxValue)
@@ -213,13 +218,13 @@ public partial class SilverKeyProgressIndicator : Control
                     excessColor = new Color(1f, 0.85f, 0f, 1f);
                 }
 
-                DrawArc(center, radius - 2f, Mathf.DegToRad(startAngle), Mathf.DegToRad(endAngle), 32, excessColor, lineWidth - 2f, true);
+                DrawArc(center, radius - 4f, Mathf.DegToRad(startAngle), Mathf.DegToRad(endAngle), 32, excessColor, lineWidth - 2f, true);
             }
         }
 
         if (!CanUseKeyOrder())
         {
-            DrawCircle(center, radius - 4f, new Color(0.2f, 0.2f, 0.2f, 0.5f));
+            DrawCircle(center, radius - 6f, new Color(0.2f, 0.2f, 0.2f, 0.5f));
         }
     }
 

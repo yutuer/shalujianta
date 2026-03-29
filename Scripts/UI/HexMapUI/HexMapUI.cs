@@ -29,6 +29,7 @@ namespace FishEatFish.UI.HexMap
         private Button _settingsButton;
 
         private Label _blackMarkLabel;
+        private SilverKeyProgressIndicator _silverKeyProgressIndicator;
         private bool _isInteractionBlocked;
 
         private Control _teleportDialog;
@@ -163,11 +164,6 @@ namespace FishEatFish.UI.HexMap
             var healthBarControl = GetNodeOrNull<Control>("HealthBar");
             _healthBar = healthBarControl as HealthBar;
 
-            if (_healthBar != null)
-            {
-                PositionHealthBar();
-            }
-
             _rageCirclesContainer = GetNodeOrNull<HBoxContainer>("RageCircles");
             _rageCircles.Clear();
             for (int i = 0; i < 4; i++)
@@ -196,6 +192,28 @@ namespace FishEatFish.UI.HexMap
 
             _blackMarkLabel = GetNodeOrNull<Label>("TopRightButtons/BlackMarkButtonContainer/BlackMarkLabel");
             _deathResistanceLabel = GetNodeOrNull<Label>("TopRightButtons/DeathResistanceButtonContainer/DeathResistanceLabel");
+            _silverKeyProgressIndicator = GetNodeOrNull<SilverKeyProgressIndicator>("SilverKeyProgressIndicator");
+
+            if (_silverKeyProgressIndicator != null)
+            {
+                GD.Print($"[HexMapUI] SilverKeyProgressIndicator 找到了!");
+                GD.Print($"[HexMapUI] 初始Size: {_silverKeyProgressIndicator.Size}");
+                GD.Print($"[HexMapUI] CustomMinimumSize: {_silverKeyProgressIndicator.CustomMinimumSize}");
+                GD.Print($"[HexMapUI] Visible: {_silverKeyProgressIndicator.Visible}");
+                PositionSilverKeyProgressIndicator();
+                GD.Print($"[HexMapUI] 定位后Size: {_silverKeyProgressIndicator.Size}");
+                GD.Print($"[HexMapUI] 定位后GlobalPosition: {_silverKeyProgressIndicator.GlobalPosition}");
+            }
+            else
+            {
+                GD.PrintErr("[HexMapUI] SilverKeyProgressIndicator 没有找到!");
+            }
+
+            if (_healthBar != null)
+            {
+                PositionHealthBar();
+                GD.Print($"[HexMapUI] 血条位置已调整: {_healthBar.GlobalPosition}");
+            }
 
             UpdateDeathResistanceDisplay(GetCurrentDeathResistance());
 
@@ -283,8 +301,30 @@ namespace FishEatFish.UI.HexMap
         {
             if (_healthBar == null) return;
             var screenSize = GetViewportRect().Size;
-            var targetPos = new Vector2(20, screenSize.Y - _healthBar.CustomMinimumSize.Y - 20);
-            _healthBar.GlobalPosition = targetPos;
+
+            if (_silverKeyProgressIndicator != null)
+            {
+                var silverKeyY = _silverKeyProgressIndicator.GlobalPosition.Y;
+                var silverKeyBottom = silverKeyY + _silverKeyProgressIndicator.Size.Y;
+                var healthBarHeight = _healthBar.CustomMinimumSize.Y;
+                var targetPos = new Vector2(_silverKeyProgressIndicator.GlobalPosition.X + _silverKeyProgressIndicator.Size.X + 10, silverKeyBottom - healthBarHeight - 20);
+                _healthBar.GlobalPosition = targetPos;
+            }
+            else
+            {
+                var targetPos = new Vector2(20, screenSize.Y - _healthBar.CustomMinimumSize.Y - 20);
+                _healthBar.GlobalPosition = targetPos;
+            }
+        }
+
+        private void PositionSilverKeyProgressIndicator()
+        {
+            if (_silverKeyProgressIndicator == null) return;
+            var screenSize = GetViewportRect().Size;
+            var silverKeySize = _silverKeyProgressIndicator.CustomMinimumSize;
+            _silverKeyProgressIndicator.Size = silverKeySize;
+            var targetPos = new Vector2(10, screenSize.Y - silverKeySize.Y - 10);
+            _silverKeyProgressIndicator.GlobalPosition = targetPos;
         }
 
         private void PositionRageCircles()
@@ -314,6 +354,7 @@ namespace FishEatFish.UI.HexMap
         private void OnScreenResized()
         {
             PositionHealthBar();
+            PositionSilverKeyProgressIndicator();
             PositionRageCircles();
             PositionTopRightButtons();
         }
@@ -327,6 +368,7 @@ namespace FishEatFish.UI.HexMap
                 _controller.OnTeleportTriggered += OnTeleportTriggered;
                 _controller.OnHealthChanged += OnHealthChanged;
                 _controller.OnBlackMarkChanged += OnBlackMarkChanged;
+                _controller.OnSilverKeyChanged += OnSilverKeyChanged;
                 _controller.OnMapCompleted += OnMapCompleted;
                 _controller.OnChallengeFailed += OnChallengeFailed;
                 _controller.OnShopOpened += OnShopOpened;
@@ -662,6 +704,22 @@ namespace FishEatFish.UI.HexMap
         private void OnBlackMarkChanged(int amount)
         {
             UpdateBlackMarkDisplay(amount);
+        }
+
+        private void OnSilverKeyChanged(int current, int max)
+        {
+            GD.Print($"[HexMapUI] OnSilverKeyChanged called: current={current}, max={max}");
+            if (_silverKeyProgressIndicator != null)
+            {
+                GD.Print($"[HexMapUI] 设置银钥进度条: current={current}, max={max}");
+                _silverKeyProgressIndicator.SetValue(current, true);
+                _silverKeyProgressIndicator.SetMaxValue(max);
+                _silverKeyProgressIndicator.QueueRedraw();
+            }
+            else
+            {
+                GD.PrintErr("[HexMapUI] OnSilverKeyChanged: _silverKeyProgressIndicator 是 null!");
+            }
         }
 
         private void UpdateBlackMarkDisplay(int amount)
