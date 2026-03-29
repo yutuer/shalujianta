@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using FishEatFish.Battle.HexMap;
+using FishEatFish.Battle.CharacterSystem;
 using FishEatFish.Shop;
 using FishEatFish.Scenes;
 using FishEatFish.UI.ShopItemCard;
@@ -22,8 +23,8 @@ namespace FishEatFish.UI.HexMap
         private HealthBar _healthBar;
         private HBoxContainer _rageCirclesContainer;
 
-        private Button _skipButton;
         private Button _deathResistanceButton;
+        private Label _deathResistanceLabel;
         private Button _blackMarkButton;
         private Button _settingsButton;
 
@@ -185,8 +186,7 @@ namespace FishEatFish.UI.HexMap
                 PositionRageCircles();
             }
 
-            ConnectButton("TopRightButtons/SkipButton", OnSkipButtonPressed);
-            ConnectButton("TopRightButtons/DeathResistanceButton", OnDeathResistanceButtonPressed);
+            ConnectButton("TopRightButtons/DeathResistanceButtonContainer/DeathResistanceButton", OnDeathResistanceButtonPressed);
             ConnectButton("TopRightButtons/BlackMarkButtonContainer/BlackMarkButton", OnBlackMarkButtonPressed);
             ConnectButton("TopRightButtons/SettingsButton", OnSettingsButtonPressed);
             if (HasNode("TopRightButtons"))
@@ -195,6 +195,9 @@ namespace FishEatFish.UI.HexMap
             }
 
             _blackMarkLabel = GetNodeOrNull<Label>("TopRightButtons/BlackMarkButtonContainer/BlackMarkLabel");
+            _deathResistanceLabel = GetNodeOrNull<Label>("TopRightButtons/DeathResistanceButtonContainer/DeathResistanceLabel");
+
+            UpdateDeathResistanceDisplay(GetCurrentDeathResistance());
 
             _teleportDialog = GetNodeOrNull<Control>("TeleportDialog");
             if (_teleportDialog == null)
@@ -542,6 +545,7 @@ namespace FishEatFish.UI.HexMap
                 GD.Print($"[HexMapUI] OnTileTriggered: tileView not found for {tile.Coord}");
             }
 
+            UpdateDeathResistanceDisplay(GetCurrentDeathResistance());
             ShowEventNotification(tile);
         }
 
@@ -668,9 +672,22 @@ namespace FishEatFish.UI.HexMap
             }
         }
 
-        private void OnSkipButtonPressed()
+        private void UpdateDeathResistanceDisplay(int amount)
         {
-            _controller?.SkipMap();
+            if (_deathResistanceLabel != null)
+            {
+                _deathResistanceLabel.Text = $"{amount}";
+            }
+        }
+
+        private int GetCurrentDeathResistance()
+        {
+            var attacker = GetNodeOrNull<Attacker>("/root/BattleManager/Attacker");
+            if (attacker != null && attacker.Characters != null && attacker.Characters.Length > 0 && attacker.Characters[0] != null)
+            {
+                return attacker.Characters[0].BaseDeathResistance;
+            }
+            return 10;
         }
 
         private void OnDeathResistanceButtonPressed()
