@@ -19,7 +19,7 @@ namespace FishEatFish.UI.HexMap
 		{
 			GD.Print($"[RageCircle] _Ready - Name: {Name}");
 			_rageLabel = GetNodeOrNull<Label>("RageLabel");
-			CustomMinimumSize = new Vector2(50, 50);
+			CustomMinimumSize = new Vector2(120, 120);
 			SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
 			SizeFlagsVertical = SizeFlags.ShrinkBegin;
 			GD.Print($"[RageCircle] _Ready complete - Name: {Name}, MinSize: {CustomMinimumSize}");

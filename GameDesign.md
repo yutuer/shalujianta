@@ -551,6 +551,129 @@ Scripts/Battle/
 
 > ⚠️ **部分实现**：银钥系统UI和基础逻辑已实现，钥令实际效果释放待完善
 
+### 14.2 银钥进度条UI ✅
+
+#### 14.2.1 界面布局
+
+银钥进度条显示在**地图界面左下角**，位于玩家血条的左侧：
+
+```
+┌──────────────────────────────────────────────────────┐
+│                                                      │
+│                                                      │
+│                                                      │
+│                                                      │
+│                                                      │
+│                                                      │
+│                                                      │
+│  ┌──────────┐  ┌────────────┐                        │
+│  │  银钥     │  │ ████████░░ │  ← 血条               │
+│  │  圈进度条  │  │  HP: 80   │                        │
+│  │   120x120 │  │            │                        │
+│  └──────────┘  └────────────┘                        │
+└──────────────────────────────────────────────────────┘
+```
+
+#### 14.2.2 组件说明
+
+| 组件 | 类型 | 尺寸 | 说明 |
+| :--- | :--- | :--- | :--- |
+| SilverKeyProgressIndicator | Control | 120×120 | 银钥圆形进度条组件 |
+| HealthBar | Control | 200×30 | 玩家血条 |
+
+#### 14.2.3 银钥进度条设计
+
+**SilverKeyProgressIndicator 组件结构**：
+
+```
+┌────────────────────────────────┐
+│                                │
+│        ╭───────────────╮       │  <- 外圈：深灰色背景 (#333333)
+│       ╱                 ╲      │
+│      │    进度弧线        │      │  <- 内圈：银色进度条 (#C0C0C0)
+│      │                   │      │
+│      │      0/1000      │      │  <- 中心：当前值/最大值
+│      │                   │      │
+│       ╲                 ╱      │
+│        ╰───────────────╯       │
+│                                │
+└────────────────────────────────┘
+```
+
+#### 14.2.4 进度条颜色设计
+
+| 状态 | 颜色 | 说明 |
+| :--- | :--- | :--- |
+| 背景 | #333333 (深灰) | 未填充区域 |
+| 基础进度 | #C0C0C0 (银色) | 当前银钥值进度 |
+| 超额进度 | #FFD700 (金色) | 超过最大值时的额外进度 |
+| 不可用 | #666666 (灰色) | 未达到可用阈值时的文字颜色 |
+| 满值特效 | #FFD700 (金色) | 达到最大值时的呼吸灯效果 |
+
+#### 14.2.5 布局位置
+
+**左下角UI定位规则**：
+
+```
+屏幕尺寸: W x H
+
+银钥圈定位：
+- 左边缘: 10px
+- 下边缘: 10px
+- 尺寸: 120×120
+
+血条定位：
+- 左边缘: 银钥圈右边缘 + 10px
+- 下边缘: 与银钥圈底部对齐，然后向上偏移20px
+- 尺寸: 200×30
+```
+
+**布局计算逻辑**（HexMapUI.cs）：
+```csharp
+// 银钥圈位置
+var silverKeySize = _silverKeyProgressIndicator.CustomMinimumSize;
+_silverKeyProgressIndicator.Size = silverKeySize;
+_silverKeyProgressIndicator.GlobalPosition = new Vector2(10, screenSize.Y - silverKeySize.Y - 10);
+
+// 血条位置
+var silverKeyY = _silverKeyProgressIndicator.GlobalPosition.Y;
+var silverKeyBottom = silverKeyY + _silverKeyProgressIndicator.Size.Y;
+var healthBarHeight = _healthBar.CustomMinimumSize.Y;
+var targetPos = new Vector2(_silverKeyProgressIndicator.GlobalPosition.X + _silverKeyProgressIndicator.Size.X + 10, silverKeyBottom - healthBarHeight - 20);
+_healthBar.GlobalPosition = targetPos;
+```
+
+#### 14.2.6 进度条显示规则
+
+| 银钥值 | 显示效果 |
+| :--- | :--- |
+| 0-999 | 银色进度弧线，文字显示"当前值/1000" |
+| 1000 | 银色进度满格，文字显示"1000/1000"，可使用钥令 |
+| 1001-1999 | 银色满格 + 金色超额弧线，文字显示"当前值/1000" |
+| 2000 | 满值状态，呼吸灯金色特效动画 |
+
+#### 14.2.7 已实现文件
+
+| 文件 | 状态 | 用途 |
+| :--- | :-- | :--- |
+| `SilverKeyProgressIndicator.tscn` | ✅ | 银钥进度条UI场景 |
+| `SilverKeyProgressIndicator.cs` | ✅ | 银钥进度条逻辑（绘制、动画） |
+| `HexMapUI.tscn` | ✅ | 集成银钥进度条组件 |
+| `HexMapUI.cs` | ✅ | 银钥进度条初始化和位置管理 |
+
+#### 14.2.8 验收标准
+
+| 验收项 | 状态 |
+| :--- | :-- |
+| 银钥进度条显示在左下角 | ✅ |
+| 银钥进度条位于血条左侧 | ✅ |
+| 进度条显示当前值和最大值 | ✅ |
+| 银色进度弧线正确显示 | ✅ |
+| 金色超额进度正确显示 | ✅ |
+| 满值时有呼吸灯特效 | ✅ |
+| 数值变化时有动画过渡 | ✅ |
+| 屏幕缩放时位置正确调整 | ✅ |
+
 ### 13.11 验收标准 🔄
 
 | 验收项 | 状态 |
