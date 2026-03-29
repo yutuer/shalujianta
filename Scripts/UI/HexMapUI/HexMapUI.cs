@@ -676,7 +676,7 @@ namespace FishEatFish.UI.HexMap
         {
             if (_deathResistanceLabel != null)
             {
-                _deathResistanceLabel.Text = $"{amount}";
+                _deathResistanceLabel.Text = $"{amount}%";
             }
         }
 
