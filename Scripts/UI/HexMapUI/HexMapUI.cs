@@ -28,7 +28,7 @@ namespace FishEatFish.UI.HexMap
         private Button _settingsButton;
 
         private Label _blackMarkLabel;
-        private bool _isBlackMarkPopupOpen;
+        private bool _isInteractionBlocked;
 
         private Control _teleportDialog;
         private Button _teleportConfirmButton;
@@ -431,6 +431,7 @@ namespace FishEatFish.UI.HexMap
 
         private void OnTileClicked(HexTileView tileView)
         {
+            if (_isInteractionBlocked) return;
             if (_controller == null) return;
 
             var tile = tileView.Tile;
@@ -453,6 +454,7 @@ namespace FishEatFish.UI.HexMap
 
         private void OnTileHovered(HexTileView tileView)
         {
+            if (_isInteractionBlocked) return;
             if (_controller == null) return;
 
             ClearPathHighlights();
@@ -486,7 +488,7 @@ namespace FishEatFish.UI.HexMap
 
         private void OnPlayerMoved(HexCoord newPos)
         {
-            if (_isBlackMarkPopupOpen) return;
+            if (_isInteractionBlocked) return;
             if (_playerIcon == null) return;
 
             CenterOnPlayer(newPos, true);
@@ -586,6 +588,12 @@ namespace FishEatFish.UI.HexMap
             }
         }
 
+        public void SetInteractionBlocked(bool blocked)
+        {
+            GD.Print($"[HexMapUI] SetInteractionBlocked called: blocked={blocked}");
+            _isInteractionBlocked = blocked;
+        }
+
         private void OnTeleportConfirmPressed()
         {
             var dialog = _teleportDialog as FishEatFish.UI.TeleportDialog.TeleportDialog;
@@ -633,11 +641,11 @@ namespace FishEatFish.UI.HexMap
             popup.Position = new Vector2((screenSize.X - popup.CustomMinimumSize.X) / 2, (screenSize.Y - popup.CustomMinimumSize.Y) / 2);
             AddChild(popup);
 
-            _isBlackMarkPopupOpen = true;
+            _isInteractionBlocked = true;
             popup.OnClosed += () =>
             {
-                _isBlackMarkPopupOpen = false;
-                GD.Print($"[HexMapUI] BlackMarkPopup closed, movement enabled");
+                _isInteractionBlocked = false;
+                GD.Print($"[HexMapUI] BlackMarkPopup closed, interaction enabled");
             };
 
             GD.Print($"[HexMapUI] OnBlackMarkGained: popup added, Position={popup.Position}, Size={popup.Size}, CustomMinimumSize={popup.CustomMinimumSize}, Visible={popup.Visible}, Modulate={popup.Modulate}");
@@ -706,6 +714,7 @@ namespace FishEatFish.UI.HexMap
 
                         if (_shopUI != null)
                         {
+                            _shopUI.SetHexMapUI(this);
                             _shopUI.OnEngravingItemConfirmed += OnEngravingItemConfirmed;
                             _shopUI.OnArtifactItemConfirmed += OnArtifactItemConfirmed;
                             _shopUI.OnEngravingCompleted += OnEngravingCompleted;

@@ -17,6 +17,8 @@ namespace FishEatFish.UI.ShopUI
         private Button _refreshButton;
         private Label _costLabel;
 
+        private FishEatFish.UI.HexMap.HexMapUI _hexMapUI;
+
         private PackedScene _shopItemCardScene;
 
         private int _currentRefreshCount = 2;
@@ -48,6 +50,12 @@ namespace FishEatFish.UI.ShopUI
             InitializeNodes();
 
             GD.Print($"[ShopUI] _Ready completed");
+        }
+
+        public void SetHexMapUI(FishEatFish.UI.HexMap.HexMapUI hexMapUI)
+        {
+            _hexMapUI = hexMapUI;
+            GD.Print($"[ShopUI] SetHexMapUI called: {_hexMapUI != null}");
         }
 
         private void InitializeNodes()
@@ -353,6 +361,7 @@ namespace FishEatFish.UI.ShopUI
             if (ui != null)
             {
                 SetInteractionEnabled(false);
+                _hexMapUI?.SetInteractionBlocked(true);
                 ui.ShowEngravingDescription(item, OnEngravingItemConfirmed, OnEngravingDescriptionCancelled);
             }
 
@@ -366,6 +375,7 @@ namespace FishEatFish.UI.ShopUI
             var ui = GetOrCreateEngravingCardSelectionUI();
             if (ui != null)
             {
+                _hexMapUI?.SetInteractionBlocked(true);
                 ui.ShowCardSelection(engravingItem, availableCards);
             }
 
@@ -376,6 +386,7 @@ namespace FishEatFish.UI.ShopUI
         {
             GD.Print($"[ShopUI] OnEngravingDescriptionCancelled called");
             SetInteractionEnabled(true);
+            _hexMapUI?.SetInteractionBlocked(false);
             GD.Print($"[ShopUI] OnEngravingDescriptionCancelled completed");
         }
 
@@ -400,6 +411,7 @@ namespace FishEatFish.UI.ShopUI
             HideEngravingCardSelection();
             OnEngravingCompleted?.Invoke();
             SetInteractionEnabled(true);
+            _hexMapUI?.SetInteractionBlocked(false);
             GD.Print($"[ShopUI] OnEngravingSelectionCompleted completed");
         }
 
@@ -408,6 +420,7 @@ namespace FishEatFish.UI.ShopUI
             GD.Print($"[ShopUI] OnEngravingSelectionCancelled called");
             HideEngravingCardSelection();
             SetInteractionEnabled(true);
+            _hexMapUI?.SetInteractionBlocked(false);
             GD.Print($"[ShopUI] OnEngravingSelectionCancelled completed");
         }
 
