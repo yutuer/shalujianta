@@ -334,6 +334,11 @@ namespace FishEatFish.UI.HexMap
                 BlackMarkShopManager.Instance.OnBlackMarkChanged += UpdateBlackMarkDisplay;
                 UpdateBlackMarkDisplay(BlackMarkShopManager.Instance.BlackMarkCount);
             }
+
+            if (HexEventManager.Instance != null)
+            {
+                HexEventManager.Instance.OnBlackMarkGained += OnBlackMarkGained;
+            }
         }
 
         private void RefreshMap()
@@ -602,6 +607,35 @@ namespace FishEatFish.UI.HexMap
         private void OnHealthChanged(float current, float max)
         {
             _healthBar?.SetHealth(current, max);
+        }
+
+        private void OnBlackMarkGained(string coord, int amount)
+        {
+            GD.Print($"[HexMapUI] OnBlackMarkGained called: coord={coord}, amount={amount}");
+
+            var popupScene = GD.Load<PackedScene>("res://Scenes/UI/BlackMarkPopup.tscn");
+            if (popupScene == null)
+            {
+                GD.PrintErr($"[HexMapUI] OnBlackMarkGained: failed to load BlackMarkPopup scene!");
+                return;
+            }
+
+            var popup = popupScene.Instantiate<FishEatFish.UI.HexMap.BlackMarkPopup>();
+            if (popup == null)
+            {
+                GD.PrintErr($"[HexMapUI] OnBlackMarkGained: failed to instantiate BlackMarkPopup!");
+                return;
+            }
+
+            var screenSize = GetViewportRect().Size;
+            popup.Position = new Vector2((screenSize.X - popup.CustomMinimumSize.X) / 2, (screenSize.Y - popup.CustomMinimumSize.Y) / 2);
+            AddChild(popup);
+
+            GD.Print($"[HexMapUI] OnBlackMarkGained: popup added, Position={popup.Position}, Size={popup.Size}, CustomMinimumSize={popup.CustomMinimumSize}, Visible={popup.Visible}, Modulate={popup.Modulate}");
+
+            popup.ShowPopup(amount);
+
+            GD.Print($"[HexMapUI] OnBlackMarkGained completed");
         }
 
         private void OnBlackMarkChanged(int amount)
