@@ -49,7 +49,7 @@ namespace FishEatFish.UI.HexMap
             float fillWidth = 200 * healthPercent;
             fillWidth = Mathf.Max(0, fillWidth);
 
-            _healthBarFill.Size = new Vector2(fillWidth, 25);
+            _healthBarFill.Size = new Vector2(fillWidth, 30);
             _healthLabel.Text = $"{Mathf.FloorToInt(_displayHealth)}/{Mathf.FloorToInt(_maxHealth)}";
         }
 
