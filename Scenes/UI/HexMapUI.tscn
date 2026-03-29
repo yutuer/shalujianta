@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://bof7a1u7j5lnw" path="res://Scripts/UI/HexMapUI/PlayerIcon.cs" id="3_playericon"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/RageCircle.tscn" id="4_ragecircle"]
 
-[node name="HexMapUI" type="Control" unique_id=1648921053]
+[node name="HexMapUI" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,7 +14,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="MapContainer" type="Control" parent="." unique_id=260089882]
+[node name="MapContainer" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -22,17 +22,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TileViews" type="Control" parent="MapContainer" unique_id=571070893]
+[node name="TileViews" type="Control" parent="MapContainer"]
 layout_mode = 1
 anchors_preset = 0
 
-[node name="PlayerIcon" type="Control" parent="MapContainer/TileViews" unique_id=2084732158]
+[node name="PlayerIcon" type="Control" parent="MapContainer/TileViews"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 1
 anchors_preset = 0
 script = ExtResource("3_playericon")
 
-[node name="Background" type="ColorRect" parent="MapContainer/TileViews/PlayerIcon" unique_id=1163941972]
+[node name="Background" type="ColorRect" parent="MapContainer/TileViews/PlayerIcon"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -41,7 +41,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.2, 0.8, 1, 0.9)
 
-[node name="IconLabel" type="Label" parent="MapContainer/TileViews/PlayerIcon" unique_id=2099326507]
+[node name="IconLabel" type="Label" parent="MapContainer/TileViews/PlayerIcon"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -52,13 +52,13 @@ text = "🎮"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HealthBar" type="Control" parent="." unique_id=1395366219]
+[node name="HealthBar" type="Control" parent="."]
 custom_minimum_size = Vector2(200, 30)
 layout_mode = 1
 anchors_preset = 0
 script = ExtResource("2_healthbar")
 
-[node name="Background" type="PanelContainer" parent="HealthBar" unique_id=1242762911]
+[node name="Background" type="PanelContainer" parent="HealthBar"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -66,21 +66,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DamageBar" type="ColorRect" parent="HealthBar/Background" unique_id=860207085]
+[node name="DamageBar" type="ColorRect" parent="HealthBar/Background"]
 layout_mode = 2
 color = Color(0.8, 0.2, 0.2, 1)
 
-[node name="HealthBarFill" type="ColorRect" parent="HealthBar/Background" unique_id=854683818]
+[node name="HealthBarFill" type="ColorRect" parent="HealthBar/Background"]
 layout_mode = 2
 color = Color(0.2, 0.8, 0.2, 1)
 
-[node name="HealthLabel" type="Label" parent="HealthBar/Background" unique_id=1220757804]
+[node name="HealthLabel" type="Label" parent="HealthBar/Background"]
 layout_mode = 2
 text = "100/100"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RageCircles" type="HBoxContainer" parent="." unique_id=49143379]
+[node name="RageCircles" type="HBoxContainer" parent="."]
 custom_minimum_size = Vector2(220, 50)
 layout_mode = 1
 anchors_preset = 1
@@ -96,53 +96,66 @@ grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 10
 
-[node name="RageCircle0" parent="RageCircles" unique_id=1516808772 instance=ExtResource("4_ragecircle")]
+[node name="RageCircle0" parent="RageCircles" instance=ExtResource("4_ragecircle")]
 layout_mode = 2
 
-[node name="RageCircle1" parent="RageCircles" unique_id=1737420671 instance=ExtResource("4_ragecircle")]
+[node name="RageCircle1" parent="RageCircles" instance=ExtResource("4_ragecircle")]
 layout_mode = 2
 
-[node name="RageCircle2" parent="RageCircles" unique_id=850945533 instance=ExtResource("4_ragecircle")]
+[node name="RageCircle2" parent="RageCircles" instance=ExtResource("4_ragecircle")]
 layout_mode = 2
 
-[node name="RageCircle3" parent="RageCircles" unique_id=465282740 instance=ExtResource("4_ragecircle")]
+[node name="RageCircle3" parent="RageCircles" instance=ExtResource("4_ragecircle")]
 layout_mode = 2
 
-[node name="TopRightButtons" type="HBoxContainer" parent="." unique_id=1291612023]
+[node name="TopRightButtons" type="HBoxContainer" parent="."]
 layout_mode = 1
 theme_override_constants/separation = 10
 
-[node name="DeathResistanceButtonContainer" type="VBoxContainer" parent="TopRightButtons" unique_id=1732116692]
+[node name="DeathResistanceButtonContainer" type="VBoxContainer" parent="TopRightButtons"]
+custom_minimum_size = Vector2(120, 200)
 layout_mode = 2
-alignment = 1
+size_flags_vertical = 4
+alignment = 0
 
 [node name="DeathResistanceButton" type="Button" parent="TopRightButtons/DeathResistanceButtonContainer"]
-custom_minimum_size = Vector2(100, 40)
+custom_minimum_size = Vector2(120, 50)
 layout_mode = 2
 text = "死亡抵抗"
+theme_override_font_sizes/font_size = 20
 
 [node name="DeathResistanceLabel" type="Label" parent="TopRightButtons/DeathResistanceButtonContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
-text = "10"
+text = "10%"
 
-[node name="BlackMarkButtonContainer" type="VBoxContainer" parent="TopRightButtons" unique_id=1375344675]
+[node name="BlackMarkButtonContainer" type="VBoxContainer" parent="TopRightButtons"]
+custom_minimum_size = Vector2(120, 200)
 layout_mode = 2
-alignment = 1
+size_flags_vertical = 4
+alignment = 0
 
-[node name="BlackMarkButton" type="Button" parent="TopRightButtons/BlackMarkButtonContainer" unique_id=1375344674]
-custom_minimum_size = Vector2(100, 40)
+[node name="BlackMarkButton" type="Button" parent="TopRightButtons/BlackMarkButtonContainer"]
+custom_minimum_size = Vector2(120, 50)
 layout_mode = 2
 text = "黑印"
+theme_override_font_sizes/font_size = 20
 
-[node name="BlackMarkLabel" type="Label" parent="TopRightButtons/BlackMarkButtonContainer" unique_id=68175127]
+[node name="BlackMarkLabel" type="Label" parent="TopRightButtons/BlackMarkButtonContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 text = "1000"
 
-[node name="SettingsButton" type="Button" parent="TopRightButtons" unique_id=1421021339]
-custom_minimum_size = Vector2(100, 40)
+[node name="SettingsButtonContainer" type="VBoxContainer" parent="TopRightButtons"]
+custom_minimum_size = Vector2(120, 200)
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 0
+
+[node name="SettingsButton" type="Button" parent="TopRightButtons/SettingsButtonContainer"]
+custom_minimum_size = Vector2(120, 50)
 layout_mode = 2
 text = "设置"
+theme_override_font_sizes/font_size = 20

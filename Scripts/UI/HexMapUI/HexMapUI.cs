@@ -188,7 +188,7 @@ namespace FishEatFish.UI.HexMap
 
             ConnectButton("TopRightButtons/DeathResistanceButtonContainer/DeathResistanceButton", OnDeathResistanceButtonPressed);
             ConnectButton("TopRightButtons/BlackMarkButtonContainer/BlackMarkButton", OnBlackMarkButtonPressed);
-            ConnectButton("TopRightButtons/SettingsButton", OnSettingsButtonPressed);
+            ConnectButton("TopRightButtons/SettingsButtonContainer/SettingsButton", OnSettingsButtonPressed);
             if (HasNode("TopRightButtons"))
             {
                 PositionTopRightButtons();
