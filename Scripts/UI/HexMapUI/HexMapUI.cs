@@ -28,6 +28,7 @@ namespace FishEatFish.UI.HexMap
         private Button _settingsButton;
 
         private Label _blackMarkLabel;
+        private bool _isBlackMarkPopupOpen;
 
         private Control _teleportDialog;
         private Button _teleportConfirmButton;
@@ -485,6 +486,7 @@ namespace FishEatFish.UI.HexMap
 
         private void OnPlayerMoved(HexCoord newPos)
         {
+            if (_isBlackMarkPopupOpen) return;
             if (_playerIcon == null) return;
 
             CenterOnPlayer(newPos, true);
@@ -630,6 +632,13 @@ namespace FishEatFish.UI.HexMap
             var screenSize = GetViewportRect().Size;
             popup.Position = new Vector2((screenSize.X - popup.CustomMinimumSize.X) / 2, (screenSize.Y - popup.CustomMinimumSize.Y) / 2);
             AddChild(popup);
+
+            _isBlackMarkPopupOpen = true;
+            popup.OnClosed += () =>
+            {
+                _isBlackMarkPopupOpen = false;
+                GD.Print($"[HexMapUI] BlackMarkPopup closed, movement enabled");
+            };
 
             GD.Print($"[HexMapUI] OnBlackMarkGained: popup added, Position={popup.Position}, Size={popup.Size}, CustomMinimumSize={popup.CustomMinimumSize}, Visible={popup.Visible}, Modulate={popup.Modulate}");
 

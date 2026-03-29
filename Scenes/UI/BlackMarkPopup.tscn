@@ -3,34 +3,54 @@
 [ext_resource type="Script" path="res://Scripts/UI/HexMapUI/BlackMarkPopup.cs" id="1_script"]
 
 [node name="BlackMarkPopup" type="PanelContainer"]
-custom_minimum_size = Vector2(300, 80)
+custom_minimum_size = Vector2(350, 250)
 layout_mode = 1
 script = ExtResource("1_script")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 2
-color = Color(0.2, 0.2, 0.2, 0.9)
+color = Color(0.15, 0.15, 0.2, 0.95)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="MainVBox" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+[node name="Spacer1" type="Control" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TitleLabel" type="Label" parent="MainVBox"]
 layout_mode = 2
 size_flags_horizontal = 4
-size_flags_vertical = 4
 text = "获得黑印！"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(1, 0.84, 0, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 28
 
-[node name="AmountLabel" type="Label" parent="VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="AmountLabel" type="Label" parent="MainVBox"]
 layout_mode = 2
 size_flags_horizontal = 4
-size_flags_vertical = 4
 text = "+50 💎"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.3, 0.5, 1, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
+
+[node name="Spacer2" type="Control" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ConfirmButton" type="Button" parent="MainVBox"]
+custom_minimum_size = Vector2(180, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "确 定"
+
+[node name="Spacer3" type="Control" parent="MainVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 15)

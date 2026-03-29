@@ -6,17 +6,26 @@ namespace FishEatFish.UI.HexMap
     {
         private Label _titleLabel;
         private Label _amountLabel;
+        private Button _confirmButton;
+
+        public System.Action OnClosed { get; set; }
 
         public override void _Ready()
         {
             GD.Print($"[BlackMarkPopup] _Ready called");
 
-            _titleLabel = GetNodeOrNull<Label>("VBoxContainer/TitleLabel");
-            _amountLabel = GetNodeOrNull<Label>("VBoxContainer/AmountLabel");
+            _titleLabel = GetNodeOrNull<Label>("MainVBox/TitleLabel");
+            _amountLabel = GetNodeOrNull<Label>("MainVBox/AmountLabel");
+            _confirmButton = GetNodeOrNull<Button>("MainVBox/ConfirmButton");
 
-            if (_titleLabel == null || _amountLabel == null)
+            if (_titleLabel == null || _amountLabel == null || _confirmButton == null)
             {
-                GD.PrintErr($"[BlackMarkPopup] Failed to get child nodes! TitleLabel:{_titleLabel}, AmountLabel:{_amountLabel}");
+                GD.PrintErr($"[BlackMarkPopup] Failed to get child nodes! TitleLabel:{_titleLabel}, AmountLabel:{_amountLabel}, ConfirmButton:{_confirmButton}");
+            }
+            else
+            {
+                _confirmButton.Pressed += OnConfirmPressed;
+                GD.Print($"[BlackMarkPopup] ConfirmButton event bound successfully");
             }
 
             GD.Print($"[BlackMarkPopup] _Ready completed: Size={Size}, CustomMinimumSize={CustomMinimumSize}");
@@ -40,20 +49,16 @@ namespace FishEatFish.UI.HexMap
             Visible = true;
             Modulate = Colors.White;
 
-            GD.Print($"[BlackMarkPopup] ShowPopup: before tween, Visible={Visible}, Modulate={Modulate}, ZIndex={ZIndex}");
-
-            var tween = CreateTween();
-            tween.SetParallel(true);
-            tween.TweenProperty(this, "modulate:a", 0f, 1.5f);
-            tween.TweenProperty(this, "position:y", Position.Y - 30, 1.5f);
-            tween.Chain();
-            tween.TweenCallback(Callable.From(() =>
-            {
-                GD.Print($"[BlackMarkPopup] ShowPopup animation completed, about to free");
-                QueueFree();
-            }));
-
+            GD.Print($"[BlackMarkPopup] ShowPopup: Visible={Visible}, Modulate={Modulate}, ZIndex={ZIndex}");
             GD.Print($"[BlackMarkPopup] ShowPopup completed");
+        }
+
+        private void OnConfirmPressed()
+        {
+            GD.Print($"[BlackMarkPopup] OnConfirmPressed called");
+            OnClosed?.Invoke();
+            QueueFree();
+            GD.Print($"[BlackMarkPopup] OnConfirmPressed completed");
         }
     }
 }
