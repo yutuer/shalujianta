@@ -399,6 +399,7 @@ namespace FishEatFish.UI.ShopUI
             GD.Print($"[ShopUI] OnEngravingSelectionCompleted called");
             HideEngravingCardSelection();
             OnEngravingCompleted?.Invoke();
+            SetInteractionEnabled(true);
             GD.Print($"[ShopUI] OnEngravingSelectionCompleted completed");
         }
 
@@ -406,6 +407,7 @@ namespace FishEatFish.UI.ShopUI
         {
             GD.Print($"[ShopUI] OnEngravingSelectionCancelled called");
             HideEngravingCardSelection();
+            SetInteractionEnabled(true);
             GD.Print($"[ShopUI] OnEngravingSelectionCancelled completed");
         }
 

@@ -601,7 +601,7 @@ namespace FishEatFish.UI.HexMap
 
         private void OnHealthChanged(float current, float max)
         {
-            _healthBar?.SetHealth(max, current);
+            _healthBar?.SetHealth(current, max);
         }
 
         private void OnBlackMarkChanged(int amount)
