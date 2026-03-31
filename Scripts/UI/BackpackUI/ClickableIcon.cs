@@ -58,7 +58,7 @@ namespace FishEatFish.UI.BackpackUI
             return _artifact?.name ?? "null";
         }
 
-        public override void _Input(InputEvent @event)
+        public override void _GuiInput(InputEvent @event)
         {
             if (@event is InputEventMouseButton mouseEvent)
             {
@@ -71,6 +71,7 @@ namespace FishEatFish.UI.BackpackUI
                     }
 
                     OnIconClicked?.Invoke(_artifact);
+                    AcceptEvent();
                 }
             }
         }
