@@ -13,7 +13,7 @@ namespace FishEatFish.UI.HexMap
         private Label _healthLabel;
 
         private float _displayHealth = 100f;
-        private float _smoothSpeed = 3f;
+        private float _smoothSpeed = 15f;
 
         public override void _Ready()
         {
