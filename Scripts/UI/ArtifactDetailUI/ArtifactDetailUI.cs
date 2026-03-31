@@ -10,25 +10,13 @@ namespace FishEatFish.UI.ArtifactDetailPanel
         private Label _nameLabel;
         private Label _typeLabel;
         private Label _descriptionLabel;
-        private Button _closeButton;
         private PanelContainer _backgroundPanel;
 
         private ArtifactData _currentArtifact;
-        private ulong _ignoreOutsideClickUntilMsec;
 
         public override void _Ready()
         {
-            GD.Print($"[ArtifactDetailUI] _Ready called");
-
             _backgroundPanel = GetNodeOrNull<PanelContainer>("BackgroundPanel");
-            GD.Print($"[ArtifactDetailUI] _backgroundPanel: {_backgroundPanel != null}");
-            if (_backgroundPanel != null)
-            {
-                GD.Print($"[ArtifactDetailUI] _backgroundPanel Visible: {_backgroundPanel.Visible}");
-                GD.Print($"[ArtifactDetailUI] _backgroundPanel Size: {_backgroundPanel.Size}");
-                GD.Print($"[ArtifactDetailUI] _backgroundPanel GlobalPosition: {_backgroundPanel.GlobalPosition}");
-            }
-
             _iconRect = GetNodeOrNull<TextureRect>("BackgroundPanel/VBoxContainer/HeaderContainer/IconContainer/IconRect");
             _emojiLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/HeaderContainer/IconContainer/EmojiLabel");
             _nameLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/HeaderContainer/TitleContainer/NameLabel");
@@ -36,35 +24,29 @@ namespace FishEatFish.UI.ArtifactDetailPanel
             _descriptionLabel = GetNodeOrNull<Label>("BackgroundPanel/VBoxContainer/DescriptionLabel");
 
             Visible = false;
-
-            GD.Print($"[ArtifactDetailUI] _Ready completed");
         }
 
-        public override void _UnhandledInput(InputEvent @event)
+        public override void _Input(InputEvent @event)
         {
             if (!Visible)
             {
                 return;
             }
 
-            if (@event is InputEventMouseButton mouseEvent)
+            if (@event is InputEventMouseButton mouseEvent &&
+                mouseEvent.Pressed &&
+                mouseEvent.ButtonIndex == MouseButton.Left)
             {
-                if (_backgroundPanel == null) return;
-
-                if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left && Time.GetTicksMsec() <= _ignoreOutsideClickUntilMsec)
+                if (_backgroundPanel == null)
                 {
-                    GD.Print("[ArtifactDetailUI] Ignore opening click right after showing detail");
                     return;
                 }
 
                 var mousePos = GetViewport().GetMousePosition();
-                var backgroundRect = _backgroundPanel.GetGlobalRect();
-                var isInBackground = backgroundRect.HasPoint(mousePos);
-                GD.Print($"[ArtifactDetailUI] _UnhandledInput: mousePos=({mousePos.X:F1}, {mousePos.Y:F1}), backgroundGlobalPos=({_backgroundPanel.GlobalPosition.X:F1}, {_backgroundPanel.GlobalPosition.Y:F1}), backgroundSize=({_backgroundPanel.Size.X:F1}, {_backgroundPanel.Size.Y:F1}), InBackground={isInBackground}, Pressed={mouseEvent.Pressed}, Button={mouseEvent.ButtonIndex}");
+                var bgRect = _backgroundPanel.GetGlobalRect();
 
-                if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left && !isInBackground)
+                if (bgRect.HasPoint(mousePos))
                 {
-                    GD.Print($"[ArtifactDetailUI] Clicked OUTSIDE background, hiding");
                     HideArtifact();
                 }
             }
@@ -73,25 +55,17 @@ namespace FishEatFish.UI.ArtifactDetailPanel
         public override void _EnterTree()
         {
             base._EnterTree();
-            MouseFilter = MouseFilterEnum.Stop;
-            GD.Print($"[ArtifactDetailUI] _EnterTree: set MouseFilter to Stop");
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            GD.Print($"[ArtifactDetailUI] _ExitTree: set MouseFilter to Pass");
-            MouseFilter = MouseFilterEnum.Pass;
         }
 
         public void ShowArtifact(ArtifactData artifact)
         {
-            GD.Print($"[ArtifactDetailUI] ShowArtifact called: artifact={artifact?.name}");
-            GD.Print($"[ArtifactDetailUI] Current Visible state before: {Visible}");
-
             if (artifact == null)
             {
-                GD.PrintErr("[ArtifactDetailUI] ShowArtifact: artifact is null!");
                 return;
             }
 
@@ -132,25 +106,13 @@ namespace FishEatFish.UI.ArtifactDetailPanel
                 _iconRect.Visible = true;
             }
 
-            _ignoreOutsideClickUntilMsec = Time.GetTicksMsec() + 120;
             Visible = true;
-            GD.Print($"[ArtifactDetailUI] Set Visible to true");
-            GD.Print($"[ArtifactDetailUI] Current Visible state after: {Visible}");
-            GD.Print($"[ArtifactDetailUI] GlobalPosition: {GlobalPosition}");
-            GD.Print($"[ArtifactDetailUI] Size: {Size}");
-            GD.Print($"[ArtifactDetailUI] _backgroundPanel Visible: {_backgroundPanel?.Visible}");
-            GD.Print($"[ArtifactDetailUI] _backgroundPanel GlobalPosition: {_backgroundPanel?.GlobalPosition}");
-            GD.Print($"[ArtifactDetailUI] _backgroundPanel Size: {_backgroundPanel?.Size}");
-            GD.Print($"[ArtifactDetailUI] ShowArtifact completed");
         }
 
         public void UpdateArtifact(ArtifactData artifact)
         {
-            GD.Print($"[ArtifactDetailUI] UpdateArtifact called: artifact={artifact?.name}");
-
             if (artifact == null)
             {
-                GD.PrintErr("[ArtifactDetailUI] UpdateArtifact: artifact is null!");
                 return;
             }
 
@@ -190,18 +152,12 @@ namespace FishEatFish.UI.ArtifactDetailPanel
             {
                 _iconRect.Visible = true;
             }
-
-            GD.Print($"[ArtifactDetailUI] UpdateArtifact completed");
         }
 
         public void HideArtifact()
         {
-            GD.Print($"[ArtifactDetailUI] HideArtifact called");
-
             Visible = false;
             _currentArtifact = null;
-
-            GD.Print($"[ArtifactDetailUI] HideArtifact completed");
         }
 
         public bool IsPointInsideDetail(Vector2 globalMousePos)
@@ -214,13 +170,5 @@ namespace FishEatFish.UI.ArtifactDetailPanel
             return _backgroundPanel.GetGlobalRect().HasPoint(globalMousePos);
         }
 
-        private void OnClosePressed()
-        {
-            GD.Print($"[ArtifactDetailUI] OnClosePressed called");
-
-            HideArtifact();
-
-            GD.Print($"[ArtifactDetailUI] OnClosePressed completed");
-        }
     }
 }

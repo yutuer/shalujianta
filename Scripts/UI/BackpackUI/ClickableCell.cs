@@ -15,15 +15,13 @@ namespace FishEatFish.UI.BackpackUI
 
         public override void _Ready()
         {
-            GD.Print($"[ClickableCell] _Ready called");
             MouseFilter = MouseFilterEnum.Stop;
-            GD.Print($"[ClickableCell] MouseFilter set to Stop");
+            FocusMode = FocusModeEnum.Click;
         }
 
         public override void _EnterTree()
         {
             base._EnterTree();
-            GD.Print($"[ClickableCell] _EnterTree called");
         }
 
         public void SetArtifact(ArtifactData artifact)
@@ -84,13 +82,31 @@ namespace FishEatFish.UI.BackpackUI
 
         public override void _GuiInput(InputEvent @event)
         {
-            if (@event is InputEventMouseButton mouseEvent)
+            bool isInside = GetGlobalRect().HasPoint(GetGlobalMousePosition());
+
+            if (!isInside)
             {
-                if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
+                return;
+            }
+
+            if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
+            {
+                if (_artifact != null)
+                {
+                    OnCellClicked?.Invoke(_artifact);
+                    AcceptEvent();
+                }
+            }
+        }
+
+        public override void _Input(InputEvent @event)
+        {
+            if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
+            {
+                if (GetGlobalRect().HasPoint(GetGlobalMousePosition()))
                 {
                     if (_artifact != null)
                     {
-                        GD.Print($"[ClickableCell] Clicked on artifact: {_artifact.name}");
                         OnCellClicked?.Invoke(_artifact);
                         AcceptEvent();
                     }
