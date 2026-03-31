@@ -40,7 +40,7 @@ namespace FishEatFish.UI.ArtifactDetailPanel
             GD.Print($"[ArtifactDetailUI] _Ready completed");
         }
 
-        public override void _Input(InputEvent @event)
+        public override void _UnhandledInput(InputEvent @event)
         {
             if (!Visible)
             {
@@ -57,11 +57,10 @@ namespace FishEatFish.UI.ArtifactDetailPanel
                     return;
                 }
 
-                var localPos = GetLocalMousePosition();
-                var backgroundLocalPos = _backgroundPanel.GetLocalMousePosition();
-                var backgroundRect = new Rect2(Vector2.Zero, _backgroundPanel.Size);
-                var isInBackground = backgroundRect.HasPoint(backgroundLocalPos);
-                GD.Print($"[ArtifactDetailUI] _Input: localPos=({localPos.X:F1}, {localPos.Y:F1}), backgroundLocalPos=({backgroundLocalPos.X:F1}, {backgroundLocalPos.Y:F1}), backgroundSize=({_backgroundPanel.Size.X:F1}, {_backgroundPanel.Size.Y:F1}), InBackground={isInBackground}, Pressed={mouseEvent.Pressed}, Button={mouseEvent.ButtonIndex}");
+                var mousePos = GetViewport().GetMousePosition();
+                var backgroundRect = _backgroundPanel.GetGlobalRect();
+                var isInBackground = backgroundRect.HasPoint(mousePos);
+                GD.Print($"[ArtifactDetailUI] _UnhandledInput: mousePos=({mousePos.X:F1}, {mousePos.Y:F1}), backgroundGlobalPos=({_backgroundPanel.GlobalPosition.X:F1}, {_backgroundPanel.GlobalPosition.Y:F1}), backgroundSize=({_backgroundPanel.Size.X:F1}, {_backgroundPanel.Size.Y:F1}), InBackground={isInBackground}, Pressed={mouseEvent.Pressed}, Button={mouseEvent.ButtonIndex}");
 
                 if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left && !isInBackground)
                 {
