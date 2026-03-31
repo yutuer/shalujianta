@@ -9,8 +9,11 @@ public partial class MapManager : Node
 
     private int _silverKeyValue = 0;
     private Dictionary<int, int> _characterRageValues = new Dictionary<int, int>();
+    private int _maxCreatureCount = 10;
 
     private List<MapDefinition> _availableMaps = new List<MapDefinition>();
+
+    public int MaxCreatureCount => _maxCreatureCount;
 
     public override void _Ready()
     {
@@ -29,6 +32,23 @@ public partial class MapManager : Node
         _isMapCompleted = false;
         _silverKeyValue = 0;
         _characterRageValues.Clear();
+        _maxCreatureCount = 10;
+    }
+
+    public void SetMaxCreatureCount(int count)
+    {
+        _maxCreatureCount = Mathf.Max(1, count);
+        GD.Print($"[MapManager] SetMaxCreatureCount: {_maxCreatureCount}");
+    }
+
+    public bool CanAcquireArtifact()
+    {
+        if (FishEatFish.Shop.BlackMarkShopManager.Instance == null)
+        {
+            return false;
+        }
+        var ownedCount = FishEatFish.Shop.BlackMarkShopManager.Instance.GetOwnedArtifactsCount();
+        return ownedCount < _maxCreatureCount;
     }
 
     public MapDefinition GetCurrentMap()

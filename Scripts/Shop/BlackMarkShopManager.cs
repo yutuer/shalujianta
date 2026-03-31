@@ -396,6 +396,12 @@ namespace FishEatFish.Shop
 				return false;
 			}
 
+			if (!CanAcquireArtifact())
+			{
+				GD.Print($"[BlackMarkShopManager] 背包已满，无法获取更多造物");
+				return false;
+			}
+
 			if (!SpendBlackMark(item.Price))
 			{
 				return false;
@@ -411,6 +417,16 @@ namespace FishEatFish.Shop
 			}
 
 			return false;
+		}
+
+		public bool CanAcquireArtifact()
+		{
+			var mapManager = GetNodeOrNull<MapManager>("/root/MapManager");
+			if (mapManager != null)
+			{
+				return mapManager.CanAcquireArtifact();
+			}
+			return _ownedArtifacts.Count < 10;
 		}
 
 		public bool StartEngravingPurchase(ShopItem item)
@@ -475,6 +491,11 @@ namespace FishEatFish.Shop
 		public List<ArtifactData> GetOwnedArtifacts()
 		{
 			return new List<ArtifactData>(_ownedArtifacts);
+		}
+
+		public int GetOwnedArtifactsCount()
+		{
+			return _ownedArtifacts?.Count ?? 0;
 		}
 
 		public void CloseShop()
