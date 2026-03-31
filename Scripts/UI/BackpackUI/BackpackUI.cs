@@ -230,15 +230,26 @@ namespace FishEatFish.UI.BackpackUI
             icon.OffsetRight = -5;
             icon.OffsetBottom = -5;
             icon.SetArtifact(artifact);
-            GD.Print($"[BackpackUI] PopulateCellWithArtifact: setting up OnIconClicked for {artifact.name}");
-            icon.OnIconClicked += (a) => {
-                GD.Print($"[BackpackUI] OnIconClicked callback invoked: artifact={a?.name}");
-                ShowArtifactDetail(a);
-            };
+            icon.OnIconClicked += ShowArtifactDetail;
 
             cell.AddChild(icon);
 
             GD.Print($"[BackpackUI] PopulateCellWithArtifact: populated cell for {artifact.name}");
+        }
+
+        public override void _Input(InputEvent @event)
+        {
+            if (@event is not InputEventMouseButton mouseEvent || !mouseEvent.Pressed || mouseEvent.ButtonIndex != MouseButton.Left)
+            {
+                return;
+            }
+
+            var mousePos = GetViewport().GetMousePosition();
+
+            if (_detailUI != null && _detailUI.Visible && !_detailUI.IsPointInsideDetail(mousePos))
+            {
+                _detailUI.HideArtifact();
+            }
         }
 
         private void ShowArtifactDetail(ArtifactData artifact)
@@ -258,13 +269,15 @@ namespace FishEatFish.UI.BackpackUI
                 backpackGlobalPos.Y + backpackSize.Y + 10
             );
 
+            _detailUI.GlobalPosition = detailTargetPos;
             if (_detailUI.Visible)
             {
-                _detailUI.HideArtifact();
+                _detailUI.UpdateArtifact(artifact);
             }
-
-            _detailUI.GlobalPosition = detailTargetPos;
-            _detailUI.ShowArtifact(artifact);
+            else
+            {
+                _detailUI.ShowArtifact(artifact);
+            }
 
             GD.Print($"[BackpackUI] ShowArtifactDetail completed");
         }
