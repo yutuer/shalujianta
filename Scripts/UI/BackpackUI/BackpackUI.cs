@@ -230,6 +230,7 @@ namespace FishEatFish.UI.BackpackUI
             icon.OffsetRight = -5;
             icon.OffsetBottom = -5;
             icon.SetArtifact(artifact);
+            icon.OnIconClicked += ShowArtifactDetail;
 
             cell.AddChild(icon);
 
@@ -249,43 +250,6 @@ namespace FishEatFish.UI.BackpackUI
             {
                 _detailUI.HideArtifact();
             }
-
-            if (TryGetClickedArtifact(mousePos, out var artifact))
-            {
-                ShowArtifactDetail(artifact);
-            }
-        }
-
-        private bool TryGetClickedArtifact(Vector2 globalMousePos, out ArtifactData artifact)
-        {
-            artifact = null;
-            if (_cellsContainer == null || BlackMarkShopManager.Instance == null)
-            {
-                return false;
-            }
-
-            var hoveredControl = GetViewport().GuiGetHoveredControl();
-            var current = hoveredControl;
-            while (current != null)
-            {
-                if (current is PanelContainer hoveredCell && hoveredCell.GetParent() == _cellsContainer)
-                {
-                    var cellName = hoveredCell.Name.ToString();
-                    if (cellName.StartsWith("Cell_") && int.TryParse(cellName.Substring(5), out int index))
-                    {
-                        var ownedArtifacts = BlackMarkShopManager.Instance.GetOwnedArtifacts();
-                        if (ownedArtifacts != null && index >= 0 && index < ownedArtifacts.Count)
-                        {
-                            artifact = ownedArtifacts[index];
-                            return artifact != null;
-                        }
-                    }
-                }
-
-                current = current.GetParent() as Control;
-            }
-
-            return false;
         }
 
         private void ShowArtifactDetail(ArtifactData artifact)
