@@ -16,7 +16,8 @@ namespace FishEatFish.Battle.HexMap
         Heal,
         TwoWayTeleport,
         Hole,
-        OneDirectionTele
+        OneDirectionTele,
+        OneWayDoor
     }
 
     public enum TeleportDirection

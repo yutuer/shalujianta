@@ -12,7 +12,7 @@ namespace FishEatFish.UI.BackpackUI
 
         public override void _Ready()
         {
-            MouseFilter = MouseFilterEnum.Stop;
+            MouseFilter = MouseFilterEnum.Ignore;
         }
 
         public override void _EnterTree()
