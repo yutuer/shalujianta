@@ -271,13 +271,13 @@ namespace FishEatFish.UI.BackpackUI
                     continue;
                 }
 
-                var icon = cell.GetNodeOrNull<ClickableIcon>("Icon");
-                if (icon == null)
+                if (!cell.GetGlobalRect().HasPoint(globalMousePos))
                 {
                     continue;
                 }
 
-                if (!icon.GetGlobalRect().HasPoint(globalMousePos))
+                var icon = cell.GetNodeOrNull<ClickableIcon>("Icon");
+                if (icon == null)
                 {
                     continue;
                 }
