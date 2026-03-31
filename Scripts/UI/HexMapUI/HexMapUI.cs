@@ -402,6 +402,7 @@ namespace FishEatFish.UI.HexMap
 
             CenterOnPlayer(_controller.CurrentPosition, false);
             UpdatePlayerPosition();
+            UpdatePlayerCurrentTile(_controller.CurrentPosition);
         }
 
         private void CenterOnPlayer(HexCoord playerCoord, bool animate = true)
@@ -543,6 +544,7 @@ namespace FishEatFish.UI.HexMap
             var tileCenterPos = playerWorldPos + _hexSize / 2 - iconSize / 2;
             _playerIcon.MoveTo(tileCenterPos);
 
+            UpdatePlayerCurrentTile(newPos);
             ClearPathHighlights();
         }
 
@@ -560,7 +562,21 @@ namespace FishEatFish.UI.HexMap
             var tileCenterPos = playerWorldPos + _hexSize / 2 - iconSize / 2;
             _playerIcon.TeleportTo(tileCenterPos);
 
+            UpdatePlayerCurrentTile(newPos);
             ClearPathHighlights();
+        }
+
+        private void UpdatePlayerCurrentTile(HexCoord playerPos)
+        {
+            foreach (var view in _tileViews.Values)
+            {
+                view.SetPlayerCurrent(false);
+            }
+
+            if (_tileViews.ContainsKey(playerPos))
+            {
+                _tileViews[playerPos].SetPlayerCurrent(true);
+            }
         }
 
         private void UpdatePlayerPosition()

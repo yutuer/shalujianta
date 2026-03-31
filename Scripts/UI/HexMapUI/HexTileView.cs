@@ -40,6 +40,7 @@ namespace FishEatFish.UI.HexMap
         private bool _isHovered;
         private bool _isPath;
         private bool _isClickable = true;
+        private bool _isPlayerCurrent;
         private Vector2 _hexWorldPosition;
 
         public System.Action<HexTileView> OnTileClicked;
@@ -100,6 +101,12 @@ namespace FishEatFish.UI.HexMap
         public void SetAsPath(bool isPath)
         {
             _isPath = isPath;
+            UpdateVisuals();
+        }
+
+        public void SetPlayerCurrent(bool isCurrent)
+        {
+            _isPlayerCurrent = isCurrent;
             UpdateVisuals();
         }
 
@@ -186,6 +193,11 @@ namespace FishEatFish.UI.HexMap
             }
 
             _hexShape.Color = tileColor;
+
+            if (_isPlayerCurrent)
+            {
+                _hexShape.Color = new Color(1.0f, 1.0f, 0.0f);
+            }
 
             if (!string.IsNullOrEmpty(iconPath) && _iconRect != null)
             {
