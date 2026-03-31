@@ -14,6 +14,7 @@ namespace FishEatFish.UI.ArtifactDetailPanel
         private PanelContainer _backgroundPanel;
 
         private ArtifactData _currentArtifact;
+        private ulong _ignoreOutsideClickUntilMsec;
 
         public override void _Ready()
         {
@@ -39,17 +40,27 @@ namespace FishEatFish.UI.ArtifactDetailPanel
             GD.Print($"[ArtifactDetailUI] _Ready completed");
         }
 
-        public override void _Input(InputEvent @event)
+        public override void _UnhandledInput(InputEvent @event)
         {
+            if (!Visible)
+            {
+                return;
+            }
+
             if (@event is InputEventMouseButton mouseEvent)
             {
                 if (_backgroundPanel == null) return;
 
-                var localPos = GetLocalMousePosition();
-                var backgroundLocalPos = _backgroundPanel.GetLocalMousePosition();
-                var backgroundRect = new Rect2(Vector2.Zero, _backgroundPanel.Size);
-                var isInBackground = backgroundRect.HasPoint(backgroundLocalPos);
-                GD.Print($"[ArtifactDetailUI] _Input: localPos=({localPos.X:F1}, {localPos.Y:F1}), backgroundLocalPos=({backgroundLocalPos.X:F1}, {backgroundLocalPos.Y:F1}), backgroundSize=({_backgroundPanel.Size.X:F1}, {_backgroundPanel.Size.Y:F1}), InBackground={isInBackground}, Pressed={mouseEvent.Pressed}, Button={mouseEvent.ButtonIndex}");
+                if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left && Time.GetTicksMsec() <= _ignoreOutsideClickUntilMsec)
+                {
+                    GD.Print("[ArtifactDetailUI] Ignore opening click right after showing detail");
+                    return;
+                }
+
+                var mousePos = GetViewport().GetMousePosition();
+                var backgroundRect = _backgroundPanel.GetGlobalRect();
+                var isInBackground = backgroundRect.HasPoint(mousePos);
+                GD.Print($"[ArtifactDetailUI] _UnhandledInput: mousePos=({mousePos.X:F1}, {mousePos.Y:F1}), backgroundGlobalPos=({_backgroundPanel.GlobalPosition.X:F1}, {_backgroundPanel.GlobalPosition.Y:F1}), backgroundSize=({_backgroundPanel.Size.X:F1}, {_backgroundPanel.Size.Y:F1}), InBackground={isInBackground}, Pressed={mouseEvent.Pressed}, Button={mouseEvent.ButtonIndex}");
 
                 if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left && !isInBackground)
                 {
@@ -121,6 +132,7 @@ namespace FishEatFish.UI.ArtifactDetailPanel
                 _iconRect.Visible = true;
             }
 
+            _ignoreOutsideClickUntilMsec = Time.GetTicksMsec() + 120;
             Visible = true;
             GD.Print($"[ArtifactDetailUI] Set Visible to true");
             GD.Print($"[ArtifactDetailUI] Current Visible state after: {Visible}");
@@ -190,6 +202,16 @@ namespace FishEatFish.UI.ArtifactDetailPanel
             _currentArtifact = null;
 
             GD.Print($"[ArtifactDetailUI] HideArtifact completed");
+        }
+
+        public bool IsPointInsideDetail(Vector2 globalMousePos)
+        {
+            if (!Visible || _backgroundPanel == null)
+            {
+                return false;
+            }
+
+            return _backgroundPanel.GetGlobalRect().HasPoint(globalMousePos);
         }
 
         private void OnClosePressed()
