@@ -75,7 +75,7 @@ namespace FishEatFish.Scenes
         private void CreateCharacterButton(CharacterDefinition character)
         {
             Panel card = new Panel();
-            card.CustomMinimumSize = new Vector2(120, 160);
+            card.CustomMinimumSize = new Vector2(100, 120);
             card.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
             card.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
 
@@ -102,40 +102,53 @@ namespace FishEatFish.Scenes
             hoverStyle.BorderColor = new Color(0.5f, 0.6f, 0.8f);
             card.AddThemeStyleboxOverride("hover", hoverStyle);
 
-            VBoxContainer content = new VBoxContainer();
-            content.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
-            content.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
-            content.Alignment = VBoxContainer.AlignmentMode.Center;
-            card.AddChild(content);
+            CenterContainer centerContainer = new CenterContainer();
+            centerContainer.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+            centerContainer.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
+            card.AddChild(centerContainer);
+
+            HBoxContainer content = new HBoxContainer();
+            centerContainer.AddChild(content);
 
             Label iconLabel = new Label();
             iconLabel.Text = GetCharacterEmoji(character.CharacterId);
             iconLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            iconLabel.AddThemeFontSizeOverride("font_size", 48);
+            iconLabel.VerticalAlignment = VerticalAlignment.Center;
+            iconLabel.CustomMinimumSize = new Vector2(60, 60);
+            iconLabel.AddThemeFontSizeOverride("font_size", 50);
             content.AddChild(iconLabel);
+
+            VBoxContainer infoContainer = new VBoxContainer();
+            infoContainer.Alignment = BoxContainer.AlignmentMode.Center;
+            content.AddChild(infoContainer);
 
             Label nameLabel = new Label();
             nameLabel.Text = character.Name;
             nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            nameLabel.VerticalAlignment = VerticalAlignment.Center;
             nameLabel.AddThemeFontSizeOverride("font_size", 20);
-            content.AddChild(nameLabel);
+            infoContainer.AddChild(nameLabel);
 
             Label statsLabel = new Label();
             statsLabel.Text = $"HP:{character.BaseHealth} ATK:{character.BaseAttack}";
             statsLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            statsLabel.VerticalAlignment = VerticalAlignment.Center;
             statsLabel.Modulate = new Color(0.7f, 0.7f, 0.7f);
-            statsLabel.AddThemeFontSizeOverride("font_size", 12);
-            content.AddChild(statsLabel);
-
-            Button selectBtn = new Button();
-            selectBtn.Text = "选择";
-            selectBtn.CustomMinimumSize = new Vector2(80, 32);
-            content.AddChild(selectBtn);
+            statsLabel.AddThemeFontSizeOverride("font_size", 14);
+            infoContainer.AddChild(statsLabel);
 
             CharacterDefinition capturedChar = character;
-            selectBtn.Pressed += () => OnCharacterSelected(capturedChar);
+            card.GuiInput += (InputEvent @event) => OnCardInput(@event, capturedChar);
 
             _characterContainer.AddChild(card);
+        }
+
+        private void OnCardInput(InputEvent @event, CharacterDefinition character)
+        {
+            if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
+            {
+                OnCharacterSelected(character);
+            }
         }
 
         private string GetCharacterEmoji(string characterId)

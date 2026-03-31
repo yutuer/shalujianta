@@ -172,7 +172,7 @@ namespace FishEatFish.UI.HexMap
                     icon = "💎";
                     break;
                 case HexEventType.Swamp:
-                    icon = "~";
+                    iconPath = "res://Assets/Icons/skull.svg";
                     break;
                 case HexEventType.TwoWayTeleport:
                     iconPath = "res://Assets/Icons/arrow_reserve.svg";
@@ -196,7 +196,7 @@ namespace FishEatFish.UI.HexMap
 
             if (_isPlayerCurrent)
             {
-                _hexShape.Color = new Color(1.0f, 1.0f, 0.0f);
+                _hexShape.Color = new Color(_normalColor.R * 0.7f, _normalColor.G * 0.7f, _normalColor.B * 0.7f);
             }
 
             if (!string.IsNullOrEmpty(iconPath) && _iconRect != null)

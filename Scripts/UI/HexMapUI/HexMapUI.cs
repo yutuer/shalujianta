@@ -536,6 +536,8 @@ namespace FishEatFish.UI.HexMap
 
             CenterOnPlayer(newPos, true);
 
+            UpdatePlayerCurrentTile(newPos);
+
             var iconSize = _playerIcon.Size == Vector2.Zero
                 ? _playerIcon.CustomMinimumSize
                 : _playerIcon.Size;
@@ -544,7 +546,6 @@ namespace FishEatFish.UI.HexMap
             var tileCenterPos = playerWorldPos + _hexSize / 2 - iconSize / 2;
             _playerIcon.MoveTo(tileCenterPos);
 
-            UpdatePlayerCurrentTile(newPos);
             ClearPathHighlights();
         }
 
