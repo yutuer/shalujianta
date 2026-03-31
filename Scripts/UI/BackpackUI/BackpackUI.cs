@@ -49,6 +49,23 @@ namespace FishEatFish.UI.BackpackUI
                 GD.Print($"[BackpackUI] Found ArtifactDetailUI: {_detailUI.Name}");
             }
 
+            if (_detailUI == null)
+            {
+                GD.PrintErr("[BackpackUI] ArtifactDetailUI still missing, instantiating fallback panel.");
+                var detailScene = GD.Load<PackedScene>("res://Scenes/UI/ArtifactDetailUI.tscn");
+                if (detailScene != null)
+                {
+                    var detailNode = detailScene.Instantiate<ArtifactDetailUI>();
+                    GetParent()?.AddChild(detailNode);
+                    _detailUI = detailNode;
+                    GD.Print("[BackpackUI] ArtifactDetailUI fallback instantiated successfully.");
+                }
+                else
+                {
+                    GD.PrintErr("[BackpackUI] Failed to load ArtifactDetailUI.tscn for fallback.");
+                }
+            }
+
             if (_cellsContainer == null)
             {
                 GD.PrintErr("[BackpackUI] _cellsContainer is null!");
