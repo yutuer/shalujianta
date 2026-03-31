@@ -198,6 +198,10 @@ namespace FishEatFish.UI.BackpackUI
                             GD.Print($"[BackpackUI] ClearAllCellContents: removing old ClickableIcon for {icon.GetArtifactName()}");
                             icon.OnIconClicked = null;
                         }
+                        else if (cellChild is ClickableCell clickableCell)
+                        {
+                            clickableCell.OnCellClicked = null;
+                        }
                         cellChild.QueueFree();
                     }
                 }
@@ -219,20 +223,14 @@ namespace FishEatFish.UI.BackpackUI
                 cellChild.QueueFree();
             }
 
-            var icon = new ClickableIcon();
-            icon.Name = "Icon";
-            icon.CustomMinimumSize = new Vector2(40, 40);
-            icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-            icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-            icon.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-            icon.OffsetLeft = 5;
-            icon.OffsetTop = 5;
-            icon.OffsetRight = -5;
-            icon.OffsetBottom = -5;
-            icon.SetArtifact(artifact);
-            icon.OnIconClicked += ShowArtifactDetail;
+            var clickableCell = new ClickableCell();
+            clickableCell.Name = "ClickableCell";
+            clickableCell.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            clickableCell.MouseFilter = MouseFilterEnum.Stop;
+            clickableCell.SetArtifact(artifact);
+            clickableCell.OnCellClicked += ShowArtifactDetail;
 
-            cell.AddChild(icon);
+            cell.AddChild(clickableCell);
 
             GD.Print($"[BackpackUI] PopulateCellWithArtifact: populated cell for {artifact.name}");
         }
