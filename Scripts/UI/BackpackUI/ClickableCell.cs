@@ -92,6 +92,7 @@ namespace FishEatFish.UI.BackpackUI
                     {
                         GD.Print($"[ClickableCell] Clicked on artifact: {_artifact.name}");
                         OnCellClicked?.Invoke(_artifact);
+                        AcceptEvent();
                     }
                 }
             }
