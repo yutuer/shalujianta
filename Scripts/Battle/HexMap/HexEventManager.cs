@@ -12,6 +12,7 @@ namespace FishEatFish.Battle.HexMap
         public System.Action<string, int> OnDamageDealt;
         public System.Action<string, int> OnHealingApplied;
         public System.Action<string, int> OnBlackMarkGained;
+        public System.Action<HexEventType, string> OnBattleTriggered;
 
         public HexEventManager()
         {
@@ -85,14 +86,13 @@ namespace FishEatFish.Battle.HexMap
             var battleType = isElite ? "精英战斗" : "普通战斗";
             GD.Print($"[HexEventManager] {battleType}: {tile.Coord}, 配置: {tile.EnemyConfig}");
 
-            OnEventTriggered?.Invoke(isElite ? "elite_battle" : "normal_battle", tile.Coord.ToString());
+            HexEventType eventType = isElite ? HexEventType.BattleElite : HexEventType.BattleNormal;
+            string enemyConfig = tile.EnemyConfig ?? (isElite ? "elite_wave" : "normal_wave");
 
-            float damage = CalculateBattleDamage(tile, isElite);
-            if (damage > 0)
-            {
-                controller.DamagePlayer(damage);
-                OnDamageDealt?.Invoke("battle", (int)damage);
-            }
+            OnEventTriggered?.Invoke(isElite ? "elite_battle" : "normal_battle", tile.Coord.ToString());
+            OnBattleTriggered?.Invoke(eventType, enemyConfig);
+
+            GD.Print($"[HexEventManager] 触发战斗场景切换: type={eventType}, config={enemyConfig}");
         }
 
         private float CalculateBattleDamage(HexTile tile, bool isElite)

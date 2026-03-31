@@ -24,6 +24,7 @@ namespace FishEatFish.Battle.HexMap
 
         [Export]
         private int _playerLevel = 1;
+        public int PlayerLevel => _playerLevel;
 
         [Export]
         private int _mapRadius = 5;
@@ -67,6 +68,8 @@ namespace FishEatFish.Battle.HexMap
         public System.Action OnShopOpened;
         public System.Action OnShopClosed;
 
+        private BattleTransitionManager _battleTransitionManager;
+
         public override void _Ready()
         {
             _instance = this;
@@ -74,7 +77,18 @@ namespace FishEatFish.Battle.HexMap
             _generator = new HexMapGenerator();
             _eventManager = new HexEventManager();
 
+            _battleTransitionManager = new BattleTransitionManager();
+            AddChild(_battleTransitionManager);
+
+            _eventManager.OnBattleTriggered += OnBattleTriggered;
+
             GenerateMap();
+        }
+
+        private void OnBattleTriggered(HexEventType battleType, string enemyConfig)
+        {
+            GD.Print($"[HexMapController] OnBattleTriggered: type={battleType}, config={enemyConfig}");
+            _battleTransitionManager.StartBattle(battleType, enemyConfig, this);
         }
 
         public void GenerateMap()
