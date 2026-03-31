@@ -13,6 +13,7 @@ namespace FishEatFish.UI.ArtifactDetailPanel
         private PanelContainer _backgroundPanel;
 
         private ArtifactData _currentArtifact;
+        private ulong _showTimeMsec;
 
         public override void _Ready()
         {
@@ -42,10 +43,15 @@ namespace FishEatFish.UI.ArtifactDetailPanel
                     return;
                 }
 
+                if (Time.GetTicksMsec() - _showTimeMsec < 120)
+                {
+                    return;
+                }
+
                 var mousePos = GetViewport().GetMousePosition();
                 var bgRect = _backgroundPanel.GetGlobalRect();
 
-                if (bgRect.HasPoint(mousePos))
+                if (!bgRect.HasPoint(mousePos))
                 {
                     HideArtifact();
                 }
@@ -106,6 +112,7 @@ namespace FishEatFish.UI.ArtifactDetailPanel
                 _iconRect.Visible = true;
             }
 
+            _showTimeMsec = Time.GetTicksMsec();
             Visible = true;
         }
 
