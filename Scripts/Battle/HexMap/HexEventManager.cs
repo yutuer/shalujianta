@@ -154,17 +154,16 @@ namespace FishEatFish.Battle.HexMap
 
         private void ProcessOneWayTeleport(HexTile tile, HexMapController controller)
         {
-            GD.Print($"[HexEventManager] 单向传送门: {tile.Coord}");
+            GD.Print($"[HexEventManager] 单向传送门: {tile.Coord}, 角色: {tile.TeleportRole}");
 
-            if (tile.TeleportDirection == TeleportDirection.Forward)
+            if (tile.TeleportRole != TeleportRole.Entry)
             {
-                GD.Print($"[HexEventManager] 传送方向: 前进");
-            }
-            else
-            {
-                GD.Print($"[HexEventManager] 传送方向: 后退");
+                GD.Print($"[HexEventManager] 这是传送出口，不能传送");
+                OnEventTriggered?.Invoke("teleport_exit", tile.Coord.ToString());
+                return;
             }
 
+            GD.Print($"[HexEventManager] 这是传送入口，准备传送");
             OnEventTriggered?.Invoke("teleport_one_way", tile.Coord.ToString());
 
             var targetTile = FindTeleportTarget(tile, controller);

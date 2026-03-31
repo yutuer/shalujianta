@@ -888,3 +888,109 @@ HexMapUI._isInteractionBlocked = true
 - 添加黑印图标的金色粒子特效
 - 支持同时获得多种奖励（黑印 + 金币）的一并显示
 - 添加音效反馈
+
+---
+
+## 18. 单向传送门系统 ✅
+
+### 18.1 功能概述
+
+单向传送门是地图上的一种特殊事件格子，玩家只能从**入口**传送到**出口**，不能反向传送。
+
+### 18.2 设计规则
+
+**单向性**：
+- 传送入口：玩家进入后会被传送到对应的出口
+- 传送出口：玩家进入后**不会**被传送，只是一个普通格子
+
+**配对机制**：
+- 入口和出口成对生成，共享同一个 `TeleportPairId`
+- 两个格子距离必须 > 5 格
+
+### 18.3 格子类型
+
+| 类型 | 图标 | 显示名称 | TeleportRole | 行为 |
+| :--- | :--- | :--- | :--- | :--- |
+| 传送入口 | `teleport_entry.png` | 传送入口 | Entry | 进入后传送到出口 |
+| 传送出口 | `teleport_exit.png` | 传送出口 | Exit | 进入后不传送 |
+
+### 18.4 数据结构
+
+**HexTile.cs 新增枚举**：
+```csharp
+public enum TeleportRole
+{
+    None,   // 非传送门
+    Entry,  // 传送入口（可以传送）
+    Exit    // 传送出口（不能传送）
+}
+```
+
+**HexTile 新增属性**：
+```csharp
+public TeleportRole TeleportRole { get; set; }
+```
+
+### 18.5 生成逻辑
+
+**HexMapGenerator.cs**：
+```csharp
+// 入口设置
+tiles[coord1].EventType = HexEventType.OneDirectionTele;
+tiles[coord1].TeleportRole = TeleportRole.Entry;
+tiles[coord1].DisplayName = "传送入口";
+tiles[coord1].IconPath = "res://Assets/Icons/teleport_entry.png";
+
+// 出口设置
+tiles[coord2].EventType = HexEventType.OneDirectionTele;
+tiles[coord2].TeleportRole = TeleportRole.Exit;
+tiles[coord2].DisplayName = "传送出口";
+tiles[coord2].IconPath = "res://Assets/Icons/teleport_exit.png";
+```
+
+### 18.6 传送逻辑
+
+**HexEventManager.cs**：
+```csharp
+private void ProcessOneWayTeleport(HexTile tile, HexMapController controller)
+{
+    // 只有入口才能传送
+    if (tile.TeleportRole != TeleportRole.Entry)
+    {
+        GD.Print($"这是传送出口，不能传送");
+        return;
+    }
+
+    // 查找配对的出口并传送
+    var targetTile = FindTeleportTarget(tile, controller);
+    if (targetTile != null)
+    {
+        controller.TeleportPlayerTo(targetTile);
+    }
+}
+```
+
+### 18.7 已实现文件
+
+| 文件 | 状态 | 用途 |
+| :--- | :-- | :--- |
+| `HexTile.cs` | ✅ | 新增 TeleportRole 枚举和属性 |
+| `HexMapGenerator.cs` | ✅ | 入口/出口不同图标和名称 |
+| `HexEventManager.cs` | ✅ | 只允许从入口传送 |
+
+### 18.8 图标资源
+
+需要创建以下图标文件：
+- `res://Assets/Icons/teleport_entry.png` - 传送入口图标
+- `res://Assets/Icons/teleport_exit.png` - 传送出口图标
+
+### 18.9 验收标准
+
+| 验收项 | 状态 |
+| :--- | :-- |
+| 地图上显示入口和出口两个不同图标 | ✅ |
+| 入口显示"传送入口"名称 | ✅ |
+| 出口显示"传送出口"名称 | ✅ |
+| 进入入口后传送到出口 | ✅ |
+| 进入出口后不传送 | ✅ |
+| 不能从出口反向传送 | ✅ |

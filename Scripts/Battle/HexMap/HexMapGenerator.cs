@@ -528,7 +528,7 @@ namespace FishEatFish.Battle.HexMap
             int attempts = 0;
             int maxAttempts = 50;
 
-            while (pairsPlaced < count / 2 && attempts < maxAttempts)
+            while (pairsPlaced < count && attempts < maxAttempts)
             {
                 attempts++;
 
@@ -563,15 +563,17 @@ namespace FishEatFish.Battle.HexMap
                     tiles[coord1].TriggerCount = HexTile.InfiniteTriggers;
                     tiles[coord1].TeleportPairId = pairId;
                     tiles[coord1].TeleportDirection = TeleportDirection.Forward;
-                    tiles[coord1].DisplayName = "单向传送门1→2";
-                    tiles[coord1].IconPath = "res://Assets/Icons/one_dir_tele.png";
+                    tiles[coord1].TeleportRole = TeleportRole.Entry;
+                    tiles[coord1].DisplayName = "传送入口";
+                    tiles[coord1].IconPath = "res://Assets/Icons/teleport_entry.svg";
 
                     tiles[coord2].EventType = HexEventType.OneDirectionTele;
                     tiles[coord2].TriggerCount = HexTile.InfiniteTriggers;
                     tiles[coord2].TeleportPairId = pairId;
                     tiles[coord2].TeleportDirection = TeleportDirection.Backward;
-                    tiles[coord2].DisplayName = "单向传送门2→1";
-                    tiles[coord2].IconPath = "res://Assets/Icons/one_dir_tele.png";
+                    tiles[coord2].TeleportRole = TeleportRole.Exit;
+                    tiles[coord2].DisplayName = "传送出口";
+                    tiles[coord2].IconPath = "res://Assets/Icons/teleport_exit.svg";
 
                     pairsPlaced++;
                 }

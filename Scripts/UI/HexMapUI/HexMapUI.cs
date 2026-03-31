@@ -226,10 +226,6 @@ namespace FishEatFish.UI.HexMap
                     var teleportNode = teleportScene.Instantiate();
                     AddChild(teleportNode);
                     _teleportDialog = teleportNode as Control;
-                    if (_teleportDialog != null)
-                    {
-                        _teleportDialog.Position = Vector2.Zero;
-                    }
                 }
             }
             if (_teleportDialog != null)

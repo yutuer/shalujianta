@@ -33,6 +33,7 @@ namespace FishEatFish.UI.HexMap
         private ColorRect _background;
         private Label _iconLabel;
         private Label _debugLabel;
+        private TextureRect _iconRect;
 
         private HexTile _tile;
         public HexTile Tile => _tile;
@@ -53,6 +54,7 @@ namespace FishEatFish.UI.HexMap
             _background = GetNode<ColorRect>("Background");
             _iconLabel = GetNode<Label>("IconLabel");
             _debugLabel = GetNode<Label>("DebugLabel");
+            _iconRect = GetNode<TextureRect>("IconRect");
 
             UpdateHexShape();
 
@@ -113,6 +115,7 @@ namespace FishEatFish.UI.HexMap
 
             Color tileColor;
             string icon = "";
+            string iconPath = "";
 
             if (_tile.IsStart)
             {
@@ -174,7 +177,14 @@ namespace FishEatFish.UI.HexMap
                     icon = "⇄";
                     break;
                 case HexEventType.OneDirectionTele:
-                    icon = "→";
+                    if (_tile.TeleportRole == TeleportRole.Entry)
+                    {
+                        iconPath = "res://Assets/Icons/teleport_entry.svg";
+                    }
+                    else
+                    {
+                        iconPath = "res://Assets/Icons/teleport_exit.svg";
+                    }
                     break;
                 case HexEventType.Empty:
                     icon = "";
@@ -185,7 +195,32 @@ namespace FishEatFish.UI.HexMap
             }
 
             _hexShape.Color = tileColor;
-            _iconLabel.Text = icon;
+
+            if (!string.IsNullOrEmpty(iconPath) && _iconRect != null)
+            {
+                var texture = GD.Load<Texture2D>(iconPath);
+                if (texture != null)
+                {
+                    _iconRect.Texture = texture;
+                    _iconRect.Visible = true;
+                    _iconLabel.Visible = false;
+                }
+                else
+                {
+                    _iconRect.Visible = false;
+                    _iconLabel.Visible = false;
+                }
+            }
+            else
+            {
+                if (_iconRect != null)
+                {
+                    _iconRect.Visible = false;
+                }
+                _iconLabel.Visible = true;
+                _iconLabel.Text = icon;
+            }
+
             _debugLabel.Text = $"{_tile.Coord}";
         }
 

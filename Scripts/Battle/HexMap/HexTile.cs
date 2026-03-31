@@ -26,6 +26,13 @@ namespace FishEatFish.Battle.HexMap
         Backward
     }
 
+    public enum TeleportRole
+    {
+        None,   // 非传送门
+        Entry,  // 传送入口（可以传送）
+        Exit    // 传送出口（不能传送）
+    }
+
     public partial class HexTile
     {
         public const int InfiniteTriggers = -1;
@@ -45,6 +52,7 @@ namespace FishEatFish.Battle.HexMap
         public string TeleportPairId { get; set; }
         public bool HasTriggeredThisVisit { get; set; }
         public TeleportDirection TeleportDirection { get; set; }
+        public TeleportRole TeleportRole { get; set; }
         public int ShopRefreshCount { get; set; }
         public List<ShopItem> ShopItems { get; set; }
 
