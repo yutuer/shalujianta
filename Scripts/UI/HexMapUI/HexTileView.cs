@@ -135,11 +135,6 @@ namespace FishEatFish.UI.HexMap
             {
                 tileColor = EventColors.GetValueOrDefault(_tile.EventType, _normalColor);
 
-                if (_tile.IsVisited)
-                {
-                    tileColor = new Color(tileColor.R * 0.7f, tileColor.G * 0.7f, tileColor.B * 0.7f);
-                }
-
                 if (_isPath && !_tile.IsVisited)
                 {
                     tileColor = _pathColor;
