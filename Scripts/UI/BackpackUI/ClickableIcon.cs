@@ -64,6 +64,12 @@ namespace FishEatFish.UI.BackpackUI
             {
                 if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
                 {
+                    var mousePos = GetViewport().GetMousePosition();
+                    if (!GetGlobalRect().HasPoint(mousePos))
+                    {
+                        return;
+                    }
+
                     OnIconClicked?.Invoke(_artifact);
                 }
             }

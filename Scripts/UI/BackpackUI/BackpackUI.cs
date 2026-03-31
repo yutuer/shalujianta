@@ -258,13 +258,15 @@ namespace FishEatFish.UI.BackpackUI
                 backpackGlobalPos.Y + backpackSize.Y + 10
             );
 
+            _detailUI.GlobalPosition = detailTargetPos;
             if (_detailUI.Visible)
             {
-                _detailUI.HideArtifact();
+                _detailUI.UpdateArtifact(artifact);
             }
-
-            _detailUI.GlobalPosition = detailTargetPos;
-            _detailUI.ShowArtifact(artifact);
+            else
+            {
+                _detailUI.ShowArtifact(artifact);
+            }
 
             GD.Print($"[BackpackUI] ShowArtifactDetail completed");
         }
