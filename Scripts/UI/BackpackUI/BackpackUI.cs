@@ -259,31 +259,30 @@ namespace FishEatFish.UI.BackpackUI
         private bool TryGetClickedArtifact(Vector2 globalMousePos, out ArtifactData artifact)
         {
             artifact = null;
-            if (_cellsContainer == null)
+            if (_cellsContainer == null || BlackMarkShopManager.Instance == null)
             {
                 return false;
             }
 
-            foreach (var cellNode in _cellsContainer.GetChildren())
+            var hoveredControl = GetViewport().GuiGetHoveredControl();
+            var current = hoveredControl;
+            while (current != null)
             {
-                if (cellNode is not PanelContainer cell)
+                if (current is PanelContainer hoveredCell && hoveredCell.GetParent() == _cellsContainer)
                 {
-                    continue;
+                    var cellName = hoveredCell.Name.ToString();
+                    if (cellName.StartsWith("Cell_") && int.TryParse(cellName.Substring(5), out int index))
+                    {
+                        var ownedArtifacts = BlackMarkShopManager.Instance.GetOwnedArtifacts();
+                        if (ownedArtifacts != null && index >= 0 && index < ownedArtifacts.Count)
+                        {
+                            artifact = ownedArtifacts[index];
+                            return artifact != null;
+                        }
+                    }
                 }
 
-                if (!cell.GetGlobalRect().HasPoint(globalMousePos))
-                {
-                    continue;
-                }
-
-                var icon = cell.GetNodeOrNull<ClickableIcon>("Icon");
-                if (icon == null)
-                {
-                    continue;
-                }
-
-                artifact = icon.GetArtifact();
-                return artifact != null;
+                current = current.GetParent() as Control;
             }
 
             return false;
