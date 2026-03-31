@@ -68,10 +68,6 @@ namespace FishEatFish.Battle.HexMap
                     ProcessHole(tile, controller);
                     break;
 
-                case HexEventType.OneWayDoor:
-                    ProcessOneWayDoor(tile, controller);
-                    break;
-
                 default:
                     GD.Print($"[HexEventManager] 未处理的事件类型: {tile.EventType}");
                     break;
@@ -158,15 +154,14 @@ namespace FishEatFish.Battle.HexMap
 
             if (tile.TeleportRole != TeleportRole.Entry)
             {
-                GD.Print($"[HexEventManager] 这是传送出口，不能传送");
-                OnEventTriggered?.Invoke("teleport_exit", tile.Coord.ToString());
+                GD.Print($"[HexEventManager] 这是传送出口，不触发传送");
                 return;
             }
 
             GD.Print($"[HexEventManager] 这是传送入口，准备传送");
             OnEventTriggered?.Invoke("teleport_one_way", tile.Coord.ToString());
 
-            var targetTile = FindTeleportTarget(tile, controller);
+            var targetTile = FindOneWayTeleportTarget(tile, controller);
             if (targetTile != null)
             {
                 GD.Print($"[HexEventManager] 传送到: {targetTile.Coord}");
@@ -176,6 +171,34 @@ namespace FishEatFish.Battle.HexMap
             {
                 GD.Print($"[HexEventManager] 未找到传送目标!");
             }
+        }
+
+        private HexTile FindOneWayTeleportTarget(HexTile sourceTile, HexMapController controller)
+        {
+            if (controller == null || controller.CurrentMap == null)
+            {
+                GD.PrintErr("[HexEventManager] controller or CurrentMap is null!");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(sourceTile.TeleportPairId))
+            {
+                GD.PrintErr("[HexEventManager] TeleportPairId is null or empty!");
+                return null;
+            }
+
+            foreach (var tile in controller.CurrentMap.GetAllTiles())
+            {
+                if (tile.TeleportPairId == sourceTile.TeleportPairId &&
+                    tile.Coord != sourceTile.Coord &&
+                    tile.TeleportRole == TeleportRole.Exit)
+                {
+                    return tile;
+                }
+            }
+
+            GD.Print($"[HexEventManager] 未找到配对的出口传送门, TeleportPairId: {sourceTile.TeleportPairId}");
+            return null;
         }
 
         private HexTile FindTeleportTarget(HexTile sourceTile, HexMapController controller)
@@ -235,30 +258,6 @@ namespace FishEatFish.Battle.HexMap
         {
             GD.Print($"[HexEventManager] 洞穴触发: {tile.Coord}");
             OnEventTriggered?.Invoke("hole", tile.Coord.ToString());
-        }
-
-        private void ProcessOneWayDoor(HexTile tile, HexMapController controller)
-        {
-            GD.Print($"[HexEventManager] 单向门: {tile.Coord}, 方向: {tile.TeleportDirection}");
-            OnEventTriggered?.Invoke("one_way_door", tile.Coord.ToString());
-
-            if (controller?.CurrentMap == null)
-                return;
-
-            int deltaQ = tile.TeleportDirection == TeleportDirection.Forward ? 1 : -1;
-            var candidates = tile.Coord.GetNeighbors();
-            foreach (var neighbor in candidates)
-            {
-                if (neighbor.Q - tile.Coord.Q != deltaQ)
-                    continue;
-
-                var targetTile = controller.CurrentMap.GetTile(neighbor);
-                if (targetTile == null || !targetTile.CanEnter)
-                    continue;
-
-                controller.TeleportPlayerTo(targetTile);
-                return;
-            }
         }
 
         public int CalculateDifficultyScaling(int playerLevel, int baseValue)

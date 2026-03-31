@@ -16,8 +16,7 @@ namespace FishEatFish.Battle.HexMap
         Heal,
         TwoWayTeleport,
         Hole,
-        OneDirectionTele,
-        OneWayDoor
+        OneDirectionTele
     }
 
     public enum TeleportDirection
@@ -87,6 +86,9 @@ namespace FishEatFish.Battle.HexMap
                     return false;
 
                 if (HasTriggeredThisVisit)
+                    return false;
+
+                if (EventType == HexEventType.OneDirectionTele && TeleportRole != TeleportRole.Entry)
                     return false;
 
                 return true;

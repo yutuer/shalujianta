@@ -67,10 +67,27 @@ namespace FishEatFish.Battle.HexMap
 
         public HexCoord GetPairedTeleport(HexCoord currentCoord, string pairId)
         {
-            return _tiles.Values
-                .FirstOrDefault(t =>
-                    t.TeleportPairId == pairId &&
-                    t.Coord != currentCoord)?.Coord ?? currentCoord;
+            var currentTile = GetTile(currentCoord);
+            if (currentTile == null)
+                return currentCoord;
+
+            foreach (var tile in _tiles.Values)
+            {
+                if (tile.TeleportPairId != pairId || tile.Coord == currentCoord)
+                    continue;
+
+                if (currentTile.EventType == HexEventType.OneDirectionTele)
+                {
+                    if (tile.TeleportRole == TeleportRole.Exit)
+                        return tile.Coord;
+                }
+                else
+                {
+                    return tile.Coord;
+                }
+            }
+
+            return currentCoord;
         }
 
         public bool CanMoveTo(HexCoord fromCoord, HexCoord toCoord)

@@ -41,8 +41,6 @@ namespace FishEatFish.Battle.HexMap
 
             PlaceOneDirectionTeleportTiles(tiles, criticalSet, difficultyConfig.OneDirectionTeleportCount);
 
-            PlaceOneWayDoorTiles(tiles, criticalSet, difficultyConfig.OneWayDoorCount);
-
             var nonCriticalEmptyTiles = tiles.Keys
                 .Where(c => !criticalSet.Contains(c) && tiles[c].EventType == HexEventType.Empty)
                 .ToList();
@@ -582,36 +580,6 @@ namespace FishEatFish.Battle.HexMap
             GD.Print($"[HexMapGenerator] 放置了 {pairsPlaced} 对单向传送门");
         }
 
-        private void PlaceOneWayDoorTiles(Dictionary<HexCoord, HexTile> tiles, HashSet<HexCoord> criticalSet, int count)
-        {
-            var candidates = tiles.Keys
-                .Where(c => !criticalSet.Contains(c) && tiles[c].EventType == HexEventType.Empty)
-                .ToList();
-
-            Shuffle(candidates);
-
-            int placed = 0;
-            foreach (var coord in candidates)
-            {
-                if (placed >= count)
-                    break;
-
-                if (!CanPlaceEventAt(tiles, coord, HexEventType.OneWayDoor))
-                    continue;
-
-                tiles[coord].EventType = HexEventType.OneWayDoor;
-                tiles[coord].TriggerCount = HexTile.InfiniteTriggers;
-                tiles[coord].TeleportDirection = _random.NextDouble() > 0.5
-                    ? TeleportDirection.Forward
-                    : TeleportDirection.Backward;
-                tiles[coord].DisplayName = "单向门";
-                tiles[coord].IconPath = "res://Assets/Icons/one_dir_tele.png";
-                placed++;
-            }
-
-            GD.Print($"[HexMapGenerator] 放置了 {placed} 个单向门");
-        }
-
         private bool VerifyOneDirectionTeleportPlacement(Dictionary<HexCoord, HexTile> tiles, HexCoord tele1, HexCoord tele2, HashSet<HexCoord> criticalSet)
         {
             var holes = tiles.Values.Where(t => t.EventType == HexEventType.Hole).ToList();
@@ -670,7 +638,7 @@ namespace FishEatFish.Battle.HexMap
 
             var existingHoles = tiles.Values.Where(t => t.EventType == HexEventType.Hole).ToList();
 
-            while (pairsPlaced < count / 2 && attempts < maxAttempts)
+            while (pairsPlaced < count && attempts < maxAttempts)
             {
                 attempts++;
 
@@ -839,7 +807,6 @@ namespace FishEatFish.Battle.HexMap
                 case HexEventType.Shop:
                 case HexEventType.TwoWayTeleport:
                 case HexEventType.OneDirectionTele:
-                case HexEventType.OneWayDoor:
                     return HexTile.InfiniteTriggers;
                 default:
                     return 1;
@@ -950,8 +917,7 @@ namespace FishEatFish.Battle.HexMap
                     SwampCount = 1,
                     HoleCount = 2,
                     TwoWayTeleportCount = 1,
-                    OneDirectionTeleportCount = 1,
-                    OneWayDoorCount = 1
+                    OneDirectionTeleportCount = 1
                 };
             }
             else if (playerLevel <= 10)
@@ -966,8 +932,7 @@ namespace FishEatFish.Battle.HexMap
                     SwampCount = 2,
                     HoleCount = 3,
                     TwoWayTeleportCount = 2,
-                    OneDirectionTeleportCount = 2,
-                    OneWayDoorCount = 1
+                    OneDirectionTeleportCount = 2
                 };
             }
             else
@@ -982,8 +947,7 @@ namespace FishEatFish.Battle.HexMap
                     SwampCount = 3,
                     HoleCount = 4,
                     TwoWayTeleportCount = 2,
-                    OneDirectionTeleportCount = 3,
-                    OneWayDoorCount = 2
+                    OneDirectionTeleportCount = 3
                 };
             }
         }
@@ -999,7 +963,6 @@ namespace FishEatFish.Battle.HexMap
             public int HoleCount { get; set; }
             public int TwoWayTeleportCount { get; set; }
             public int OneDirectionTeleportCount { get; set; }
-            public int OneWayDoorCount { get; set; }
         }
     }
 }

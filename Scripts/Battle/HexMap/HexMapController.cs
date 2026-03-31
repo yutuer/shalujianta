@@ -34,6 +34,8 @@ namespace FishEatFish.Battle.HexMap
         private HexCoord _currentPosition;
         public HexCoord CurrentPosition => _currentPosition;
 
+        private HexCoord _previousPosition;
+
         private HexMapState _currentState = HexMapState.Idle;
         public HexMapState CurrentState => _currentState;
 
@@ -54,6 +56,7 @@ namespace FishEatFish.Battle.HexMap
         private int _pathIndex = 0;
 
         public System.Action<HexCoord> OnPlayerMoved;
+        public System.Action<HexCoord> OnPlayerTeleported;
         public System.Action<HexTile> OnTileTriggered;
         public System.Action<HexCoord> OnTeleportTriggered;
         public System.Action<float, float> OnHealthChanged;
@@ -183,8 +186,15 @@ namespace FishEatFish.Battle.HexMap
             }
 
             var nextCoord = _currentPath[_pathIndex];
+            _previousPosition = _currentPosition;
             _currentPosition = nextCoord;
             OnPlayerMoved?.Invoke(nextCoord);
+
+            var previousTile = _currentMap.GetTile(_previousPosition);
+            if (previousTile != null && (previousTile.EventType == HexEventType.TwoWayTeleport || previousTile.EventType == HexEventType.OneDirectionTele))
+            {
+                previousTile.HasTriggeredThisVisit = false;
+            }
 
             await ToSignal(GetTree().CreateTimer(0.3f), Timer.SignalName.Timeout);
 
@@ -259,6 +269,13 @@ namespace FishEatFish.Battle.HexMap
             if (tile == null || !tile.ShouldShowTeleportPrompt)
                 return;
 
+            if (tile.EventType == HexEventType.OneDirectionTele && tile.TeleportRole != TeleportRole.Entry)
+            {
+                GD.Print($"[HexMapController] 单向传送门出口不能传送");
+                _currentState = HexMapState.Idle;
+                return;
+            }
+
             var targetCoord = _currentMap.GetPairedTeleport(_currentPosition, tile.TeleportPairId);
 
             if (targetCoord != _currentPosition)
@@ -284,7 +301,7 @@ namespace FishEatFish.Battle.HexMap
         private void TeleportPlayer(HexCoord targetCoord)
         {
             _currentPosition = targetCoord;
-            OnPlayerMoved?.Invoke(_currentPosition);
+            OnPlayerTeleported?.Invoke(_currentPosition);
 
             GD.Print($"[HexMapController] 传送到: {targetCoord}");
 
@@ -293,6 +310,10 @@ namespace FishEatFish.Battle.HexMap
             var tile = _currentMap.GetTile(_currentPosition);
             if (tile != null)
             {
+                if (tile.EventType == HexEventType.TwoWayTeleport)
+                {
+                    tile.HasTriggeredThisVisit = true;
+                }
                 ProcessTile(tile);
             }
         }

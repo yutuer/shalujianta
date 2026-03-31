@@ -360,6 +360,7 @@ namespace FishEatFish.UI.HexMap
             if (_controller != null)
             {
                 _controller.OnPlayerMoved += OnPlayerMoved;
+                _controller.OnPlayerTeleported += OnPlayerTeleported;
                 _controller.OnTileTriggered += OnTileTriggered;
                 _controller.OnTeleportTriggered += OnTeleportTriggered;
                 _controller.OnHealthChanged += OnHealthChanged;
@@ -545,6 +546,23 @@ namespace FishEatFish.UI.HexMap
             ClearPathHighlights();
         }
 
+        private void OnPlayerTeleported(HexCoord newPos)
+        {
+            if (_playerIcon == null) return;
+
+            CenterOnPlayer(newPos, false);
+
+            var iconSize = _playerIcon.Size == Vector2.Zero
+                ? _playerIcon.CustomMinimumSize
+                : _playerIcon.Size;
+
+            var playerWorldPos = HexToWorld(newPos);
+            var tileCenterPos = playerWorldPos + _hexSize / 2 - iconSize / 2;
+            _playerIcon.TeleportTo(tileCenterPos);
+
+            ClearPathHighlights();
+        }
+
         private void UpdatePlayerPosition()
         {
             if (_controller == null) return;
@@ -615,9 +633,7 @@ namespace FishEatFish.UI.HexMap
                 HexEventType.Shop => "商店",
                 HexEventType.Heal => "生命之泉",
                 HexEventType.TwoWayTeleport => "双向传送门",
-                HexEventType.Hole => "洞穴",
                 HexEventType.OneDirectionTele => "单向传送门",
-                HexEventType.OneWayDoor => "单向门",
                 _ => "事件"
             };
         }
