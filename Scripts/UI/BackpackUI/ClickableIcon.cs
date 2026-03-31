@@ -12,7 +12,7 @@ namespace FishEatFish.UI.BackpackUI
 
         public override void _Ready()
         {
-            MouseFilter = MouseFilterEnum.Stop;
+            MouseFilter = MouseFilterEnum.Ignore;
         }
 
         public override void _EnterTree()
@@ -58,15 +58,9 @@ namespace FishEatFish.UI.BackpackUI
             return _artifact?.name ?? "null";
         }
 
-        public override void _Input(InputEvent @event)
+        public ArtifactData GetArtifact()
         {
-            if (@event is InputEventMouseButton mouseEvent)
-            {
-                if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
-                {
-                    OnIconClicked?.Invoke(_artifact);
-                }
-            }
+            return _artifact;
         }
     }
 }
