@@ -31,6 +31,7 @@ namespace FishEatFish.UI.HexMap
         private Label _blackMarkLabel;
         private SilverKeyProgressIndicator _silverKeyProgressIndicator;
         private bool _isInteractionBlocked;
+        private HexCoord? _pendingMoveTarget;
 
         private Control _teleportDialog;
         private Button _teleportConfirmButton;
@@ -372,6 +373,11 @@ namespace FishEatFish.UI.HexMap
                 _controller.OnShopClosed += OnShopClosed;
             }
 
+            if (_playerIcon != null)
+            {
+                _playerIcon.OnMoveCompleted += OnPlayerMoveCompleted;
+            }
+
             if (BlackMarkShopManager.Instance != null)
             {
                 BlackMarkShopManager.Instance.OnBlackMarkChanged += UpdateBlackMarkDisplay;
@@ -536,7 +542,7 @@ namespace FishEatFish.UI.HexMap
 
             CenterOnPlayer(newPos, true);
 
-            UpdatePlayerCurrentTile(newPos);
+            _pendingMoveTarget = newPos;
 
             var iconSize = _playerIcon.Size == Vector2.Zero
                 ? _playerIcon.CustomMinimumSize
@@ -547,6 +553,15 @@ namespace FishEatFish.UI.HexMap
             _playerIcon.MoveTo(tileCenterPos);
 
             ClearPathHighlights();
+        }
+
+        private void OnPlayerMoveCompleted()
+        {
+            if (_pendingMoveTarget.HasValue)
+            {
+                UpdatePlayerCurrentTile(_pendingMoveTarget.Value);
+                _pendingMoveTarget = null;
+            }
         }
 
         private void OnPlayerTeleported(HexCoord newPos)

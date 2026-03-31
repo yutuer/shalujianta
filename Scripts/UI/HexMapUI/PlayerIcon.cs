@@ -1,4 +1,5 @@
 using Godot;
+using System;
 
 namespace FishEatFish.UI.HexMap
 {
@@ -14,6 +15,7 @@ namespace FishEatFish.UI.HexMap
         private Vector2 _currentPosition;
         private bool _isMoving;
         private float _bobTimer;
+        public event Action OnMoveCompleted;
 
         public override void _Ready()
         {
@@ -66,6 +68,7 @@ namespace FishEatFish.UI.HexMap
                     _currentPosition = _targetPosition;
                     _isMoving = false;
                     Position = _currentPosition;
+                    OnMoveCompleted?.Invoke();
                 }
                 else
                 {
