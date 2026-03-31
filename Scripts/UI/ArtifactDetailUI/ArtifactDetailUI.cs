@@ -14,6 +14,7 @@ namespace FishEatFish.UI.ArtifactDetailPanel
         private PanelContainer _backgroundPanel;
 
         private ArtifactData _currentArtifact;
+        private ulong _shownAtFrame;
 
         public override void _Ready()
         {
@@ -41,9 +42,20 @@ namespace FishEatFish.UI.ArtifactDetailPanel
 
         public override void _Input(InputEvent @event)
         {
+            if (!Visible)
+            {
+                return;
+            }
+
             if (@event is InputEventMouseButton mouseEvent)
             {
                 if (_backgroundPanel == null) return;
+
+                if (mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left && Engine.GetProcessFrames() == _shownAtFrame)
+                {
+                    GD.Print("[ArtifactDetailUI] Ignore same-frame click right after opening");
+                    return;
+                }
 
                 var localPos = GetLocalMousePosition();
                 var backgroundLocalPos = _backgroundPanel.GetLocalMousePosition();
@@ -121,6 +133,7 @@ namespace FishEatFish.UI.ArtifactDetailPanel
                 _iconRect.Visible = true;
             }
 
+            _shownAtFrame = Engine.GetProcessFrames();
             Visible = true;
             GD.Print($"[ArtifactDetailUI] Set Visible to true");
             GD.Print($"[ArtifactDetailUI] Current Visible state after: {Visible}");
