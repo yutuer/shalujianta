@@ -621,6 +621,7 @@ namespace FishEatFish.UI.HexMap
                 HexEventType.TwoWayTeleport => "双向传送门",
                 HexEventType.Hole => "洞穴",
                 HexEventType.OneDirectionTele => "单向传送门",
+                HexEventType.OneWayDoor => "单向门",
                 _ => "事件"
             };
         }

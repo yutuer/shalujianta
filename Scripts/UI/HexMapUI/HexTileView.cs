@@ -25,7 +25,8 @@ namespace FishEatFish.UI.HexMap
             { HexEventType.GainBlackMark, new Color(0.2f, 0.2f, 0.5f) },
             { HexEventType.Swamp, new Color(0.5f, 0.4f, 0.2f) },
             { HexEventType.TwoWayTeleport, new Color(0.3f, 0.6f, 0.9f) },
-            { HexEventType.OneDirectionTele, new Color(0.5f, 0.3f, 0.8f) }
+            { HexEventType.OneDirectionTele, new Color(0.5f, 0.3f, 0.8f) },
+            { HexEventType.OneWayDoor, new Color(0.7f, 0.5f, 0.2f) }
         };
 
         private Polygon2D _hexShape;
@@ -177,6 +178,9 @@ namespace FishEatFish.UI.HexMap
                     break;
                 case HexEventType.Empty:
                     icon = "";
+                    break;
+                case HexEventType.OneWayDoor:
+                    icon = "⇥";
                     break;
             }
 

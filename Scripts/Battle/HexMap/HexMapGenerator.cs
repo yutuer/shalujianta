@@ -41,6 +41,8 @@ namespace FishEatFish.Battle.HexMap
 
             PlaceOneDirectionTeleportTiles(tiles, criticalSet, difficultyConfig.OneDirectionTeleportCount);
 
+            PlaceOneWayDoorTiles(tiles, criticalSet, difficultyConfig.OneWayDoorCount);
+
             var nonCriticalEmptyTiles = tiles.Keys
                 .Where(c => !criticalSet.Contains(c) && tiles[c].EventType == HexEventType.Empty)
                 .ToList();
@@ -50,6 +52,12 @@ namespace FishEatFish.Battle.HexMap
             PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.Heal, difficultyConfig.HealCount);
             PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.GainBlackMark, difficultyConfig.BlackMarkCount);
             PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.Shop, difficultyConfig.ShopCount);
+
+            if (!VerifyNoAdjacentSameEvents(tiles))
+            {
+                GD.PrintErr("[HexMapGenerator] 验证失败: 检测到相同事件出现在相邻格子，重新生成地图...");
+                return Generate(radius, playerLevel);
+            }
 
             EnsurePathConnectivity(tiles, startCoord, endCoord);
 
@@ -537,6 +545,12 @@ namespace FishEatFish.Battle.HexMap
 
                 if (coord1.DistanceTo(coord2) > 5)
                 {
+                    if (!CanPlaceEventAt(tiles, coord1, HexEventType.OneDirectionTele) ||
+                        !CanPlaceEventAt(tiles, coord2, HexEventType.OneDirectionTele))
+                    {
+                        continue;
+                    }
+
                     if (!VerifyOneDirectionTeleportPlacement(tiles, coord1, coord2, criticalSet))
                     {
                         GD.Print($"[HexMapGenerator] 单向传送门对 ({coord1}, {coord2}) 验证失败");
@@ -564,6 +578,36 @@ namespace FishEatFish.Battle.HexMap
             }
 
             GD.Print($"[HexMapGenerator] 放置了 {pairsPlaced} 对单向传送门");
+        }
+
+        private void PlaceOneWayDoorTiles(Dictionary<HexCoord, HexTile> tiles, HashSet<HexCoord> criticalSet, int count)
+        {
+            var candidates = tiles.Keys
+                .Where(c => !criticalSet.Contains(c) && tiles[c].EventType == HexEventType.Empty)
+                .ToList();
+
+            Shuffle(candidates);
+
+            int placed = 0;
+            foreach (var coord in candidates)
+            {
+                if (placed >= count)
+                    break;
+
+                if (!CanPlaceEventAt(tiles, coord, HexEventType.OneWayDoor))
+                    continue;
+
+                tiles[coord].EventType = HexEventType.OneWayDoor;
+                tiles[coord].TriggerCount = HexTile.InfiniteTriggers;
+                tiles[coord].TeleportDirection = _random.NextDouble() > 0.5
+                    ? TeleportDirection.Forward
+                    : TeleportDirection.Backward;
+                tiles[coord].DisplayName = "单向门";
+                tiles[coord].IconPath = "res://Assets/Icons/one_dir_tele.png";
+                placed++;
+            }
+
+            GD.Print($"[HexMapGenerator] 放置了 {placed} 个单向门");
         }
 
         private bool VerifyOneDirectionTeleportPlacement(Dictionary<HexCoord, HexTile> tiles, HexCoord tele1, HexCoord tele2, HashSet<HexCoord> criticalSet)
@@ -603,6 +647,11 @@ namespace FishEatFish.Battle.HexMap
             for (int i = 0; i < Math.Min(count, candidates.Count); i++)
             {
                 var coord = candidates[i];
+                if (!CanPlaceEventAt(tiles, coord, HexEventType.Swamp))
+                {
+                    continue;
+                }
+
                 tiles[coord].EventType = HexEventType.Swamp;
                 tiles[coord].TriggerCount = HexTile.InfiniteTriggers;
                 tiles[coord].Damage = 10;
@@ -636,6 +685,12 @@ namespace FishEatFish.Battle.HexMap
 
                 if (coord1.DistanceTo(coord2) > 5)
                 {
+                    if (!CanPlaceEventAt(tiles, coord1, HexEventType.TwoWayTeleport) ||
+                        !CanPlaceEventAt(tiles, coord2, HexEventType.TwoWayTeleport))
+                    {
+                        continue;
+                    }
+
                     if (!VerifyTeleportPlacement(tiles, coord1, coord2, criticalSet))
                     {
                         GD.Print($"[HexMapGenerator] 传送门对 ({coord1}, {coord2}) 验证失败");
@@ -726,13 +781,24 @@ namespace FishEatFish.Battle.HexMap
         private void PlaceRandomEvents(Dictionary<HexCoord, HexTile> tiles, List<HexCoord> candidates,
             HexEventType eventType, int count)
         {
-            Shuffle(candidates);
+            var available = candidates
+                .Where(c => tiles[c].EventType == HexEventType.Empty)
+                .ToList();
 
-            for (int i = 0; i < Math.Min(count, candidates.Count); i++)
+            Shuffle(available);
+
+            int placed = 0;
+            for (int i = 0; i < available.Count && placed < count; i++)
             {
-                var coord = candidates[i];
+                var coord = available[i];
+                if (!CanPlaceEventAt(tiles, coord, eventType))
+                {
+                    continue;
+                }
+
                 tiles[coord].EventType = eventType;
                 tiles[coord].TriggerCount = GetTriggerCountForEvent(eventType);
+                placed++;
 
                 switch (eventType)
                 {
@@ -771,10 +837,50 @@ namespace FishEatFish.Battle.HexMap
                 case HexEventType.Shop:
                 case HexEventType.TwoWayTeleport:
                 case HexEventType.OneDirectionTele:
+                case HexEventType.OneWayDoor:
                     return HexTile.InfiniteTriggers;
                 default:
                     return 1;
             }
+        }
+
+        private bool CanPlaceEventAt(Dictionary<HexCoord, HexTile> tiles, HexCoord coord, HexEventType eventType)
+        {
+            if (!tiles.ContainsKey(coord))
+                return false;
+
+            foreach (var neighbor in coord.GetNeighbors())
+            {
+                if (tiles.TryGetValue(neighbor, out var neighborTile) && neighborTile.EventType == eventType)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool VerifyNoAdjacentSameEvents(Dictionary<HexCoord, HexTile> tiles)
+        {
+            foreach (var tile in tiles.Values)
+            {
+                if (tile.EventType == HexEventType.Empty)
+                    continue;
+
+                foreach (var neighbor in tile.Coord.GetNeighbors())
+                {
+                    if (!tiles.TryGetValue(neighbor, out var neighborTile))
+                        continue;
+
+                    if (neighborTile.EventType == tile.EventType)
+                    {
+                        GD.PrintErr($"[HexMapGenerator] 相邻重复事件: {tile.Coord} 与 {neighbor}, 类型 {tile.EventType}");
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private bool VerifyReachable(HexCoord start, HexCoord end, Dictionary<HexCoord, HexTile> tiles)
@@ -842,7 +948,8 @@ namespace FishEatFish.Battle.HexMap
                     SwampCount = 1,
                     HoleCount = 2,
                     TwoWayTeleportCount = 1,
-                    OneDirectionTeleportCount = 1
+                    OneDirectionTeleportCount = 1,
+                    OneWayDoorCount = 1
                 };
             }
             else if (playerLevel <= 10)
@@ -857,7 +964,8 @@ namespace FishEatFish.Battle.HexMap
                     SwampCount = 2,
                     HoleCount = 3,
                     TwoWayTeleportCount = 2,
-                    OneDirectionTeleportCount = 2
+                    OneDirectionTeleportCount = 2,
+                    OneWayDoorCount = 1
                 };
             }
             else
@@ -872,7 +980,8 @@ namespace FishEatFish.Battle.HexMap
                     SwampCount = 3,
                     HoleCount = 4,
                     TwoWayTeleportCount = 2,
-                    OneDirectionTeleportCount = 3
+                    OneDirectionTeleportCount = 3,
+                    OneWayDoorCount = 2
                 };
             }
         }
@@ -888,6 +997,7 @@ namespace FishEatFish.Battle.HexMap
             public int HoleCount { get; set; }
             public int TwoWayTeleportCount { get; set; }
             public int OneDirectionTeleportCount { get; set; }
+            public int OneWayDoorCount { get; set; }
         }
     }
 }
