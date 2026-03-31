@@ -297,6 +297,25 @@ namespace FishEatFish.Battle.HexMap
             }
         }
 
+        public void TeleportPlayerTo(HexTile targetTile)
+        {
+            if (targetTile == null || !targetTile.CanEnter)
+            {
+                GD.PrintErr("[HexMapController] TeleportPlayerTo: target tile is invalid!");
+                return;
+            }
+
+            GD.Print($"[HexMapController] TeleportPlayerTo: 从 {_currentPosition} 传送到 {targetTile.Coord}");
+
+            _currentPosition = targetTile.Coord;
+            OnPlayerMoved?.Invoke(_currentPosition);
+
+            _currentState = HexMapState.Idle;
+
+            targetTile.OnPlayerEnter();
+            OnTileTriggered?.Invoke(targetTile);
+        }
+
         private void TriggerTileEvent(HexTile tile)
         {
             if (!tile.CanTrigger)

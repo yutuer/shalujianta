@@ -5,16 +5,15 @@ using System.Linq;
 
 namespace FishEatFish.UI.BackpackUI
 {
-    public partial class BackpackUI : PanelContainer
+    public partial class BackpackUI : Control
     {
-        private HBoxContainer _cellsContainer;
+        private GridContainer _cellsContainer;
         private PanelContainer _cellTemplate;
         private ArtifactDetailUI _detailUI;
 
-        private const int MAX_COLUMNS_PER_ROW = 8;
+        private const int COLUMNS_PER_ROW = 8;
         private const int CELL_SIZE = 50;
         private const int CELL_SPACING = 6;
-        private const int ICON_SIZE = 40;
 
         private int _maxCellCount = 10;
         private int _ownedArtifactCount = 0;
@@ -23,13 +22,31 @@ namespace FishEatFish.UI.BackpackUI
         {
             GD.Print($"[BackpackUI] _Ready called");
 
-            _cellsContainer = GetNodeOrNull<HBoxContainer>("CellsContainer");
+            _cellsContainer = GetNodeOrNull<GridContainer>("CellsContainer");
             _cellTemplate = GetNodeOrNull<PanelContainer>("CellTemplate");
 
-            _detailUI = GetNodeOrNull<ArtifactDetailUI>("/root/BattleScene/ArtifactDetailUI");
+            GD.Print($"[BackpackUI] Parent: {GetParent()?.Name}, Parent Path: {GetPath()}");
+            GD.Print($"[BackpackUI] Trying to find ArtifactDetailUI at path: ../ArtifactDetailUI");
+
+            _detailUI = GetNodeOrNull<ArtifactDetailUI>("../ArtifactDetailUI");
             if (_detailUI == null)
             {
-                _detailUI = GetNodeOrNull<ArtifactDetailUI>("/root/MainMenu/ArtifactDetailUI");
+                GD.PrintErr("[BackpackUI] _detailUI is null!");
+                
+                GD.Print($"[BackpackUI] Trying alternative path: /root/BattleScene/UI/ArtifactDetailUI");
+                _detailUI = GetNodeOrNull<ArtifactDetailUI>("/root/BattleScene/UI/ArtifactDetailUI");
+                if (_detailUI == null)
+                {
+                    GD.PrintErr("[BackpackUI] Alternative path also returned null!");
+                }
+                else
+                {
+                    GD.Print($"[BackpackUI] Found ArtifactDetailUI via alternative path!");
+                }
+            }
+            else
+            {
+                GD.Print($"[BackpackUI] Found ArtifactDetailUI: {_detailUI.Name}");
             }
 
             if (_cellsContainer == null)
@@ -62,8 +79,17 @@ namespace FishEatFish.UI.BackpackUI
                 GD.Print($"[BackpackUI] UpdateMaxCellCount: using default {_maxCellCount}");
             }
 
-            int totalWidth = _maxCellCount * CELL_SIZE + (_maxCellCount - 1) * CELL_SPACING;
-            CustomMinimumSize = new Vector2(totalWidth, CELL_SIZE);
+            UpdateSize();
+        }
+
+        private void UpdateSize()
+        {
+            int rows = Mathf.CeilToInt((float)_maxCellCount / COLUMNS_PER_ROW);
+            int totalWidth = COLUMNS_PER_ROW * CELL_SIZE + (COLUMNS_PER_ROW - 1) * CELL_SPACING;
+            int totalHeight = rows * CELL_SIZE + Mathf.Max(0, rows - 1) * CELL_SPACING;
+
+            CustomMinimumSize = new Vector2(totalWidth, totalHeight);
+            GD.Print($"[BackpackUI] UpdateSize: rows={rows}, width={totalWidth}, height={totalHeight}");
         }
 
         private void InitializeCells()
@@ -146,22 +172,38 @@ namespace FishEatFish.UI.BackpackUI
 
         private void ClearAllCellContents()
         {
-            if (_cellsContainer == null) return;
+            GD.Print($"[BackpackUI] ClearAllCellContents called");
+            if (_cellsContainer == null)
+            {
+                GD.PrintErr("[BackpackUI] ClearAllCellContents: _cellsContainer is null!");
+                return;
+            }
+
+            GD.Print($"[BackpackUI] ClearAllCellContents: _cellsContainer has {_cellsContainer.GetChildCount()} children");
 
             foreach (var child in _cellsContainer.GetChildren())
             {
                 var cell = child as PanelContainer;
                 if (cell == null) continue;
 
+                GD.Print($"[BackpackUI] ClearAllCellContents: processing cell {cell.Name} with {cell.GetChildCount()} children");
+
                 foreach (var cellChild in cell.GetChildren().ToList())
                 {
                     var childName = cellChild.Name.ToString();
                     if (!childName.StartsWith("Cell_"))
                     {
+                        if (cellChild is ClickableIcon icon)
+                        {
+                            GD.Print($"[BackpackUI] ClearAllCellContents: removing old ClickableIcon for {icon.GetArtifactName()}");
+                            icon.OnIconClicked = null;
+                        }
                         cellChild.QueueFree();
                     }
                 }
             }
+
+            GD.Print($"[BackpackUI] ClearAllCellContents completed");
         }
 
         private void PopulateCellWithArtifact(PanelContainer cell, ArtifactData artifact)
@@ -172,101 +214,31 @@ namespace FishEatFish.UI.BackpackUI
                 return;
             }
 
-            foreach (var child in cell.GetChildren().ToList())
+            foreach (var cellChild in cell.GetChildren().ToList())
             {
-                var childName = child.Name.ToString();
-                if (childName != "Cell_")
-                {
-                    child.QueueFree();
-                }
+                cellChild.QueueFree();
             }
 
-            var innerPanel = new PanelContainer();
-            innerPanel.Name = "InnerPanel";
-            innerPanel.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-            innerPanel.MouseFilter = Control.MouseFilterEnum.Ignore;
+            var icon = new ClickableIcon();
+            icon.Name = "Icon";
+            icon.CustomMinimumSize = new Vector2(40, 40);
+            icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+            icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
+            icon.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            icon.OffsetLeft = 5;
+            icon.OffsetTop = 5;
+            icon.OffsetRight = -5;
+            icon.OffsetBottom = -5;
+            icon.SetArtifact(artifact);
+            GD.Print($"[BackpackUI] PopulateCellWithArtifact: setting up OnIconClicked for {artifact.name}");
+            icon.OnIconClicked += (a) => {
+                GD.Print($"[BackpackUI] OnIconClicked callback invoked: artifact={a?.name}");
+                ShowArtifactDetail(a);
+            };
 
-            TextureRect icon = null;
-            bool hasValidTexture = false;
-
-            if (!string.IsNullOrEmpty(artifact.icon))
-            {
-                var texture = GD.Load<Texture2D>(artifact.icon);
-                if (texture != null)
-                {
-                    icon = new TextureRect();
-                    icon.Name = "Icon";
-                    icon.CustomMinimumSize = new Vector2(ICON_SIZE, ICON_SIZE);
-                    icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-                    icon.Texture = texture;
-                    icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-
-                    float offset = (CELL_SIZE - ICON_SIZE) / 2f;
-                    icon.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-                    icon.SetAnchor(Side.Left, 0);
-                    icon.SetAnchor(Side.Top, 0);
-                    icon.SetAnchor(Side.Right, 1);
-                    icon.SetAnchor(Side.Bottom, 1);
-                    icon.OffsetLeft = offset;
-                    icon.OffsetTop = offset;
-                    icon.OffsetRight = -offset;
-                    icon.OffsetBottom = -offset;
-
-                    hasValidTexture = true;
-                }
-            }
-
-            if (!hasValidTexture)
-            {
-                icon = new TextureRect();
-                icon.Name = "Icon";
-                icon.CustomMinimumSize = new Vector2(ICON_SIZE, ICON_SIZE);
-                icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-                icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-
-                float offset = (CELL_SIZE - ICON_SIZE) / 2f;
-                icon.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-                icon.SetAnchor(Side.Left, 0);
-                icon.SetAnchor(Side.Top, 0);
-                icon.SetAnchor(Side.Right, 1);
-                icon.SetAnchor(Side.Bottom, 1);
-                icon.OffsetLeft = offset;
-                icon.OffsetTop = offset;
-                icon.OffsetRight = -offset;
-                icon.OffsetBottom = -offset;
-
-                var label = new Label();
-                label.Name = "Emoji";
-                label.Text = "💎";
-                label.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-                label.HorizontalAlignment = HorizontalAlignment.Center;
-                label.VerticalAlignment = VerticalAlignment.Center;
-                label.MouseFilter = Control.MouseFilterEnum.Ignore;
-                icon.AddChild(label);
-            }
-
-            innerPanel.AddChild(icon);
-            cell.AddChild(innerPanel);
-
-            cell.GuiInput += (InputEvent evt) => OnCellClicked(evt, artifact);
+            cell.AddChild(icon);
 
             GD.Print($"[BackpackUI] PopulateCellWithArtifact: populated cell for {artifact.name}");
-        }
-
-        private void OnCellClicked(InputEvent evt, ArtifactData artifact)
-        {
-            GD.Print($"[BackpackUI] OnCellClicked called: artifact={artifact?.name}");
-
-            if (evt is InputEventMouseButton mouseBtn)
-            {
-                if (mouseBtn.Pressed && mouseBtn.ButtonIndex == MouseButton.Left)
-                {
-                    GD.Print($"[BackpackUI] OnCellClicked: left click detected on {artifact?.name}");
-                    ShowArtifactDetail(artifact);
-                }
-            }
-
-            GD.Print($"[BackpackUI] OnCellClicked completed");
         }
 
         private void ShowArtifactDetail(ArtifactData artifact)
@@ -279,6 +251,19 @@ namespace FishEatFish.UI.BackpackUI
                 return;
             }
 
+            var backpackGlobalPos = GlobalPosition;
+            var backpackSize = Size;
+            var detailTargetPos = new Vector2(
+                backpackGlobalPos.X + backpackSize.X / 2 - 175,
+                backpackGlobalPos.Y + backpackSize.Y + 10
+            );
+
+            if (_detailUI.Visible)
+            {
+                _detailUI.HideArtifact();
+            }
+
+            _detailUI.GlobalPosition = detailTargetPos;
             _detailUI.ShowArtifact(artifact);
 
             GD.Print($"[BackpackUI] ShowArtifactDetail completed");

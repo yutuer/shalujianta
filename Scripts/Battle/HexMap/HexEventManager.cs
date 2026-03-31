@@ -60,6 +60,10 @@ namespace FishEatFish.Battle.HexMap
                     ProcessTeleport(tile, controller);
                     break;
 
+                case HexEventType.OneDirectionTele:
+                    ProcessOneWayTeleport(tile, controller);
+                    break;
+
                 case HexEventType.Hole:
                     ProcessHole(tile, controller);
                     break;
@@ -140,9 +144,88 @@ namespace FishEatFish.Battle.HexMap
 
         private void ProcessTeleport(HexTile tile, HexMapController controller)
         {
-            string teleportType = tile.EventType == HexEventType.TwoWayTeleport ? "双向传送门" : "单向传送门";
-            GD.Print($"[HexEventManager] {teleportType}: {tile.Coord}");
-            OnEventTriggered?.Invoke("teleport", tile.Coord.ToString());
+            GD.Print($"[HexEventManager] 双向传送门: {tile.Coord}");
+            OnEventTriggered?.Invoke("teleport_two_way", tile.Coord.ToString());
+        }
+
+        private void ProcessOneWayTeleport(HexTile tile, HexMapController controller)
+        {
+            GD.Print($"[HexEventManager] 单向传送门: {tile.Coord}");
+
+            if (tile.TeleportDirection == TeleportDirection.Forward)
+            {
+                GD.Print($"[HexEventManager] 传送方向: 前进");
+            }
+            else
+            {
+                GD.Print($"[HexEventManager] 传送方向: 后退");
+            }
+
+            OnEventTriggered?.Invoke("teleport_one_way", tile.Coord.ToString());
+
+            var targetTile = FindTeleportTarget(tile, controller);
+            if (targetTile != null)
+            {
+                GD.Print($"[HexEventManager] 传送到: {targetTile.Coord}");
+                controller.TeleportPlayerTo(targetTile);
+            }
+            else
+            {
+                GD.Print($"[HexEventManager] 未找到传送目标!");
+            }
+        }
+
+        private HexTile FindTeleportTarget(HexTile sourceTile, HexMapController controller)
+        {
+            if (controller == null || controller.CurrentMap == null)
+            {
+                GD.PrintErr("[HexEventManager] controller or CurrentMap is null!");
+                return null;
+            }
+
+            if (!string.IsNullOrEmpty(sourceTile.TeleportPairId))
+            {
+                var allTiles = controller.CurrentMap.GetAllTiles();
+                foreach (var tile in allTiles)
+                {
+                    if (tile != sourceTile &&
+                        tile.EventType == HexEventType.OneDirectionTele &&
+                        tile.TeleportPairId == sourceTile.TeleportPairId &&
+                        !tile.IsDisappeared)
+                    {
+                        return tile;
+                    }
+                }
+            }
+
+            var hexMap = controller.CurrentMap;
+            var targetRow = sourceTile.Coord.Q + 1;
+
+            if (sourceTile.TeleportDirection == TeleportDirection.Forward)
+            {
+                targetRow = sourceTile.Coord.Q + 2;
+            }
+            else
+            {
+                targetRow = sourceTile.Coord.Q - 1;
+            }
+
+            var candidates = new System.Collections.Generic.List<HexTile>();
+            foreach (var tile in hexMap.GetAllTiles())
+            {
+                if (tile.Coord.Q == targetRow && !tile.IsDisappeared && tile.CanEnter)
+                {
+                    candidates.Add(tile);
+                }
+            }
+
+            if (candidates.Count > 0)
+            {
+                var random = new Random();
+                return candidates[random.Next(candidates.Count)];
+            }
+
+            return null;
         }
 
         private void ProcessHole(HexTile tile, HexMapController controller)

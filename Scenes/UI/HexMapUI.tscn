@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://bof7a1u7j5lnw" path="res://Scripts/UI/HexMapUI/PlayerIcon.cs" id="3_playericon"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/RageCircle.tscn" id="4_ragecircle"]
 [ext_resource type="PackedScene" uid="uid://silver_key_progress" path="res://Scenes/UI/SilverKeyProgressIndicator.tscn" id="5_silverkey"]
+[ext_resource type="PackedScene" uid="uid://ArtifactDetailUI_scene_001" path="res://Scenes/UI/ArtifactDetailUI.tscn" id="6_artifact_detail"]
 
 [node name="HexMapUI" type="Control"]
 layout_mode = 3
@@ -175,3 +176,5 @@ custom_minimum_size = Vector2(120, 50)
 layout_mode = 2
 text = "设置"
 theme_override_font_sizes/font_size = 20
+
+[node name="ArtifactDetailUI" parent="." instance=ExtResource("6_artifact_detail")]

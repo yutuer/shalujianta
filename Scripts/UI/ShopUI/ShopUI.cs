@@ -149,16 +149,22 @@ namespace FishEatFish.UI.ShopUI
             if (_artifactDescriptionScene == null)
             {
                 _artifactDescriptionScene = GD.Load<PackedScene>("res://Scenes/UI/ArtifactDescriptionUI.tscn");
+                GD.Print($"[ShopUI] GetOrCreateArtifactDescriptionUI: loaded scene, scene={_artifactDescriptionScene != null}");
             }
 
             if (_artifactDescriptionScene != null)
             {
                 _artifactDescriptionUI = _artifactDescriptionScene.Instantiate<FishEatFish.UI.ArtifactDescriptionUI.ArtifactDescriptionUI>();
+                GD.Print($"[ShopUI] GetOrCreateArtifactDescriptionUI: instantiated ui, ui={_artifactDescriptionUI != null}, type={_artifactDescriptionUI?.GetType().FullName}");
                 AddChild(_artifactDescriptionUI);
                 _artifactDescriptionUI.Visible = false;
                 _artifactDescriptionUI.OnPurchaseCompleted += OnArtifactPurchased;
                 _artifactDescriptionUI.OnCancel += OnArtifactCancelled;
                 GD.Print("[ShopUI] ArtifactDescriptionUI created on demand");
+            }
+            else
+            {
+                GD.PrintErr("[ShopUI] GetOrCreateArtifactDescriptionUI: _artifactDescriptionScene is null!");
             }
 
             return _artifactDescriptionUI;

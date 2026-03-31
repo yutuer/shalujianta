@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/UI/ArtifactDescriptionUI/ArtifactDescriptionUI.cs" id="1"]
+[ext_resource type="Script" uid="uid://dnjhxl3lw30le" path="res://Scripts/UI/ArtifactDescriptionUI/ArtifactDescriptionUI.cs" id="1"]
 
 [node name="ArtifactDescriptionUI" type="Control"]
 custom_minimum_size = Vector2(400, 300)

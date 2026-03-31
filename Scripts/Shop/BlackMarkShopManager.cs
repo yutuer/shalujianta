@@ -59,6 +59,7 @@ namespace FishEatFish.Shop
 		private List<EngravingData> _allEngravings;
 
 		private List<ArtifactData> _ownedArtifacts;
+		private HashSet<string> _purchasedArtifactIds;
 		private List<string> _engravedCardIds;
 
 		private int _blackMarkCount;
@@ -82,6 +83,7 @@ namespace FishEatFish.Shop
 			_instance = this;
 
 			_ownedArtifacts = new List<ArtifactData>();
+			_purchasedArtifactIds = new HashSet<string>();
 			_engravedCardIds = new List<string>();
 			_blackMarkCount = 1000;
 			CurrentShopItems = new List<ShopItem>();
@@ -349,7 +351,10 @@ namespace FishEatFish.Shop
 
 			var random = new Random();
 
-			var availableArtifacts = _allArtifacts.Where(a => !_ownedArtifacts.Contains(a)).ToList();
+			var ownedArtifactIds = _ownedArtifacts.Select(a => a.artifactId).ToHashSet();
+			var availableArtifacts = _allArtifacts
+				.Where(a => !ownedArtifactIds.Contains(a.artifactId) && !_purchasedArtifactIds.Contains(a.artifactId))
+				.ToList();
 			var shuffledArtifacts = availableArtifacts.OrderBy(_ => random.Next()).ToList();
 			int artifactCount = Math.Min(2, shuffledArtifacts.Count);
 			for (int i = 0; i < artifactCount; i++)
@@ -396,12 +401,6 @@ namespace FishEatFish.Shop
 				return false;
 			}
 
-			if (!CanAcquireArtifact())
-			{
-				GD.Print($"[BlackMarkShopManager] 背包已满，无法获取更多造物");
-				return false;
-			}
-
 			if (!SpendBlackMark(item.Price))
 			{
 				return false;
@@ -410,9 +409,18 @@ namespace FishEatFish.Shop
 			var artifact = _allArtifacts.FirstOrDefault(a => a.artifactId == item.ItemId);
 			if (artifact != null)
 			{
-				_ownedArtifacts.Add(artifact);
+				bool addedToBackpack = CanAcquireArtifact();
+				if (addedToBackpack)
+				{
+					_ownedArtifacts.Add(artifact);
+					_purchasedArtifactIds.Add(artifact.artifactId);
+					GD.Print($"[BlackMarkShopManager] 购买成功: {item.Name}，已放入背包");
+				}
+				else
+				{
+					GD.Print($"[BlackMarkShopManager] 购买成功: {item.Name}，但背包已满，无法放入");
+				}
 				item.Purchased = true;
-				GD.Print($"[BlackMarkShopManager] 购买成功: {item.Name}，物品保留在商店但标记为已售");
 				return true;
 			}
 
@@ -517,6 +525,7 @@ namespace FishEatFish.Shop
 		public void ResetForNewRun()
 		{
 			_ownedArtifacts.Clear();
+			_purchasedArtifactIds.Clear();
 			_engravedCardIds.Clear();
 			_blackMarkCount = 0;
 			CurrentShopItems.Clear();
