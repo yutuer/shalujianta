@@ -204,6 +204,16 @@ namespace FishEatFish.UI.ArtifactDetailPanel
             GD.Print($"[ArtifactDetailUI] HideArtifact completed");
         }
 
+        public bool IsPointInsideDetail(Vector2 globalMousePos)
+        {
+            if (!Visible || _backgroundPanel == null)
+            {
+                return false;
+            }
+
+            return _backgroundPanel.GetGlobalRect().HasPoint(globalMousePos);
+        }
+
         private void OnClosePressed()
         {
             GD.Print($"[ArtifactDetailUI] OnClosePressed called");
