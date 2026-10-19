@@ -60,7 +60,30 @@ run_project(projectPath="E:/trae_Projects/FishEatFish")
 take_screenshot()
 ```
 
-导出配置见 `export_presets.cfg`（Windows / x86_64）。
+导出配置见 `export_presets.cfg`（预设名 `Windows Desktop`，输出到 `dabao/qianye.exe`）。
+
+### 1.4 常用命令速查
+
+```powershell
+cd E:\trae_Projects\FishEatFish
+```
+
+| 目的 | 命令 |
+|---|---|
+| 编译 | `dotnet build` |
+| 清理后重编 | `dotnet clean; dotnet build` |
+| **校验任务统计表** | `powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1` |
+| 导出 Windows 版 | `godot --headless --export-release "Windows Desktop" dabao/qianye.exe` |
+| 提交（多行信息） | `git commit -F <消息文件>` ← 多行信息别用 `-m`，PowerShell 会拆参数 |
+| 推送 | `git push origin main` |
+| GitHub 认证状态 | `gh auth status` |
+| 看 CI / PR / Issue | `gh run list` · `gh pr list` · `gh issue list` |
+| 查仓库 API | `gh api repos/yutuer/shalujianta` |
+
+> 导出产物（`dabao/`、`qianye.*`、`*.tpz`、`*.rar`）已在 `.gitignore` 中，不会误入版本库。
+
+**跑起来看**（本机无 Godot 编辑器，用 MCP）：
+`run_project(projectPath=...)` 启动 · `take_screenshot()` 截图 · `simulate_input(...)` 模拟输入 · `run_script(...)` 注入 GDScript
 
 ---
 
@@ -87,6 +110,7 @@ FishEatFish/
 │  ├─ Shop/         黑印商店
 │  └─ UI/           20+ UI 组件脚本
 ├─ docs/            专项技术文档（4 篇）+ 原始策划案
+├─ tools/           check-task-stats.ps1 —— 校验任务统计表是否漂移
 ├─ .trae/           Trae 的项目规则与历史计划
 └─ project.godot    工程配置（含 [autoload]）
 ```
@@ -165,6 +189,7 @@ MainMenu
 
 ## 5. 当前进度基线
 
+> **本表是快照，不是活数据。** 权威来源是 [`tasks.md`](tasks.md) 的任务行；下表由脚本实算后同步。
 > 统计于 **2026-10-20**，口径：按 `tasks.md` 一~五节任务行逐行实算（共 **87** 行）。
 
 | 分类 | 总数 | ✅ | 🔄 | ⬜ |
@@ -175,6 +200,15 @@ MainMenu
 | 商店系统（已完成） | 28 | 26 | 1 | 1 |
 | Bug 修复 | 5 | 3 | 2 | 0 |
 | **合计** | **87** | **33** | **9** | **45** |
+
+📌 **改完任务状态别只改表**——跑校验脚本，它一次核对三处（实算 / `tasks.md` 统计表 / 本表）：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
+```
+
+退出码 `0` = 一致；非 `0` = 有漂移，脚本会逐条列出该改哪几个数字。
+（本项目历史上 `tasks.md` 的统计表曾长期失真——自称 61/23，实际 87/33——就是因为只靠人记得同步。）
 
 **已跑通的主循环**：主菜单 → 选图 → 选角色 → 六边形地图 → 踩战斗格子 → 按波次配置生成敌人 → 战斗结束 → **回到地图且地图/位置/生命/黑印完整恢复**（24 项集成断言通过）。
 
