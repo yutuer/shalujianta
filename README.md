@@ -85,6 +85,33 @@ cd E:\trae_Projects\FishEatFish
 **跑起来看**（本机无 Godot 编辑器，用 MCP）：
 `run_project(projectPath=...)` 启动 · `take_screenshot()` 截图 · `simulate_input(...)` 模拟输入 · `run_script(...)` 注入 GDScript
 
+### 1.5 快速进入某个场景（跳过菜单流程）
+
+改完 bug 要验证时，**不必走「主菜单 → 选关卡 → 选角色 → 进地图」那一大段**。
+
+**A. 你自己开（最快）** —— Godot 可执行文件在 `K:\Godot_v4.6.1-stable_mono_win64\`：
+
+```powershell
+cd E:\trae_Projects\FishEatFish
+dotnet build                                                       # 改了 C# 必须先编译
+& 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe' `
+    --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/HexMapScene.tscn'
+```
+
+常用场景（直接跟在命令行最后即可）：
+
+| 场景 | 路径 | 说明 |
+|---|---|---|
+| 六边形地图 | `res://Scenes/HexMapScene.tscn` | 验证地图相关改动 |
+| 战斗 | `res://Scenes/BattleScene.tscn` | 无地图上下文，敌人按 `normal_wave` 加载 |
+| 角色选择 | `res://Scenes/CharacterSelection.tscn` | |
+| 主菜单 | `res://Scenes/MainMenu.tscn` | 默认入口 |
+
+> 直接跑单个场景时 **autoload 照常加载**（`MapManager` / `BattleTransitionManager` / `BlackMarkShopManager`），地图存档机制可用。
+
+**B. 让我开** —— 我用 MCP 的 `run_project(scene="Scenes/HexMapScene.tscn", background=false)`，
+窗口会弹在你屏幕，**你自己验证、你自己关**，我不去 stop 它；你关掉后我还能读到运行日志。
+
 ---
 
 ## 2. 目录地图
