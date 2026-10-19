@@ -1,0 +1,42 @@
+{
+  "presets": {
+    "default": {
+      "desc": "选人完成后的默认状态：鼠牛虎兔 + 银光斩 + 第一张关卡 → 六边形地图",
+      "team": ["rat", "ox", "tiger", "rabbit"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "hexmap"
+    },
+    "battle": {
+      "desc": "选人完成 → 直接进战斗（无地图上下文，敌人按 normal_wave）",
+      "team": ["rat", "ox", "tiger", "rabbit"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "near_shop": {
+      "desc": "选人完成 + 落在商店格子旁边（不触发商店事件）",
+      "team": ["rat", "ox", "tiger", "rabbit"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "hexmap",
+      "startAt": "shop"
+    },
+    "half_hp": {
+      "desc": "选人完成 + 进地图时血量只有一半",
+      "team": ["rat", "ox", "tiger", "rabbit"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "hexmap",
+      "playerHealthRatio": 0.5
+    },
+    "elite_battle": {
+      "desc": "选人完成 + 直接进战斗，敌人按 elite_wave",
+      "team": ["rat", "ox", "tiger", "rabbit"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle",
+      "enemyWave": "elite_wave"
+    }
+  }
+}

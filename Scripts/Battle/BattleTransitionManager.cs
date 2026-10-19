@@ -26,6 +26,15 @@ namespace FishEatFish.Battle
         /// </summary>
         public bool HasSavedMap => _savedMap != null;
 
+        /// <summary>
+        /// 指定本次战斗使用的敌人波次（供调试场景准备器在切场景前预设）
+        /// </summary>
+        public void SetEnemyConfig(string enemyConfigKey)
+        {
+            _currentEnemyConfig = enemyConfigKey;
+            GD.Print($"[BattleTransitionManager] 敌人波次设为 {enemyConfigKey}");
+        }
+
         public event Action OnBattleStart;
         public event Action<bool> OnBattleEnd;
 

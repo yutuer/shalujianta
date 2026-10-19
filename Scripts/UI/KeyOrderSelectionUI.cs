@@ -281,11 +281,11 @@ public partial class KeyOrderSlotUI : Panel
     {
         return effectType switch
         {
-            KeyOrderEffectType.Damage => "res://Assets/Icons/sword.png",
-            KeyOrderEffectType.Heal => "res://Assets/Icons/star.png",
-            KeyOrderEffectType.Buff => "res://Assets/Icons/shield.png",
+            KeyOrderEffectType.Damage => "res://Assets/Icons/intent_attack.svg",
+            KeyOrderEffectType.Heal => "res://Assets/Icons/relic_charm.svg",
+            KeyOrderEffectType.Buff => "res://Assets/Icons/intent_buff.svg",
             KeyOrderEffectType.Debuff => "res://Assets/Icons/enemy_elite.svg",
-            KeyOrderEffectType.Special => "res://Assets/Icons/star.png",
+            KeyOrderEffectType.Special => "res://Assets/Icons/relic_whetstone.svg",
             _ => "res://Assets/Icons/enemy_elite.svg"
         };
     }

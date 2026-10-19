@@ -201,21 +201,21 @@ public partial class CardUI : Panel
             bgColor = new Color(0.2f, 0.1f, 0.1f, 1f);
             borderColor = new Color(0.8f, 0.3f, 0.3f, 1f);
             glowColor = new Color(0.8f, 0.3f, 0.3f, 0.3f);
-            iconPath = "res://Assets/Icons/sword.png";
+            iconPath = "res://Assets/Icons/intent_attack.svg";
         }
         else if (cardData.ShieldGain > 0)
         {
             bgColor = new Color(0.1f, 0.15f, 0.2f, 1f);
             borderColor = new Color(0.3f, 0.5f, 0.8f, 1f);
             glowColor = new Color(0.3f, 0.5f, 0.8f, 0.3f);
-            iconPath = "res://Assets/Icons/shield.png";
+            iconPath = "res://Assets/Icons/intent_defend.svg";
         }
         else if (cardData.EnergyGain > 0 || cardData.DrawCount > 0)
         {
             bgColor = new Color(0.15f, 0.12f, 0.2f, 1f);
             borderColor = new Color(0.6f, 0.3f, 0.8f, 1f);
             glowColor = new Color(0.6f, 0.3f, 0.8f, 0.3f);
-            iconPath = "res://Assets/Icons/star.png";
+            iconPath = "res://Assets/Icons/intent_buff.svg";
         }
 
         StyleBoxFlat style = new StyleBoxFlat();

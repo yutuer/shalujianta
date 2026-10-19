@@ -63,13 +63,13 @@ namespace FishEatFish.Scenes
         }
 
         /// <summary>
-        /// 调试入口：复刻「主菜单 → 选人 → 地图」的全局状态（默认队伍/钥令/第一张关卡），
-        /// 直接进六边形地图，省去点击但保证状态与真实流程一致。
+        /// 调试入口：进入「调试场景准备器」，它会复刻「主菜单 → 选人 → 地图」的全局状态，
+        /// 再进目标场景。命令行可加 --scenario=xxx 指定预设。
         /// </summary>
         private void OnDevQuickStartPressed()
         {
-            GD.Print("[MainMenu] 调试直达地图");
-            Dev.DevQuickStart.SetupAndGo(GetTree());
+            GD.Print("[MainMenu] 进入调试场景准备器");
+            GetTree().ChangeSceneToFile("res://Scenes/Dev/DevScenario.tscn");
         }
 
         private void OnHoleTestPressed()

@@ -85,58 +85,70 @@ cd E:\trae_Projects\FishEatFish
 **跑起来看**（本机无 Godot 编辑器，用 MCP）：
 `run_project(projectPath=...)` 启动 · `take_screenshot()` 截图 · `simulate_input(...)` 模拟输入 · `run_script(...)` 注入 GDScript
 
-### 1.5 快速进入某个场景（跳过菜单流程）
+### 1.5 调试场景准备器（带着选人完成的状态进场景）
 
 改完 bug 要验证时，**不必走「主菜单 → 选关卡 → 选角色 → 进地图」那一大段**。
 
-> ⚠️ **但别直接跑 `HexMapScene.tscn`** —— 那样会跳过选人流程，`GlobalData.SelectedCharacters` /
+> ⚠️ **别直接跑 `HexMapScene.tscn`** —— 那样会跳过选人流程，`GlobalData.SelectedCharacters` /
 > `EquippedKeyOrder` / `CurrentMap` 全是 null，战斗会**回退到默认阵容「鼠牛虎兔」**而不是你选的队伍，
-> 刻印可选卡牌列表也拿不到卡组。**用下面的调试入口**，它会把这些全局量按真实流程补齐。
+> 刻印可选卡牌列表也拿不到卡组。
 
-**A. 调试入口（推荐，快且状态正确）**
-
-`Scenes/Dev/DevQuickStart.tscn` 会复刻「主菜单 → 选人 → 地图」的全局状态再进地图。
-主菜单也有个「调试直达地图 (默认阵容)」按钮，点了直接进地图。
+**调试场景准备器**（`Scenes/Dev/DevScenario.tscn`）会先把这些全局量按真实流程补齐，再进目标场景。
 
 ```powershell
 cd E:\trae_Projects\FishEatFish
 dotnet build                                          # 改了 C# 必须先编译
 $godot = 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe'
 
-# 默认：鼠牛虎兔 + 银光斩 + 第一张关卡 → 六边形地图
-& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevQuickStart.tscn'
+# 默认预设
+& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevScenario.tscn'
 
-# 指定阵容/钥令/关卡/目标场景
-& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevQuickStart.tscn' -- `
-    --team=dragon,horse,monkey,dog --key=key_shield --map=map02 --target=battle
+# 指定预设
+& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevScenario.tscn' -- --scenario=near_shop
+
+# 预设 + 临时覆盖
+& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevScenario.tscn' -- `
+    --scenario=default --team=dragon,horse,monkey,dog --key=key_shield --map=map02 --target=battle
 ```
 
-| 参数 | 取值 | 说明 |
-|---|---|---|
-| `--team=` | `rat,ox,tiger,rabbit` / `dragon,horse,monkey,dog` … 12 生肖 id | 必须 4 个，否则回退默认队伍 |
-| `--key=` | `silver_slash` `key_shield` `energy_infusion` `armor_break` `life_key` | 钥令 id |
-| `--map=` | `map01` `map02` `map03` 或 MapId | 关卡 |
-| `--target=` | `hexmap`（默认） / `battle` | 进地图还是直接进战斗 |
+**内置预设**（`Data/dev_scenarios.json`）：
 
-> 角色 id：`rat` `ox` `tiger` `rabbit` `dragon` `snake` `horse` `goat` `monkey` `rooster` `dog` `pig`
-> 钥令 id → 名称：`silver_slash`→银光斩 `key_shield`→钥之护盾 `energy_infusion`→能量灌注 `armor_break`→破甲 `life_key`→生命钥
+| 预设 | 效果 |
+|---|---|
+| `default` | 选人完成（鼠牛虎兔 + 银光斩 + 第一张关卡）→ 六边形地图 |
+| `battle` | 选人完成 → 直接进战斗（敌人 `normal_wave`） |
+| `near_shop` | 选人完成 + 落在商店格子**旁边**（不触发商店事件） |
+| `half_hp` | 选人完成 + 进地图时血量只有一半 |
+| `elite_battle` | 选人完成 → 直接进战斗，敌人 `elite_wave` |
 
-**B. 直接跑任意场景**（只适合不依赖队伍的场景，如纯地图逻辑调试）
+**命令行参数**：
 
-```powershell
-& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/HexMapScene.tscn'
-```
+| 参数 | 取值 |
+|---|---|
+| `--scenario=` | 上表预设名 |
+| `--team=` | 12 生肖 id 逗号分隔，必须 4 个：`rat` `ox` `tiger` `rabbit` `dragon` `snake` `horse` `goat` `monkey` `rooster` `dog` `pig` |
+| `--key=` | `silver_slash`→银光斩 `key_shield`→钥之护盾 `energy_infusion`→能量灌注 `armor_break`→破甲 `life_key`→生命钥 |
+| `--map=` | `map01` `map02` `map03` |
+| `--target=` | `hexmap`（默认）/ `battle` |
 
-| 场景 | 路径 | 状态 |
-|---|---|---|
-| 六边形地图 | `res://Scenes/HexMapScene.tscn` | ⚠️ 无队伍/钥令/关卡 |
-| 战斗 | `res://Scenes/BattleScene.tscn` | ⚠️ 同上，敌人按 `normal_wave` 加载 |
-| 角色选择 | `res://Scenes/CharacterSelection.tscn` | 完整流程的一环 |
-| 主菜单 | `res://Scenes/MainMenu.tscn` | 默认入口 |
+**以后要加新预设（比如"带特定装备""站在 BOSS 房门口"）**：
+① 往 `Data/dev_scenarios.json` 加一条 preset；
+② 若需要新的状态维度，在 `Scripts/Dev/DevScenario.cs` 的 `ApplyInSceneState()` 里加一个钩子（现有钩子：血量比例、落点、敌人波次）。
+
+主菜单也有「调试直达地图 (默认阵容)」按钮，点它等同于跑 `default` 预设。
+
+**其他场景**（只适合不依赖队伍的调试，如纯地图逻辑）：
+
+| 场景 | 路径 |
+|---|---|
+| 六边形地图 | `res://Scenes/HexMapScene.tscn` ⚠️ 无队伍/钥令/关卡 |
+| 战斗 | `res://Scenes/BattleScene.tscn` ⚠️ 同上，敌人按 `normal_wave` |
+| 角色选择 | `res://Scenes/CharacterSelection.tscn` |
+| 主菜单 | `res://Scenes/MainMenu.tscn` |
 
 > 直接跑单个场景时 **autoload 照常加载**（`MapManager` / `BattleTransitionManager` / `BlackMarkShopManager`），地图存档机制可用。
 
-**C. 让我开** —— 我用 MCP 的 `run_project(scene="Scenes/Dev/DevQuickStart.tscn", background=false)`，
+**让我开** —— 我用 MCP 的 `run_project(scene="Scenes/Dev/DevScenario.tscn", background=false)`，
 窗口会弹在你屏幕，**你自己验证、你自己关**，我不去 stop 它；你关掉后我还能读到运行日志。
 
 ---
@@ -146,13 +158,14 @@ $godot = 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe'
 ```
 FishEatFish/
 ├─ Data/            10 张 JSON 数据表（卡牌/角色/刻印/造物/buff/效果/大招/敌人波次…）
+│                   + dev_scenarios.json —— 调试场景预设表
 ├─ Scenes/          30+ 个 .tscn
 │  ├─ MainMenu / LevelMap / CharacterSelection / BattleScene / HexMapScene
-│  ├─ Dev/           DevQuickStart.tscn —— 调试入口，复刻选人流程的全局状态后直达地图
+│  ├─ Dev/           DevScenario.tscn —— 调试场景准备器入口
 │  └─ UI/           24 个 UI 组件场景
 ├─ Scripts/         114+ 个 .cs，按职责分层
 │  ├─ Scenes/       场景驱动（BattleManager 1007 行是核心）
-│  ├─ Dev/          DevQuickStart.cs —— 调试入口逻辑
+│  ├─ Dev/          DevScenario.cs —— 调试场景准备器逻辑
 │  ├─ Battle/       战斗核心
 │  │  ├─ Core/          Player / Enemy / IUnit / 敌人波次加载
 │  │  ├─ Card/          卡牌数据、等级、描述生成
@@ -340,6 +353,34 @@ git filter-repo --force --path <路径> --invert-paths --refs <远端SHA>..HEAD
 - JSON 里的整数经 `Godot.Collections.Dictionary` 取出是 **long**，要 `(int)(long)` 或按 `Variant.VariantType` 判断
 - `Control` 子节点的 `mouse_filter` 默认是 `Stop`，会吃掉点击；`Label` 默认 `Ignore`
 - 地图格子颜色直接编码事件类型（`HexTileView.EventColors`），可用来在无头环境下识别格子
+
+### 6.8 `.tscn` 根节点漏绑 script → 组件静默退化成空节点
+
+2026-10-20 在战斗场景排查报错时发现：`AttackerDisplayUI.tscn`、`RageDisplayUI.tscn`、
+`KeyOrderSelectionUI.tscn` **三个场景的根节点都没有 `script = ExtResource(...)`**（ext_resource 声明了脚本，但没挂到根节点上）。
+
+后果很隐蔽：`BattleManager.LoadUIComponent<T>()` 里的 `packedScene.Instantiate<T>()` 因为类型不匹配返回 null，
+于是走**代码兜底** `new T()` —— 得到一个**没有任何子节点的空 Control**。
+于是运行日志里出现：
+
+```
+[BattleManager] 攻击体角色显示UI初始化成功      ← 看着像成功
+ERROR: Node not found: "VBoxContainer/TeamStatsLabel"   ← 其实是空节点
+```
+
+**攻击体编队、怒气槽、钥令选择这三个 UI 实际上一直是空的**，只是没有崩所以没人发现。
+修法就是在根节点补一行 `script = ExtResource("1")`。
+
+**教训**：
+- 新建 `.tscn` 时，**根节点一定要绑脚本**——只声明 ext_resource 不等于挂上了
+- 「从场景加载: xxx.tscn」这条日志是组件是否真的走了场景路径的判据；缺它就说明退回了代码兜底
+- 一键排查：`Scenes/**/*.tscn` 里凡是有 Script ext_resource 的，根节点都要有 `script =`
+
+### 6.9 引用的资源必须真的存在
+
+`CardUI.cs` / `KeyOrderSelectionUI.cs` 引用了 `sword.png` `shield.png` `star.png`，
+但 `Assets/Icons/` 里根本没有这三个 png（只有 svg）。因为代码有 null 兜底，不崩，只是图标不显示 + 每次刷 "Resource file not found"。
+已改指向现有资源：`intent_attack.svg`（剑）、`intent_defend.svg`（盾）、`intent_buff.svg`（增益）、`relic_charm.svg`（恢复）。
 
 ---
 
