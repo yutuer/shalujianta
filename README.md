@@ -340,6 +340,20 @@ git filter-repo --force --path <路径> --invert-paths --refs <远端SHA>..HEAD
 - **造物装备界面 / 金币系统**（`tasks.md` 中优先级，2.1 / 2.2）
 - **`.trae/plans/hexmapui-refactor-plan.md` 阶段 6**：`HexMapUI.cs` 拆分 `TopRightButtonsPanel` / `PlayerStatusPanel` / `RageCirclesPanel` / `HexMapView`（目标 802 行 → <400 行）
 
+### ⚠️ 用 Agent 跑测试时的提交陷阱
+
+`godot-runtime` MCP 启动项目时会**往 `project.godot` 的 `[autoload]` 注入一行**：
+
+```ini
+McpBridge="*res://.mcp/godot-runtime/bridge/mcp_bridge.gd"
+```
+
+测试会话运行期间 `git status` 会显示 `M project.godot`（**这是正常的**），停止/关闭项目后会自动还原。
+
+**但如果你在会话运行期间执行 `git add .` 或 `git commit -a`**，这行会被提交进仓库 —— 而 `.mcp/` 本身是 gitignore 的，别人克隆后这条 autoload 指向不存在的脚本，**项目直接启动失败**。
+
+**规矩**：跑测试期间只 `git add` 具体文件；确认 `project.godot` 没有意外改动再提交。
+
 ---
 
 ## 8. 变更记录
