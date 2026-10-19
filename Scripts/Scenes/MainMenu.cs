@@ -13,6 +13,7 @@ namespace FishEatFish.Scenes
         private Button _levelSelectButton;
         private Button _testButton;
         private Button _holeTestButton;
+        private Button _devQuickStartButton;
         private Button _continueButton;
         private Button _exitButton;
         private Label _resultLabel;
@@ -24,6 +25,7 @@ namespace FishEatFish.Scenes
             _levelSelectButton = GetNode<Button>("Panel/VBoxContainer/LevelSelectButton");
             _testButton = GetNode<Button>("Panel/VBoxContainer/TestButton");
             _holeTestButton = GetNode<Button>("Panel/VBoxContainer/HoleTestButton");
+            _devQuickStartButton = GetNode<Button>("Panel/VBoxContainer/DevQuickStartButton");
             _continueButton = GetNode<Button>("Panel/VBoxContainer/ContinueButton");
             _exitButton = GetNode<Button>("Panel/VBoxContainer/ExitButton");
 
@@ -32,6 +34,7 @@ namespace FishEatFish.Scenes
             _levelSelectButton.Pressed += OnLevelSelectPressed;
             _testButton.Pressed += OnTestPressed;
             _holeTestButton.Pressed += OnHoleTestPressed;
+            _devQuickStartButton.Pressed += OnDevQuickStartPressed;
             _continueButton.Pressed += OnContinuePressed;
             _exitButton.Pressed += OnExitPressed;
 
@@ -57,6 +60,16 @@ namespace FishEatFish.Scenes
         private void OnTestPressed()
         {
             GetTree().ChangeSceneToFile("res://Scenes/BattleScene.tscn");
+        }
+
+        /// <summary>
+        /// 调试入口：复刻「主菜单 → 选人 → 地图」的全局状态（默认队伍/钥令/第一张关卡），
+        /// 直接进六边形地图，省去点击但保证状态与真实流程一致。
+        /// </summary>
+        private void OnDevQuickStartPressed()
+        {
+            GD.Print("[MainMenu] 调试直达地图");
+            Dev.DevQuickStart.SetupAndGo(GetTree());
         }
 
         private void OnHoleTestPressed()

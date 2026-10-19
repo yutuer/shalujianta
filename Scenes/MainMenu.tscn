@@ -99,6 +99,10 @@ text = "直接战斗测试"
 layout_mode = 2
 text = "洞穴地图验证测试"
 
+[node name="DevQuickStartButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "调试直达地图 (默认阵容)"
+
 [node name="ContinueButton" type="Button" parent="Panel/VBoxContainer"]
 disabled = true
 text = "继续游戏 (即将开放)"

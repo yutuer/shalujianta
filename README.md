@@ -89,27 +89,54 @@ cd E:\trae_Projects\FishEatFish
 
 改完 bug 要验证时，**不必走「主菜单 → 选关卡 → 选角色 → 进地图」那一大段**。
 
-**A. 你自己开（最快）** —— Godot 可执行文件在 `K:\Godot_v4.6.1-stable_mono_win64\`：
+> ⚠️ **但别直接跑 `HexMapScene.tscn`** —— 那样会跳过选人流程，`GlobalData.SelectedCharacters` /
+> `EquippedKeyOrder` / `CurrentMap` 全是 null，战斗会**回退到默认阵容「鼠牛虎兔」**而不是你选的队伍，
+> 刻印可选卡牌列表也拿不到卡组。**用下面的调试入口**，它会把这些全局量按真实流程补齐。
+
+**A. 调试入口（推荐，快且状态正确）**
+
+`Scenes/Dev/DevQuickStart.tscn` 会复刻「主菜单 → 选人 → 地图」的全局状态再进地图。
+主菜单也有个「调试直达地图 (默认阵容)」按钮，点了直接进地图。
 
 ```powershell
 cd E:\trae_Projects\FishEatFish
-dotnet build                                                       # 改了 C# 必须先编译
-& 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe' `
-    --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/HexMapScene.tscn'
+dotnet build                                          # 改了 C# 必须先编译
+$godot = 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe'
+
+# 默认：鼠牛虎兔 + 银光斩 + 第一张关卡 → 六边形地图
+& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevQuickStart.tscn'
+
+# 指定阵容/钥令/关卡/目标场景
+& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevQuickStart.tscn' -- `
+    --team=dragon,horse,monkey,dog --key=key_shield --map=map02 --target=battle
 ```
 
-常用场景（直接跟在命令行最后即可）：
-
-| 场景 | 路径 | 说明 |
+| 参数 | 取值 | 说明 |
 |---|---|---|
-| 六边形地图 | `res://Scenes/HexMapScene.tscn` | 验证地图相关改动 |
-| 战斗 | `res://Scenes/BattleScene.tscn` | 无地图上下文，敌人按 `normal_wave` 加载 |
-| 角色选择 | `res://Scenes/CharacterSelection.tscn` | |
+| `--team=` | `rat,ox,tiger,rabbit` / `dragon,horse,monkey,dog` … 12 生肖 id | 必须 4 个，否则回退默认队伍 |
+| `--key=` | `silver_slash` `key_shield` `energy_infusion` `armor_break` `life_key` | 钥令 id |
+| `--map=` | `map01` `map02` `map03` 或 MapId | 关卡 |
+| `--target=` | `hexmap`（默认） / `battle` | 进地图还是直接进战斗 |
+
+> 角色 id：`rat` `ox` `tiger` `rabbit` `dragon` `snake` `horse` `goat` `monkey` `rooster` `dog` `pig`
+> 钥令 id → 名称：`silver_slash`→银光斩 `key_shield`→钥之护盾 `energy_infusion`→能量灌注 `armor_break`→破甲 `life_key`→生命钥
+
+**B. 直接跑任意场景**（只适合不依赖队伍的场景，如纯地图逻辑调试）
+
+```powershell
+& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/HexMapScene.tscn'
+```
+
+| 场景 | 路径 | 状态 |
+|---|---|---|
+| 六边形地图 | `res://Scenes/HexMapScene.tscn` | ⚠️ 无队伍/钥令/关卡 |
+| 战斗 | `res://Scenes/BattleScene.tscn` | ⚠️ 同上，敌人按 `normal_wave` 加载 |
+| 角色选择 | `res://Scenes/CharacterSelection.tscn` | 完整流程的一环 |
 | 主菜单 | `res://Scenes/MainMenu.tscn` | 默认入口 |
 
 > 直接跑单个场景时 **autoload 照常加载**（`MapManager` / `BattleTransitionManager` / `BlackMarkShopManager`），地图存档机制可用。
 
-**B. 让我开** —— 我用 MCP 的 `run_project(scene="Scenes/HexMapScene.tscn", background=false)`，
+**C. 让我开** —— 我用 MCP 的 `run_project(scene="Scenes/Dev/DevQuickStart.tscn", background=false)`，
 窗口会弹在你屏幕，**你自己验证、你自己关**，我不去 stop 它；你关掉后我还能读到运行日志。
 
 ---
@@ -119,11 +146,13 @@ dotnet build                                                       # 改了 C# �
 ```
 FishEatFish/
 ├─ Data/            10 张 JSON 数据表（卡牌/角色/刻印/造物/buff/效果/大招/敌人波次…）
-├─ Scenes/          30 个 .tscn
+├─ Scenes/          30+ 个 .tscn
 │  ├─ MainMenu / LevelMap / CharacterSelection / BattleScene / HexMapScene
+│  ├─ Dev/           DevQuickStart.tscn —— 调试入口，复刻选人流程的全局状态后直达地图
 │  └─ UI/           24 个 UI 组件场景
-├─ Scripts/         114 个 .cs，按职责分层
+├─ Scripts/         114+ 个 .cs，按职责分层
 │  ├─ Scenes/       场景驱动（BattleManager 1007 行是核心）
+│  ├─ Dev/          DevQuickStart.cs —— 调试入口逻辑
 │  ├─ Battle/       战斗核心
 │  │  ├─ Core/          Player / Enemy / IUnit / 敌人波次加载
 │  │  ├─ Card/          卡牌数据、等级、描述生成
