@@ -33,8 +33,19 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
     $RepoRoot = Split-Path -Parent $scriptDir
 }
 
+# ============================ 维护须知 ============================
+# ⚠️ 本文件必须以「UTF-8 with BOM」保存！
+#    PowerShell 5.1 会把无 BOM 的 .ps1 当 ANSI 读，中文与 emoji 全部乱码，
+#    表现为 "Unexpected token" 之类的解析错误。用 VS Code 保存时请选
+#    "UTF-8 with BOM"，或用记事本「另存为 → UTF-8」。
+#
+#    emoji 一律用码点构造，不要在源码里直接写，避免再次依赖 BOM：
+#      U+2705 ✅   U+1F504 🔄（超出 BMP，必须 ConvertFromUtf32 转代理对）
+#      U+2B1C ⬜   U+274C ❌
+# ================================================================
+
 # 用码点构造 emoji，避免脚本文件必须带 BOM 才能被 PowerShell 5.1 正确解析
-# 注意：🔄 是 U+1F504，超出 BMP，必须用 ConvertFromUtf32 转成代理对，不能直接 [char]0x1F504
+# 注意：U+1F504 超出 BMP，必须用 ConvertFromUtf32 转成代理对，不能直接 [char]0x1F504
 $Done  = [char]::ConvertFromUtf32(0x2705)   # ✅
 $Doing = [char]::ConvertFromUtf32(0x1F504)  # 🔄
 $Todo  = [char]::ConvertFromUtf32(0x2B1C)   # ⬜
