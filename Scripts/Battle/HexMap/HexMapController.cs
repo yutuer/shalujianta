@@ -69,6 +69,7 @@ namespace FishEatFish.Battle.HexMap
         public System.Action OnShopClosed;
 
         private BattleTransitionManager _battleTransitionManager;
+        private bool _isRestored = false;
 
         public override void _Ready()
         {
@@ -77,17 +78,59 @@ namespace FishEatFish.Battle.HexMap
             _generator = new HexMapGenerator();
             _eventManager = new HexEventManager();
 
-            _battleTransitionManager = new BattleTransitionManager();
-            AddChild(_battleTransitionManager);
+            // BattleTransitionManager 是 autoload，跨场景存活，持有地图存档
+            _battleTransitionManager = BattleTransitionManager.Instance;
 
             _eventManager.OnBattleTriggered += OnBattleTriggered;
 
-            GenerateMap();
+            if (_battleTransitionManager != null && _battleTransitionManager.HasSavedMap)
+            {
+                RestoreMapState();
+            }
+            else
+            {
+                GenerateMap();
+            }
+        }
+
+        /// <summary>
+        /// 从 BattleTransitionManager 的存档恢复地图（战斗结束后返回地图时走这条路径）
+        /// </summary>
+        private void RestoreMapState()
+        {
+            HexMap savedMap = _battleTransitionManager.GetSavedMap();
+            if (savedMap == null)
+            {
+                GD.PrintErr("[HexMapController] 地图存档为空，改为重新生成");
+                GenerateMap();
+                return;
+            }
+
+            _currentMap = savedMap;
+            _currentPosition = _battleTransitionManager.GetSavedPlayerPosition();
+            _playerLevel = _battleTransitionManager.GetSavedPlayerLevel();
+            _playerMaxHealth = _battleTransitionManager.GetSavedPlayerMaxHealth();
+            _playerCurrentHealth = _battleTransitionManager.GetSavedPlayerHealth();
+            _currentState = HexMapState.Idle;
+            _hasSkipped = false;
+            _isRestored = true;
+
+            int savedBlackMark = _battleTransitionManager.GetSavedBlackMarkCount();
+            BlackMarkShopManager.Instance?.SetBlackMarkCount(savedBlackMark);
+
+            GD.Print($"[HexMapController] 恢复地图状态: 位置={_currentPosition}, 等级={_playerLevel}, 生命={_playerCurrentHealth}/{_playerMaxHealth}, 黑印={savedBlackMark}");
         }
 
         private void OnBattleTriggered(HexEventType battleType, string enemyConfig)
         {
             GD.Print($"[HexMapController] OnBattleTriggered: type={battleType}, config={enemyConfig}");
+
+            if (_battleTransitionManager == null)
+            {
+                GD.PrintErr("[HexMapController] BattleTransitionManager 不可用，无法进入战斗");
+                return;
+            }
+
             _battleTransitionManager.StartBattle(battleType, enemyConfig, this);
         }
 
@@ -103,6 +146,13 @@ namespace FishEatFish.Battle.HexMap
 
         public void SetPlayerLevel(int level)
         {
+            // 从战斗返回的地图使用存档等级，不被外部覆盖
+            if (_isRestored)
+            {
+                GD.Print($"[HexMapController] 地图已从存档恢复，保留存档等级 {_playerLevel}，忽略传入等级 {level}");
+                return;
+            }
+
             _playerLevel = level;
             if (level <= 5)
                 _mapRadius = 3;
@@ -409,12 +459,14 @@ namespace FishEatFish.Battle.HexMap
         private void CompleteMap()
         {
             GD.Print("[HexMapController] 地图探索完成!");
+            _battleTransitionManager?.ClearSavedState();
             OnMapCompleted?.Invoke();
         }
 
         private void FailChallenge()
         {
             GD.Print("[HexMapController] 挑战失败!");
+            _battleTransitionManager?.ClearSavedState();
             OnChallengeFailed?.Invoke();
         }
 

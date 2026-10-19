@@ -130,8 +130,16 @@ namespace FishEatFish.Scenes
             _selectedMap = map;
             GD.Print($"选择了地图: {map.Name}");
 
-            MapManager mapManager = new MapManager();
-            mapManager.StartMap(map);
+            // MapManager 是 autoload，直接使用单例（不要 new，new 出来的实例没有进入场景树）
+            MapManager mapManager = MapManager.Instance;
+            if (mapManager != null)
+            {
+                mapManager.StartMap(map);
+            }
+            else
+            {
+                GD.PrintErr("MapManager 单例不可用，地图进度不会被记录");
+            }
 
             GlobalData.CurrentMap = map;
             GetTree().ChangeSceneToFile("res://Scenes/CharacterSelection.tscn");

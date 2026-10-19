@@ -21,6 +21,11 @@ namespace FishEatFish.Battle
         public HexMap.HexEventType CurrentBattleType => _currentBattleType;
         public string CurrentEnemyConfig => _currentEnemyConfig;
 
+        /// <summary>
+        /// 是否存在可恢复的地图存档（战斗返回地图时用）
+        /// </summary>
+        public bool HasSavedMap => _savedMap != null;
+
         public event Action OnBattleStart;
         public event Action<bool> OnBattleEnd;
 
@@ -61,8 +66,9 @@ namespace FishEatFish.Battle
 
             if (IsInBattle)
             {
-                GD.PrintErr("[BattleTransitionManager] Already in battle!");
-                return;
+                GD.PrintErr("[BattleTransitionManager] 上一次战斗未正常结束，重置状态后继续");
+                ClearSavedState();
+                IsInBattle = false;
             }
 
             SaveMapState(controller);

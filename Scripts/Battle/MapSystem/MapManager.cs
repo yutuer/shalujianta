@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 public partial class MapManager : Node
 {
+    private static MapManager _instance;
+    public static MapManager Instance => _instance;
+
     private MapDefinition _currentMap;
     private int _currentBattleIndex = 0;
     private bool _isMapCompleted = false;
@@ -17,6 +20,7 @@ public partial class MapManager : Node
 
     public override void _Ready()
     {
+        _instance = this;
         InitializeMaps();
     }
 

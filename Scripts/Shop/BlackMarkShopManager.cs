@@ -300,6 +300,16 @@ namespace FishEatFish.Shop
 			GD.Print($"[BlackMarkShopManager] 获得 {amount} 黑印，当前: {_blackMarkCount}");
 		}
 
+		/// <summary>
+		/// 直接设置黑印数量（用于从地图存档恢复黑印）
+		/// </summary>
+		public void SetBlackMarkCount(int count)
+		{
+			_blackMarkCount = Mathf.Max(0, count);
+			OnBlackMarkChanged?.Invoke(_blackMarkCount);
+			GD.Print($"[BlackMarkShopManager] 黑印数量设置为 {_blackMarkCount}");
+		}
+
 		public bool SpendBlackMark(int amount)
 		{
 			if (_blackMarkCount < amount)

@@ -27,6 +27,7 @@ namespace FishEatFish.Battle.HexMap
             tiles[endCoord].TriggerCount = 1;
             tiles[endCoord].DisplayName = "BOSS";
             tiles[endCoord].IconPath = "res://Assets/Icons/boss.png";
+            tiles[endCoord].EnemyConfig = "boss_wave";
 
             var criticalPath = FindShortestPath(tiles, startCoord, endCoord);
             var criticalSet = new HashSet<HexCoord>(criticalPath);

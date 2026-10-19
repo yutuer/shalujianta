@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle;
 using FishEatFish.Battle.Core;
 using FishEatFish.Battle.Card;
 using FishEatFish.Battle.Effects.Buffs;
@@ -429,23 +430,69 @@ namespace FishEatFish.Scenes
 
 	/// <summary>
 	/// 初始化敌人
-	/// 当前创建3个测试敌人：守卫、精锐、背信
+	/// 敌人组合由地图上的战斗格子决定（普通 / 精英 / BOSS），配置见 Data/enemies.json
 	/// </summary>
 	private void InitializeEnemies()
 	{
 		GD.Print("[BattleManager] 开始初始化敌人...");
 		ClearEnemyUI();
-		enemies.Clear();
+		ClearEnemies();
 
-		AddEnemy("守卫 A", 54, 8, 2, "balanced");
-		AddEnemy("精锐 B", 50, 10, 1, "aggressive");
-		AddEnemy("背信 C", 38, 6, 0, "defensive");
+		string waveKey = ResolveEnemyWaveKey();
+		List<Enemy> waveEnemies = EnemyConfigLoader.CreateEnemies(waveKey);
+
+		if (waveEnemies.Count == 0)
+		{
+			GD.PrintErr($"[BattleManager] 波次 '{waveKey}' 没有配置敌人，回退到默认阵容");
+			AddEnemy("守卫 A", 54, 8, 0, "balanced", 2);
+			AddEnemy("精锐 B", 50, 10, 1, "aggressive", 1);
+			AddEnemy("背信 C", 38, 6, 2, "defensive", 0);
+		}
+		else
+		{
+			foreach (Enemy enemy in waveEnemies)
+			{
+				enemies.Add(enemy);
+				AddChild(enemy);
+				CreateEnemyUI(enemy);
+				GD.Print($"[BattleManager] 创建敌人: {enemy.EnemyName} HP={enemy.MaxHealth} ATK={enemy.Attack} DEF={enemy.Defense} 行为={enemy.Behavior}");
+			}
+		}
 
 		enemyManager.SetEnemies(enemies);
-		GD.Print($"[BattleManager] 敌人初始化完成，共{enemies.Count}个敌人");
+		GD.Print($"[BattleManager] 敌人初始化完成，共{enemies.Count}个敌人 (波次: {waveKey})");
 	}
 
-	private void AddEnemy(string name, int maxHealth, int attack, int position, string behavior = "aggressive")
+	/// <summary>
+	/// 解析本次战斗使用的敌人波次键
+	/// 优先取地图战斗格子指定的配置，没有则用普通波次
+	/// </summary>
+	private string ResolveEnemyWaveKey()
+	{
+		BattleTransitionManager transitionManager = BattleTransitionManager.Instance;
+		if (transitionManager != null && !string.IsNullOrEmpty(transitionManager.CurrentEnemyConfig))
+		{
+			GD.Print($"[BattleManager] 使用地图指定的敌人波次: {transitionManager.CurrentEnemyConfig}");
+			return transitionManager.CurrentEnemyConfig;
+		}
+
+		GD.Print("[BattleManager] 未指定敌人波次，回退到 normal_wave");
+		return "normal_wave";
+	}
+
+	private void ClearEnemies()
+	{
+		foreach (Enemy enemy in enemies)
+		{
+			if (enemy != null)
+			{
+				enemy.QueueFree();
+			}
+		}
+		enemies.Clear();
+	}
+
+	private void AddEnemy(string name, int maxHealth, int attack, int position, string behavior = "aggressive", int defense = 0, bool isElite = false, bool isBoss = false)
 	{
 		Enemy enemy = new Enemy
 		{
@@ -453,10 +500,14 @@ namespace FishEatFish.Scenes
 			MaxHealth = maxHealth,
 			CurrentHealth = maxHealth,
 			Attack = attack,
+			Defense = defense,
 			Position = position,
-			Behavior = behavior
+			Behavior = behavior,
+			IsElite = isElite,
+			IsBoss = isBoss
 		};
 		enemies.Add(enemy);
+		AddChild(enemy);
 		CreateEnemyUI(enemy);
 	}
 
@@ -1170,12 +1221,43 @@ namespace FishEatFish.Scenes
 
 	private void OnNextLevelPressed()
 	{
+		GD.Print("[BattleManager] OnNextLevelPressed called");
+		if (TryReturnToHexMap(true))
+		{
+			return;
+		}
 		GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
 	}
 
 	private void OnMapPressed()
 	{
+		GD.Print("[BattleManager] OnMapPressed called");
+		if (TryReturnToHexMap(false))
+		{
+			return;
+		}
 		GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
+	}
+
+	/// <summary>
+	/// 若本次战斗是从六边形地图进入的，则回到地图并恢复状态；否则返回关卡地图
+	/// </summary>
+	/// <param name="victory">是否胜利</param>
+	/// <returns>true 表示已切回六边形地图</returns>
+	private bool TryReturnToHexMap(bool victory)
+	{
+		BattleTransitionManager transitionManager = BattleTransitionManager.Instance;
+
+		if (transitionManager == null || !transitionManager.HasSavedMap)
+		{
+			GD.Print("[BattleManager] 无地图存档，返回关卡地图");
+			transitionManager?.ClearSavedState();
+			return false;
+		}
+
+		GD.Print($"[BattleManager] 返回六边形地图 (胜利: {victory})");
+		transitionManager.EndBattle(victory);
+		return true;
 	}
     }
 }
