@@ -345,7 +345,18 @@ namespace FishEatFish.UI.HexMap
         public override void _EnterTree()
         {
             base._EnterTree();
-            GetTree().Connect("screen_resized", new Callable(this, nameof(OnScreenResized)));
+
+            // Godot 4 已移除 SceneTree.screen_resized，窗口尺寸变化由 Viewport.SizeChanged 通知
+            GetViewport().SizeChanged += OnScreenResized;
+        }
+
+        public override void _ExitTree()
+        {
+            if (GetViewport() != null)
+            {
+                GetViewport().SizeChanged -= OnScreenResized;
+            }
+            base._ExitTree();
         }
 
         private void OnScreenResized()

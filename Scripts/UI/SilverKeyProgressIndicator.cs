@@ -39,12 +39,18 @@ public partial class SilverKeyProgressIndicator : Control
         GD.Print($"[SilverKeyProgressIndicator] Initial Size: {Size}");
         GD.Print($"[SilverKeyProgressIndicator] CustomMinimumSize: {CustomMinimumSize}");
 
-        _valueLabel = GetNode<Label>("ValueLabel");
-        _maxLabel = GetNode<Label>("MaxLabel");
+        // ValueLabel / MaxLabel 位于 VBoxContainer 之下（见 SilverKeyProgressIndicator.tscn）
+        _valueLabel = GetNodeOrNull<Label>("VBoxContainer/ValueLabel");
+        _maxLabel = GetNodeOrNull<Label>("VBoxContainer/MaxLabel");
 
         if (_valueLabel == null)
         {
-            GD.PrintErr("[SilverKeyProgressIndicator] 未找到ValueLabel节点");
+            GD.PrintErr("[SilverKeyProgressIndicator] 未找到 VBoxContainer/ValueLabel 节点");
+        }
+
+        if (_maxLabel == null)
+        {
+            GD.PrintErr("[SilverKeyProgressIndicator] 未找到 VBoxContainer/MaxLabel 节点");
         }
 
         UpdateDisplay();
