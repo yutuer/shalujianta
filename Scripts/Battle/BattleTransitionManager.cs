@@ -35,6 +35,28 @@ namespace FishEatFish.Battle
             GD.Print($"[BattleTransitionManager] 敌人波次设为 {enemyConfigKey}");
         }
 
+        /// <summary>
+        /// 打赢 BOSS 战后置位：回到地图时需要结算"地图完成"
+        /// </summary>
+        public bool PendingMapCompletion { get; private set; } = false;
+
+        /// <summary>
+        /// 清除"待结算地图完成"标记（地图结算后调用）
+        /// </summary>
+        public void ClearPendingMapCompletion()
+        {
+            PendingMapCompletion = false;
+        }
+
+        /// <summary>
+        /// 把战斗结束时的剩余血量写回地图存档（血量在地图与战斗之间是同一份）
+        /// </summary>
+        public void UpdateSavedPlayerHealth(float health)
+        {
+            _savedPlayerHealth = Mathf.Max(0f, health);
+            GD.Print($"[BattleTransitionManager] 地图血量更新为 {_savedPlayerHealth}");
+        }
+
         public event Action OnBattleStart;
         public event Action<bool> OnBattleEnd;
 
@@ -97,6 +119,14 @@ namespace FishEatFish.Battle
             GD.Print($"[BattleTransitionManager] EndBattle called: victory={victory}");
 
             IsInBattle = false;
+
+            // 打赢 BOSS 战 → 回到地图后要结算"地图完成"
+            if (victory && _currentBattleType == HexMap.HexEventType.BattleBoss)
+            {
+                PendingMapCompletion = true;
+                GD.Print("[BattleTransitionManager] BOSS 战胜利，标记为待结算地图完成");
+            }
+
             OnBattleEnd?.Invoke(victory);
 
             GD.Print($"[BattleTransitionManager] Switching back to HexMapScene...");

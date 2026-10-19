@@ -118,8 +118,11 @@ $godot = 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe'
 | `default` | 选人完成（鼠牛虎兔 + 银光斩 + 第一张关卡）→ 六边形地图 |
 | `battle` | 选人完成 → 直接进战斗（敌人 `normal_wave`） |
 | `near_shop` | 选人完成 + 落在商店格子**旁边**（不触发商店事件） |
-| `half_hp` | 选人完成 + 进地图时血量只有一半 |
+| `half_hp` | 选人完成 + 进地图时血量只有一半（125 → 62） |
 | `elite_battle` | 选人完成 → 直接进战斗，敌人 `elite_wave` |
+| `near_boss` | 选人完成 + 站在 BOSS 格子旁边（走上去即触发 BOSS 战） |
+| `step_on_boss` | 选人完成 + **直接站上 BOSS 格子**（立刻触发 BOSS 战，用于验证触发链路） |
+| `boss_battle` | 选人完成 → 直接打 BOSS 战（敌人 `boss_wave`） |
 
 **命令行参数**：
 
@@ -281,12 +284,19 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 **已跑通的主循环**：主菜单 → 选图 → 选角色 → 六边形地图 → 踩战斗格子 → 按波次配置生成敌人 → 战斗结束 → **回到地图且地图/位置/生命/黑印完整恢复**（24 项集成断言通过）。
 
+**血量是同一份**：玩家血量 = 队伍总血量（鼠牛虎兔 = 125）。地图上显示它，进战斗带着当前血量进去（`携带地图血量进入战斗: 125/125`），战斗胜利把剩余血量写回地图；战败不写回（战斗会重开，血量保持战前值）。
+
+**已打通的**：
+- 地图 → 战斗 → 返回地图（状态完整恢复）
+- 敌人按波次配置加载（普通 / 精英 / BOSS 三档）
+- **BOSS 战**：终点格子是 👹 BOSS，走上去即触发 BOSS 战（`boss_wave`），打赢后回到地图并结算「地图探索完成」
+- 地图血量与战斗血量打通
+
 **尚未打通的**：
 - 刻印效果在出牌时**实际触发**
 - 大招 / 钥令的**实际战斗效果**
 - 战斗胜利后的**奖励选择界面**
 - Buff / Debuff 的 UI 呈现
-- **BOSS 战斗**（配置已备好，但触发路径被 `ProcessTile` 提前 return 挡掉）
 
 ---
 
@@ -382,16 +392,39 @@ ERROR: Node not found: "VBoxContainer/TeamStatsLabel"   ← 其实是空节点
 但 `Assets/Icons/` 里根本没有这三个 png（只有 svg）。因为代码有 null 兜底，不崩，只是图标不显示 + 每次刷 "Resource file not found"。
 已改指向现有资源：`intent_attack.svg`（剑）、`intent_defend.svg`（盾）、`intent_buff.svg`（增益）、`relic_charm.svg`（恢复）。
 
+### 6.10 子节点的脚本也要挂，而且一个 .cs 只能挂一个类
+
+接 6.8：修好根节点的 script 之后，`AttackerDisplayUI` / `RageDisplayUI` 虽然能加载了，
+但它们的 **4 个槽位节点（`CharacterSlot0..3` / `RageSlot0..3`）还是空 Panel**，日志报
+「未找到角色槽位节点」。原因有两层：
+
+1. 槽位节点也没挂脚本 → `GetNode<Panel>(path) as CharacterSlotUI` 得到 null
+2. **`CharacterSlotUI` / `RageSlotUI` 原本和宿主类写在同一个 .cs 文件里**
+   （Godot 一个脚本文件只能对应一个类，`.tscn` 挂脚本时按文件绑定），
+   必须先拆成 `Scripts/UI/CharacterSlotUI.cs` / `Scripts/UI/RageSlotUI.cs` 再挂
+
+另外 `RageDisplayUI` 的槽位路径本身也写错了：实际是 `VBoxContainer/RageSlotsContainer/RageSlotN`，
+代码写的是 `RageSlotsContainer/RageSlotN`（少一层）。修正前 UI 显示的是 .tscn 里的静态占位文字
+「怒气值 0/100 0/100…」，修正后才显示「鼠 0/100 0%　牛…　虎…　兔…」+「总怒气 0」。
+
+**教训**：新建带子组件的 UI 场景时，**每个需要脚本的节点都要单独挂脚本，且对应独立的 .cs 文件**；
+写完用 `HasNode(path)` 验证过的路径去取，取不到时 Godot 只报「未找到」不崩，很容易被忽略。
+
+### 6.11 血条初始值需要手动推一次
+
+`HexMapUI` 只在 `OnHealthChanged` 事件里更新血条，但 `HexMapController` 比 `HexMapUI` **先**就绪，
+初始那次事件早于订阅，**不会被补发** —— 所以血条一直显示 .tscn 里的默认值 100/100，
+跟队伍总血量（125）毫无关系。修法是在订阅后手动推一次：
+
+```csharp
+_healthBar?.SetHealth(_controller.PlayerCurrentHealth, _controller.PlayerMaxHealth);
+```
+
+**教训**：跨节点的"初始状态同步"不会自动发生，凡是 UI 靠事件驱动的值，都要在订阅后手动同步一次。
+
 ---
 
 ## 7. 下一步做什么
-
-### P0 · 需要先决策
-
-1. **BOSS 触发规则** —— 终点格子目前直接 `CompleteMap()`，永远打不到 BOSS。要「到终点先打 BOSS」还是「到终点即通关」？
-   涉及：`Scripts/Battle/HexMap/HexMapController.cs` 的 `ProcessTile()`
-2. **地图血量与战斗血量打通** —— 现在是两套独立系统，战斗掉的血不会带回地图
-   涉及：`HexMapController.PlayerCurrentHealth` ↔ `BattleManager.player.CurrentHealth`
 
 ### P0 · 战斗闭环补全（`tasks.md` 高优先级）
 
@@ -405,6 +438,7 @@ ERROR: Node not found: "VBoxContainer/TeamStatsLabel"   ← 其实是空节点
 
 ### P1 · 体验与工程
 
+- **战斗奖励发放**：现在打赢 BOSS 只结算「地图完成」，没有发奖（金币/造物/刻印）——与 1.3 一起做
 - **点击远距离格子移动**：现在悬停会高亮整条路径，但点击只接受相邻格子（`HexMapUI.OnTileClicked`）
 - **存档持久化到磁盘**：所有跨场景状态目前只在内存，重启即丢
 - **造物装备界面 / 金币系统**（`tasks.md` 中优先级，2.1 / 2.2）
@@ -430,6 +464,8 @@ McpBridge="*res://.mcp/godot-runtime/bridge/mcp_bridge.gd"
 
 | 日期 | 内容 |
 |---|---|
+| 2026-10-20 | 打通 BOSS 触发（终点格子走上去即打 BOSS，打赢结算地图完成）与血量打通（队伍总血量=地图血量=战斗血量，战斗胜利写回） |
+| 2026-10-20 | 修掉战斗场景 3 个 UI 组件静默失效的根因：.tscn 根节点/槽位节点漏绑 script；CharacterSlotUI / RageSlotUI 拆分为独立脚本；RageDisplayUI 槽位路径少一层 VBoxContainer/；HexMapUI 血条初始值手动推送 |
 | 2026-10-20 | 文档与代码对齐：`tasks.md` 统计表实算校准、`GameDesign.md` 章节编号去撞号、`docs/六边形地图算法.md` 常量同步、补「边↔方向」对应表 |
 | 2026-10-20 | 打通地图→战斗→返回地图闭环；敌人波次配置化；三个管理器改 autoload；修银钥指示器节点路径与 Godot 4 窗口尺寸信号 |
 | 2026-10-20 | 仓库瘦身：打包/导出产物移出版本库（`.git` 2.4GB → 1MB，GitHub 仓库 1.1MB） |

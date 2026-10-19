@@ -424,6 +424,19 @@ namespace FishEatFish.Scenes
 		}
 
 		player.CurrentHealth = player.MaxHealth;
+
+		// 带着地图上的当前血量进战斗（血量在地图与战斗之间是同一份）
+		BattleTransitionManager transitionManager = BattleTransitionManager.Instance;
+		if (transitionManager != null && transitionManager.HasSavedMap)
+		{
+			float carriedHealth = transitionManager.GetSavedPlayerHealth();
+			if (carriedHealth > 0f)
+			{
+				player.CurrentHealth = (int)Mathf.Min(carriedHealth, player.MaxHealth);
+				GD.Print($"[BattleManager] 携带地图血量进入战斗: {player.CurrentHealth}/{player.MaxHealth}");
+			}
+		}
+
 		player.MaxHandSize = 10;
 		GD.Print("[BattleManager] Player初始化完成");
 	}
@@ -672,6 +685,10 @@ namespace FishEatFish.Scenes
 		{
 			battleEndRageHandler?.OnBattleEnd(true, player.CurrentHealth, player.MaxHealth);
 			ProcessPostBattleRage(true);
+
+			// 战斗胜利：把剩余血量写回地图存档（战败不写回，战斗会重开，血量保持战前值）
+			BattleTransitionManager.Instance?.UpdateSavedPlayerHealth(player.CurrentHealth);
+
 			AddMessage("你赢得了战斗!", LogType.System);
 			endTurnButton.Text = "下一关";
 			endTurnButton.Disabled = false;

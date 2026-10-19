@@ -4,6 +4,8 @@ using System.Linq;
 using Godot;
 using FishEatFish.UI.HexMap;
 using FishEatFish.Shop;
+using FishEatFish.Scenes;
+using FishEatFish.Battle.CharacterSystem;
 
 namespace FishEatFish.Battle.HexMap
 {
@@ -83,6 +85,9 @@ namespace FishEatFish.Battle.HexMap
 
             _eventManager.OnBattleTriggered += OnBattleTriggered;
 
+            // 地图血量上限 = 队伍总血量（与战斗内一致，血量在地图与战斗之间是同一份）
+            SyncMaxHealthFromTeam();
+
             if (_battleTransitionManager != null && _battleTransitionManager.HasSavedMap)
             {
                 RestoreMapState();
@@ -91,6 +96,36 @@ namespace FishEatFish.Battle.HexMap
             {
                 GenerateMap();
             }
+        }
+
+        /// <summary>
+        /// 按已选队伍的总血量设置地图血量上限
+        /// </summary>
+        private void SyncMaxHealthFromTeam()
+        {
+            if (GlobalData.SelectedCharacters == null || GlobalData.SelectedCharacters.Length != 4)
+            {
+                return;
+            }
+
+            int total = 0;
+            foreach (CharacterDefinition character in GlobalData.SelectedCharacters)
+            {
+                if (character != null)
+                {
+                    total += character.BaseHealth;
+                }
+            }
+
+            if (total <= 0)
+            {
+                return;
+            }
+
+            _playerMaxHealth = total;
+            // 新地图从满血开始；恢复存档时随后会被存档值覆盖
+            _playerCurrentHealth = total;
+            GD.Print($"[HexMapController] 血量上限按队伍设为 {_playerMaxHealth}（当前 {_playerCurrentHealth}）");
         }
 
         /// <summary>
@@ -109,16 +144,27 @@ namespace FishEatFish.Battle.HexMap
             _currentMap = savedMap;
             _currentPosition = _battleTransitionManager.GetSavedPlayerPosition();
             _playerLevel = _battleTransitionManager.GetSavedPlayerLevel();
-            _playerMaxHealth = _battleTransitionManager.GetSavedPlayerMaxHealth();
-            _playerCurrentHealth = _battleTransitionManager.GetSavedPlayerHealth();
             _currentState = HexMapState.Idle;
             _hasSkipped = false;
             _isRestored = true;
+
+            // 用 SetPlayerHealth 走一遍，才能顺带把血条 UI 推上去
+            SetPlayerHealth(
+                _battleTransitionManager.GetSavedPlayerMaxHealth(),
+                _battleTransitionManager.GetSavedPlayerHealth());
 
             int savedBlackMark = _battleTransitionManager.GetSavedBlackMarkCount();
             BlackMarkShopManager.Instance?.SetBlackMarkCount(savedBlackMark);
 
             GD.Print($"[HexMapController] 恢复地图状态: 位置={_currentPosition}, 等级={_playerLevel}, 生命={_playerCurrentHealth}/{_playerMaxHealth}, 黑印={savedBlackMark}");
+
+            // 打赢 BOSS 战回到地图 → 结算地图完成
+            if (_battleTransitionManager.PendingMapCompletion)
+            {
+                _battleTransitionManager.ClearPendingMapCompletion();
+                GD.Print("[HexMapController] BOSS 已击败，结算地图完成");
+                CompleteMap();
+            }
         }
 
         private void OnBattleTriggered(HexEventType battleType, string enemyConfig)
@@ -305,12 +351,15 @@ namespace FishEatFish.Battle.HexMap
 
         private void ProcessTile(HexTile tile)
         {
-            if (tile.IsStart || tile.IsEnd && tile.EventType == HexEventType.BattleBoss)
+            if (tile.IsStart)
             {
-                if (tile.IsEnd && tile.EventType == HexEventType.BattleBoss)
-                {
-                    CompleteMap();
-                }
+                return;
+            }
+
+            // 终点格子是 BOSS：先进 BOSS 战，打赢了才算这张地图完成
+            if (tile.IsEnd && tile.EventType == HexEventType.BattleBoss)
+            {
+                TriggerTileEvent(tile);
                 return;
             }
 

@@ -30,7 +30,29 @@
       "target": "hexmap",
       "playerHealthRatio": 0.5
     },
-    "elite_battle": {
+    "step_on_boss": {
+      "desc": "选人完成 + 直接站上 BOSS 格子（立刻触发 BOSS 战，用于验证触发链路）",
+      "team": ["rat", "ox", "tiger", "rabbit"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "hexmap",
+      "startOn": "boss"
+    },    "near_boss": {
+      "desc": "选人完成 + 站在 BOSS 格子旁边（走上去即触发 BOSS 战）",
+      "team": ["rat", "ox", "tiger", "rabbit"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "hexmap",
+      "startAt": "boss"
+    },
+    "boss_battle": {
+      "desc": "选人完成 → 直接打 BOSS 战（敌人按 boss_wave）",
+      "team": ["rat", "ox", "tiger", "rabbit"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle",
+      "enemyWave": "boss_wave"
+    },    "elite_battle": {
       "desc": "选人完成 + 直接进战斗，敌人按 elite_wave",
       "team": ["rat", "ox", "tiger", "rabbit"],
       "keyOrder": "silver_slash",

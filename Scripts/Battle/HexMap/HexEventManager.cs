@@ -83,13 +83,26 @@ namespace FishEatFish.Battle.HexMap
 
         private void ProcessBattle(HexTile tile, HexMapController controller, bool isElite)
         {
-            var battleType = isElite ? "精英战斗" : "普通战斗";
+            // 必须用格子自身的类型：BOSS 格子虽然也走 isElite=true 分支，但不能被降级成精英战斗
+            HexEventType eventType = tile.EventType;
+
+            string battleType = eventType switch
+            {
+                HexEventType.BattleBoss => "BOSS 战",
+                HexEventType.BattleElite => "精英战斗",
+                _ => "普通战斗"
+            };
             GD.Print($"[HexEventManager] {battleType}: {tile.Coord}, 配置: {tile.EnemyConfig}");
 
-            HexEventType eventType = isElite ? HexEventType.BattleElite : HexEventType.BattleNormal;
-            string enemyConfig = tile.EnemyConfig ?? (isElite ? "elite_wave" : "normal_wave");
+            string fallbackConfig = eventType switch
+            {
+                HexEventType.BattleBoss => "boss_wave",
+                HexEventType.BattleElite => "elite_wave",
+                _ => "normal_wave"
+            };
+            string enemyConfig = tile.EnemyConfig ?? fallbackConfig;
 
-            OnEventTriggered?.Invoke(isElite ? "elite_battle" : "normal_battle", tile.Coord.ToString());
+            OnEventTriggered?.Invoke(eventType.ToString().ToLower() + "_battle", tile.Coord.ToString());
             OnBattleTriggered?.Invoke(eventType, enemyConfig);
 
             GD.Print($"[HexEventManager] 触发战斗场景切换: type={eventType}, config={enemyConfig}");

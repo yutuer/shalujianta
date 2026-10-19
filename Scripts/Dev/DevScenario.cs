@@ -22,6 +22,8 @@ namespace FishEatFish.Dev
 		public float PlayerHealthRatio { get; set; } = 1f;
 		/// <summary>进地图后落点对应的格子事件类型（shop/elite/boss/...），缺省不干预</summary>
 		public string StartAt { get; set; } = "";
+		/// <summary>直接站到指定类型格子上（会立即触发该格子的事件），缺省不干预</summary>
+		public string StartOn { get; set; } = "";
 		/// <summary>直接进战斗时强制使用的敌人波次</summary>
 		public string EnemyWave { get; set; } = "";
 	}
@@ -99,6 +101,7 @@ namespace FishEatFish.Dev
 					Target = d.ContainsKey("target") ? d["target"].ToString() : "hexmap",
 					PlayerHealthRatio = d.ContainsKey("playerHealthRatio") ? (float)d["playerHealthRatio"].AsDouble() : 1f,
 					StartAt = d.ContainsKey("startAt") ? d["startAt"].ToString() : "",
+					StartOn = d.ContainsKey("startOn") ? d["startOn"].ToString() : "",
 					EnemyWave = d.ContainsKey("enemyWave") ? d["enemyWave"].ToString() : ""
 				};
 
@@ -248,6 +251,22 @@ namespace FishEatFish.Dev
 				}
 			}
 
+			// 直接站到指定类型的格子上（会立刻触发该格子的事件，比如 BOSS 战）
+			if (!string.IsNullOrEmpty(preset.StartOn))
+			{
+				HexCoord? onTile = FindTileOf(controller, preset.StartOn);
+				if (onTile.HasValue)
+				{
+					controller.QuickMoveTo(onTile.Value);
+					GD.Print($"[DevScenario] 站上 {preset.StartOn} 格子: {onTile.Value}");
+					changed = true;
+				}
+				else
+				{
+					GD.PrintErr($"[DevScenario] 地图上找不到 {preset.StartOn} 格子");
+				}
+			}
+
 			if (!changed) GD.Print("[DevScenario] 无需调整场景内状态");
 			QueueFree();
 		}
@@ -266,29 +285,35 @@ namespace FishEatFish.Dev
 		/// <summary>找指定事件类型格子的一个可站立邻格</summary>
 		private static HexCoord? FindAdjacentTileOf(HexMapController controller, string eventName)
 		{
+			HexCoord? tile = FindTileOf(controller, eventName);
+			if (!tile.HasValue) return null;
+
+			HexMap map = controller.CurrentMap;
+			foreach (HexCoord neighbor in tile.Value.GetNeighbors())
+			{
+				HexTile n = map.GetTile(neighbor);
+				if (n != null && n.CanEnter && n.EventType == HexEventType.Empty)
+				{
+					return neighbor;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>找指定事件类型的一个格子坐标</summary>
+		private static HexCoord? FindTileOf(HexMapController controller, string eventName)
+		{
 			HexEventType? target = ParseEventType(eventName);
 			if (!target.HasValue) return null;
 
 			HexMap map = controller.CurrentMap;
 			if (map == null) return null;
 
-			HexTile targetTile = null;
 			foreach (HexTile tile in map.GetAllTiles())
 			{
 				if (tile.EventType == target.Value && tile.CanEnter)
 				{
-					targetTile = tile;
-					break;
-				}
-			}
-			if (targetTile == null) return null;
-
-			foreach (HexCoord neighbor in targetTile.Coord.GetNeighbors())
-			{
-				HexTile n = map.GetTile(neighbor);
-				if (n != null && n.CanEnter && n.EventType == HexEventType.Empty)
-				{
-					return neighbor;
+					return tile.Coord;
 				}
 			}
 			return null;

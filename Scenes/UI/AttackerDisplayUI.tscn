@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://attacker_display_ui"]
+[gd_scene load_steps=3 format=3 uid="uid://attacker_display_ui"]
 
 [ext_resource type="Script" path="res://Scripts/UI/AttackerDisplayUI.cs" id="1"]
+[ext_resource type="Script" path="res://Scripts/UI/CharacterSlotUI.cs" id="2"]
 
 [node name="AttackerDisplayUI" type="Control"]
 custom_minimum_size = Vector2(600, 200)
@@ -36,6 +37,7 @@ alignment = 1
 custom_minimum_size = Vector2(100, 80)
 layout_mode = 2
 
+script = ExtResource("2")
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CharacterContainer/CharacterSlot0"]
 layout_mode = 2
 alignment = 1
@@ -60,6 +62,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(100, 80)
 layout_mode = 2
 
+script = ExtResource("2")
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CharacterContainer/CharacterSlot1"]
 layout_mode = 2
 alignment = 1
@@ -84,6 +87,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(100, 80)
 layout_mode = 2
 
+script = ExtResource("2")
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CharacterContainer/CharacterSlot2"]
 layout_mode = 2
 alignment = 1
@@ -108,6 +112,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(100, 80)
 layout_mode = 2
 
+script = ExtResource("2")
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CharacterContainer/CharacterSlot3"]
 layout_mode = 2
 alignment = 1

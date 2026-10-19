@@ -61,6 +61,8 @@ namespace FishEatFish.UI.HexMap
 
             if (_controller != null)
             {
+                // 控制器比本 UI 先就绪，初始血量事件不会补发，这里手动推一次
+                _healthBar?.SetHealth(_controller.PlayerCurrentHealth, _controller.PlayerMaxHealth);
                 RefreshMap();
             }
         }
@@ -626,6 +628,13 @@ namespace FishEatFish.UI.HexMap
 
         private void OnTileTriggered(HexTile tile)
         {
+            // 触发战斗/传送等会切场景，此时本 UI 可能已脱离场景树，不能再操作节点
+            if (!IsInsideTree())
+            {
+                GD.Print("[HexMapUI] OnTileTriggered: UI 已脱离场景树，跳过处理");
+                return;
+            }
+
             GD.Print($"[HexMapUI] OnTileTriggered: tile={tile.Coord}, EventType={tile.EventType}");
             if (_tileViews.ContainsKey(tile.Coord))
             {
@@ -650,6 +659,8 @@ namespace FishEatFish.UI.HexMap
 
         private void ShowEventNotification(HexTile tile)
         {
+            if (!IsInsideTree()) return;
+
             var notification = new Label();
             notification.Text = tile.DisplayName ?? GetEventDisplayName(tile.EventType);
             notification.HorizontalAlignment = HorizontalAlignment.Center;
@@ -796,10 +807,17 @@ namespace FishEatFish.UI.HexMap
 
         private int GetCurrentDeathResistance()
         {
-            var attacker = GetNodeOrNull<Attacker>("/root/BattleManager/Attacker");
-            if (attacker != null && attacker.Characters != null && attacker.Characters.Length > 0 && attacker.Characters[0] != null)
+            // 地图场景里没有 BattleManager（且原来的绝对路径 /root/BattleManager/Attacker 也是错的），
+            // 直接用已选角色的死亡抵抗
+            if (GlobalData.SelectedCharacters != null)
             {
-                return attacker.Characters[0].BaseDeathResistance;
+                foreach (FishEatFish.Battle.CharacterSystem.CharacterDefinition character in GlobalData.SelectedCharacters)
+                {
+                    if (character != null)
+                    {
+                        return character.BaseDeathResistance;
+                    }
+                }
             }
             return 10;
         }
