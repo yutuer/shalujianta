@@ -2,3 +2,17 @@
 .godot/
 /android/
 .mcp/
+
+# 打包 / 导出产物（不入库）
+# - dabao/ 与 data_FishEatFish_windows_x86_64/ 是 Windows 导出的运行时目录
+# - qianye.* 是导出后的可执行文件与数据包
+# - *.tpz 是 Godot 导出模板包（单份 1GB+，只保留在本地）
+# - *.rar 是手工打包的发布归档
+/dabao/
+/data_FishEatFish_windows_x86_64/
+/export/
+/qianye.exe
+/qianye.console.exe
+/qianye.pck
+*.tpz
+*.rar
