@@ -13,6 +13,9 @@ namespace FishEatFish.Battle.HexMap
 
         private readonly Random _random;
 
+        /// <summary>最近一次生成用掉的重试次数（0 = 一次就成）</summary>
+        public int LastRetryCount { get; private set; }
+
         public HexMapGenerator(int? seed = null)
         {
             _random = seed.HasValue ? new Random(seed.Value) : new Random();
@@ -20,11 +23,102 @@ namespace FishEatFish.Battle.HexMap
 
         public HexMap Generate(int radius, int playerLevel)
         {
-            return GenerateInternal(radius, playerLevel, 0);
+            return GenerateInternal(radius, playerLevel, 0, null);
         }
 
-        private HexMap GenerateInternal(int radius, int playerLevel, int attempt)
+        /// <summary>
+        /// 按配额生成地图（不经过 spec，便于内部调用与测试）。
+       /// </summary>
+        public HexMap GenerateWithQuota(int radius, MapQuota quota)
         {
+            return GenerateInternal(radius, 1, 0, quota);
+        }
+
+        /// <summary>
+        /// 按**关卡规格**生成地图（D14）—— 同一份规格 + 同一个种子 → 逐格相同的地图。
+        /// </summary>
+        /// <param name="spec">关卡规格（配额 + 种子）</param>
+        /// <exception cref="System.InvalidOperationException">规格不可满足时明确报错</exception>
+        public static HexMap GenerateFromSpec(MapSpec spec)
+        {
+            if (spec == null)
+            {
+                throw new System.ArgumentNullException(nameof(spec));
+            }
+
+            int radius = RadiusFromTileCount(spec.TotalTiles);
+
+            // 可满足性检查：放不下就明确报错，不静默产出残缺地图
+            // （传送门每对占 2 个格子：入口 + 出口）
+            int available = Mathf.Max(0, spec.TotalTiles - 2 - spec.Quota.TeleportTileCount);
+            spec.Validate(available);
+
+            var generator = new HexMapGenerator(spec.Seed);
+            HexMap map = generator.GenerateInternal(radius, 1, 0, spec.Quota);
+
+            // 配额核对：实际数量与规格逐项比对
+            ReportQuotaMismatch(spec, map);
+            GD.Print($"[HexMapGenerator] 按规格生成: {spec.MapId}（seed={spec.Seed}，重试 {generator.LastRetryCount} 次）");
+            return map;
+        }
+
+        /// <summary>由总格数反推网格半径（网格是 (2r+1) × (2r+1)）</summary>
+        public static int RadiusFromTileCount(int totalTiles)
+        {
+            int side = Mathf.RoundToInt(Mathf.Sqrt(Mathf.Max(1, totalTiles)));
+            if (side % 2 == 0) side += 1;   // 必须是奇数
+            return Mathf.Max(1, (side - 1) / 2);
+        }
+
+        /// <summary>生成后核对实际事件数量与规格是否一致（不一致只提示，不阻断）</summary>
+        private static void ReportQuotaMismatch(MapSpec spec, HexMap map)
+        {
+            Dictionary<HexEventType, int> counts = MapSpec.CountEvents(map);
+
+            void Compare(string label, HexEventType type, int expected)
+            {
+                int actual;
+                counts.TryGetValue(type, out actual);
+                if (actual != expected)
+                {
+                    GD.Print($"[HexMapGenerator] 配额偏差: {label} 期望 {expected}，实际 {actual}");
+                }
+            }
+
+            Compare("普通战斗", HexEventType.BattleNormal, spec.Quota.Battle);
+            Compare("精英战斗", HexEventType.BattleElite, spec.Quota.Elite);
+            Compare("商店", HexEventType.Shop, spec.Quota.Shop);
+            Compare("治疗", HexEventType.Heal, spec.Quota.Heal);
+            Compare("黑印", HexEventType.GainBlackMark, spec.Quota.BlackMark);
+            Compare("沼泽", HexEventType.Swamp, spec.Quota.Swamp);
+            Compare("洞", HexEventType.Hole, spec.Quota.Hole);
+            Compare("探照灯", HexEventType.Searchlight, spec.Quota.Searchlight);
+            Compare("单向门(格)", HexEventType.OneDirectionTele, spec.Quota.TeleportOneWay * 2);
+            Compare("双向门(格)", HexEventType.TwoWayTeleport, spec.Quota.TeleportTwoWay * 2);
+        }
+
+        /// <summary>把难度配置转成配额（老入口用）</summary>
+        private static MapQuota ToQuota(DifficultyConfig config)
+        {
+            return new MapQuota
+            {
+                Battle = config.NormalBattleCount,
+                Elite = config.EliteBattleCount,
+                Shop = config.ShopCount,
+                Heal = config.HealCount,
+                BlackMark = config.BlackMarkCount,
+                Swamp = config.SwampCount,
+                Hole = config.HoleCount,
+                Searchlight = config.SearchlightCount,
+                TeleportOneWay = config.OneDirectionTeleportCount,
+                TeleportTwoWay = config.TwoWayTeleportCount
+            };
+        }
+
+        private HexMap GenerateInternal(int radius, int playerLevel, int attempt, MapQuota quotaOverride)
+        {
+            LastRetryCount = attempt;
+
             var tiles = GenerateHexGrid(radius);
 
             var startCoord = SelectRandomEdgeTile(tiles, radius);
@@ -41,34 +135,35 @@ namespace FishEatFish.Battle.HexMap
             var criticalPath = FindShortestPath(tiles, startCoord, endCoord);
             var criticalSet = new HashSet<HexCoord>(criticalPath);
 
-            var difficultyConfig = GetDifficultyConfig(playerLevel);
+            // 配额来源：规格优先，没有规格才按难度配置
+            MapQuota quota = quotaOverride ?? ToQuota(GetDifficultyConfig(playerLevel));
 
-            PlaceHoleTiles(tiles, criticalSet, difficultyConfig.HoleCount);
+            PlaceHoleTiles(tiles, criticalSet, quota.Hole);
 
-            PlaceSearchlightTiles(tiles, criticalSet, difficultyConfig.SearchlightCount);
+            PlaceSearchlightTiles(tiles, criticalSet, quota.Searchlight);
 
-            PlaceSwampTiles(tiles, criticalSet, difficultyConfig.SwampCount);
+            PlaceSwampTiles(tiles, criticalSet, quota.Swamp);
 
-            PlaceTwoWayTeleportTiles(tiles, criticalSet, difficultyConfig.TwoWayTeleportCount);
+            PlaceTwoWayTeleportTiles(tiles, criticalSet, quota.TeleportTwoWay);
 
-            PlaceOneDirectionTeleportTiles(tiles, criticalSet, difficultyConfig.OneDirectionTeleportCount);
+            PlaceOneDirectionTeleportTiles(tiles, criticalSet, quota.TeleportOneWay);
 
             var nonCriticalEmptyTiles = tiles.Keys
                 .Where(c => !criticalSet.Contains(c) && tiles[c].EventType == HexEventType.Empty)
                 .ToList();
 
-            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.BattleNormal, difficultyConfig.NormalBattleCount);
-            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.BattleElite, difficultyConfig.EliteBattleCount);
-            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.Heal, difficultyConfig.HealCount);
-            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.GainBlackMark, difficultyConfig.BlackMarkCount);
-            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.Shop, difficultyConfig.ShopCount);
+            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.BattleNormal, quota.Battle);
+            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.BattleElite, quota.Elite);
+            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.Heal, quota.Heal);
+            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.GainBlackMark, quota.BlackMark);
+            PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.Shop, quota.Shop);
 
             if (!VerifyNoAdjacentSameEvents(tiles))
             {
                 GD.PrintErr("[HexMapGenerator] 验证失败: 检测到相同事件出现在相邻格子，重新生成地图...");
                 if (attempt < MaxGenerateAttempts)
                 {
-                    return GenerateInternal(radius, playerLevel, attempt + 1);
+                    return GenerateInternal(radius, playerLevel, attempt + 1, quotaOverride);
                 }
                 return new HexMap(tiles, startCoord, endCoord, playerLevel);
             }
@@ -80,7 +175,7 @@ namespace FishEatFish.Battle.HexMap
                 GD.PrintErr("[HexMapGenerator] 验证失败: 移除所有洞穴后无法到达boss，重新生成地图...");
                 if (attempt < MaxGenerateAttempts)
                 {
-                    return GenerateInternal(radius, playerLevel, attempt + 1);
+                    return GenerateInternal(radius, playerLevel, attempt + 1, quotaOverride);
                 }
                 return new HexMap(tiles, startCoord, endCoord, playerLevel);
             }
@@ -95,7 +190,7 @@ namespace FishEatFish.Battle.HexMap
                 GD.PrintErr(report.ToString());
                 if (attempt < MaxGenerateAttempts)
                 {
-                    return GenerateInternal(radius, playerLevel, attempt + 1);
+                    return GenerateInternal(radius, playerLevel, attempt + 1, quotaOverride);
                 }
             }
             else if (!report.IsValid)

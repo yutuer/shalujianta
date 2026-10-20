@@ -1,0 +1,60 @@
+{
+  "_comment": "关卡规格（D14）：每关一份配额 + 种子。同一份规格 + 同一个种子 → 逐格相同的地图。",
+  "_usage": "「格子数」= 事件格总数（不含起点/终点）；单向门/双向门各占 1 个格子；洞 1~3 个。",
+  "specs": [
+    {
+      "mapId": "map_01",
+      "seed": 20261020,
+      "clusters": 1,
+      "totalTiles": 121,
+      "quota": {
+        "battle": 2,
+        "elite": 1,
+        "shop": 1,
+        "heal": 1,
+        "blackMark": 2,
+        "swamp": 1,
+        "hole": 2,
+        "searchlight": 1,
+        "teleportOneWay": 1,
+        "teleportTwoWay": 1
+      }
+    },
+    {
+      "mapId": "map_02",
+      "seed": 20261021,
+      "clusters": 1,
+      "totalTiles": 121,
+      "quota": {
+        "battle": 3,
+        "elite": 2,
+        "shop": 1,
+        "heal": 1,
+        "blackMark": 3,
+        "swamp": 2,
+        "hole": 3,
+        "searchlight": 1,
+        "teleportOneWay": 2,
+        "teleportTwoWay": 2
+      }
+    },
+    {
+      "mapId": "map_03",
+      "seed": 20261022,
+      "clusters": 1,
+      "totalTiles": 121,
+      "quota": {
+        "battle": 4,
+        "elite": 2,
+        "shop": 2,
+        "heal": 2,
+        "blackMark": 3,
+        "swamp": 2,
+        "hole": 3,
+        "searchlight": 2,
+        "teleportOneWay": 2,
+        "teleportTwoWay": 2
+      }
+    }
+  ]
+}

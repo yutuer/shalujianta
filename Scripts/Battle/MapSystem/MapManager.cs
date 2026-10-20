@@ -17,6 +17,13 @@ public partial class MapManager : Node
 
     private List<MapDefinition> _availableMaps = new List<MapDefinition>();
 
+    /// <summary>
+    /// 地图缓存（按 mapId）—— 关卡是**固定内容**：同一关卡重复进入要拿到同一张图。
+    /// 放在 autoload 里，所以退出关卡再回来、战斗往返都复用同一张。
+    /// </summary>
+    private readonly Dictionary<string, FishEatFish.Battle.HexMap.HexMap> _mapCache
+        = new Dictionary<string, FishEatFish.Battle.HexMap.HexMap>();
+
     /// <summary>上次完成这张图的日期（yyyy-MM-dd），空串 = 从未完成过</summary>
     private string _lastCompletionDate = "";
 
@@ -197,5 +204,32 @@ public partial class MapManager : Node
         _isMapCompleted = false;
         _silverKeyValue = 0;
         _characterRageValues.Clear();
+    }
+
+    // ===== 地图缓存（D14：关卡是固定内容，重复进入拿同一张图）=====
+
+    /// <summary>取缓存的地图；没有则返回 null</summary>
+    public FishEatFish.Battle.HexMap.HexMap GetCachedMap(string mapId)
+    {
+        if (string.IsNullOrEmpty(mapId)) return null;
+
+        FishEatFish.Battle.HexMap.HexMap map;
+        return _mapCache.TryGetValue(mapId, out map) ? map : null;
+    }
+
+    /// <summary>把地图放进缓存</summary>
+    public void CacheMap(string mapId, FishEatFish.Battle.HexMap.HexMap map)
+    {
+        if (string.IsNullOrEmpty(mapId) || map == null) return;
+
+        _mapCache[mapId] = map;
+        GD.Print($"[MapManager] 缓存地图: {mapId}（缓存数 {_mapCache.Count}）");
+    }
+
+    /// <summary>清空地图缓存</summary>
+    public void ClearMapCache()
+    {
+        _mapCache.Clear();
+        GD.Print("[MapManager] 地图缓存已清空");
     }
 }

@@ -188,7 +188,7 @@ namespace FishEatFish.Battle.HexMap
 
         public void GenerateMap()
         {
-            _currentMap = _generator.Generate(_mapRadius, _playerLevel);
+            _currentMap = GenerateMapBySpec();
             _currentPosition = _currentMap.Start;
             _currentState = HexMapState.Idle;
             _hasSkipped = false;
@@ -198,6 +198,50 @@ namespace FishEatFish.Battle.HexMap
             _battleTransitionManager?.SaveRevealedTiles(null, CurrentMapId);
 
             GD.Print($"[HexMapController] 地图已生成，起点: {_currentPosition}, 终点: {_currentMap.End}");
+        }
+
+        /// <summary>
+        /// 按关卡规格生成地图（D14）：
+        ///   1. 先查缓存 —— 同一关卡重复进入拿**同一张图**（关卡是固定内容）
+        ///   2. 没有缓存才按规格 + 种子生成（确定性：同规格同种子 → 逐格相同）
+        ///   3. 规格缺失或不可满足 → 回退到旧的难度配置生成
+        /// </summary>
+        private HexMap GenerateMapBySpec()
+        {
+            string mapId = CurrentMapId;
+            MapManager mapManager = MapManager.Instance;
+
+            // 1. 缓存复用
+            if (mapManager != null && !string.IsNullOrEmpty(mapId))
+            {
+                HexMap cached = mapManager.GetCachedMap(mapId);
+                if (cached != null)
+                {
+                    GD.Print($"[HexMapController] 复用缓存地图: {mapId}");
+                    return cached;
+                }
+            }
+
+            // 2. 按规格生成
+            MapSpec spec = string.IsNullOrEmpty(mapId) ? null : MapSpec.Load(mapId);
+            if (spec != null)
+            {
+                try
+                {
+                    HexMap map = HexMapGenerator.GenerateFromSpec(spec);
+                    mapManager?.CacheMap(mapId, map);
+                    return map;
+                }
+                catch (System.InvalidOperationException ex)
+                {
+                    GD.PrintErr($"[HexMapController] 关卡规格不可满足，回退到默认生成: {ex.Message}");
+                }
+            }
+
+            // 3. 回退：旧的难度配置生成
+            HexMap fallback = _generator.Generate(_mapRadius, _playerLevel);
+            mapManager?.CacheMap(mapId, fallback);
+            return fallback;
         }
 
         public void SetPlayerLevel(int level)
