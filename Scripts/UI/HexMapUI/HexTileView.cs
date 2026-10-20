@@ -33,6 +33,8 @@ namespace FishEatFish.UI.HexMap
         private Label _iconLabel;
         private Label _debugLabel;
         private TextureRect _iconRect;
+        private Line2D _highlightLine;
+        private bool _isFogged;
 
         private HexTile _tile;
         public HexTile Tile => _tile;
@@ -55,6 +57,7 @@ namespace FishEatFish.UI.HexMap
             _iconLabel = GetNode<Label>("IconLabel");
             _debugLabel = GetNode<Label>("DebugLabel");
             _iconRect = GetNode<TextureRect>("IconRect");
+            _highlightLine = GetNodeOrNull<Line2D>("HighlightLine");
 
             UpdateHexShape();
 
@@ -110,6 +113,31 @@ namespace FishEatFish.UI.HexMap
             UpdateVisuals();
         }
 
+        /// <summary>当前是否处于「可交互高亮」状态（玩家相邻的一环格子）</summary>
+        public bool IsHighlighted => _highlightLine != null && _highlightLine.Visible;
+
+        /// <summary>当前是否处于迷雾（未照亮）状态</summary>
+        public bool IsFogged => _isFogged;
+
+        /// <summary>
+        /// 设置「可交互高亮」——当前玩家相邻的一环格子会亮起青色边框（参考图 R-17）
+        /// </summary>
+        public void SetHighlight(bool highlight)
+        {
+        	if (_highlightLine != null)
+        	{
+        		_highlightLine.Visible = highlight;
+        	}
+        }
+
+        /// <summary>
+        /// 设置「迷雾」——未照亮的格子显示为黑色，图标与坐标隐藏
+        /// </summary>
+        public void SetFogged(bool fogged)
+        {
+        	_isFogged = fogged;
+        	UpdateVisuals();
+        }
         public void SetClickable(bool clickable)
         {
             _isClickable = clickable;
@@ -118,6 +146,19 @@ namespace FishEatFish.UI.HexMap
         private void UpdateVisuals()
         {
             if (_tile == null || _hexShape == null) return;
+
+            // 迷雾：未照亮的格子全黑，图标与坐标都不显示
+            if (_isFogged)
+            {
+                _hexShape.Color = new Color(0.02f, 0.02f, 0.04f, 1f);
+                if (_iconRect != null) _iconRect.Visible = false;
+                if (_iconLabel != null) _iconLabel.Visible = false;
+                if (_debugLabel != null) _debugLabel.Visible = false;
+                if (_highlightLine != null) _highlightLine.Visible = false;
+                return;
+            }
+
+            if (_debugLabel != null) _debugLabel.Visible = true;
 
             Color tileColor;
             string icon = "";

@@ -378,6 +378,7 @@ namespace FishEatFish.UI.HexMap
             if (_controller != null)
             {
                 _controller.OnPlayerMoved += OnPlayerMoved;
+            _controller.OnRevealedChanged += UpdateFogAndHighlight;
                 _controller.OnPlayerTeleported += OnPlayerTeleported;
                 _controller.OnTileTriggered += OnTileTriggered;
                 _controller.OnTeleportTriggered += OnTeleportTriggered;
@@ -404,6 +405,7 @@ namespace FishEatFish.UI.HexMap
             if (HexEventManager.Instance != null)
             {
                 HexEventManager.Instance.OnBlackMarkGained += OnBlackMarkGained;
+                HexEventManager.Instance.OnEventTriggered += OnMapEventTriggered;
             }
         }
 
@@ -417,6 +419,10 @@ namespace FishEatFish.UI.HexMap
             {
                 CreateTileView(tile);
             }
+
+            // 初始照亮玩家所在位置周围一圈（否则开局全黑）
+            _controller.RevealTiles(_controller.CurrentPosition, 1);
+            UpdateFogAndHighlight();
 
             if (_playerIcon != null)
             {
@@ -474,7 +480,36 @@ namespace FishEatFish.UI.HexMap
             _tileViewsContainer.AddChild(tileView);
             tileView.SetTile(tile);
 
+            // 战争迷雾：未照亮的格子显示为黑色
+            tileView.SetFogged(!(_controller?.IsRevealed(tile.Coord) ?? false));
+
             _tileViews[tile.Coord] = tileView;
+        }
+
+        /// <summary>
+        /// 刷新迷雾与「可交互高亮」
+        ///   - 迷雾：只有已照亮的格子可见
+        ///   - 高亮：玩家相邻的一环格子亮青色边框（对照参考图 R-17）
+        /// </summary>
+        private void UpdateFogAndHighlight()
+        {
+            if (_controller == null) return;
+
+            HashSet<HexCoord> neighbors = new HashSet<HexCoord>();
+            foreach (HexCoord n in _controller.CurrentPosition.GetNeighbors())
+            {
+                neighbors.Add(n);
+            }
+
+            foreach (var pair in _tileViews)
+            {
+                HexTileView view = pair.Value;
+                HexTile tile = view.Tile;
+                if (tile == null) continue;
+
+                view.SetFogged(!_controller.IsRevealed(tile.Coord));
+                view.SetHighlight(neighbors.Contains(tile.Coord));
+            }
         }
 
         private Vector2 HexToWorld(HexCoord coord)
@@ -552,12 +587,56 @@ namespace FishEatFish.UI.HexMap
             }
         }
 
+		    /// <summary>
+		    /// 踩到探照灯：弹出事件面板（复用 D7 的通用 EventDialog），选「打开开关」后驱散半径 3 格的迷雾
+		    /// </summary>
+		    /// <summary>
+		    /// 地图事件触发（来自 HexEventManager）。
+		    /// 注意：不能用 controller 的 OnTileTriggered —— 那里 tile.Trigger() 已经把一次性事件的
+		    /// EventType 清成 Empty 了，探照灯就认不出来。
+		    /// </summary>
+		    private void OnMapEventTriggered(string eventName, string coord)
+		    {
+		        GD.Print($"[HexMapUI] OnMapEventTriggered: {eventName} @ {coord}");
+
+		        if (eventName == "searchlight")
+		        {
+		            ShowSearchlightEvent();
+		        }
+		    }
+		    private void ShowSearchlightEvent()
+		    {
+		        if (_eventDialog == null)
+		        {
+		            GD.PrintErr("[HexMapUI] ShowSearchlightEvent: 事件弹窗不存在");
+		            return;
+		        }
+
+		        _eventDialog.OnOptionSelected -= OnSearchlightOptionSelected;
+		        _eventDialog.OnOptionSelected += OnSearchlightOptionSelected;
+		        _eventDialog.ShowEvent(FishEatFish.Battle.MapEventData.Load("searchlight"));
+		        SetInteractionBlocked(true);
+		    }
+
+		    private void OnSearchlightOptionSelected(int index)
+		    {
+		        GD.Print($"[HexMapUI] OnSearchlightOptionSelected: index={index}");
+		        SetInteractionBlocked(false);
+
+		        // 探照灯打开开关：驱散半径 3 格的迷雾（主人确认：3 格）
+		        _controller?.RevealTiles(_controller.CurrentPosition, 3);
+		        UpdateFogAndHighlight();
+		    }
         private void OnPlayerMoved(HexCoord newPos)
         {
             if (_isInteractionBlocked) return;
             if (_playerIcon == null) return;
 
             CenterOnPlayer(newPos, true);
+
+            // 走到哪照亮哪（周围一圈）+ 刷新迷雾与高亮
+            _controller?.RevealTiles(newPos, 1);
+            UpdateFogAndHighlight();
 
             _pendingMoveTarget = newPos;
 
@@ -668,13 +747,14 @@ namespace FishEatFish.UI.HexMap
             var notification = new Label();
             notification.Text = tile.DisplayName ?? GetEventDisplayName(tile.EventType);
             notification.HorizontalAlignment = HorizontalAlignment.Center;
-            notification.Position = new Vector2(GetViewportRect().Size.X / 2 - 100, 100);
+            // y=140：让开顶部公共 HUD（CommonHUD 高 120），否则文字会压在 HUD 上
+            notification.Position = new Vector2(GetViewportRect().Size.X / 2 - 100, 140);
             notification.AddThemeFontSizeOverride("font_size", 20);
             notification.Modulate = Colors.White;
             AddChild(notification);
 
             var tween = CreateTween();
-            tween.TweenProperty(notification, "position:y", 80, 1.0f);
+            tween.TweenProperty(notification, "position:y", 120, 1.0f);
             tween.TweenProperty(notification, "modulate:a", 0f, 0.5f);
             tween.TweenCallback(Callable.From(() => notification.QueueFree()));
         }

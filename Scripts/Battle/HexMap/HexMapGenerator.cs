@@ -36,6 +36,8 @@ namespace FishEatFish.Battle.HexMap
 
             PlaceHoleTiles(tiles, criticalSet, difficultyConfig.HoleCount);
 
+            PlaceSearchlightTiles(tiles, criticalSet, difficultyConfig.SearchlightCount);
+
             PlaceSwampTiles(tiles, criticalSet, difficultyConfig.SwampCount);
 
             PlaceTwoWayTeleportTiles(tiles, criticalSet, difficultyConfig.TwoWayTeleportCount);
@@ -191,6 +193,47 @@ namespace FishEatFish.Battle.HexMap
             return path;
         }
 
+		    /// <summary>
+		    /// 放置探照灯：踩上去可以「打开开关」，驱散半径 3 格的迷雾（扩大视野）
+		    /// </summary>
+		    private void PlaceSearchlightTiles(Dictionary<HexCoord, HexTile> tiles, HashSet<HexCoord> criticalSet, int count)
+		    {
+		        if (count <= 0) return;
+
+		        var candidates = tiles.Keys
+		            .Where(c => !criticalSet.Contains(c))
+		            .ToList();
+
+		        int placed = 0;
+		        int attempts = 0;
+		        int maxAttempts = candidates.Count * 2;
+
+		        while (placed < count && attempts < maxAttempts && candidates.Count > 0)
+		        {
+		            attempts++;
+		            var coord = candidates[_random.Next(candidates.Count)];
+
+		            // 探照灯不要挨着另一个探照灯
+		            bool adjacentToOther = false;
+		            foreach (HexCoord n in coord.GetNeighbors())
+		            {
+		                if (tiles.TryGetValue(n, out HexTile nt) && nt.EventType == HexEventType.Searchlight)
+		                {
+		                    adjacentToOther = true;
+		                    break;
+		                }
+		            }
+		            if (adjacentToOther) continue;
+
+		            tiles[coord].EventType = HexEventType.Searchlight;
+		            tiles[coord].TriggerCount = 1;
+		            tiles[coord].DisplayName = "探照灯";
+		            tiles[coord].IconPath = "res://Assets/Icons/relic_lantern.svg";
+		            placed++;
+		        }
+
+		        GD.Print($"[HexMapGenerator] 放置探照灯 {placed} 个");
+		    }
         private void PlaceHoleTiles(Dictionary<HexCoord, HexTile> tiles, HashSet<HexCoord> criticalSet, int count)
         {
             var candidates = tiles.Keys
@@ -917,6 +960,7 @@ namespace FishEatFish.Battle.HexMap
                     ShopCount = 2,
                     SwampCount = 1,
                     HoleCount = 2,
+                    SearchlightCount = 1,
                     TwoWayTeleportCount = 1,
                     OneDirectionTeleportCount = 1
                 };
@@ -962,6 +1006,8 @@ namespace FishEatFish.Battle.HexMap
             public int ShopCount { get; set; }
             public int SwampCount { get; set; }
             public int HoleCount { get; set; }
+            /// <summary>探照灯数量（每关 1~3 个，踩上去可打开开关扩大视野）</summary>
+            public int SearchlightCount { get; set; }
             public int TwoWayTeleportCount { get; set; }
             public int OneDirectionTeleportCount { get; set; }
         }

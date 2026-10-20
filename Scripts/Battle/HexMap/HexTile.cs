@@ -16,7 +16,9 @@ namespace FishEatFish.Battle.HexMap
         Heal,
         TwoWayTeleport,
         Hole,
-        OneDirectionTele
+        OneDirectionTele,
+        /// <summary>探照灯：打开开关可驱散周围的迷雾（扩大视野）</summary>
+        Searchlight
     }
 
     public enum TeleportDirection
@@ -41,6 +43,17 @@ namespace FishEatFish.Battle.HexMap
         public bool IsStart { get; set; }
         public bool IsEnd { get; set; }
         public bool IsVisited { get; set; }
+
+        /// <summary>是否已被照亮（战争迷雾）。未照亮的格子显示为迷雾（黑色）。</summary>
+        public bool IsRevealed { get; set; }
+
+        /// <summary>
+        /// 是否阻挡视线（墙体 / 巨石之类）。
+        /// 目前地图生成器不会设置它，是给 FOV 规则预留的开关：
+        /// 换上 BlockingFovRule 后，被标记的格子会挡住它身后的视野。
+        /// </summary>
+        public bool IsVisionBlocker { get; set; }
+
         public bool IsDisappeared { get; set; }
         public int TriggerCount { get; set; }
 
@@ -204,3 +217,4 @@ namespace FishEatFish.Battle.HexMap
         }
     }
 }
+

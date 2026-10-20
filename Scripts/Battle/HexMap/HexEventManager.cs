@@ -69,6 +69,10 @@ namespace FishEatFish.Battle.HexMap
                     ProcessHole(tile, controller);
                     break;
 
+                case HexEventType.Searchlight:
+                    ProcessSearchlight(tile, controller);
+                    break;
+
                 default:
                     GD.Print($"[HexEventManager] 未处理的事件类型: {tile.EventType}");
                     break;
@@ -267,6 +271,12 @@ namespace FishEatFish.Battle.HexMap
             return null;
         }
 
+		    private void ProcessSearchlight(HexTile tile, HexMapController controller)
+		    {
+		        GD.Print($"[HexEventManager] 探照灯: {tile.Coord}");
+		        // 只发事件，真正的「打开开关」由 UI 弹窗后回调 controller.RevealTiles
+		        OnEventTriggered?.Invoke("searchlight", tile.Coord.ToString());
+		    }
         private void ProcessHole(HexTile tile, HexMapController controller)
         {
             GD.Print($"[HexEventManager] 洞穴触发: {tile.Coord}");

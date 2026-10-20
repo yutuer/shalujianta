@@ -36,6 +36,9 @@ namespace FishEatFish.Scenes
                 _commonHUD = (CommonHUD)commonHudScene.Instantiate();
                 // 地图左上角已有自己的怒气圈显示，这里不重复显示角色圆环
                 _commonHUD.ShowTeamSection = false;
+				// 地图场景已有既有的 BackpackUI 造物栏（常驻顶部、支持点击查看详情），
+				// HUD 再显示一套 8 格收集品会和它重叠，所以关掉 HUD 这一套。
+				_commonHUD.ShowCollectionSection = false;
                 AddChild(_commonHUD);
             }
             else

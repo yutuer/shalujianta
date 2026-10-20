@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 namespace FishEatFish.Battle
 {
@@ -16,6 +17,10 @@ namespace FishEatFish.Battle
         private int _savedBlackMarkCount;
         private HexMap.HexEventType _currentBattleType;
         private string _currentEnemyConfig;
+        private HashSet<HexMap.HexCoord> _savedRevealedTiles = new HashSet<HexMap.HexCoord>();
+
+        /// <summary>已照亮集合所属的关卡标识（空 = 无存档）</summary>
+        private string _savedRevealedMapId = string.Empty;
 
         public bool IsInBattle { get; private set; }
         public HexMap.HexEventType CurrentBattleType => _currentBattleType;
@@ -55,6 +60,33 @@ namespace FishEatFish.Battle
         {
             _savedPlayerHealth = Mathf.Max(0f, health);
             GD.Print($"[BattleTransitionManager] 地图血量更新为 {_savedPlayerHealth}");
+        }
+
+        /// <summary>
+        /// 保存已照亮（战争迷雾）的格子集合
+        /// </summary>
+        /// <param name="revealed">已照亮格子集合</param>
+        /// <param name="mapId">关卡标识（GlobalData.CurrentMap.MapId），用于跨关卡时区分，避免串味</param>
+        public void SaveRevealedTiles(HashSet<HexMap.HexCoord> revealed, string mapId = null)
+        {
+            _savedRevealedTiles = revealed != null
+                ? new HashSet<HexMap.HexCoord>(revealed)
+                : new HashSet<HexMap.HexCoord>();
+            _savedRevealedMapId = mapId ?? string.Empty;
+        }
+
+        /// <summary>
+        /// 读取已照亮（战争迷雾）的格子集合
+        /// </summary>
+        public HashSet<HexMap.HexCoord> GetSavedRevealedTiles()
+        {
+            return _savedRevealedTiles;
+        }
+
+        /// <summary>已照亮集合所属的关卡标识</summary>
+        public string GetSavedRevealedMapId()
+        {
+            return _savedRevealedMapId;
         }
 
         public event Action OnBattleStart;
@@ -220,6 +252,8 @@ namespace FishEatFish.Battle
             _savedBlackMarkCount = 0;
             _currentBattleType = HexMap.HexEventType.Empty;
             _currentEnemyConfig = null;
+            _savedRevealedTiles = new HashSet<HexMap.HexCoord>();
+            _savedRevealedMapId = string.Empty;
             GD.Print("[BattleTransitionManager] Saved state cleared");
         }
     }

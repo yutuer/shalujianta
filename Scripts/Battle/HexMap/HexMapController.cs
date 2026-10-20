@@ -70,6 +70,9 @@ namespace FishEatFish.Battle.HexMap
         public System.Action OnShopOpened;
         public System.Action OnShopClosed;
 
+        /// <summary>可见区域（战争迷雾）发生变化时触发</summary>
+        public System.Action OnRevealedChanged;
+
         private BattleTransitionManager _battleTransitionManager;
         private bool _isRestored = false;
 
@@ -156,6 +159,9 @@ namespace FishEatFish.Battle.HexMap
             int savedBlackMark = _battleTransitionManager.GetSavedBlackMarkCount();
             BlackMarkShopManager.Instance?.SetBlackMarkCount(savedBlackMark);
 
+            // 战争迷雾：战斗结束回到地图后，把已照亮的格子恢复回来
+            RestoreRevealedTiles();
+
             GD.Print($"[HexMapController] 恢复地图状态: 位置={_currentPosition}, 等级={_playerLevel}, 生命={_playerCurrentHealth}/{_playerMaxHealth}, 黑印={savedBlackMark}");
 
             // 打赢 BOSS 战回到地图 → 结算地图完成
@@ -186,6 +192,10 @@ namespace FishEatFish.Battle.HexMap
             _currentPosition = _currentMap.Start;
             _currentState = HexMapState.Idle;
             _hasSkipped = false;
+
+            // 新的地图 = 新的关卡，战争迷雾从零开始（存档里的旧集合也要清掉，避免跨关卡串味）
+            _revealedTiles.Clear();
+            _battleTransitionManager?.SaveRevealedTiles(null, CurrentMapId);
 
             GD.Print($"[HexMapController] 地图已生成，起点: {_currentPosition}, 终点: {_currentMap.End}");
         }
@@ -327,6 +337,98 @@ namespace FishEatFish.Battle.HexMap
             return neighbors.Contains(neighbor) &&
                    _currentMap.Contains(neighbor) &&
                    _currentMap.GetTile(neighbor).CanEnter;
+        }
+
+        // ===== 战争迷雾（可见区域）=====
+
+        private readonly HashSet<HexCoord> _revealedTiles = new HashSet<HexCoord>();
+
+        /// <summary>
+        /// 视野计算规则（可插拔）。
+        /// 默认纯半径；想加「墙体挡视线」就换成 <see cref="FovCalculator.BlockingRule"/>。
+        /// </summary>
+        public IFovRule FovRule { get; set; } = FovCalculator.DefaultRule;
+
+        /// <summary>当前已照亮的格子集合</summary>
+        public IReadOnlyCollection<HexCoord> RevealedTiles => _revealedTiles;
+
+        /// <summary>该格子是否已被照亮（迷雾之外）</summary>
+        public bool IsRevealed(HexCoord coord)
+        {
+            return _revealedTiles.Contains(coord);
+        }
+
+        /// <summary>
+        /// 照亮一片区域（半径内的格子 + 中心本身）。
+        /// 探照灯打开开关时调用；玩家移动时也会照亮周围一圈。
+        /// </summary>
+        /// <param name="center">中心坐标</param>
+        /// <param name="radius">半径（0 = 只照亮中心）</param>
+        /// <returns>本次新照亮的格子数量</returns>
+        public int RevealTiles(HexCoord center, int radius)
+        {
+            if (_currentMap == null) return 0;
+
+            List<HexCoord> newlyRevealed = new List<HexCoord>();
+
+            foreach (HexCoord coord in FovCalculator.Compute(center, radius, _currentMap, FovRule))
+            {
+                if (_revealedTiles.Contains(coord)) continue;
+
+                HexTile tile = _currentMap.GetTile(coord);
+                if (tile == null) continue;
+
+                tile.IsRevealed = true;
+                _revealedTiles.Add(coord);
+                newlyRevealed.Add(coord);
+            }
+
+            if (newlyRevealed.Count > 0)
+            {
+                SaveRevealedTiles();
+                OnRevealedChanged?.Invoke();
+                GD.Print($"[HexMapController] 照亮 {newlyRevealed.Count} 个格子（中心 {center}，半径 {radius}），当前共 {_revealedTiles.Count}");
+            }
+
+            return newlyRevealed.Count;
+        }
+
+        /// <summary>把已照亮集合写进地图存档</summary>
+        private void SaveRevealedTiles()
+        {
+            _battleTransitionManager?.SaveRevealedTiles(_revealedTiles, CurrentMapId);
+        }
+
+        /// <summary>当前关卡标识（用于照亮存档跨关卡区分）</summary>
+        public string CurrentMapId => GlobalData.CurrentMap?.MapId ?? string.Empty;
+
+        /// <summary>
+        /// 从地图存档恢复已照亮集合。
+        /// 只在「战斗结束回到地图」时调用（RestoreMapState），
+        /// 且存档所属关卡必须与当前关卡一致，否则不恢复（换关卡不能继承上一关的视野）。
+        /// </summary>
+        private void RestoreRevealedTiles()
+        {
+            HashSet<HexCoord> saved = _battleTransitionManager?.GetSavedRevealedTiles();
+            if (saved == null || saved.Count == 0) return;
+
+            string savedMapId = _battleTransitionManager?.GetSavedRevealedMapId() ?? string.Empty;
+            if (!string.IsNullOrEmpty(savedMapId) && savedMapId != CurrentMapId)
+            {
+                GD.Print($"[HexMapController] 照亮存档属于关卡 {savedMapId}，当前关卡 {CurrentMapId}，不恢复");
+                return;
+            }
+
+            _revealedTiles.Clear();
+            foreach (HexCoord coord in saved)
+            {
+                _revealedTiles.Add(coord);
+                HexTile tile = _currentMap?.GetTile(coord);
+                if (tile != null) tile.IsRevealed = true;
+            }
+
+            GD.Print($"[HexMapController] 恢复已照亮格子: {_revealedTiles.Count}");
+            OnRevealedChanged?.Invoke();
         }
 
         public void QuickMoveTo(HexCoord targetCoord)

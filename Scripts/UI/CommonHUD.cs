@@ -38,6 +38,15 @@ namespace FishEatFish.UI
 		[Export]
 		public bool ShowStatsSection = true;
 
+		/// <summary>
+		/// 是否显示收集品（造物）槽区。
+		/// 地图场景的 HexMapUI 已有既有的 BackpackUI 造物栏（常驻顶部居中，支持点击查看详情），
+		/// 两套同时显示会互相重叠，所以地图接入时设为 false，只保留 BackpackUI 那一套。
+		/// 战斗 / 商店场景没有 BackpackUI，用这一套。
+		/// </summary>
+		[Export]
+		public bool ShowCollectionSection = true;
+
 		private const int CollectionSlotCount = 8;
 
 		private AttackerDisplayUI _teamDisplay;
@@ -82,6 +91,11 @@ namespace FishEatFish.UI
 			if (statsBox != null)
 			{
 				statsBox.Visible = ShowStatsSection;
+			}
+
+			if (_collectionBox != null)
+			{
+				_collectionBox.Visible = ShowCollectionSection;
 			}
 
 			Refresh();
