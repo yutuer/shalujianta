@@ -358,6 +358,15 @@ namespace FishEatFish.UI.HexMap
             {
                 GetViewport().SizeChanged -= OnScreenResized;
             }
+
+            // BlackMarkShopManager 是 autoload（跨场景存活），事件必须在这里退订：
+            // 否则本场景的 HexMapUI 被释放后，autoload 的委托里还指着它，
+            // 下次触发 OnBlackMarkChanged 就会访问已释放的 Label（ObjectDisposedException）。
+            if (BlackMarkShopManager.Instance != null)
+            {
+                BlackMarkShopManager.Instance.OnBlackMarkChanged -= UpdateBlackMarkDisplay;
+            }
+
             base._ExitTree();
         }
 
@@ -791,7 +800,8 @@ namespace FishEatFish.UI.HexMap
 
         private void UpdateBlackMarkDisplay(int amount)
         {
-            if (_blackMarkLabel != null)
+            // 双保险：即使事件退订漏了，也不要碰已释放的节点
+            if (_blackMarkLabel != null && GodotObject.IsInstanceValid(_blackMarkLabel))
             {
                 _blackMarkLabel.Text = $"{amount}";
             }

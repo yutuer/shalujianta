@@ -114,6 +114,53 @@ namespace FishEatFish.Battle
             GetTree().ChangeSceneToFile("res://Scenes/BattleScene.tscn");
         }
 
+        /// <summary>
+        /// 待显示的结算数据（战斗胜利后传给结算界面）
+        /// </summary>
+        public BattleResultData PendingResult { get; private set; } = null;
+
+        /// <summary>
+        /// 显示战斗结算界面：保存结算数据并切场景
+        /// </summary>
+        public void ShowBattleResult(BattleResultData data)
+        {
+            GD.Print($"[BattleTransitionManager] ShowBattleResult called: map={data?.MapId}, turns={data?.TurnCount}, stars={data?.StarCount}");
+
+            if (data == null)
+            {
+                GD.PrintErr("[BattleTransitionManager] 结算数据为 null，直接回地图");
+                EndBattle(true);
+                return;
+            }
+
+            PendingResult = data;
+            GetTree().ChangeSceneToFile("res://Scenes/UI/BattleResultUI.tscn");
+            GD.Print("[BattleTransitionManager] ShowBattleResult completed");
+        }
+
+        /// <summary>
+        /// 结算界面点「完成调查」：回六边形地图；没有地图存档则回关卡地图
+        /// </summary>
+        public void CompleteBattleResult()
+        {
+            GD.Print("[BattleTransitionManager] CompleteBattleResult called");
+
+            PendingResult = null;
+
+            if (HasSavedMap)
+            {
+                EndBattle(true);
+            }
+            else
+            {
+                GD.Print("[BattleTransitionManager] 无地图存档，返回关卡地图");
+                ClearSavedState();
+                GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
+            }
+
+            GD.Print("[BattleTransitionManager] CompleteBattleResult completed");
+        }
+
         public void EndBattle(bool victory)
         {
             GD.Print($"[BattleTransitionManager] EndBattle called: victory={victory}");

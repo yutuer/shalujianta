@@ -506,6 +506,14 @@ namespace FishEatFish.Shop
 			return _engravedCardIds.Contains(cardId);
 		}
 
+		/// <summary>
+		/// 获取全部可用造物数据（结算界面展示「调查奖励」用）
+		/// </summary>
+		public List<ArtifactData> GetAllArtifacts()
+		{
+			return new List<ArtifactData>(_allArtifacts);
+		}
+
 		public List<ArtifactData> GetOwnedArtifacts()
 		{
 			return new List<ArtifactData>(_ownedArtifacts);

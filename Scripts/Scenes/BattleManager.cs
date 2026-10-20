@@ -7,6 +7,7 @@ using FishEatFish.Battle.Effects.Buffs;
 using FishEatFish.Battle.CharacterSystem;
 using FishEatFish.Scenes;
 using FishEatFish.AI;
+using FishEatFish.Shop;
 
 namespace FishEatFish.Scenes
 {
@@ -21,6 +22,11 @@ namespace FishEatFish.Scenes
 	private Player player;
 	private List<Enemy> enemies = new List<Enemy>();
 	private int turnCount = 1;
+
+		/// <summary>
+		/// 本场战斗已进行的回合数（结算界面要用）
+		/// </summary>
+		public int TurnCount => turnCount;
 	private bool isPlayerTurn = true;
 
 	// ========== UI节点引用 ==========
@@ -1236,16 +1242,81 @@ namespace FishEatFish.Scenes
 		GetTree().ReloadCurrentScene();
 	}
 
+
 	private void OnNextLevelPressed()
 	{
 		GD.Print("[BattleManager] OnNextLevelPressed called");
-		if (TryReturnToHexMap(true))
+		BattleTransitionManager transitionManager = BattleTransitionManager.Instance;
+
+		if (transitionManager == null)
 		{
+			GD.PrintErr("[BattleManager] BattleTransitionManager 为空，直接回关卡地图");
+			GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
 			return;
 		}
-		GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
+
+		// 战斗胜利：先显示「调查完成」结算界面，玩家点「完成调查」再回地图
+		BattleResultData result = BuildResultData();
+		transitionManager.ShowBattleResult(result);
 	}
 
+	/// <summary>
+	/// 组装战斗结算数据（星级评价 / 唤醒体同调率 / 调查奖励）
+	/// </summary>
+	private BattleResultData BuildResultData()
+	{
+		GD.Print("[BattleManager] BuildResultData called");
+
+		BattleResultData data = new BattleResultData();
+		data.MapId = GlobalData.CurrentMap?.MapId ?? "未知关卡";
+		data.MapName = GlobalData.CurrentMap?.Name ?? "";
+		data.TurnCount = turnCount;
+		data.StarCount = BattleResultRules.GetStarCount(turnCount);
+		data.StarDescription = BattleResultRules.GetStarDescription(turnCount);
+		data.SyncEntries = BattleResultRules.BuildSyncEntries(GlobalData.SelectedCharacters);
+		data.Rewards = BuildRewards();
+
+		GD.Print($"[BattleManager] BuildResultData completed: map={data.MapId}, turns={data.TurnCount}, stars={data.StarCount}, sync={data.SyncEntries.Count}, rewards={data.Rewards.Count}");
+		return data;
+	}
+
+	/// <summary>
+	/// 组装调查奖励：金币 + 造物（取前 3 个，确定性，不随机）
+	/// </summary>
+	private List<BattleRewardEntry> BuildRewards()
+	{
+		List<BattleRewardEntry> rewards = new List<BattleRewardEntry>();
+
+		int gold = MapManager.Instance?.GetMapReward() ?? 0;
+		if (gold > 0)
+		{
+			rewards.Add(new BattleRewardEntry
+			{
+				RewardName = "金币",
+				IconPath = "",
+				Amount = gold
+			});
+		}
+
+		BlackMarkShopManager shop = BlackMarkShopManager.Instance;
+		if (shop != null)
+		{
+			List<ArtifactData> allArtifacts = shop.GetAllArtifacts();
+			int count = Mathf.Min(3, allArtifacts.Count);
+			for (int i = 0; i < count; i++)
+			{
+				rewards.Add(new BattleRewardEntry
+				{
+					RewardName = allArtifacts[i].name,
+					IconPath = allArtifacts[i].icon,
+					Amount = 1
+				});
+			}
+		}
+
+		GD.Print($"[BattleManager] BuildRewards completed: {rewards.Count} 项");
+		return rewards;
+	}
 	private void OnMapPressed()
 	{
 		GD.Print("[BattleManager] OnMapPressed called");
