@@ -65,17 +65,28 @@ namespace FishEatFish.UI.HexMap
             MouseExited += OnMouseExited;
         }
 
+        /// <summary>
+        /// 更新六边形本体的顶点。
+        ///
+        /// ⚠️ 顶点必须**以格子中心为原点**（x∈[-75,75]、y∈[-78,78]）——
+        /// HexTileView 节点本身的位置就是格子中心。之前这里用的是
+        /// 「相对格子左上角」的坐标（x∈[15,165]、y∈[0,156]，中心 (90,78)），
+        /// 而 HighlightLine 用的是中心原点坐标 → **填色六边形整体右移 90px、下移 78px**，
+        /// 跟高亮描边完全不重合（主人图里的错位）。
+        ///
+        /// 正确写法：把规则文件里的顶点减去中心 (90,78)。
+        /// </summary>
         private void UpdateHexShape()
         {
             if (_hexShape == null) return;
 
             var points = new Vector2[6];
-            points[0] = new Vector2(90, 0);
-            points[1] = new Vector2(165, 39);
-            points[2] = new Vector2(165, 117);
-            points[3] = new Vector2(90, 156);
-            points[4] = new Vector2(15, 117);
-            points[5] = new Vector2(15, 39);
+            points[0] = new Vector2(0, -78);
+            points[1] = new Vector2(75, -39);
+            points[2] = new Vector2(75, 39);
+            points[3] = new Vector2(0, 78);
+            points[4] = new Vector2(-75, 39);
+            points[5] = new Vector2(-75, -39);
 
             _hexShape.Polygon = points;
             _background.Color = Colors.Transparent;
