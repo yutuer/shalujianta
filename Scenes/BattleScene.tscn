@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://0k25fywn32tc" path="res://Scripts/Battle/CardLayoutManager.cs" id="3_card_layout"]
 [ext_resource type="PackedScene" uid="uid://ArtifactDetailUI_scene_001" path="res://Scenes/UI/ArtifactDetailUI.tscn" id="4_artifact_detail"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CommonHUD.tscn" id="5_common_hud"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/BuffDebuffDisplay.tscn" id="6_buffdebuff"]
 
 [node name="BattleScene" type="Node2D" unique_id=1960259589]
 script = ExtResource("1_battle")
@@ -119,6 +120,7 @@ layout_mode = 2
 text = "能量: 3/3"
 horizontal_alignment = 1
 
+[node name="BuffDebuffDisplay" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" instance=ExtResource("6_buffdebuff")]
 [node name="EnemyZone" type="Panel" parent="UI/MainArea/BattleZones" unique_id=762201044]
 layout_mode = 2
 size_flags_horizontal = 3

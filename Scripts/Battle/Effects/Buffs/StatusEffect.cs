@@ -27,6 +27,10 @@ public abstract partial class StatusEffect : Resource
     [Export]
     public int IconPathHash { get; set; } = 0;
 
+        /// <summary>图标资源路径（由 EffectRegistry 按 buffId 配置，UI 直接用这个字段取图标）</summary>
+        [Export]
+        public string IconPath { get; set; } = "";
+
     [Export]
     public int StackCount { get; set; } = 1;
 

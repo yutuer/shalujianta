@@ -43,6 +43,7 @@ namespace FishEatFish.Scenes
 	private List<EnemyUI> enemyUIs = new List<EnemyUI>();
 	private List<CardUI> cardUIs = new List<CardUI>();
 	private PlayerStatsUI playerStatsUI;
+	private BuffDebuffDisplay _buffDebuffDisplay;
 	private PlayerZoneUI playerZoneUI;
 
 	private BattleLogWindow battleLogWindow;
@@ -593,6 +594,18 @@ namespace FishEatFish.Scenes
 	/// 战斗开始入口
 	/// 初始化怒气统计 → 发送系统消息 → 开始第一回合
 	/// </summary>
+	/// <summary>
+	/// 刷新战斗中的 Buff / Debuff 图标层（角色区下方那排）
+	/// </summary>
+	private void UpdateBuffDebuffDisplay()
+	{
+		if (_buffDebuffDisplay == null)
+		{
+		_buffDebuffDisplay = GetNodeOrNull<BuffDebuffDisplay>("UI/MainArea/BattleZones/PlayerZone/VBoxContainer/BuffDebuffDisplay");
+		}
+		if (_buffDebuffDisplay == null) return;
+		_buffDebuffDisplay.DisplayAllStatus(player?.StatusEffects);
+	}
 	private void StartBattle()
 	{
 		GD.Print("[BattleManager] ========== 战斗开始 ==========");
@@ -603,6 +616,8 @@ namespace FishEatFish.Scenes
 
 	private void StartTurn()
 	{
+		UpdateBuffDebuffDisplay();
+
 		AddMessage($"第 {turnCount} 回合开始", LogType.System);
 
 		isPlayerTurn = true;

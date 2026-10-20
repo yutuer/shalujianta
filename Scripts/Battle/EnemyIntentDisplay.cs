@@ -15,6 +15,7 @@ public class EnemyIntentDisplay
         attackIcon = ResourceLoader.Load<Texture2D>("res://Assets/Icons/intent_attack.svg");
         defendIcon = ResourceLoader.Load<Texture2D>("res://Assets/Icons/intent_defend.svg");
         buffIcon = ResourceLoader.Load<Texture2D>("res://Assets/Icons/intent_buff.svg");
+        healIcon = ResourceLoader.Load<Texture2D>("res://Assets/Icons/relic_charm.svg");
     }
 
     public AIAction PredictEnemyAction(Enemy enemy, Player player, List<Enemy> allEnemies)

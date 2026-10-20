@@ -50,3 +50,9 @@ horizontal_alignment = 1
 [node name="IntentLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 horizontal_alignment = 1
+[node name="IntentIcon" type="TextureRect" parent="VBoxContainer"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5

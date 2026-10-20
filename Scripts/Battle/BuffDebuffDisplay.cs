@@ -3,186 +3,153 @@ using System.Collections.Generic;
 using System.Linq;
 using FishEatFish.Battle.Effects.Buffs;
 
+/// <summary>
+/// 战斗中的 Buff / Debuff 图标层（对照参考图 R-08 角色区下方那排图标）
+///
+/// 图标来源：StatusEffect.IconPath（由 EffectRegistry 按 buffId 配置）
+/// 层数：同名效果叠加时显示 ×N
+/// 过期：SetStatusEffects 传入的状态里消失的图标会淡出
+/// </summary>
 public partial class BuffDebuffDisplay : Control
 {
     private HBoxContainer _iconContainer;
-    private List<TextureRect> _buffIcons = new List<TextureRect>();
-    private List<Label> _buffValueLabels = new List<Label>();
 
-    private const int MaxDisplayIcons = 5;
+    private const int MaxDisplayIcons = 8;
 
     public override void _Ready()
     {
-        _iconContainer = new HBoxContainer();
+        GD.Print("[BuffDebuffDisplay] _Ready called");
+
+        _iconContainer = GetNodeOrNull<HBoxContainer>("IconContainer");
+        if (_iconContainer == null)
+        {
+            GD.PrintErr("[BuffDebuffDisplay] 未找到 IconContainer 节点");
+            return;
+        }
+
         _iconContainer.Alignment = HBoxContainer.AlignmentMode.Center;
-        AddChild(_iconContainer);
+        GD.Print("[BuffDebuffDisplay] _Ready completed");
     }
 
-    public void DisplayBuffs(List<StatusEffect> buffs)
-    {
-        ClearDisplay();
-
-        var displayBuffs = buffs.Take(MaxDisplayIcons).ToList();
-
-        foreach (var buff in displayBuffs)
-        {
-            AddBuffIcon(buff);
-        }
-    }
-
-    public void DisplayDebuffs(List<StatusEffect> debuffs)
-    {
-        var displayDebuffs = debuffs.Take(MaxDisplayIcons).ToList();
-
-        foreach (var debuff in displayDebuffs)
-        {
-            AddDebuffIcon(debuff);
-        }
-    }
-
+    /// <summary>
+    /// 显示一组状态效果（buff 与 debuff 混排，自动按类型上色）
+    /// </summary>
     public void DisplayAllStatus(List<StatusEffect> allStatus)
     {
+        if (_iconContainer == null) return;
+
         ClearDisplay();
+        if (allStatus == null) return;
 
-        var buffs = allStatus.Where(s => s.EffectType == StatusEffectType.Buff).Take(MaxDisplayIcons);
-        var debuffs = allStatus.Where(s => s.EffectType == StatusEffectType.Debuff).Take(MaxDisplayIcons);
+        List<StatusEffect> buffList = allStatus.Where(s => s.EffectType == StatusEffectType.Buff).ToList();
+        List<StatusEffect> debuffList = allStatus.Where(s => s.EffectType == StatusEffectType.Debuff).ToList();
 
-        foreach (var buff in buffs)
+        foreach (StatusEffect buff in buffList.Take(MaxDisplayIcons))
         {
-            AddBuffIcon(buff);
+            AddStatusIcon(buff, false);
         }
 
-        foreach (var debuff in debuffs)
+        foreach (StatusEffect debuff in debuffList.Take(MaxDisplayIcons))
         {
-            AddDebuffIcon(debuff);
+            AddStatusIcon(debuff, true);
         }
+
+        GD.Print($"[BuffDebuffDisplay] DisplayAllStatus called: buff={buffList.Count} debuff={debuffList.Count}");
     }
 
-    private void AddBuffIcon(StatusEffect effect)
+    /// <summary>
+    /// 清空并淡出（状态全部过期时用）
+    /// </summary>
+    public void PlayExpireAnimation()
     {
-        var container = new VBoxContainer();
+        if (_iconContainer == null) return;
+
+        foreach (Node child in _iconContainer.GetChildren())
+        {
+            if (child is CanvasItem item)
+            {
+                Tween tween = item.CreateTween();
+                tween.TweenProperty(item, "modulate:a", 0f, 0.25f);
+            }
+        }
+
+        GD.Print("[BuffDebuffDisplay] PlayExpireAnimation called");
+    }
+
+    private void AddStatusIcon(StatusEffect effect, bool isDebuff)
+    {
+        VBoxContainer container = new VBoxContainer();
         container.Alignment = VBoxContainer.AlignmentMode.Center;
 
-        var icon = new TextureRect();
-        icon.CustomMinimumSize = new Vector2(24, 24);
-        icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
+        TextureRect icon = new TextureRect
+        {
+            CustomMinimumSize = new Vector2(26, 26),
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered
+        };
 
-        string iconPath = GetBuffIconPath(effect.EffectName);
-        if (!string.IsNullOrEmpty(iconPath))
+        string iconPath = effect.IconPath;
+        if (!string.IsNullOrEmpty(iconPath) && ResourceLoader.Exists(iconPath))
         {
             icon.Texture = ResourceLoader.Load<Texture2D>(iconPath);
         }
         else
         {
-            icon.Modulate = new Color(0.3f, 0.5f, 1f);
+            // 没有图标资源时用颜色区分（蓝=增益 / 红=减益）
+            icon.Modulate = isDebuff ? new Color(1f, 0.35f, 0.35f) : new Color(0.4f, 0.7f, 1f);
         }
 
         container.AddChild(icon);
 
-        Label valueLabel = new Label();
-        valueLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        valueLabel.AddThemeColorOverride("font_color", new Color(0.3f, 0.8f, 1f));
-        valueLabel.AddThemeFontSizeOverride("font_size", 10);
-        valueLabel.Text = GetBuffValueText(effect);
+        Label valueLabel = new Label
+        {
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+        valueLabel.AddThemeColorOverride("font_color", isDebuff ? new Color(1f, 0.5f, 0.5f) : new Color(0.4f, 0.85f, 1f));
+        valueLabel.AddThemeFontSizeOverride("font_size", 11);
+        valueLabel.Text = BuildValueText(effect, isDebuff);
         container.AddChild(valueLabel);
 
         _iconContainer.AddChild(container);
-        _buffIcons.Add(icon);
-        _buffValueLabels.Add(valueLabel);
     }
 
-    private void AddDebuffIcon(StatusEffect effect)
+    /// <summary>
+    /// 数值文本；层数 &gt; 1 时追加 ×N
+    /// </summary>
+    private string BuildValueText(StatusEffect effect, bool isDebuff)
     {
-        var container = new VBoxContainer();
-        container.Alignment = VBoxContainer.AlignmentMode.Center;
-
-        var icon = new TextureRect();
-        icon.CustomMinimumSize = new Vector2(24, 24);
-        icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-
-        string iconPath = GetDebuffIconPath(effect.EffectName);
-        if (!string.IsNullOrEmpty(iconPath))
+        string value = isDebuff ? GetDebuffValueText(effect) : GetBuffValueText(effect);
+        if (effect.StackCount > 1)
         {
-            icon.Texture = ResourceLoader.Load<Texture2D>(iconPath);
+            value += $" ×{effect.StackCount}";
         }
-        else
-        {
-            icon.Modulate = new Color(1f, 0.3f, 0.3f);
-        }
-
-        container.AddChild(icon);
-
-        Label valueLabel = new Label();
-        valueLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        valueLabel.AddThemeColorOverride("font_color", new Color(1f, 0.5f, 0.5f));
-        valueLabel.AddThemeFontSizeOverride("font_size", 10);
-        valueLabel.Text = GetDebuffValueText(effect);
-        container.AddChild(valueLabel);
-
-        _iconContainer.AddChild(container);
-        _buffIcons.Add(icon);
-        _buffValueLabels.Add(valueLabel);
-    }
-
-    private string GetBuffIconPath(string effectName)
-    {
-        return effectName.ToLower() switch
-        {
-            "strength" => "res://Assets/Icons/buff_attack.png",
-            "defense" => "res://Assets/Icons/buff_defense.png",
-            "regeneration" => "res://Assets/Icons/buff_heal.png",
-            "thorns" => "res://Assets/Icons/buff_thorns.png",
-            "fury" => "res://Assets/Icons/buff_fury.png",
-            _ => ""
-        };
-    }
-
-    private string GetDebuffIconPath(string effectName)
-    {
-        return effectName.ToLower() switch
-        {
-            "weak" => "res://Assets/Icons/debuff_weak.png",
-            "vulnerable" => "res://Assets/Icons/debuff_vulnerable.png",
-            "poison" => "res://Assets/Icons/debuff_poison.png",
-            "slow" => "res://Assets/Icons/debuff_slow.png",
-            "silence" => "res://Assets/Icons/debuff_silence.png",
-            _ => ""
-        };
+        return value;
     }
 
     private string GetBuffValueText(StatusEffect effect)
     {
-        if (effect is StrengthBuff sb)
-            return $"+{sb.AttackBonus}";
-        if (effect is DefenseBuff db)
-            return $"+{db.DefenseBonus}";
-        if (effect is RegenerationBuff rb)
-            return $"+{rb.HealPerTurn}";
-        if (effect is ThornsBuff tb)
-            return $"+{tb.DamageReflect}";
+        if (effect is StrengthBuff sb) return $"+{sb.AttackBonus}";
+        if (effect is DefenseBuff db) return $"+{db.DefenseBonus}";
+        if (effect is RegenerationBuff rb) return $"+{rb.HealPerTurn}";
+        if (effect is ThornsBuff tb) return $"+{tb.DamageReflect}";
         return $"{effect.RemainingDuration}";
     }
 
     private string GetDebuffValueText(StatusEffect effect)
     {
-        if (effect is WeakDebuff wd)
-            return $"-{wd.AttackReduction}";
-        if (effect is VulnerableDebuff vd)
-            return $"+{vd.DamageIncrease}";
-        if (effect is PoisonDebuff pd)
-            return $"{pd.DamagePerTurn}";
-        if (effect is SlowDebuff sd)
-            return $"-{sd.EnergyReduction}";
+        if (effect is WeakDebuff wd) return $"-{wd.AttackReduction}";
+        if (effect is VulnerableDebuff vd) return $"+{vd.DamageIncrease}";
+        if (effect is PoisonDebuff pd) return $"{pd.DamagePerTurn}";
+        if (effect is SlowDebuff sd) return $"-{sd.EnergyReduction}";
         return $"{effect.RemainingDuration}";
     }
 
     public void ClearDisplay()
     {
-        foreach (var child in _iconContainer.GetChildren())
+        if (_iconContainer == null) return;
+
+        foreach (Node child in _iconContainer.GetChildren())
         {
             child.QueueFree();
         }
-        _buffIcons.Clear();
-        _buffValueLabels.Clear();
     }
 }

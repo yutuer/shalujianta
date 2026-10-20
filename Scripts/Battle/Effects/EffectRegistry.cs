@@ -11,6 +11,40 @@ public static class EffectRegistry
     private static bool _initialized = false;
     private static bool _jsonLoaded = false;
 
+    /// <summary>
+    /// buffId -> 图标资源路径。
+    /// 项目目前没有专门的 buff/debuff 图标，先用 Assets/Icons 里已有的 svg 占位，
+    /// 等正式美术资源到位后只改这张表即可（UI 侧不用动）。
+    /// </summary>
+    private static readonly Dictionary<string, string> BuffIcons = new Dictionary<string, string>
+    {
+        { "strength", "res://Assets/Icons/intent_attack.svg" },
+        { "attack_up", "res://Assets/Icons/intent_attack.svg" },
+        { "vampirism", "res://Assets/Icons/intent_attack.svg" },
+        { "defense", "res://Assets/Icons/intent_defend.svg" },
+        { "defense_up", "res://Assets/Icons/intent_defend.svg" },
+        { "regeneration", "res://Assets/Icons/relic_charm.svg" },
+        { "thorns", "res://Assets/Icons/skull.svg" },
+        { "fury", "res://Assets/Icons/intent_buff.svg" },
+        { "weak", "res://Assets/Icons/intent_defend.svg" },
+        { "vulnerable", "res://Assets/Icons/intent_attack.svg" },
+        { "poison", "res://Assets/Icons/skull.svg" },
+        { "burn", "res://Assets/Icons/skull.svg" },
+        { "bleed", "res://Assets/Icons/skull.svg" },
+        { "slow", "res://Assets/Icons/arrow_reserve.svg" },
+        { "silence", "res://Assets/Icons/relic_anchor.svg" },
+        { "defense_down", "res://Assets/Icons/intent_defend.svg" }
+    };
+
+    /// <summary>
+    /// 取某个 buffId 的图标路径（找不到返回空串）
+    /// </summary>
+    public static string GetBuffIconPath(string buffId)
+    {
+        if (string.IsNullOrEmpty(buffId)) return "";
+        return BuffIcons.TryGetValue(buffId.ToLower(), out string path) ? path : "";
+    }
+
     public static void RegisterEffect(string id, Type effectType)
     {
         _effectTypes[id] = effectType;
@@ -124,6 +158,7 @@ public static class EffectRegistry
         buff.EffectName = config.Name;
         buff.Description = config.Description;
         buff.Duration = config.Duration;
+        buff.IconPath = GetBuffIconPath(buffId);
         buff.Initialize();
 
         return buff;
@@ -170,6 +205,7 @@ public static class EffectRegistry
         debuff.EffectName = config.Name;
         debuff.Description = config.Description;
         debuff.Duration = config.Duration;
+        debuff.IconPath = GetBuffIconPath(debuffId);
         debuff.Initialize();
 
         return debuff;

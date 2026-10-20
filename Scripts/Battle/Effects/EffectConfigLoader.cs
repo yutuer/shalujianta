@@ -12,6 +12,15 @@ public static class EffectConfigLoader
     private static Dictionary<string, DebuffConfig> _debuffConfigs = new Dictionary<string, DebuffConfig>();
     private static bool _loaded = false;
 
+    /// <summary>
+    /// 确保 JSON 配置已加载。
+    /// 之前 EffectRegistry.LoadFromJson() 从没被调用过，导致 buffs/debuffs/effects 的 JSON 配置全是死的，
+    /// 这里做成懒加载，保证任何入口第一次查询配置时都会先加载。
+    /// </summary>
+    private static void EnsureLoaded()
+    {
+    	LoadAll();
+    }
     public static void LoadAll()
     {
         if (_loaded) return;
@@ -331,6 +340,7 @@ public static class EffectConfigLoader
 
     public static EffectDefinition GetEffectTemplate(string effectId)
     {
+    	EnsureLoaded();
         if (_effectTemplates.ContainsKey(effectId))
         {
             return _effectTemplates[effectId];
@@ -340,6 +350,7 @@ public static class EffectConfigLoader
 
     public static BuffConfig GetBuffConfig(string buffId)
     {
+    	EnsureLoaded();
         if (_buffConfigs.ContainsKey(buffId))
         {
             return _buffConfigs[buffId];
@@ -349,6 +360,7 @@ public static class EffectConfigLoader
 
     public static DebuffConfig GetDebuffConfig(string debuffId)
     {
+    	EnsureLoaded();
         if (_debuffConfigs.ContainsKey(debuffId))
         {
             return _debuffConfigs[debuffId];

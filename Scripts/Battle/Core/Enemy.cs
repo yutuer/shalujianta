@@ -133,6 +133,7 @@ public partial class Enemy : Node, IUnit
 		if (existing != null)
 		{
 			existing.RefreshDuration();
+			existing.StackCount++;   // 同名效果叠加层数，UI 显示 ×N
 			return;
 		}
 
