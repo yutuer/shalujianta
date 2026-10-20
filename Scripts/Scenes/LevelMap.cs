@@ -1,6 +1,7 @@
 using Godot;
 using FishEatFish.Battle.CharacterSystem;
 using FishEatFish.Battle.HexMap;
+using FishEatFish.UI;
 
 namespace FishEatFish.Scenes
 {
@@ -9,6 +10,7 @@ namespace FishEatFish.Scenes
         private VBoxContainer _mapContainer;
         private Button _backButton;
         private Button _battleButton;
+        private LevelDetailUI _levelDetailUI;
 
         private MapDefinition _selectedMap;
         private MapDefinition[] _availableMaps;
@@ -22,8 +24,27 @@ namespace FishEatFish.Scenes
             _backButton.Pressed += OnBackPressed;
             _battleButton.Pressed += OnBattlePressed;
 
+            SetupLevelDetail();
+
             LoadMaps();
             BuildMapList();
+        }
+
+        /// <summary>关卡详情弹窗（D3）：点关卡卡片先看详情，点「调查」才进关卡</summary>
+        private void SetupLevelDetail()
+        {
+            var scene = GD.Load<PackedScene>("res://Scenes/UI/LevelDetailUI.tscn");
+            if (scene == null)
+            {
+                GD.PrintErr("[LevelMap] 关卡详情弹窗场景加载失败");
+                return;
+            }
+
+            _levelDetailUI = scene.Instantiate<LevelDetailUI>();
+            if (_levelDetailUI == null) return;
+
+            AddChild(_levelDetailUI);
+            _levelDetailUI.OnInvestigate += OnInvestigateConfirmed;
         }
 
         private void LoadMaps()
@@ -106,9 +127,9 @@ namespace FishEatFish.Scenes
             stats.AddChild(rewardLabel);
 
             Button selectButton = new Button();
-            selectButton.Text = "选择";
-            selectButton.CustomMinimumSize = new Vector2(100, 50);
-            selectButton.Pressed += () => OnMapSelected(map);
+            selectButton.Text = "查看详情";
+            selectButton.CustomMinimumSize = new Vector2(120, 50);
+            selectButton.Pressed += () => OnMapDetailRequested(map);
             content.AddChild(selectButton);
 
             _mapContainer.AddChild(card);
@@ -123,6 +144,19 @@ namespace FishEatFish.Scenes
                 MapDifficulty.Hard => "困难",
                 _ => "未知"
             };
+        }
+
+        /// <summary>点关卡卡片 → 弹关卡详情（D3）</summary>
+        private void OnMapDetailRequested(MapDefinition map)
+        {
+            GD.Print($"查看关卡详情: {map.Name}");
+            _levelDetailUI?.ShowDetail(map);
+        }
+
+        /// <summary>弹窗里点了「调查」→ 真正进这个关卡</summary>
+        private void OnInvestigateConfirmed(MapDefinition map)
+        {
+            OnMapSelected(map);
         }
 
         private void OnMapSelected(MapDefinition map)

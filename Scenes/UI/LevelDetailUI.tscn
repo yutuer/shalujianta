@@ -1,0 +1,209 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/LevelDetailUI.cs" id="1"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/LevelDetailEnemySlot.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/LevelDetailRewardSlot.tscn" id="3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.09, 0.11, 0.15, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.52, 0.38, 0.75)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="LevelDetailUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+EnemySlotScene = ExtResource("2")
+RewardSlotScene = ExtResource("3")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(1400, 660)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -700.0
+offset_top = -330.0
+offset_right = 700.0
+offset_bottom = 330.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MainVBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TopRow" type="HBoxContainer" parent="Panel/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ChapterLabel" type="Label" parent="Panel/MainVBox/TopRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.9, 1, 1)
+text = "星辰篇"
+
+[node name="TitleLabel" type="Label" parent="Panel/MainVBox/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.96, 0.94, 0.85, 1)
+text = "关卡详情"
+horizontal_alignment = 1
+
+[node name="CloseButton" type="Button" parent="Panel/MainVBox/TopRow"]
+custom_minimum_size = Vector2(48, 40)
+layout_mode = 2
+text = "✕"
+
+[node name="Sep1" type="HSeparator" parent="Panel/MainVBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="Panel/MainVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.95, 0.95, 0.98, 1)
+text = "1-1 关卡名"
+
+[node name="DescLabel" type="Label" parent="Panel/MainVBox"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.78, 0.82, 0.9, 1)
+text = "关卡描述"
+autowrap_mode = 3
+
+[node name="InfoRow" type="HBoxContainer" parent="Panel/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="RecLabel" type="Label" parent="Panel/MainVBox/InfoRow"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.9, 0.92, 0.96, 1)
+text = "推荐等级  1"
+vertical_alignment = 1
+
+[node name="StarsRow" type="HBoxContainer" parent="Panel/MainVBox/InfoRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Star0" type="Label" parent="Panel/MainVBox/InfoRow/StarsRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.85, 0.78, 0.45, 1)
+text = "☆"
+
+[node name="Star1" type="Label" parent="Panel/MainVBox/InfoRow/StarsRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.85, 0.78, 0.45, 1)
+text = "☆"
+
+[node name="Star2" type="Label" parent="Panel/MainVBox/InfoRow/StarsRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.85, 0.78, 0.45, 1)
+text = "☆"
+
+[node name="DifficultyBox" type="HBoxContainer" parent="Panel/MainVBox/InfoRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NormalButton" type="Button" parent="Panel/MainVBox/InfoRow/DifficultyBox"]
+custom_minimum_size = Vector2(110, 42)
+layout_mode = 2
+text = "普通"
+
+[node name="HardButton" type="Button" parent="Panel/MainVBox/InfoRow/DifficultyBox"]
+custom_minimum_size = Vector2(110, 42)
+layout_mode = 2
+text = "困难"
+
+[node name="Sep2" type="HSeparator" parent="Panel/MainVBox"]
+layout_mode = 2
+
+[node name="PreviewRow" type="HBoxContainer" parent="Panel/MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 60
+
+[node name="EnemySection" type="VBoxContainer" parent="Panel/MainVBox/PreviewRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="Panel/MainVBox/PreviewRow/EnemySection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.9, 0.92, 0.96, 1)
+text = "敌方预览"
+
+[node name="EnemyBox" type="HBoxContainer" parent="Panel/MainVBox/PreviewRow/EnemySection"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RewardSection" type="VBoxContainer" parent="Panel/MainVBox/PreviewRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="Panel/MainVBox/PreviewRow/RewardSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.9, 0.92, 0.96, 1)
+text = "奖励预览"
+
+[node name="RewardBox" type="HBoxContainer" parent="Panel/MainVBox/PreviewRow/RewardSection"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BottomRow" type="HBoxContainer" parent="Panel/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="Panel/MainVBox/BottomRow"]
+custom_minimum_size = Vector2(220, 56)
+layout_mode = 2
+text = "取消"
+
+[node name="InvestigateButton" type="Button" parent="Panel/MainVBox/BottomRow"]
+custom_minimum_size = Vector2(220, 56)
+layout_mode = 2
+text = "调查"
+
+[node name="RecordButton" type="Button" parent="Panel/MainVBox/BottomRow"]
+custom_minimum_size = Vector2(160, 56)
+layout_mode = 2
+text = "记录"
+
+[node name="NoticeLabel" type="Label" parent="Panel/MainVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.95, 0.8, 0.5, 1)
+text = ""
+horizontal_alignment = 1

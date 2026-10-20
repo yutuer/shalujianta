@@ -26,7 +26,7 @@ namespace FishEatFish.Battle.HexMap
             tiles[endCoord].EventType = HexEventType.BattleBoss;
             tiles[endCoord].TriggerCount = 1;
             tiles[endCoord].DisplayName = "BOSS";
-            tiles[endCoord].IconPath = "res://Assets/Icons/boss.png";
+            tiles[endCoord].IconPath = "res://Assets/Icons/skull.svg";
             tiles[endCoord].EnemyConfig = "boss_wave";
 
             var criticalPath = FindShortestPath(tiles, startCoord, endCoord);
@@ -818,12 +818,12 @@ namespace FishEatFish.Battle.HexMap
                 {
                     case HexEventType.BattleNormal:
                         tiles[coord].DisplayName = "遭遇敌人";
-                        tiles[coord].IconPath = "res://Assets/Icons/enemy.png";
+                        tiles[coord].IconPath = "res://Assets/Icons/enemy_cultist.svg";
                         tiles[coord].EnemyConfig = "normal_wave";
                         break;
                     case HexEventType.BattleElite:
                         tiles[coord].DisplayName = "精英敌人";
-                        tiles[coord].IconPath = "res://Assets/Icons/elite.png";
+                        tiles[coord].IconPath = "res://Assets/Icons/enemy_elite.svg";
                         tiles[coord].EnemyConfig = "elite_wave";
                         break;
                     case HexEventType.Heal:

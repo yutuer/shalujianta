@@ -164,6 +164,13 @@ namespace FishEatFish.UI.HexMap
             string icon = "";
             string iconPath = "";
 
+            // 优先用格子自己配的图标（生成器设置的 IconPath）。
+            // 文件不存在就回退到下面按事件类型取的默认符号 —— 不会静默空白。
+            if (!string.IsNullOrEmpty(_tile.IconPath) && ResourceLoader.Exists(_tile.IconPath))
+            {
+                iconPath = _tile.IconPath;
+            }
+
             if (_tile.IsStart)
             {
                 tileColor = _startColor;
@@ -189,48 +196,52 @@ namespace FishEatFish.UI.HexMap
                 }
             }
 
-            switch (_tile.EventType)
+            // 格子自带图标优先（上面已取到），没有才按事件类型取默认符号
+            if (string.IsNullOrEmpty(iconPath))
             {
-                case HexEventType.BattleNormal:
-                    icon = "⚔";
-                    break;
-                case HexEventType.BattleElite:
-                    icon = "⚔!";
-                    break;
-                case HexEventType.BattleBoss:
-                    icon = "👹";
-                    break;
-                case HexEventType.Shop:
-                    icon = "$";
-                    break;
-                case HexEventType.Heal:
-                    icon = "+";
-                    break;
-                case HexEventType.Hole:
-                    icon = "O";
-                    break;
-                case HexEventType.GainBlackMark:
-                    icon = "💎";
-                    break;
-                case HexEventType.Swamp:
-                    iconPath = "res://Assets/Icons/skull.svg";
-                    break;
-                case HexEventType.TwoWayTeleport:
-                    iconPath = "res://Assets/Icons/arrow_reserve.svg";
-                    break;
-                case HexEventType.OneDirectionTele:
-                    if (_tile.TeleportRole == TeleportRole.Entry)
-                    {
-                        iconPath = "res://Assets/Icons/teleport_entry.svg";
-                    }
-                    else
-                    {
-                        iconPath = "res://Assets/Icons/teleport_exit.svg";
-                    }
-                    break;
-                case HexEventType.Empty:
-                    icon = "";
-                    break;
+                switch (_tile.EventType)
+                {
+                    case HexEventType.BattleNormal:
+                        icon = "⚔";
+                        break;
+                    case HexEventType.BattleElite:
+                        icon = "⚔!";
+                        break;
+                    case HexEventType.BattleBoss:
+                        icon = "👹";
+                        break;
+                    case HexEventType.Shop:
+                        icon = "$";
+                        break;
+                    case HexEventType.Heal:
+                        icon = "+";
+                        break;
+                    case HexEventType.Hole:
+                        icon = "O";
+                        break;
+                    case HexEventType.GainBlackMark:
+                        icon = "💎";
+                        break;
+                    case HexEventType.Swamp:
+                        iconPath = "res://Assets/Icons/skull.svg";
+                        break;
+                    case HexEventType.TwoWayTeleport:
+                        iconPath = "res://Assets/Icons/arrow_reserve.svg";
+                        break;
+                    case HexEventType.OneDirectionTele:
+                        if (_tile.TeleportRole == TeleportRole.Entry)
+                        {
+                            iconPath = "res://Assets/Icons/teleport_entry.svg";
+                        }
+                        else
+                        {
+                            iconPath = "res://Assets/Icons/teleport_exit.svg";
+                        }
+                        break;
+                    case HexEventType.Empty:
+                        icon = "";
+                        break;
+                }
             }
 
             _hexShape.Color = tileColor;
