@@ -80,6 +80,7 @@ size_flags_horizontal = 3
 [node name="EngravingIcon" type="TextureRect" parent="BackgroundPanel/VBoxContainer/BottomContainer/EngravingInfoContainer"]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
+expand_mode = 1
 stretch_mode = 5
 
 [node name="EngravingNameLabel" type="Label" parent="BackgroundPanel/VBoxContainer/BottomContainer/EngravingInfoContainer"]

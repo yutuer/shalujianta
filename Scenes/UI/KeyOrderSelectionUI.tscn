@@ -66,6 +66,7 @@ alignment = 1
 [node name="IconRect" type="TextureRect" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot0/VBoxContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(40, 40)
+expand_mode = 1
 
 [node name="NameLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot0/VBoxContainer"]
 layout_mode = 2
@@ -94,6 +95,7 @@ alignment = 1
 [node name="IconRect" type="TextureRect" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot1/VBoxContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(40, 40)
+expand_mode = 1
 
 [node name="NameLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot1/VBoxContainer"]
 layout_mode = 2
@@ -122,6 +124,7 @@ alignment = 1
 [node name="IconRect" type="TextureRect" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot2/VBoxContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(40, 40)
+expand_mode = 1
 
 [node name="NameLabel" type="Label" parent="BackgroundPanel/VBoxContainer/KeyOrderSlotsContainer/KeyOrderSlot2/VBoxContainer"]
 layout_mode = 2

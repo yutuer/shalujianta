@@ -44,6 +44,7 @@ theme_override_font_sizes/font_size = 48
 
 [node name="IconRect" type="TextureRect" parent="."]
 visible = false
+custom_minimum_size = Vector2(80, 80)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -56,6 +57,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 grow_horizontal = 2
 grow_vertical = 2
+expand_mode = 1
 stretch_mode = 5
 
 [node name="DebugLabel" type="Label" parent="."]
