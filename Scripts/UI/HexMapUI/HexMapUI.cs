@@ -341,7 +341,8 @@ namespace FishEatFish.UI.HexMap
             if (topRightContainer == null) return;
             var screenSize = GetViewportRect().Size;
             float buttonContainerWidth = 100 * 4 + 10 * 3 + 40;
-            topRightContainer.GlobalPosition = new Vector2(screenSize.X - buttonContainerWidth - 20, 20);
+            // y=132：让开顶部公共 HUD（CommonHUD）的统计位，HUD 高 120
+            topRightContainer.GlobalPosition = new Vector2(screenSize.X - buttonContainerWidth - 20, 132);
         }
 
         public override void _EnterTree()

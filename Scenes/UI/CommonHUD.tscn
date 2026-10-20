@@ -1,0 +1,142 @@
+[gd_scene load_steps=4 format=3 uid="uid://commonhud"]
+
+[ext_resource type="Script" path="res://Scripts/UI/CommonHUD.cs" id="1"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/AttackerDisplayUI.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/CommonHUDSlot.tscn" id="3"]
+
+[node name="CommonHUD" type="Control"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+script = ExtResource("1")
+SlotScene = ExtResource("3")
+
+[node name="TeamDisplay" parent="." instance=ExtResource("2")]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 4.0
+offset_right = 416.0
+offset_bottom = 116.0
+
+[node name="KeyOrderBox" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 430.0
+offset_top = 24.0
+offset_right = 560.0
+offset_bottom = 96.0
+theme_override_constants/separation = 8
+
+[node name="KeyOrderDisc" type="PanelContainer" parent="KeyOrderBox"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="KeyOrderInitial" type="Label" parent="KeyOrderBox/KeyOrderDisc"]
+layout_mode = 2
+text = "—"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.94, 0.78, 1)
+
+[node name="KeyOrderLabel" type="Label" parent="KeyOrderBox"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "无钥令"
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
+
+[node name="CollectionBox" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 32.0
+offset_right = 980.0
+offset_bottom = 88.0
+theme_override_constants/separation = 8
+
+[node name="StatsBox" type="HBoxContainer" parent="."]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -560.0
+offset_top = 18.0
+offset_right = -20.0
+offset_bottom = 102.0
+theme_override_constants/separation = 28
+alignment = 2
+
+[node name="Stat0" type="VBoxContainer" parent="StatsBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="TitleLabel" type="Label" parent="StatsBox/Stat0"]
+layout_mode = 2
+text = "银钥"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.7, 0.73, 0.8, 1)
+
+[node name="ValueLabel" type="Label" parent="StatsBox/Stat0"]
+layout_mode = 2
+text = "0"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.93, 0.72, 1)
+
+[node name="Stat1" type="VBoxContainer" parent="StatsBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="TitleLabel" type="Label" parent="StatsBox/Stat1"]
+layout_mode = 2
+text = "黑印"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.7, 0.73, 0.8, 1)
+
+[node name="ValueLabel" type="Label" parent="StatsBox/Stat1"]
+layout_mode = 2
+text = "0"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.93, 0.72, 1)
+
+[node name="Stat2" type="VBoxContainer" parent="StatsBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="TitleLabel" type="Label" parent="StatsBox/Stat2"]
+layout_mode = 2
+text = "队伍血量"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.7, 0.73, 0.8, 1)
+
+[node name="ValueLabel" type="Label" parent="StatsBox/Stat2"]
+layout_mode = 2
+text = "0"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.93, 0.72, 1)
+
+[node name="Stat3" type="VBoxContainer" parent="StatsBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="TitleLabel" type="Label" parent="StatsBox/Stat3"]
+layout_mode = 2
+text = "关卡"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.7, 0.73, 0.8, 1)
+
+[node name="ValueLabel" type="Label" parent="StatsBox/Stat3"]
+layout_mode = 2
+text = "—"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.93, 0.72, 1)

@@ -1,6 +1,7 @@
 using Godot;
 using FishEatFish.UI.HexMap;
 using FishEatFish.Battle.HexMap;
+using FishEatFish.UI;
 
 namespace FishEatFish.Scenes
 {
@@ -8,6 +9,7 @@ namespace FishEatFish.Scenes
     {
         private HexMapUI _hexMapUI;
         private HexMapController _controller;
+        private CommonHUD _commonHUD;
 
         public override void _Ready()
         {
@@ -25,6 +27,20 @@ namespace FishEatFish.Scenes
             else
             {
                 GD.PrintErr("[HexMapScene] Failed to load HexMapUI scene!");
+            }
+
+            // 顶部公共 HUD（地图 / 战斗 / 商店共用）
+            var commonHudScene = GD.Load<PackedScene>("res://Scenes/UI/CommonHUD.tscn");
+            if (commonHudScene != null)
+            {
+                _commonHUD = (CommonHUD)commonHudScene.Instantiate();
+                // 地图左上角已有自己的怒气圈显示，这里不重复显示角色圆环
+                _commonHUD.ShowTeamSection = false;
+                AddChild(_commonHUD);
+            }
+            else
+            {
+                GD.PrintErr("[HexMapScene] Failed to load CommonHUD scene!");
             }
         }
     }
