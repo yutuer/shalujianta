@@ -437,6 +437,30 @@ namespace FishEatFish.Shop
 			return false;
 		}
 
+		/// <summary>
+		/// 直接发放一个造物进背包（战斗奖励用，不扣黑印）。
+		/// </summary>
+		/// <param name="artifact">造物数据</param>
+		/// <returns>是否发放成功</returns>
+		public bool GrantArtifact(ArtifactData artifact)
+		{
+			if (artifact == null)
+			{
+				GD.PrintErr("[BlackMarkShopManager] GrantArtifact 收到空造物");
+				return false;
+			}
+
+			if (!CanAcquireArtifact())
+			{
+				GD.PrintErr($"[BlackMarkShopManager] GrantArtifact 失败：背包已满（{GetOwnedArtifactsCount()}）");
+				return false;
+			}
+
+			_ownedArtifacts.Add(artifact);
+			GD.Print($"[BlackMarkShopManager] 发放造物: {artifact.name}（背包 {GetOwnedArtifactsCount()}）");
+			return true;
+		}
+
 		public bool CanAcquireArtifact()
 		{
 			var mapManager = GetNodeOrNull<MapManager>("/root/MapManager");

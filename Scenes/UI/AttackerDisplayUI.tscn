@@ -54,6 +54,12 @@ alignment = 1
 layout_mode = 2
 text = "角色"
 
+[node name="UltReadyLabel" type="Label" parent="VBoxContainer/CharacterContainer/CharacterSlot0/HBoxContainer"]
+layout_mode = 2
+text = "可释放"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 [node name="RageCircle" type="TextureRect" parent="VBoxContainer/CharacterContainer/CharacterSlot0/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
@@ -79,6 +85,12 @@ alignment = 1
 layout_mode = 2
 text = "角色"
 
+[node name="UltReadyLabel" type="Label" parent="VBoxContainer/CharacterContainer/CharacterSlot1/HBoxContainer"]
+layout_mode = 2
+text = "可释放"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 [node name="RageCircle" type="TextureRect" parent="VBoxContainer/CharacterContainer/CharacterSlot1/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
@@ -104,6 +116,12 @@ alignment = 1
 layout_mode = 2
 text = "角色"
 
+[node name="UltReadyLabel" type="Label" parent="VBoxContainer/CharacterContainer/CharacterSlot2/HBoxContainer"]
+layout_mode = 2
+text = "可释放"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 [node name="RageCircle" type="TextureRect" parent="VBoxContainer/CharacterContainer/CharacterSlot2/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
@@ -129,6 +147,12 @@ alignment = 1
 layout_mode = 2
 text = "角色"
 
+[node name="UltReadyLabel" type="Label" parent="VBoxContainer/CharacterContainer/CharacterSlot3/HBoxContainer"]
+layout_mode = 2
+text = "可释放"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 [node name="RageCircle" type="TextureRect" parent="VBoxContainer/CharacterContainer/CharacterSlot3/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2

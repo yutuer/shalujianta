@@ -23,6 +23,12 @@ public class EngravingEffect
     public int Priority { get; set; }
     public string Rarity { get; set; }
 
+    /// <summary>
+    /// 刻印图标路径（卡面角标用）。
+    /// 必须指向真实存在的资源，否则 UI 会退化成纯色方块。
+    /// </summary>
+    public string IconPath { get; set; } = "";
+
     public static EngravingEffect CreateShieldEngraving()
     {
         return new EngravingEffect
@@ -33,7 +39,8 @@ public class EngravingEffect
             Description = "使用此卡后获得 +5 护盾",
             PrimaryValue = 5,
             Priority = 1,
-            Rarity = "common"
+            Rarity = "common",
+            IconPath = "res://Assets/Icons/intent_defend.svg"
         };
     }
 
@@ -48,7 +55,8 @@ public class EngravingEffect
             PrimaryValue = 3,
             SecondaryValue = 3,
             Priority = 2,
-            Rarity = "common"
+            Rarity = "common",
+            IconPath = "res://Assets/Icons/skull.svg"
         };
     }
 
@@ -61,7 +69,8 @@ public class EngravingEffect
             Name = "复制刻印",
             Description = "获得一张此卡牌的复制",
             Priority = 3,
-            Rarity = "rare"
+            Rarity = "rare",
+            IconPath = "res://Assets/Icons/relic_lantern.svg"
         };
     }
 
@@ -75,7 +84,8 @@ public class EngravingEffect
             Description = "其他队友各获得 +15 怒气值",
             PrimaryValue = 15,
             Priority = 4,
-            Rarity = "rare"
+            Rarity = "rare",
+            IconPath = "res://Assets/Icons/intent_buff.svg"
         };
     }
 
@@ -89,7 +99,8 @@ public class EngravingEffect
             Description = "出牌角色获得 +30 怒气值",
             PrimaryValue = 30,
             Priority = 5,
-            Rarity = "common"
+            Rarity = "common",
+            IconPath = "res://Assets/Icons/intent_attack.svg"
         };
     }
 
@@ -104,7 +115,8 @@ public class EngravingEffect
             PrimaryValue = 50,
             SecondaryValue = 1,
             Priority = 6,
-            Rarity = "epic"
+            Rarity = "epic",
+            IconPath = "res://Assets/Icons/enemy_elite.svg"
         };
     }
 

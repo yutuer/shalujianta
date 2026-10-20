@@ -10,7 +10,7 @@
 |---|---|
 | 引擎 | Godot 4.6.1-stable **mono**（.NET 8.0 / `net8.0`） |
 | 仓库 | <https://github.com/yutuer/shalujianta.git>（分支 `main`） |
-| 规模 | 117 个 C# 脚本 / 18,664 行 · 31 个 `.tscn` · 11 张 JSON 数据表 |
+| 规模 | 156 个 C# 脚本 / 25,625 行 · 47 个 `.tscn` · 15 张 JSON 数据表 |
 | 原始需求 | [`docs/原始策划案.md`](docs/原始策划案.md) |
 | 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 14 个条目 |
 
@@ -118,14 +118,14 @@ $godot = 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe'
 
 ```
 FishEatFish/
-├─ Data/            11 张 JSON 数据表（卡牌/角色/刻印/造物/buff/效果/大招/敌人波次…）
+├─ Data/            15 张 JSON 数据表（卡牌/角色/刻印/造物/buff/效果/大招/敌人波次…）
 │                   + dev_scenarios.json —— 调试场景预设表
-├─ Scenes/          31 个 .tscn
+├─ Scenes/          47 个 .tscn
 │  ├─ MainMenu / LevelMap / CharacterSelection / BattleScene / HexMapScene
 │  ├─ Dev/           DevScenario.tscn —— 调试场景准备器入口
-│  └─ UI/           24 个 UI 组件场景
-├─ Scripts/         117 个 .cs，按职责分层
-│  ├─ Scenes/       场景驱动（BattleManager 1007 行是核心）
+│  └─ UI/           40 个 UI 组件场景
+├─ Scripts/         156 个 .cs，按职责分层
+│  ├─ Scenes/       场景驱动（BattleManager 是战斗主循环核心）
 │  ├─ Dev/          DevScenario.cs —— 调试场景准备器逻辑
 │  ├─ Battle/       战斗核心
 │  │  ├─ Core/          Player / Enemy / IUnit / 敌人波次加载
@@ -134,12 +134,12 @@ FishEatFish/
 │  │  ├─ Effects/       效果注册表、效果实现、Buff/Debuff
 │  │  ├─ HexMap/        坐标、格子、地图、生成器、事件
 │  │  ├─ MapSystem/     MapManager / 地图定义 / 奖励
-│  │  ├─ ArtifactSystem/ EngravingSystem/ SilverKeySystem/
+│  │  ├─ ArtifactSystem/ EngravingSystem/ SilverKeySystem/ BattleRewardManager/
 │  │  └─ CardLayoutManager / RageManager / BattleTransitionManager …
 │  ├─ AI/           敌人 AI（激进/均衡/防守）
 │  ├─ Shop/         黑印商店
 │  ├─ MapValidation/ 地图可达性与死锁校验（**7 个文件不依赖 Godot，整目录可拷走**）
-│  └─ UI/           20+ UI 组件脚本
+│  └─ UI/           40+ UI 组件脚本
 ├─ docs/            专题文档（见 §9 文档索引）+ 原始策划案 + 参考图
 ├─ tools/           check-task-stats.ps1 校验任务统计表是否漂移
 │                   check-doc-consistency.ps1 文档一致性回读测试（链接/换行符/编码/术语/统计）
@@ -161,6 +161,12 @@ MainMenu
        └→ CharacterSelection（选 4 角色 + 1 钥令）
             ├→ HexMapScene（六边形地图探索）⇄ BattleScene（战斗）
             └→ BattleScene（直接进战斗，测试用）
+
+战斗胜利后的两段收尾（D18）：
+  BattleScene → BattleRewardUI（三选一：造物 or 刻印）
+              → BattleResultUI（调查完成结算）
+              → HexMapScene（回地图）
+  刻印奖励会多一段：BattleRewardUI → EngravingRewardCardSelectionUI（选一张卡镶嵌）
 ```
 
 跨场景数据靠两套机制：
@@ -175,6 +181,8 @@ MainMenu
 | `MapManager` | `Scripts/Battle/MapSystem/MapManager.cs` | 当前关卡、进度、造物数量上限 |
 | `BattleTransitionManager` | `Scripts/Battle/BattleTransitionManager.cs` | 地图↔战斗切换、**地图存档**（地图对象/位置/生命/黑印）、敌人波次键 |
 | `BlackMarkShopManager` | `Scripts/Shop/BlackMarkShopManager.cs` | 黑印余额、商店物品、已购造物、已刻印卡牌 |
+| `EngravingManager` | `Scripts/Battle/EngravingSystem/EngravingManager.cs` | **刻印的唯一真相源**：卡牌↔刻印映射（跨战斗存活）、出牌触发 |
+| `BattleRewardManager` | `Scripts/Battle/BattleRewardManager.cs` | 战斗奖励候选生成（造物/刻印三选一）与发放 |
 
 > 这三个**必须是 autoload**。历史上它们分别是场景节点 / 子节点，切场景就销毁，导致黑印清零、地图存档丢失。
 
@@ -226,16 +234,16 @@ MainMenu
 ## 5. 当前进度基线
 
 > **本表是快照，不是活数据。** 权威来源是 [`tasks.md`](tasks.md) 的任务行；下表由脚本实算后同步。
-> 统计于 **2026-10-20**，口径：按 `tasks.md` 一~五节任务行逐行实算（共 **129** 行）。
+> 统计于 **2026-10-20**，口径：按 `tasks.md` 一~五节任务行逐行实算（共 **131** 行）。
 
 | 分类 | 总数 | ✅ | 🔄 | ⬜ |
 |---|:-:|:-:|:-:|:-:|
-| 高优先级 | 68 | 45 | 5 | 18 |
+| 高优先级 | 70 | 64 | 1 | 5 |
 | 中优先级 | 15 | 0 | 1 | 14 |
 | 低优先级 | 13 | 0 | 0 | 13 |
-| 商店系统（已完成） | 28 | 26 | 1 | 1 |
+| 商店系统（已完成） | 28 | 28 | 0 | 0 |
 | Bug 修复 | 5 | 3 | 2 | 0 |
-| **合计** | **129** | **74** | **9** | **46** |
+| **合计** | **131** | **95** | **4** | **32** |
 
 📌 **改完任务状态别只改表**——跑校验脚本，它一次核对四处（`tasks.md` 实算 / `tasks.md` 统计表 / 本表 / `docs/开发计划.md`）：
 
@@ -249,13 +257,15 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 **血量是同一份**：玩家血量 = 队伍总血量（鼠牛虎兔 = 125），战斗胜利写回地图，战败不写回。
 
-**尚未打通的**：刻印效果实际触发 · 大招/钥令实际效果 · 战斗胜利后的奖励**选择**界面（战后**结算**界面已做，见 D4） · Buff/Debuff UI 呈现 · 地图连通性/死锁校验（还没法自动查"走过去了回不来"） · 按配额生成关卡地图（现在是无 seed 随机生成，退出重进同一关卡地图会变） · 地图迷雾系统（还没有战争迷雾 / 相邻高亮 / 探照灯道具） · 多簇地图生成（地图目前是完整网格，只靠「洞穴」格子假断开）。
+**尚未打通的**：地图迷雾的**云雾状有机边缘**（纯黑遮罩与战争迷雾本体已做，见 D5） · 造物装备界面（2.1） · 金币系统（2.2） · 地图胜利结算界面（2.3） · 角色羁绊 / 怒气溢出 / 技能升级 / 外观皮肤（3.x） · 存档持久化到磁盘（跨场景状态已放 autoload，**重启仍丢**）。
+
+> 上一迭代（对标参考图 D1~D14）已全部完成；本轮（战斗机制闭环 D15~D19）把**刻印 / 大招 / 钥令 / 战斗奖励选择 / Buff-Debuff UI** 这 5 组从「写了但没接线」变成了真正可用 —— 详见 [`docs/开发计划.md`](docs/开发计划.md)。
 
 ---
 
 ## 6. 已知陷阱与经验
 
-完整的 16 条记在 **[`docs/踩坑记录.md`](docs/踩坑记录.md)**，改代码前建议扫一眼。最要命的几条：
+完整的 35 条记在 **[`docs/踩坑记录.md`](docs/踩坑记录.md)**，改代码前建议扫一眼。最要命的几条：
 
 | 坑 | 一句话 | 详见 |
 |---|---|---|
@@ -271,9 +281,15 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 ## 7. 下一步做什么
 
-**本轮迭代（UI 对标参考图）—— 14 个条目已全部完成** ✅
-逐条走「需求 → 开发 → 验证」三步流程，每条都有临时 C# 集成测试断言。
-清单与逐条实现回写见 [`docs/开发计划.md`](docs/开发计划.md)。
+**本轮迭代（战斗机制闭环）—— 5 个条目已全部完成** ✅
+上一轮（UI 对标参考图 D1~D14）也已完成。两轮清单与逐条实现回写见 [`docs/开发计划.md`](docs/开发计划.md)。
+
+**这轮修的是「写了但没接线」的 5 组**（D15~D19）：
+- **D15 刻印触发** ✅ —— `EngravingManager` 升为 **autoload**（刻印必须跨战斗存活）；卡组每场重建 → 新增 `ApplyToDeck` 回填；出牌时真正触发 6 种刻印效果；卡面右上角加刻印角标。
+- **D16 怒气大招** ✅ —— 根因是 `UltimateSkill.Execute` 只跑空的 `EffectIds`（大招实际效果为零），且读的是字段更少的 `characters.json`。改为 **`ultimates.json` 为唯一权威源** + 新增 `UltimateExecutor` 真正结算伤害/减益/治疗/护盾/抽牌；点击角色槽位释放大招。
+- **D17 钥令效果** ✅ —— 修掉**双重计数 bug**（管理器与调用方各记一次 → 「每回合 2 次」实际只能用 1 次）；限额改由管理器**守门**（超限直接拒绝、不执行效果）。
+- **D18 战斗奖励选择界面** ✅ —— 新增 `BattleRewardUI` 三选一（造物 or 刻印，50/50）；刻印走独立选卡界面；胜利流程改为「奖励三选一 → 调查完成结算 → 回地图」。
+- **D19 Buff/Debuff UI** ✅ —— 敌人侧补上状态图标行；玩家侧改**差集刷新**（消失的只淡出那一个）；状态变化实时刷新。
 
 **地图这条线（🔺 核心资产）**
 - **D13「地图可达性与死锁校验」** ✅ —— 通用算法模块 `Scripts/MapValidation/`（7 个文件**不依赖 Godot**，整目录可拷走）。9 类结构化诊断：通不了关 / 软锁 / 不可达区域 / 关键格不可达 / 死路 / 孤岛 / 状态死锁 / 旁支必需格不可达 / 多簇。可移植性有可重复脚本 `tools/verify-mapvalidation-portability.ps1` 守着。
@@ -292,13 +308,12 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 - **D11「商店刷新/购买二次确认」** ✅ —— 通用 `ConfirmDialog`（标题 + 正文 + 取消/确认）。
 - **D2「视觉主题资源」** ✅ —— `Assets/Themes/MainTheme.tres`（深蓝灰 + 细金线）+ 衬线中文标题字体。
 
-**功能缺口** —— `tasks.md` 高优先级 5 组（战斗奖励**选择**界面 / 刻印触发 / 大招 / 钥令 / Buff-Debuff UI）尚未完成，进度见 §5。
+**功能缺口** —— `tasks.md` 高优先级的 5 组（战斗奖励**选择**界面 / 刻印触发 / 大招 / 钥令 / Buff-Debuff UI）**已在本轮全部完成**（D15~D19），进度见 §5。
 
 **其他待办**（散落在 `tasks.md` 与 `.trae/plans/`，未进本轮迭代）：
 
-- 战斗奖励发放 —— 现在打赢 BOSS 只结算「地图完成」，没发奖（金币/造物/刻印）
 - 点击远距离格子移动 —— 现在悬停会高亮整条路径，但点击只接受相邻格子（`HexMapUI.OnTileClicked`）
-- 存档持久化到磁盘 —— 所有跨场景状态目前只在内存，重启即丢
+- 存档持久化到磁盘 —— 跨场景状态已放 autoload（`MapManager` / `BattleTransitionManager` / `BlackMarkShopManager` / `EngravingManager` / `BattleRewardManager`），**但重启仍丢**
 - `HexMapUI.cs` 拆分 —— `.trae/plans/hexmapui-refactor-plan.md` 阶段 6（目标 802 行 → <400 行）
 
 ---
@@ -312,7 +327,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 | 日期 | 内容 |
 |---|---|
-| 2026-10-20 | **本轮 14 条需求全部完成**（D1/D2/D3/D4/D5/D6/D7/D8/D9/D10/D11/D12/D13/D14）——每条走「需求 → 开发 → 验证」三步，用**临时 C# 集成测试**断言，测完即删。新增可复用资产：**地图校验器 `Scripts/MapValidation/`**（不依赖 Godot，整目录可拷到别的项目，有 `tools/verify-mapvalidation-portability.ps1` 守着可移植性）、**关卡规格 `Data/level_specs.json`**（配额 + 种子 → 确定性 + 可复用）、**统一主题 `Assets/Themes/MainTheme.tres`**。本轮还修掉一批**既有缺陷**：`MapDefinition.EnemyWaveIds` 指向不存在的波次 key（死配置）、`HexMapGenerator` 的 IconPath 指向 9 个不存在的 png、`HexTileView` 压根没读 IconPath、缺「不可满足规格」检查、洞的时序是「踩上去就消失」而不是「离开才消失」、`RestoreRevealedTiles` 写了却从没被调用。统计 129 行 / 74 完成 / 9 进行 / 46 待开 |
+| 2026-10-20 | **战斗机制闭环 5 组全部完成（D15~D19）** —— 上一轮 D1~D14 完成的是**界面**，这一轮补的是**机制**：D15 刻印触发 / D16 怒气大招 / D17 钥令效果 / D18 战斗奖励选择界面 / D19 Buff-Debuff UI。**根因全是「代码写了但没接线」**：EngravingManager.OnCardPlayed 零调用点、且卡组每场重建 → 刻印必丢；UltimateSkill.Execute 只跑空的 EffectIds → **大招实际效果为零**，且读的是字段更少的 characters.json 而非 ultimates.json；KeyOrderManager.ApplyKeyOrderEffect 内部记一次使用、BattleManager 又记一次 → **「每回合 2 次」实际只能用 1 次**。本轮还修掉两个更隐蔽的**减益失效**：DefenseDownDebuff 靠改防御值，敌人防御为 0 时完全无效；VulnerableDebuff 靠 _owner 判定，而 Enemy.AddStatusEffect 从不调 SetOwner → **易伤从来没生效过**（大招「龙王咆哮」因此打不出毒+易伤）。两处都改为**参与伤害计算**。新增 autoload 两个（EngravingManager / BattleRewardManager）。验证用临时 C# 集成测试，**75/75 断言通过**，测完即删 || 2026-10-20 | **本轮 14 条需求全部完成**（D1/D2/D3/D4/D5/D6/D7/D8/D9/D10/D11/D12/D13/D14）——每条走「需求 → 开发 → 验证」三步，用**临时 C# 集成测试**断言，测完即删。新增可复用资产：**地图校验器 `Scripts/MapValidation/`**（不依赖 Godot，整目录可拷到别的项目，有 `tools/verify-mapvalidation-portability.ps1` 守着可移植性）、**关卡规格 `Data/level_specs.json`**（配额 + 种子 → 确定性 + 可复用）、**统一主题 `Assets/Themes/MainTheme.tres`**。本轮还修掉一批**既有缺陷**：`MapDefinition.EnemyWaveIds` 指向不存在的波次 key（死配置）、`HexMapGenerator` 的 IconPath 指向 9 个不存在的 png、`HexTileView` 压根没读 IconPath、缺「不可满足规格」检查、洞的时序是「踩上去就消失」而不是「离开才消失」、`RestoreRevealedTiles` 写了却从没被调用。统计 129 行 / 74 完成 / 9 进行 / 46 待开 |
 | 2026-10-20 | **回读测试**：从 GitHub 拉回 6 个文件与本地做 SHA256 逐字节比对，**全部一致**（推送完整）；同时全文扫描发现并修正一批前后不一致 —— **术语纠正「洞 = 桥（cut edge）」→ 洞是顶点，要判断的是「割点（articulation point）」**；「桥树」统一改称**簇图**（簇图要考虑双向传送超边与单向有向边，跟纯无向的桥树不是一回事）；`BridgeTreeAnalyzer.cs` → `ClusterGraphAnalyzer.cs`；例子块改用簇的视角重画；奇偶性段落的「区域」统一为「簇」 |
 | 2026-10-20 | **D7「事件弹窗统一」完成**：新增通用 `EventDialog`（标题 / 主图 / 叙事文案 / N 个带描述的选项 / 隐藏事件标记）+ `Data/events.json` 事件数据表（文案与图**不硬编码**）+ `MapEventData` 加载器。双向隧道接入（原 `TeleportDialog` 已删除）；**单向传送不弹窗**（不可逆的路，问了也没意义）。验证用临时 C# 集成测试，**17/17 断言通过**（选【离开】留在原地、选【进入】完成传送 `(-3,9)→(3,4)`） |
 | 2026-10-20 | **D1「顶部公共 HUD 外壳」完成**：新增 `CommonHUD` 组件（4 个角色圆环 + 当前钥令 + 8 格收集品槽 + 右上 4 个统计位），已接入**战斗场景与地图场景**。角色圆环复用 `AttackerDisplayUI`、收集品槽新增 `CommonHUDSlot`（图标/空槽 ✕），数据全部取自既有 autoload 与 `GlobalData`，组件不持有游戏状态。用两个导出开关（`ShowTeamSection` / `ShowStatsSection`）避免与各场景原有 UI 重复；顺带把 `BattleScene` 的 TopBar 下移 y=128、地图右上角按钮组下移 y=132 以让开 HUD。验证用临时 C# 集成测试，**16/16 断言通过**（两个场景各截一张图，数据与位置均正确） |
@@ -350,7 +365,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 |---|---|
 | **本文** | 主干：现状 / 架构 / 进度 / 下一步 |
 | `.trae/rules/project_rules.md` | **开发铁律**（第一准则、UI 规范、日志规范、六边形常量） |
-| `docs/开发计划.md` | **本轮迭代执行计划**：需求→开发→验证三步流程 + 14 个条目 + 重要度/难度排序 + 参考图索引 |
+| `docs/开发计划.md` | **迭代执行计划**：需求→开发→验证三步流程 + 19 个条目 + 重要度/难度排序 + 参考图索引 |
 | `tasks.md` | 87 行任务清单 + 依赖 + 状态 |
 | `GameDesign.md` | 完整策划案 18 章 + 未完成功能清单 |
 | `checklist.md` | 12 大类验收清单 |
@@ -359,7 +374,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 | 路径 | 内容 |
 |---|---|
-| `docs/踩坑记录.md` | **16 条真实踩坑与规矩**（改代码前扫一眼） |
+| `docs/踩坑记录.md` | **35 条真实踩坑与规矩**（改代码前扫一眼） |
 | `docs/调试场景准备器.md` | 调试场景准备器用法、8 个预设、命令行参数、加预设的方法 |
 | `docs/六边形地图算法.md` | 六边形坐标权威文档 |
 | `docs/手牌预览功能使用说明.md` | 手牌扇形调试面板用法 |

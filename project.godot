@@ -20,6 +20,8 @@ config/icon="res://icon.svg"
 MapManager="*res://Scripts/Battle/MapSystem/MapManager.cs"
 BattleTransitionManager="*res://Scripts/Battle/BattleTransitionManager.cs"
 BlackMarkShopManager="*res://Scripts/Shop/BlackMarkShopManager.cs"
+EngravingManager="*res://Scripts/Battle/EngravingSystem/EngravingManager.cs"
+BattleRewardManager="*res://Scripts/Battle/BattleRewardManager.cs"
 
 [display]
 

@@ -5,6 +5,7 @@ using FishEatFish.Battle.Core;
 using FishEatFish.Battle.Card;
 using FishEatFish.Battle.Effects.Buffs;
 using FishEatFish.Battle.CharacterSystem;
+using FishEatFish.Battle.EngravingSystem;
 using FishEatFish.Scenes;
 using FishEatFish.AI;
 using FishEatFish.Shop;
@@ -291,6 +292,8 @@ namespace FishEatFish.Scenes
 			{
 				attackerDisplayUI.SetAttacker(attacker);
 			}
+			// 点击角色槽位释放大招（怒气满时才可点）
+			attackerDisplayUI.SetUltimateClickCallback(OnUltimateSlotClicked);
 		}
 		GD.Print("[BattleManager] 攻击体角色显示UI初始化成功");
 
@@ -327,6 +330,45 @@ namespace FishEatFish.Scenes
 			keyOrderDescriptionUI.Position = new Vector2(300, 250);
 		}
 		GD.Print("[BattleManager] 钥令说明UI初始化成功");
+	}
+
+	/// <summary>
+	/// 点击角色槽位 → 尝试释放该角色的大招（tasks.md 1.4.2 / 1.4.3）。
+	/// </summary>
+	/// <param name="slotIndex">槽位索引 0~3</param>
+	private void OnUltimateSlotClicked(int slotIndex)
+	{
+		GD.Print($"[BattleManager] OnUltimateSlotClicked called: slot={slotIndex}");
+
+		if (rageManager == null || !isPlayerTurn) return;
+		if (slotIndex < 0 || slotIndex >= characterPositions.Count) return;
+
+		CharacterPosition position = characterPositions[slotIndex];
+		if (position == null || !position.CanUseUltimate())
+		{
+			AddMessage("怒气不足，无法释放大招!", LogType.System);
+			return;
+		}
+
+		bool released = rageManager.UseUltimate(slotIndex, player, enemies.ToArray());
+		if (!released)
+		{
+			AddMessage("大招释放失败!", LogType.System);
+			return;
+		}
+
+		// 释放动画 + 表现刷新
+		position.PlayUltimateAnimation(player, enemies.ToArray());
+		AddMessage($"{position.Character?.Name ?? "角色"} 释放了大招！", LogType.System);
+
+		UpdateRageDisplay();
+		UpdateUI();
+		UpdateEnemyUI();
+		UpdateBuffDebuffDisplay();
+		UpdateEnemyStatusIcons();
+
+		CheckGameOver();
+		GD.Print($"[BattleManager] OnUltimateSlotClicked completed: slot={slotIndex}");
 	}
 
 	/// <summary>
@@ -587,6 +629,15 @@ namespace FishEatFish.Scenes
 		}
 
 		player.ShuffleDeck();
+
+		// 刻印回填：卡组每场战斗都重新 new 出来，不回填就等于「上回合刻的印」全丢了
+		EngravingManager engravingManager = EngravingManager.Instance;
+		if (engravingManager != null)
+		{
+			int engravedCount = engravingManager.ApplyToDeck(player.Deck);
+			GD.Print($"[BattleManager] 刻印回填完成: {engravedCount} 张卡带刻印");
+		}
+
 		GD.Print("[BattleManager] 卡牌初始化完成");
 	}
 
@@ -604,8 +655,21 @@ namespace FishEatFish.Scenes
 		_buffDebuffDisplay = GetNodeOrNull<BuffDebuffDisplay>("UI/MainArea/BattleZones/PlayerZone/VBoxContainer/BuffDebuffDisplay");
 		}
 		if (_buffDebuffDisplay == null) return;
-		_buffDebuffDisplay.DisplayAllStatus(player?.StatusEffects);
+		_buffDebuffDisplay.RefreshStatus(player?.StatusEffects);
 	}
+
+	/// <summary>
+	/// 刷新敌人身上的 Buff / Debuff 图标（敌人血条下方那排）。
+	/// </summary>
+	private void UpdateEnemyStatusIcons()
+	{
+		for (int i = 0; i < enemies.Count && i < enemyUIs.Count; i++)
+		{
+			if (enemyUIs[i] == null || enemies[i] == null) continue;
+			enemyUIs[i].UpdateStatusIcons(enemies[i].StatusEffects);
+		}
+	}
+
 	private void StartBattle()
 	{
 		GD.Print("[BattleManager] ========== 战斗开始 ==========");
@@ -678,6 +742,8 @@ namespace FishEatFish.Scenes
 
 		UpdateUI();
 		UpdateEnemyUI();
+		UpdateBuffDebuffDisplay();
+		UpdateEnemyStatusIcons();
 
 		if (CheckGameOver())
 		{
@@ -994,6 +1060,7 @@ namespace FishEatFish.Scenes
 
 		ApplyCardEffects(card);
 		ApplyCardDamage(card);
+		TriggerEngraving(card);
 
 		if (player.Hand.Contains(card))
 		{
@@ -1004,8 +1071,51 @@ namespace FishEatFish.Scenes
 		UpdateUI();
 		UpdateEnemyUI();
 		UpdateHandUI();
+		UpdateBuffDebuffDisplay();
+		UpdateEnemyStatusIcons();
 
 		CheckGameOver();
+	}
+
+	/// <summary>
+	/// 触发这张卡的刻印效果（tasks.md 1.2.2）。
+	/// 没有刻印就什么都不做；触发了就把描述打进战斗日志。
+	/// </summary>
+	private void TriggerEngraving(Card card)
+	{
+		EngravingManager engravingManager = EngravingManager.Instance;
+		if (engravingManager == null || card == null) return;
+		if (!card.IsEngraved) return;
+
+		CharacterPosition owner = ResolveCardOwner(card);
+		string description = engravingManager.OnCardPlayed(card, player, enemies.ToArray(), owner, characterPositions);
+
+		if (!string.IsNullOrEmpty(description))
+		{
+			AddMessage(description, LogType.System);
+		}
+	}
+
+	/// <summary>
+	/// 找出这张卡属于哪个角色（用于「自身怒气」「团队怒气」这类需要出牌者的刻印）。
+	/// 找不到就返回 null，刻印里会做 null 保护。
+	/// </summary>
+	private CharacterPosition ResolveCardOwner(Card card)
+	{
+		if (card == null || attacker == null) return null;
+
+		CharacterDefinition character = attacker.GetCharacterByCard(card);
+		if (character == null) return null;
+
+		for (int i = 0; i < attacker.Characters.Length && i < characterPositions.Count; i++)
+		{
+			if (attacker.Characters[i] == character)
+			{
+				return characterPositions[i];
+			}
+		}
+
+		return null;
 	}
 
 	private void AddSilverKey(int energyCost)
@@ -1082,10 +1192,11 @@ namespace FishEatFish.Scenes
 
 	/// <summary>
 	/// 钥令按钮点击处理
-	/// 逻辑分支：
-	/// - 钥令值 < 1000：显示钥令说明（使用按钮禁用）
-	/// - 钥令值 ≥ 1000 + 首次使用：显示钥令说明（使用按钮启用）
-	/// - 钥令值 ≥ 1000 + 非首次使用：显示提示 + 随机3个钥令选择
+	/// 逻辑分支（每回合上限 2 次）：
+	/// - 银钥不足：显示钥令说明（使用按钮禁用）
+	/// - 本回合 0 次用过：显示钥令说明（使用按钮启用）→ 释放「已装备的钥令」
+	/// - 本回合 1 次用过：提示 + 随机 3 个钥令三选一
+	/// - 本回合 2 次用过（已用满）：拒绝，给出提示
 	/// </summary>
 	private void OnKeyOrderPressed()
 	{
@@ -1102,13 +1213,23 @@ namespace FishEatFish.Scenes
 		if (currentSilverKey < silverKeyConfig.BaseMaxSilverKey)
 		{
 			ShowKeyOrderDescription(false);
+			return;
 		}
-		else if (keyOrderManager.CanUseKeyOrder())
+
+		if (!keyOrderManager.CanUseKeyOrder())
 		{
+			AddMessage($"本回合钥令已用满（{keyOrderManager.GetUsedCountThisTurn()}/{KeyOrderManager.MaxKeyOrderUsePerTurn} 次）!", LogType.System);
+			return;
+		}
+
+		if (keyOrderManager.IsFirstUseThisTurn())
+		{
+			// 第一次用：释放已装备的钥令
 			ShowKeyOrderDescription(true);
 		}
 		else
 		{
+			// 第二次用：从随机 3 个钥令里挑一个
 			ShowPromptAndRandomSelection();
 		}
 	}
@@ -1154,23 +1275,31 @@ namespace FishEatFish.Scenes
 
 		if (!keyOrderManager.CanUseKeyOrder())
 		{
-			AddMessage("本回合已使用过钥令!", LogType.System);
+			AddMessage($"本回合钥令已用满（{keyOrderManager.GetUsedCountThisTurn()}/{KeyOrderManager.MaxKeyOrderUsePerTurn} 次）!", LogType.System);
 			return;
 		}
 
 		currentSilverKey -= equippedOrder.SilverKeyCost;
-		keyOrderManager.ApplyKeyOrderEffect(equippedOrder, player, enemies.ToArray());
-		keyOrderManager.RecordKeyOrderUse();
+		// 使用次数由 KeyOrderManager.ApplyKeyOrderEffect 内部记录，这里不要再记一次
+		if (!keyOrderManager.ApplyKeyOrderEffect(equippedOrder, player, enemies.ToArray()))
+		{
+			// 释放失败要把银钥退回去
+			currentSilverKey += equippedOrder.SilverKeyCost;
+			AddMessage("钥令释放失败!", LogType.System);
+			return;
+		}
 		AddMessage($"你释放了钥令：{equippedOrder.Name}！", LogType.System);
 
 		UpdateSilverKeyUI();
 		UpdateUI();
 		UpdateEnemyUI();
+		UpdateBuffDebuffDisplay();
+		UpdateEnemyStatusIcons();
 
-		if (currentSilverKey >= silverKeyConfig.BaseMaxSilverKey &&
-			keyOrderManager.CanUseKeyOrder())
+		// 第 1 次用完后仍有余量 → 提示玩家可以再挑一个随机钥令（第 2 次）
+		if (keyOrderManager.CanUseKeyOrder() && currentSilverKey >= silverKeyConfig.BaseMaxSilverKey)
 		{
-			ShowRandomKeyOrderSelection();
+			AddMessage("本回合还可以再使用 1 次钥令！", LogType.System);
 		}
 	}
 
@@ -1215,15 +1344,28 @@ namespace FishEatFish.Scenes
 			randomOrders,
 			(selectedOrder) =>
 			{
-				if (currentSilverKey >= selectedOrder.SilverKeyCost)
+				if (!keyOrderManager.CanUseKeyOrder())
+				{
+					AddMessage($"本回合钥令已用满（{keyOrderManager.GetUsedCountThisTurn()}/{KeyOrderManager.MaxKeyOrderUsePerTurn} 次）!", LogType.System);
+				}
+				else if (currentSilverKey >= selectedOrder.SilverKeyCost)
 				{
 					currentSilverKey -= selectedOrder.SilverKeyCost;
-					keyOrderManager.ApplyKeyOrderEffect(selectedOrder, player, enemies.ToArray());
-					keyOrderManager.RecordKeyOrderUse();
+					// 使用次数由 KeyOrderManager.ApplyKeyOrderEffect 内部记录
+					if (!keyOrderManager.ApplyKeyOrderEffect(selectedOrder, player, enemies.ToArray()))
+					{
+						// 释放失败要把银钥退回去
+						currentSilverKey += selectedOrder.SilverKeyCost;
+						AddMessage("钥令释放失败!", LogType.System);
+						isKeyOrderSelectionOpen = false;
+						return;
+					}
 					AddMessage($"你释放了钥令：{selectedOrder.Name}！", LogType.System);
 					UpdateSilverKeyUI();
 					UpdateUI();
 					UpdateEnemyUI();
+					UpdateBuffDebuffDisplay();
+					UpdateEnemyStatusIcons();
 				}
 				else
 				{
@@ -1270,9 +1412,35 @@ namespace FishEatFish.Scenes
 			return;
 		}
 
-		// 战斗胜利：先显示「调查完成」结算界面，玩家点「完成调查」再回地图
+		// 战斗胜利流程：奖励三选一 → 「调查完成」结算界面 → 回地图
+		// 奖励先于结算（对照参考图 R-10 / R-11 的「中途选择」语义）
 		BattleResultData result = BuildResultData();
+		transitionManager.SetPendingResult(result);
+
+		List<BattleRewardChoice> choices = GenerateRewardChoices();
+		if (choices.Count > 0)
+		{
+			transitionManager.ShowBattleReward(choices);
+			return;
+		}
+
+		// 没有奖励可发（例如背包满且无刻印候选）→ 直接进结算
 		transitionManager.ShowBattleResult(result);
+	}
+
+	/// <summary>
+	/// 生成本场战斗的奖励候选（三选一）。
+	/// </summary>
+	private List<BattleRewardChoice> GenerateRewardChoices()
+	{
+		BattleRewardManager rewardManager = BattleRewardManager.Instance;
+		if (rewardManager == null)
+		{
+			GD.PrintErr("[BattleManager] BattleRewardManager 未初始化，本次不发奖励");
+			return new List<BattleRewardChoice>();
+		}
+
+		return rewardManager.GenerateChoices();
 	}
 
 	/// <summary>

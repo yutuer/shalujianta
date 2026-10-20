@@ -168,6 +168,77 @@ namespace FishEatFish.Battle
         /// </summary>
         public BattleResultData PendingResult { get; private set; } = null;
 
+        /// <summary>先暂存结算数据（奖励选择之后还要用）</summary>
+        public void SetPendingResult(BattleResultData data)
+        {
+            PendingResult = data;
+        }
+
+        /// <summary>待选的战斗奖励候选（战斗胜利后传给奖励选择界面）</summary>
+        public List<BattleRewardChoice> PendingRewardChoices { get; private set; } = null;
+
+        /// <summary>待镶嵌的刻印（奖励选择界面选了刻印后带过来）</summary>
+        public BattleRewardChoice PendingRewardEngraving { get; private set; } = null;
+
+        /// <summary>待镶嵌刻印的目标卡牌候选</summary>
+        public List<FishEatFish.Battle.Card.Card> PendingRewardTargetCards { get; private set; } = null;
+
+        /// <summary>设置待镶嵌的刻印</summary>
+        public void SetPendingRewardEngraving(BattleRewardChoice choice)
+        {
+            PendingRewardEngraving = choice;
+        }
+
+        /// <summary>设置待镶嵌刻印的目标卡牌候选</summary>
+        public void SetPendingRewardTargetCards(List<FishEatFish.Battle.Card.Card> cards)
+        {
+            PendingRewardTargetCards = cards;
+        }
+
+        /// <summary>
+        /// 显示战斗奖励选择界面：保存候选并切场景。
+        /// </summary>
+        public void ShowBattleReward(List<BattleRewardChoice> choices)
+        {
+            GD.Print($"[BattleTransitionManager] ShowBattleReward called: {choices?.Count ?? 0} 个候选");
+
+            if (choices == null || choices.Count == 0)
+            {
+                GD.PrintErr("[BattleTransitionManager] 没有奖励候选，直接结束战斗");
+                EndBattle(true);
+                return;
+            }
+
+            PendingRewardChoices = choices;
+            PendingRewardEngraving = null;
+            PendingRewardTargetCards = null;
+
+            GetTree().ChangeSceneToFile("res://Scenes/UI/BattleRewardUI.tscn");
+            GD.Print("[BattleTransitionManager] ShowBattleReward completed");
+        }
+
+        /// <summary>
+        /// 奖励选择完成：清掉待选数据，接着显示结算界面（结算之后才回地图）。
+        /// </summary>
+        public void CompleteBattleReward()
+        {
+            GD.Print("[BattleTransitionManager] CompleteBattleReward called");
+
+            PendingRewardChoices = null;
+            PendingRewardEngraving = null;
+            PendingRewardTargetCards = null;
+
+            if (PendingResult != null)
+            {
+                ShowBattleResult(PendingResult);
+            }
+            else
+            {
+                EndBattle(true);
+            }
+            GD.Print("[BattleTransitionManager] CompleteBattleReward completed");
+        }
+
         /// <summary>
         /// 显示战斗结算界面：保存结算数据并切场景
         /// </summary>

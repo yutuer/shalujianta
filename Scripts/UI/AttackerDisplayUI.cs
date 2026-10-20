@@ -102,6 +102,36 @@ public partial class AttackerDisplayUI : Control
     }
 
     /// <summary>
+    /// 设置角色槽位点击回调（点击可释放大招的槽位时触发）
+    /// </summary>
+    /// <param name="onSlotClicked">回调参数为槽位索引 (0-3)，传 null 表示清除回调</param>
+    public void SetUltimateClickCallback(System.Action<int> onSlotClicked)
+    {
+        GD.Print("[AttackerDisplayUI] SetUltimateClickCallback called");
+
+        for (int i = 0; i < _characterSlots.Count; i++)
+        {
+            int slotIndex = i;
+            CharacterSlotUI slot = _characterSlots[i];
+            if (slot == null)
+            {
+                continue;
+            }
+
+            if (onSlotClicked != null)
+            {
+                slot.SetClickCallback(() => onSlotClicked(slotIndex));
+            }
+            else
+            {
+                slot.SetClickCallback(null);
+            }
+        }
+
+        GD.Print("[AttackerDisplayUI] SetUltimateClickCallback completed");
+    }
+
+    /// <summary>
     /// 高亮显示怒气已满的角色（可用于大招释放）
     /// </summary>
     public void HighlightCharacterWithFullRage()

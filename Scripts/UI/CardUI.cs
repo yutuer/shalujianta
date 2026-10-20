@@ -12,6 +12,7 @@ public partial class CardUI : Panel
     private TextureRect typeIcon;
     private Label hoverHint;
     private Label levelLabel;
+    private TextureRect engravingIcon;
 
     private Card cardData;
     private int cardIndex;
@@ -44,6 +45,12 @@ public partial class CardUI : Panel
         if (levelNode != null)
         {
             levelLabel = levelNode as Label;
+        }
+
+        engravingIcon = GetNodeOrNull<TextureRect>("EngravingIcon");
+        if (engravingIcon == null)
+        {
+            GD.PrintErr("[CardUI] 未找到 EngravingIcon 节点");
         }
 
         nameLabel.AddThemeColorOverride("font_color", new Color(1f, 1f, 1f));
@@ -157,7 +164,45 @@ public partial class CardUI : Panel
         playButton.Disabled = !canPlay;
 
         UpdateLevelDisplay();
+        UpdateEngravingBadge(card);
         UpdateCardStyle();
+    }
+
+    /// <summary>
+    /// 刻印角标：卡上刻了印就在右上角显示刻印图标（没刻则隐藏）。
+    /// 图标资源必须真实存在，否则不显示（不显示占位图，避免误导）。
+    /// </summary>
+    private void UpdateEngravingBadge(Card card)
+    {
+        if (engravingIcon == null) return;
+
+        if (card == null || !card.IsEngraved || card.EngravingEffect == null)
+        {
+            engravingIcon.Visible = false;
+            engravingIcon.Texture = null;
+            return;
+        }
+
+        string iconPath = card.EngravingEffect.IconPath;
+        if (string.IsNullOrEmpty(iconPath) || !ResourceLoader.Exists(iconPath))
+        {
+            GD.PrintErr($"[CardUI] 刻印图标不存在: {iconPath}");
+            engravingIcon.Visible = false;
+            engravingIcon.Texture = null;
+            return;
+        }
+
+        Texture2D texture = ResourceLoader.Load<Texture2D>(iconPath);
+        if (texture == null)
+        {
+            engravingIcon.Visible = false;
+            engravingIcon.Texture = null;
+            return;
+        }
+
+        engravingIcon.Texture = texture;
+        engravingIcon.Visible = true;
+        engravingIcon.TooltipText = card.EngravingEffect.Name;
     }
 
     public void SetTexture(Texture2D texture)

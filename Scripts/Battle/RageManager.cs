@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using FishEatFish.Battle.Core;
+using FishEatFish.Battle.CharacterSystem;
 
 public partial class RageManager : Node
 {
@@ -85,12 +86,39 @@ public partial class RageManager : Node
         return false;
     }
 
-    public void UseUltimate(int positionIndex, Player player, Enemy[] enemies)
+    /// <summary>
+    /// 使用指定位置角色的大招
+    /// </summary>
+    /// <param name="positionIndex">角色位置索引 (0-3)</param>
+    /// <param name="player">玩家</param>
+    /// <param name="enemies">敌人数组</param>
+    /// <returns>是否成功释放大招</returns>
+    public bool UseUltimate(int positionIndex, Player player, Enemy[] enemies)
     {
+        GD.Print("[RageManager] UseUltimate called");
+
+        bool success = false;
+
         if (positionIndex >= 0 && positionIndex < _characterPositions.Count)
         {
-            _characterPositions[positionIndex]?.UseUltimate(player, enemies);
+            CharacterPosition position = _characterPositions[positionIndex];
+            if (position != null)
+            {
+                success = position.TryUseUltimate(player, enemies, out string logMessage);
+                GD.Print($"[RageManager] {logMessage}");
+            }
+            else
+            {
+                GD.PrintErr($"[RageManager] 位置{positionIndex}没有对应的角色位置节点");
+            }
         }
+        else
+        {
+            GD.PrintErr($"[RageManager] 位置索引越界：{positionIndex}");
+        }
+
+        GD.Print("[RageManager] UseUltimate completed");
+        return success;
     }
 
     public List<CharacterPosition> GetCharactersWithFullRage()

@@ -66,9 +66,11 @@ public partial class Enemy : Node, IUnit
 	public void TakeDamage(int damage)
 	{
 		int actualDamage = CombatCalculator.CalculateDamage(damage, Defense);
+		// 减益（易伤 / 破甲）要参与最终伤害计算 —— 不走这一步，
+		// 挂在敌人身上的减益就只是"挂了却毫无作用"的状态图标
+		actualDamage = CalculateModifiedDamage(actualDamage, this);
 		CurrentHealth = Mathf.Max(0, CurrentHealth - actualDamage);
 	}
-
 	public void TakeDamageWithVariance(int baseDamage, float variancePercent = 0.1f)
 	{
 		int damage = CombatCalculator.CalculateDamageWithVariance(baseDamage, variancePercent);

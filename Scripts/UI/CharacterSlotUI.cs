@@ -1,24 +1,35 @@
 using Godot;
+using System;
 using FishEatFish.Battle.CharacterSystem;
 
 /// <summary>
 /// 简化版角色槽位UI组件
-/// 显示内容：圆形头像 + 角色名称 + 圆形怒气进度条
-/// </summary>
-/// <summary>
-/// 简化版角色槽位UI组件
-/// 显示内容：圆形头像 + 角色名称 + 圆形怒气进度条
+/// 显示内容：圆形头像 + 角色名称 + 圆形怒气进度条 + 大招就绪徽标
 /// </summary>
 public partial class CharacterSlotUI : Panel
 {
+    /// <summary>「可释放」徽标候选节点名（由场景中添加的 Label）</summary>
+    private static readonly string[] UltReadyLabelNames =
+    {
+        "UltReadyLabel",
+        "UltReadyBadge",
+        "ReadyBadge",
+        "UltimateReadyLabel"
+    };
+
     private TextureRect _avatarRect;
     private Label _nameLabel;
     private TextureRect _rageCircle;
+    private Label _ultReadyLabel;
 
     private CharacterDefinition _character;
     private int _slotIndex;
     private int _currentRage = 0;
     private bool _isHighlighted = false;
+    private bool _ultReadyLabelMissingReported = false;
+
+    private System.Action _clickCallback;
+    private Tween _ultReadyTween;
 
     private const int MaxRage = 100;
 
@@ -29,7 +40,11 @@ public partial class CharacterSlotUI : Panel
 
     public override void _Ready()
     {
+        GD.Print("[CharacterSlotUI] _Ready called");
+
         SetupUI();
+
+        GD.Print("[CharacterSlotUI] _Ready completed");
     }
 
     private void SetupUI()
@@ -37,16 +52,67 @@ public partial class CharacterSlotUI : Panel
         _avatarRect = GetNodeOrNull<TextureRect>("HBoxContainer/AvatarRect");
         _nameLabel = GetNodeOrNull<Label>("HBoxContainer/VBoxContainer/NameLabel");
         _rageCircle = GetNodeOrNull<TextureRect>("HBoxContainer/VBoxContainer/RageCircle");
+        _ultReadyLabel = FindUltReadyLabel();
 
-        var hbox = GetNodeOrNull<HBoxContainer>(".");
-        if (hbox != null)
+        if (_avatarRect == null)
         {
-            hbox.Name = $"CharacterSlot{_slotIndex}";
+            GD.PrintErr("[CharacterSlotUI] 未找到节点：HBoxContainer/AvatarRect");
+        }
+        else
+        {
+            // 让点击落到槽位面板自身，保证 _GuiInput 能收到点击
+            _avatarRect.MouseFilter = MouseFilterEnum.Ignore;
+        }
+
+        if (_nameLabel == null)
+        {
+            GD.PrintErr("[CharacterSlotUI] 未找到节点：HBoxContainer/VBoxContainer/NameLabel");
+        }
+
+        if (_rageCircle == null)
+        {
+            GD.PrintErr("[CharacterSlotUI] 未找到节点：HBoxContainer/VBoxContainer/RageCircle");
+        }
+        else
+        {
+            _rageCircle.MouseFilter = MouseFilterEnum.Ignore;
+        }
+
+        if (_ultReadyLabel == null)
+        {
+            GD.PrintErr("[CharacterSlotUI] 未找到「可释放」徽标节点（建议命名 UltReadyLabel），无法显示大招就绪提示");
+            _ultReadyLabelMissingReported = true;
         }
     }
 
     /// <summary>
-    /// 设置角色数据
+    /// 查找「可释放」徽标 Label（优先槽位直接子节点，其次 HBoxContainer 下）
+    /// </summary>
+    private Label FindUltReadyLabel()
+    {
+        foreach (string nodeName in UltReadyLabelNames)
+        {
+            Label label = GetNodeOrNull<Label>(nodeName);
+            if (label != null)
+            {
+                return label;
+            }
+        }
+
+        foreach (string nodeName in UltReadyLabelNames)
+        {
+            Label label = GetNodeOrNull<Label>($"HBoxContainer/{nodeName}");
+            if (label != null)
+            {
+                return label;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 设置槽位数据
     /// </summary>
     /// <param name="character">角色定义数据</param>
     /// <param name="index">槽位索引</param>
@@ -57,12 +123,18 @@ public partial class CharacterSlotUI : Panel
 
         if (character != null)
         {
-            _nameLabel.Text = character.Name;
+            if (_nameLabel != null)
+            {
+                _nameLabel.Text = character.Name;
+            }
             LoadCharacterAvatar(character);
         }
         else
         {
-            _nameLabel.Text = "空";
+            if (_nameLabel != null)
+            {
+                _nameLabel.Text = "空";
+            }
         }
 
         UpdateAppearance();
@@ -70,6 +142,11 @@ public partial class CharacterSlotUI : Panel
 
     private void LoadCharacterAvatar(CharacterDefinition character)
     {
+        if (_avatarRect == null)
+        {
+            return;
+        }
+
         string avatarPath = $"res://Assets/Icons/enemy_elite.svg";
         Texture2D avatar = ResourceLoader.Load<Texture2D>(avatarPath);
         if (avatar != null)
@@ -106,21 +183,42 @@ public partial class CharacterSlotUI : Panel
             barColor = new Color(0.5f, 0.5f, 0.5f);
         }
 
-        var rageStyle = new StyleBoxFlat();
-        rageStyle.BgColor = barColor;
-        rageStyle.SetCornerRadiusAll(15);
-        _rageCircle.AddThemeStyleboxOverride("panel", rageStyle);
+        if (_rageCircle != null)
+        {
+            var rageStyle = new StyleBoxFlat();
+            rageStyle.BgColor = barColor;
+            rageStyle.SetCornerRadiusAll(15);
+            _rageCircle.AddThemeStyleboxOverride("panel", rageStyle);
+        }
 
-        if (canUseUltimate)
+        // 「可释放」徽标 + 可点击状态 + 脉冲高亮
+        SetUltReadyIndicator(canUseUltimate);
+        SetClickable(canUseUltimate);
+        SetHighlight(canUseUltimate);
+    }
+
+    /// <summary>
+    /// 显示/隐藏「可释放」徽标
+    /// </summary>
+    private void SetUltReadyIndicator(bool ready)
+    {
+        if (_ultReadyLabel == null)
         {
-            PlayUltReadyAnimation();
+            _ultReadyLabel = FindUltReadyLabel();
         }
-        else
+
+        if (_ultReadyLabel == null)
         {
-            var tween = CreateTween();
-            tween.Kill();
-            Modulate = new Color(1f, 1f, 1f, 1f);
+            if (!_ultReadyLabelMissingReported)
+            {
+                _ultReadyLabelMissingReported = true;
+                GD.PrintErr("[CharacterSlotUI] 未找到「可释放」徽标节点（建议命名 UltReadyLabel），无法显示大招就绪提示");
+            }
+            return;
         }
+
+        _ultReadyLabel.Visible = ready;
+        _ultReadyLabel.Text = ready ? "可释放" : "";
     }
 
     /// <summary>
@@ -128,23 +226,88 @@ public partial class CharacterSlotUI : Panel
     /// </summary>
     private void PlayUltReadyAnimation()
     {
-        Tween tween = CreateTween();
-        tween.SetLoops();
+        if (_ultReadyTween != null && _ultReadyTween.IsValid())
+        {
+            _ultReadyTween.Kill();
+        }
+
+        _ultReadyTween = CreateTween();
+        _ultReadyTween.SetLoops();
 
         var origColor = Modulate;
-        tween.TweenProperty(this, "modulate", new Color(1.2f, 1f, 0.8f, 1f), 0.5f)
+        _ultReadyTween.TweenProperty(this, "modulate", new Color(1.2f, 1f, 0.8f, 1f), 0.5f)
             .SetTrans(Tween.TransitionType.Sine)
             .SetEase(Tween.EaseType.InOut);
-        tween.TweenProperty(this, "modulate", origColor, 0.5f)
+        _ultReadyTween.TweenProperty(this, "modulate", origColor, 0.5f)
             .SetTrans(Tween.TransitionType.Sine)
             .SetEase(Tween.EaseType.InOut);
 
-        tween.Play();
+        _ultReadyTween.Play();
     }
 
+    /// <summary>
+    /// 停止大招就绪脉冲动画
+    /// </summary>
+    private void StopUltReadyAnimation()
+    {
+        if (_ultReadyTween != null && _ultReadyTween.IsValid())
+        {
+            _ultReadyTween.Kill();
+        }
+        _ultReadyTween = null;
+
+        Modulate = new Color(1f, 1f, 1f, 1f);
+    }
+
+    /// <summary>
+    /// 设置槽位是否可点击（只有怒气满可释放大招时才可点）
+    /// </summary>
     public void SetClickable(bool clickable)
     {
         MouseFilter = clickable ? MouseFilterEnum.Stop : MouseFilterEnum.Ignore;
+    }
+
+    /// <summary>
+    /// 设置点击回调（左键点击槽位时触发）
+    /// </summary>
+    /// <param name="onClicked">点击回调，参数为空表示清除回调</param>
+    public void SetClickCallback(System.Action onClicked)
+    {
+        GD.Print("[CharacterSlotUI] SetClickCallback called");
+
+        _clickCallback = onClicked;
+
+        GD.Print("[CharacterSlotUI] SetClickCallback completed");
+    }
+
+    /// <summary>
+    /// 鼠标输入：左键按下时触发点击回调
+    /// </summary>
+    public override void _GuiInput(InputEvent @event)
+    {
+        // 只处理鼠标按键事件，忽略鼠标移动等，避免刷屏
+        if (@event is not InputEventMouseButton mouseButton)
+        {
+            return;
+        }
+
+        GD.Print("[CharacterSlotUI] _GuiInput called");
+
+        if (mouseButton.ButtonIndex == MouseButton.Left && mouseButton.Pressed)
+        {
+            if (_clickCallback != null)
+            {
+                _clickCallback.Invoke();
+            }
+            else
+            {
+                GD.Print("[CharacterSlotUI] 槽位被点击，但没有设置点击回调");
+            }
+
+            AcceptEvent();
+        }
+
+        GD.Print("[CharacterSlotUI] _GuiInput completed");
     }
 
     /// <summary>
@@ -161,9 +324,7 @@ public partial class CharacterSlotUI : Panel
         }
         else
         {
-            var tween = CreateTween();
-            tween.Kill();
-            Modulate = new Color(1f, 1f, 1f, 1f);
+            StopUltReadyAnimation();
         }
     }
 
