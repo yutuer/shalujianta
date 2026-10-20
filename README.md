@@ -89,6 +89,7 @@ cd E:\trae_Projects\FishEatFish
 | 看 CI / PR / Issue | `gh run list` · `gh pr list` · `gh issue list` |
 | 查仓库 API | `gh api repos/yutuer/shalujianta` |
 | 压参考图入库 | `powershell -ExecutionPolicy Bypass -File tools\convert-reference-images.ps1` |
+| **地图校验模块可移植性验证** | `powershell -ExecutionPolicy Bypass -File tools\verify-mapvalidation-portability.ps1` |
 
 > 导出产物（`dabao/`、`qianye.*`、`*.tpz`、`*.rar`）已在 `.gitignore` 中，不会误入版本库。
 
@@ -137,11 +138,13 @@ FishEatFish/
 │  │  └─ CardLayoutManager / RageManager / BattleTransitionManager …
 │  ├─ AI/           敌人 AI（激进/均衡/防守）
 │  ├─ Shop/         黑印商店
+│  ├─ MapValidation/ 地图可达性与死锁校验（**7 个文件不依赖 Godot，整目录可拷走**）
 │  └─ UI/           20+ UI 组件脚本
 ├─ docs/            专题文档（见 §9 文档索引）+ 原始策划案 + 参考图
 ├─ tools/           check-task-stats.ps1 校验任务统计表是否漂移
 │                   check-doc-consistency.ps1 文档一致性回读测试（链接/换行符/编码/术语/统计）
 │                   convert-reference-images.ps1 压参考图入库
+│                   verify-mapvalidation-portability.ps1 校验地图校验模块可整体拷走
 ├─ .trae/           Trae 的项目规则与历史计划
 └─ project.godot    工程配置（含 [autoload]）
 ```
@@ -227,12 +230,12 @@ MainMenu
 
 | 分类 | 总数 | ✅ | 🔄 | ⬜ |
 |---|:-:|:-:|:-:|:-:|
-| 高优先级 | 68 | 23 | 5 | 40 |
+| 高优先级 | 68 | 32 | 5 | 31 |
 | 中优先级 | 15 | 0 | 1 | 14 |
 | 低优先级 | 13 | 0 | 0 | 13 |
 | 商店系统（已完成） | 28 | 26 | 1 | 1 |
 | Bug 修复 | 5 | 3 | 2 | 0 |
-| **合计** | **129** | **52** | **9** | **68** |
+| **合计** | **129** | **61** | **9** | **59** |
 
 📌 **改完任务状态别只改表**——跑校验脚本，它一次核对四处（`tasks.md` 实算 / `tasks.md` 统计表 / 本表 / `docs/开发计划.md`）：
 

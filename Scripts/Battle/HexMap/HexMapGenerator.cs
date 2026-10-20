@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using MapValidation;
 
 namespace FishEatFish.Battle.HexMap
 {
     public class HexMapGenerator
     {
+        /// <summary>生成失败时的最大重试次数（避免死循环）</summary>
+        private const int MaxGenerateAttempts = 20;
+
         private readonly Random _random;
 
         public HexMapGenerator(int? seed = null)
@@ -15,6 +19,11 @@ namespace FishEatFish.Battle.HexMap
         }
 
         public HexMap Generate(int radius, int playerLevel)
+        {
+            return GenerateInternal(radius, playerLevel, 0);
+        }
+
+        private HexMap GenerateInternal(int radius, int playerLevel, int attempt)
         {
             var tiles = GenerateHexGrid(radius);
 
@@ -57,7 +66,11 @@ namespace FishEatFish.Battle.HexMap
             if (!VerifyNoAdjacentSameEvents(tiles))
             {
                 GD.PrintErr("[HexMapGenerator] 验证失败: 检测到相同事件出现在相邻格子，重新生成地图...");
-                return Generate(radius, playerLevel);
+                if (attempt < MaxGenerateAttempts)
+                {
+                    return GenerateInternal(radius, playerLevel, attempt + 1);
+                }
+                return new HexMap(tiles, startCoord, endCoord, playerLevel);
             }
 
             EnsurePathConnectivity(tiles, startCoord, endCoord);
@@ -65,10 +78,37 @@ namespace FishEatFish.Battle.HexMap
             if (!VerifyAllHolesPlacement(tiles, startCoord, endCoord))
             {
                 GD.PrintErr("[HexMapGenerator] 验证失败: 移除所有洞穴后无法到达boss，重新生成地图...");
-                return Generate(radius, playerLevel);
+                if (attempt < MaxGenerateAttempts)
+                {
+                    return GenerateInternal(radius, playerLevel, attempt + 1);
+                }
+                return new HexMap(tiles, startCoord, endCoord, playerLevel);
             }
 
-            return new HexMap(tiles, startCoord, endCoord, playerLevel);
+            var map = new HexMap(tiles, startCoord, endCoord, playerLevel);
+
+            // D13 自检：用通用校验器兜底（人工关卡与参数生成共用同一套判定标准）
+            MapValidationReport report = new MapValidator().Validate(new HexMapGraph(map));
+            if (!report.CanCompleteGoal)
+            {
+                GD.PrintErr("[HexMapGenerator] 校验失败: 找不到能通关的走法，重新生成地图...");
+                GD.PrintErr(report.ToString());
+                if (attempt < MaxGenerateAttempts)
+                {
+                    return GenerateInternal(radius, playerLevel, attempt + 1);
+                }
+            }
+            else if (!report.IsValid)
+            {
+                // 只是提示（软锁 / 不可达区域之类），不阻断生成
+                GD.Print($"[HexMapGenerator] 校验提示（不阻断）: {report.Issues.Count} 项问题");
+                foreach (MapIssue issue in report.Issues)
+                {
+                    GD.Print($"[HexMapGenerator]   {issue}");
+                }
+            }
+
+            return map;
         }
 
         private Dictionary<HexCoord, HexTile> GenerateHexGrid(int radius)
