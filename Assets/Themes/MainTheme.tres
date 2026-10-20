@@ -1,0 +1,91 @@
+[gd_resource type="Theme" load_steps=9 format=3]
+
+; FishEatFish 统一视觉主题（对照参考图 R-01 / R-04 / R-12）
+;   - 底色深蓝灰（不是纯黑）
+;   - 分割线与边框用极细金线
+;   - 标题用衬线中文（配合 TitleFont.tres）
+;
+; 注意：这里**只定义颜色与边框**，不设 content_margin、不改 default_font_size ——
+; 一旦改动控件尺寸，现有线框布局（按钮并排、HBox 排列）就会被挤爆。
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_normal"]
+bg_color = Color(0.13, 0.15, 0.21, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.72, 0.63, 0.36, 0.5)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+bg_color = Color(0.19, 0.22, 0.3, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.86, 0.78, 0.5, 0.9)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_pressed"]
+bg_color = Color(0.09, 0.11, 0.16, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.96, 0.93, 0.8, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_disabled"]
+bg_color = Color(0.1, 0.11, 0.14, 0.7)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.4, 0.38, 0.3, 0.4)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.09, 0.11, 0.16, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.72, 0.63, 0.36, 0.35)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_separator"]
+bg_color = Color(0.72, 0.63, 0.36, 0.45)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+draw_center = false
+
+[resource]
+Label/colors/font_color = Color(0.9, 0.92, 0.96, 1)
+Button/colors/font_color = Color(0.88, 0.9, 0.96, 1)
+Button/colors/font_hover_color = Color(1, 0.93, 0.72, 1)
+Button/colors/font_pressed_color = Color(1, 0.93, 0.72, 1)
+Button/colors/font_disabled_color = Color(0.48, 0.5, 0.56, 1)
+Button/styles/normal = SubResource("StyleBoxFlat_button_normal")
+Button/styles/hover = SubResource("StyleBoxFlat_button_hover")
+Button/styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+Button/styles/disabled = SubResource("StyleBoxFlat_button_disabled")
+Button/styles/focus = SubResource("StyleBoxEmpty_focus")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
+Panel/styles/panel = SubResource("StyleBoxFlat_panel")
+HSeparator/styles/separator = SubResource("StyleBoxFlat_separator")
+VSeparator/styles/separator = SubResource("StyleBoxFlat_separator")

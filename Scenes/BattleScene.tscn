@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://ArtifactDetailUI_scene_001" path="res://Scenes/UI/ArtifactDetailUI.tscn" id="4_artifact_detail"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CommonHUD.tscn" id="5_common_hud"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/BuffDebuffDisplay.tscn" id="6_buffdebuff"]
+[ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="7_theme"]
+[ext_resource type="SystemFont" path="res://Assets/Themes/TitleFont.tres" id="8_titlefont"]
 
 [node name="BattleScene" type="Node2D" unique_id=1960259589]
 script = ExtResource("1_battle")
@@ -36,11 +38,14 @@ anchor_right = 1.0
 offset_top = 128.0
 offset_bottom = 168.0
 grow_horizontal = 2
+theme = ExtResource("7_theme")
 
 [node name="ArtifactDetailUI" parent="UI" instance=ExtResource("4_artifact_detail")]
 
 [node name="Title" type="Label" parent="UI/TopBar" unique_id=877999875]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.85, 1)
+theme_override_fonts/font = ExtResource("8_titlefont")
 text = "FishEatFish"
 
 [node name="FloorInfo" type="Label" parent="UI/TopBar" unique_id=459992778]

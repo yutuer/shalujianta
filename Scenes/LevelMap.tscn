@@ -1,7 +1,9 @@
-[gd_scene load_steps=7 format=4]
+[gd_scene load_steps=8 format=4]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/LevelMap.cs" id="1_levelmap"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/LevelMapCard.tscn" id="2_card"]
+[ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="3_theme"]
+[ext_resource type="SystemFont" path="res://Assets/Themes/TitleFont.tres" id="4_titlefont"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.07, 0.09, 0.15, 1)
@@ -39,6 +41,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("3_theme")
 script = ExtResource("1_levelmap")
 CardScene = ExtResource("2_card")
 
@@ -85,8 +88,9 @@ text = "◀"
 [node name="ChapterLabel" type="Label" parent="SafeArea/Content/TopBar/ChapterBox"]
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 26
 theme_override_colors/font_color = Color(0.95, 0.93, 0.85, 1)
+theme_override_fonts/font = ExtResource("4_titlefont")
+theme_override_font_sizes/font_size = 26
 text = "第 1 章　初探"
 vertical_alignment = 1
 
@@ -131,6 +135,8 @@ theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="SafeArea/Content/Header"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.85, 1)
+theme_override_fonts/font = ExtResource("4_titlefont")
 theme_override_font_sizes/font_size = 34
 text = "选择地图"
 
@@ -194,10 +200,12 @@ text = "关卡进度 0/0"
 
 [node name="BackButton" type="Button" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout"]
 layout_mode = 2
+size_flags_horizontal = 0
 text = "返回主菜单"
 theme_override_styles/normal = SubResource("StyleBoxFlat_back")
 
 [node name="BattleButton" type="Button" parent="SafeArea/Content/BottomBar/BottomMargin/BottomLayout"]
 layout_mode = 2
+size_flags_horizontal = 0
 text = "进入战斗测试"
 theme_override_styles/normal = SubResource("StyleBoxFlat_back")

@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://commonhud"]
+[gd_scene load_steps=5 format=3 uid="uid://commonhud"]
 
 [ext_resource type="Script" path="res://Scripts/UI/CommonHUD.cs" id="1"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/AttackerDisplayUI.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CommonHUDSlot.tscn" id="3"]
+[ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="4_theme"]
 
 [node name="CommonHUD" type="Control"]
 custom_minimum_size = Vector2(0, 120)
@@ -11,6 +12,7 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 120.0
 grow_horizontal = 2
+theme = ExtResource("4_theme")
 script = ExtResource("1")
 SlotScene = ExtResource("3")
 

@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://silver_key_progress" path="res://Scenes/UI/SilverKeyProgressIndicator.tscn" id="5_silverkey"]
 [ext_resource type="PackedScene" uid="uid://ArtifactDetailUI_scene_001" path="res://Scenes/UI/ArtifactDetailUI.tscn" id="6_artifact_detail"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/ScorePanel.tscn" id="7_scorepanel"]
+[ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="8_theme"]
 
 [node name="HexMapUI" type="Control"]
 layout_mode = 3
@@ -15,6 +16,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("8_theme")
 script = ExtResource("1_script")
 
 [node name="MapContainer" type="Control" parent="."]

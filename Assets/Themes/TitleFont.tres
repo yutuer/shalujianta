@@ -1,0 +1,10 @@
+[gd_resource type="SystemFont" format=3]
+
+; 标题用的衬线中文字体（参考图 R-01 / R-04 的标题是宋体一类的衬线体）。
+; font_names 按优先级排列，找不到就退到下一个；
+; 全部找不到时 Godot 会用系统默认字体（正文的中文显示不受影响）。
+
+[resource]
+font_names = PackedStringArray("SimSun", "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", "Noto Serif SC", "Microsoft YaHei", "Noto Sans CJK SC", "sans-serif")
+antialiasing = 1
+subpixel_positioning = 1
