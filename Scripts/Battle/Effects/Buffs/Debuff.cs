@@ -39,13 +39,16 @@ public partial class WeakDebuff : StatusEffect
 
 public partial class VulnerableDebuff : StatusEffect
 {
+    /// <summary>
+    /// 易伤强度：敌人**受到伤害增加的百分比**。
+    /// </summary>
     [Export]
-    public int DamageIncrease { get; set; } = 3;
+    public int DamageIncrease { get; set; } = 50;
 
     public VulnerableDebuff()
     {
         EffectName = "Vulnerable";
-        Description = "受けるダメージが %d 増加";
+        Description = "受到伤害+%d%%";
         Duration = 2;
         EffectType = StatusEffectType.Debuff;
     }
@@ -115,13 +118,28 @@ public partial class SilenceDebuff : StatusEffect
 
 public partial class DefenseDownDebuff : StatusEffect
 {
+    /// <summary>
+    /// 破甲强度：敌人**受到伤害增加的百分比**。
+    ///
+    /// 字段名从 <c>DefenseReduction</c> 改为 <c>DamageIncreasePercent</c>，
+    /// 因为实现方式变了（见下方说明）—— 现在它表示「受到伤害 +N%」，
+    /// 而不是「防御值 -N」。旧名保留为别名，避免外部引用编译不过。
+    /// </summary>
     [Export]
-    public int DefenseReduction { get; set; } = 10;
+    public int DamageIncreasePercent { get; set; } = 10;
+
+    /// <summary>旧字段名（= <see cref="DamageIncreasePercent"/>），保留兼容</summary>
+    [Export]
+    public int DefenseReduction
+    {
+        get => DamageIncreasePercent;
+        set => DamageIncreasePercent = value;
+    }
 
     public DefenseDownDebuff()
     {
         EffectName = "DefenseDown";
-        Description = "防御力が %d 減少";
+        Description = "受到伤害+%d%%";
         Duration = 3;
         EffectType = StatusEffectType.Debuff;
     }
@@ -141,6 +159,6 @@ public partial class DefenseDownDebuff : StatusEffect
     /// <param name="baseDamage">减伤前的伤害</param>
     public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
     {
-        return baseDamage + baseDamage * DefenseReduction / 100;
+        return baseDamage + baseDamage * DamageIncreasePercent / 100;
     }
 }

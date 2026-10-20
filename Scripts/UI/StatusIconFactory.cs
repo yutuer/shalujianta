@@ -127,11 +127,17 @@ namespace FishEatFish.UI
             return $"{effect.RemainingDuration}";
         }
 
-        /// <summary>减益数值口径：易伤为 +N（受到的伤害变多），其余减益为 -N，未知用剩余回合数</summary>
+        /// <summary>
+        /// 减益数值口径：
+        ///   - 易伤 / 破甲 = 受到伤害 +N%（百分比）
+        ///   - 虚弱 = 攻击力 -N，减速 = 能量 -N，中毒 = 每回合 -N 伤害
+        ///   - 未知效果用剩余回合数
+        /// </summary>
         private static string GetDebuffValueText(StatusEffect effect)
         {
             if (effect is WeakDebuff wd) return $"-{wd.AttackReduction}";
-            if (effect is VulnerableDebuff vd) return $"+{vd.DamageIncrease}";
+            if (effect is VulnerableDebuff vd) return $"+{vd.DamageIncrease}%";
+            if (effect is DefenseDownDebuff dd) return $"+{dd.DamageIncreasePercent}%";
             if (effect is PoisonDebuff pd) return $"-{pd.DamagePerTurn}";
             if (effect is SlowDebuff sd) return $"-{sd.EnergyReduction}";
             return $"{effect.RemainingDuration}";

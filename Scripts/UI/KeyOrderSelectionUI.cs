@@ -266,7 +266,7 @@ public partial class KeyOrderSlotUI : Panel
             KeyOrderEffectType.Damage => $"造成 {keyOrder.EffectValue} 伤害",
             KeyOrderEffectType.Heal => $"恢复 {keyOrder.EffectValue}% 最大生命",
             KeyOrderEffectType.Buff => $"获得 {keyOrder.EffectValue} 护盾",
-            KeyOrderEffectType.Debuff => $"降低敌人 {keyOrder.EffectValue} 防御",
+            KeyOrderEffectType.Debuff => $"敌人受到伤害 +{keyOrder.EffectValue}%",
             KeyOrderEffectType.Special => $"获得 {keyOrder.EffectValue} 能量",
             _ => "未知效果"
         };

@@ -209,7 +209,7 @@ public partial class KeyOrderDescriptionUI : Control
             KeyOrderEffectType.Damage => $"造成 {keyOrder.EffectValue} 点伤害",
             KeyOrderEffectType.Heal => $"恢复 {keyOrder.EffectValue}% 最大生命值",
             KeyOrderEffectType.Buff => $"获得 {keyOrder.EffectValue} 点护盾",
-            KeyOrderEffectType.Debuff => $"降低敌人 {keyOrder.EffectValue} 点防御",
+            KeyOrderEffectType.Debuff => $"敌人受到伤害 +{keyOrder.EffectValue}%",
             KeyOrderEffectType.Special => $"获得 {keyOrder.EffectValue} 点能量",
             _ => "未知效果"
         };

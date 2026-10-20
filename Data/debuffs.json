@@ -18,14 +18,14 @@
         "vulnerable": {
             "debuffId": "vulnerable",
             "name": "易伤",
-            "description": "受到的伤害+%d",
+            "description": "受到的伤害+%d%%",
             "duration": 2,
             "effects": [
                 {
                     "effectId": "vulnerable_effect",
                     "type": "modify_damage_received",
                     "trigger": "immediate",
-                    "value": 3,
+                    "value": 50,
                     "target": "self"
                 }
             ]
@@ -70,15 +70,15 @@
         },
         "defense_down": {
             "debuffId": "defense_down",
-            "name": "防御降低",
-            "description": "防御力-%d",
+            "name": "破甲",
+            "description": "受到的伤害+%d%%",
             "duration": 3,
             "effects": [
                 {
                     "effectId": "defense_down_effect",
-                    "type": "modify_defense",
+                    "type": "modify_damage_received",
                     "trigger": "immediate",
-                    "value": -10,
+                    "value": 10,
                     "target": "self"
                 }
             ]

@@ -120,7 +120,9 @@ public partial class KeyOrder : Resource
         {
             KeyOrderId = "armor_break",
             Name = "破甲之钥",
-            Description = "敌人防御-10持续3回合",
+            // 破甲的实际语义是「敌人受到的伤害 +N%」（参与伤害计算），
+            // 不是「降低防御值」—— 后者在防御本来就是 0 的敌人身上完全无效。
+            Description = "敌人受到伤害+10%，持续3回合",
             SilverKeyCost = 1000,
             EffectType = KeyOrderEffectType.Debuff,
             EffectValue = 10,

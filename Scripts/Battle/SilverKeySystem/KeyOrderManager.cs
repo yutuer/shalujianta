@@ -189,7 +189,7 @@ public partial class KeyOrderManager : Node
                 };
                 debuff.Initialize();
                 enemy.AddStatusEffect(debuff);
-                GD.Print($"[KeyOrderManager] 钥令破甲: {enemy.EnemyName} 防御 -{order.EffectValue}");
+                GD.Print($"[KeyOrderManager] 钥令破甲: {enemy.EnemyName} 受到伤害 +{order.EffectValue}%");
             }
         }
     }
