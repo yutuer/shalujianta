@@ -130,15 +130,24 @@ if (Test-Path $statsScript) {
 
 # ---------- 可选：远端回读比对 ----------
 if ($CheckRemote) {
-    $gh = Get-Command gh -ErrorAction SilentlyContinue
-    if ($null -eq $gh) {
-        Write-Host '  跳过远端比对：未找到 gh' -ForegroundColor Yellow
+    # gh 可能只装在用户级 PATH（某些 shell 会话不继承），找不到时兜底常见便携版路径
+    $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
+    $ghExe = $null
+    if ($null -ne $ghCmd) {
+        $ghExe = $ghCmd.Source
+    } else {
+        $fallback = Join-Path $env:USERPROFILE 'Tools\gh\bin\gh.exe'
+        if (Test-Path $fallback) { $ghExe = $fallback }
+    }
+
+    if ($null -eq $ghExe) {
+        Write-Host '  跳过远端比对：未找到 gh（可装到 %USERPROFILE%\Tools\gh\bin）' -ForegroundColor Yellow
     } else {
         $remote = 'yutuer/shalujianta'
-        $tracked = @('README.md', 'tasks.md', 'docs/开发计划.md', 'docs/踩坑记录.md', 'docs/调试场景准备器.md', '.gitignore')
+        $tracked = @('README.md', 'tasks.md', 'docs/开发计划.md', 'docs/踩坑记录.md', 'docs/调试场景准备器.md', '.gitignore', 'tools/check-doc-consistency.ps1')
         foreach ($r in $tracked) {
             $api = $r -replace ' ', '%20'
-            $j = (& gh api "repos/$remote/contents/$api" 2>$null) | ConvertFrom-Json
+            $j = (& $ghExe api "repos/$remote/contents/$api" 2>$null) | ConvertFrom-Json
             if ($null -eq $j -or -not $j.content) { $problems += "[远端] 取不到 $r"; continue }
             $remoteBytes = [Convert]::FromBase64String(($j.content -replace '\s', ''))
             $sha = [System.Security.Cryptography.SHA256]::Create()
@@ -146,7 +155,7 @@ if ($CheckRemote) {
             $lh = (Get-FileHash -LiteralPath (Join-Path $RepoRoot ($r -replace '/', '\')) -Algorithm SHA256).Hash
             if ($rh -ne $lh) { $problems += "[远端] $r 与本地不一致（远端可能没推上去）" }
         }
-        Write-Host '  远端比对完成' -ForegroundColor Green
+        Write-Host "  远端比对完成（$($tracked.Count) 个文件）" -ForegroundColor Green
     }
 }
 
