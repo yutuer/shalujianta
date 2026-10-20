@@ -10,8 +10,9 @@
 |---|---|
 | 引擎 | Godot 4.6.1-stable **mono**（.NET 8.0 / `net8.0`） |
 | 仓库 | <https://github.com/yutuer/shalujianta.git>（分支 `main`） |
-| 规模 | 114 个 C# 脚本 / 18,104 行 · 30 个 `.tscn` · 10 张 JSON 数据表 |
+| 规模 | 117 个 C# 脚本 / 18,664 行 · 31 个 `.tscn` · 11 张 JSON 数据表 |
 | 原始需求 | [`docs/原始策划案.md`](docs/原始策划案.md) |
+| 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 11 个条目 |
 
 ---
 
@@ -19,14 +20,20 @@
 
 | # | 文件 | 什么时候看 |
 | :-: |---|---|
-| 1 | **本文** | 先扫一遍：现状、坑、下一步 |
+| 1 | **本文** | 主干：现状、架构、下一步、文档地图 |
 | 2 | [`.trae/rules/project_rules.md`](.trae/rules/project_rules.md) | **动手前必读**——写代码的铁律 |
-| 3 | [`tasks.md`](tasks.md) | 87 行任务清单，带依赖关系与状态 |
-| 4 | [`GameDesign.md`](GameDesign.md) | 完整策划案（18 章 + ✅/🔄/❌ 标记） |
-| 5 | [`CODE_WIKI.md`](CODE_WIKI.md) | 技术档案（自动生成，**已滞后，以源码为准**） |
-| 6 | [`checklist.md`](checklist.md) | 12 大类验收清单 |
+| 3 | [`docs/开发计划.md`](docs/开发计划.md) | **正在做什么**——本轮迭代条目 + 三步流程 |
+| 4 | [`tasks.md`](tasks.md) | 87 行任务清单，带依赖关系与状态 |
+| 5 | [`GameDesign.md`](GameDesign.md) | 完整策划案（18 章 + ✅/🔄/❌ 标记） |
+| 6 | [`docs/踩坑记录.md`](docs/踩坑记录.md) | **踩过什么坑**——改代码前扫一眼 |
+| 7 | [`docs/调试场景准备器.md`](docs/调试场景准备器.md) | 怎么带着「选人已完成」的状态进场景 |
+| 8 | [`CODE_WIKI.md`](CODE_WIKI.md) | 技术档案（自动生成，**已滞后，以源码为准**） |
+| 9 | [`checklist.md`](checklist.md) | 12 大类验收清单 |
 
-> ⚠️ **文档会失同步。** 本项目历史上至少 4 处文档与代码脱节（见 §6.1）。**源码是唯一真相**，任何文档与代码冲突时以源码为准，并顺手把文档修掉。
+> ⚠️ **文档会失同步。** 本项目历史上至少 4 处文档与代码脱节（见 [`docs/踩坑记录.md` §1](docs/踩坑记录.md)）。**源码是唯一真相**，冲突时以源码为准，并顺手把文档修掉。
+
+> 📌 **本文是主干**，只回答五个问题：这是什么 / 怎么跑 / 架构长啥样 / 现在啥进度 / 下一步做什么。
+> 一切细节都外链到 `docs/` 专题文档，**不在这里展开**——需要时点进去看。
 
 ---
 
@@ -79,80 +86,28 @@ cd E:\trae_Projects\FishEatFish
 | GitHub 认证状态 | `gh auth status` |
 | 看 CI / PR / Issue | `gh run list` · `gh pr list` · `gh issue list` |
 | 查仓库 API | `gh api repos/yutuer/shalujianta` |
+| 压参考图入库 | `powershell -ExecutionPolicy Bypass -File tools\convert-reference-images.ps1` |
 
 > 导出产物（`dabao/`、`qianye.*`、`*.tpz`、`*.rar`）已在 `.gitignore` 中，不会误入版本库。
 
 **跑起来看**（本机无 Godot 编辑器，用 MCP）：
 `run_project(projectPath=...)` 启动 · `take_screenshot()` 截图 · `simulate_input(...)` 模拟输入 · `run_script(...)` 注入 GDScript
 
-### 1.5 调试场景准备器（带着选人完成的状态进场景）
+### 1.5 调试场景准备器（速查）
 
 改完 bug 要验证时，**不必走「主菜单 → 选关卡 → 选角色 → 进地图」那一大段**。
 
-> ⚠️ **别直接跑 `HexMapScene.tscn`** —— 那样会跳过选人流程，`GlobalData.SelectedCharacters` /
-> `EquippedKeyOrder` / `CurrentMap` 全是 null，战斗会**回退到默认阵容「鼠牛虎兔」**而不是你选的队伍，
-> 刻印可选卡牌列表也拿不到卡组。
-
-**调试场景准备器**（`Scenes/Dev/DevScenario.tscn`）会先把这些全局量按真实流程补齐，再进目标场景。
-
 ```powershell
-cd E:\trae_Projects\FishEatFish
-dotnet build                                          # 改了 C# 必须先编译
+dotnet build
 $godot = 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe'
-
-# 默认预设
-& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevScenario.tscn'
-
-# 指定预设
-& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevScenario.tscn' -- --scenario=near_shop
-
-# 预设 + 临时覆盖
-& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevScenario.tscn' -- `
-    --scenario=default --team=dragon,horse,monkey,dog --key=key_shield --map=map02 --target=battle
+& $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevScenario.tscn' -- --scenario=battle
 ```
 
-**内置预设**（`Data/dev_scenarios.json`）：
+内置 8 个预设：`default` `battle` `near_shop` `half_hp` `elite_battle` `near_boss` `step_on_boss` `boss_battle`。
 
-| 预设 | 效果 |
-|---|---|
-| `default` | 选人完成（鼠牛虎兔 + 银光斩 + 第一张关卡）→ 六边形地图 |
-| `battle` | 选人完成 → 直接进战斗（敌人 `normal_wave`） |
-| `near_shop` | 选人完成 + 落在商店格子**旁边**（不触发商店事件） |
-| `half_hp` | 选人完成 + 进地图时血量只有一半（125 → 62） |
-| `elite_battle` | 选人完成 → 直接进战斗，敌人 `elite_wave` |
-| `near_boss` | 选人完成 + 站在 BOSS 格子旁边（走上去即触发 BOSS 战） |
-| `step_on_boss` | 选人完成 + **直接站上 BOSS 格子**（立刻触发 BOSS 战，用于验证触发链路） |
-| `boss_battle` | 选人完成 → 直接打 BOSS 战（敌人 `boss_wave`） |
+> ⚠️ **别直接跑 `HexMapScene.tscn`** —— 会跳过选人流程，战斗回退到默认阵容「鼠牛虎兔」而不是你选的队伍。
 
-**命令行参数**：
-
-| 参数 | 取值 |
-|---|---|
-| `--scenario=` | 上表预设名 |
-| `--team=` | 12 生肖 id 逗号分隔，必须 4 个：`rat` `ox` `tiger` `rabbit` `dragon` `snake` `horse` `goat` `monkey` `rooster` `dog` `pig` |
-| `--key=` | `silver_slash`→银光斩 `key_shield`→钥之护盾 `energy_infusion`→能量灌注 `armor_break`→破甲 `life_key`→生命钥 |
-| `--map=` | `map01` `map02` `map03` |
-| `--target=` | `hexmap`（默认）/ `battle` |
-
-**以后要加新预设（比如"带特定装备""站在 BOSS 房门口"）**：
-① 往 `Data/dev_scenarios.json` 加一条 preset；
-② 若需要新的状态维度，在 `Scripts/Dev/DevScenario.cs` 的 `ApplyInSceneState()` 里加一个钩子（现有钩子：血量比例、落点、敌人波次）。
-
-主菜单也有「调试直达地图 (默认阵容)」按钮，点它等同于跑 `default` 预设。
-
-**其他场景**（只适合不依赖队伍的调试，如纯地图逻辑）：
-
-| 场景 | 路径 |
-|---|---|
-| 六边形地图 | `res://Scenes/HexMapScene.tscn` ⚠️ 无队伍/钥令/关卡 |
-| 战斗 | `res://Scenes/BattleScene.tscn` ⚠️ 同上，敌人按 `normal_wave` |
-| 角色选择 | `res://Scenes/CharacterSelection.tscn` |
-| 主菜单 | `res://Scenes/MainMenu.tscn` |
-
-> 直接跑单个场景时 **autoload 照常加载**（`MapManager` / `BattleTransitionManager` / `BlackMarkShopManager`），地图存档机制可用。
-
-**让我开** —— 我用 MCP 的 `run_project(scene="Scenes/Dev/DevScenario.tscn", background=false)`，
-窗口会弹在你屏幕，**你自己验证、你自己关**，我不去 stop 它；你关掉后我还能读到运行日志。
+**预设表、命令行参数、加新预设的方法** → [`docs/调试场景准备器.md`](docs/调试场景准备器.md)
 
 ---
 
@@ -160,13 +115,13 @@ $godot = 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe'
 
 ```
 FishEatFish/
-├─ Data/            10 张 JSON 数据表（卡牌/角色/刻印/造物/buff/效果/大招/敌人波次…）
+├─ Data/            11 张 JSON 数据表（卡牌/角色/刻印/造物/buff/效果/大招/敌人波次…）
 │                   + dev_scenarios.json —— 调试场景预设表
-├─ Scenes/          30+ 个 .tscn
+├─ Scenes/          31 个 .tscn
 │  ├─ MainMenu / LevelMap / CharacterSelection / BattleScene / HexMapScene
 │  ├─ Dev/           DevScenario.tscn —— 调试场景准备器入口
 │  └─ UI/           24 个 UI 组件场景
-├─ Scripts/         114+ 个 .cs，按职责分层
+├─ Scripts/         117 个 .cs，按职责分层
 │  ├─ Scenes/       场景驱动（BattleManager 1007 行是核心）
 │  ├─ Dev/          DevScenario.cs —— 调试场景准备器逻辑
 │  ├─ Battle/       战斗核心
@@ -181,8 +136,9 @@ FishEatFish/
 │  ├─ AI/           敌人 AI（激进/均衡/防守）
 │  ├─ Shop/         黑印商店
 │  └─ UI/           20+ UI 组件脚本
-├─ docs/            专项技术文档（4 篇）+ 原始策划案
-├─ tools/           check-task-stats.ps1 —— 校验任务统计表是否漂移
+├─ docs/            专题文档（见 §9 文档索引）+ 原始策划案 + 参考图
+├─ tools/           check-task-stats.ps1 校验统计表是否漂移
+│                   convert-reference-images.ps1 压参考图入库
 ├─ .trae/           Trae 的项目规则与历史计划
 └─ project.godot    工程配置（含 [autoload]）
 ```
@@ -257,6 +213,8 @@ MainMenu
 4. **改完代码必须 `dotnet build` 通过**再让用户测
 5. **六边形坐标常量见 §3.3**
 
+> 这 5 条之外，历史上踩过的 15 个坑（`.tscn` 漏绑脚本、无头环境模拟点击失效、git push 上传大文件、PowerShell 编码……）都记在 [`docs/踩坑记录.md`](docs/踩坑记录.md)。
+
 ---
 
 ## 5. 当前进度基线
@@ -273,190 +231,51 @@ MainMenu
 | Bug 修复 | 5 | 3 | 2 | 0 |
 | **合计** | **87** | **33** | **9** | **45** |
 
-📌 **改完任务状态别只改表**——跑校验脚本，它一次核对三处（实算 / `tasks.md` 统计表 / 本表）：
+📌 **改完任务状态别只改表**——跑校验脚本，它一次核对四处（`tasks.md` 实算 / `tasks.md` 统计表 / 本表 / `docs/开发计划.md`）：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 ```
 
 退出码 `0` = 一致；非 `0` = 有漂移，脚本会逐条列出该改哪几个数字。
-（本项目历史上 `tasks.md` 的统计表曾长期失真——自称 61/23，实际 87/33——就是因为只靠人记得同步。）
 
-**已跑通的主循环**：主菜单 → 选图 → 选角色 → 六边形地图 → 踩战斗格子 → 按波次配置生成敌人 → 战斗结束 → **回到地图且地图/位置/生命/黑印完整恢复**（24 项集成断言通过）。
+**已跑通的主循环**：主菜单 → 选图 → 选角色 → 六边形地图 → 踩战斗格子 → 按波次配置生成敌人 → 战斗结束 → 回到地图且地图/位置/生命/黑印完整恢复。
 
-**血量是同一份**：玩家血量 = 队伍总血量（鼠牛虎兔 = 125）。地图上显示它，进战斗带着当前血量进去（`携带地图血量进入战斗: 125/125`），战斗胜利把剩余血量写回地图；战败不写回（战斗会重开，血量保持战前值）。
+**血量是同一份**：玩家血量 = 队伍总血量（鼠牛虎兔 = 125），战斗胜利写回地图，战败不写回。
 
-**已打通的**：
-- 地图 → 战斗 → 返回地图（状态完整恢复）
-- 敌人按波次配置加载（普通 / 精英 / BOSS 三档）
-- **BOSS 战**：终点格子是 👹 BOSS，走上去即触发 BOSS 战（`boss_wave`），打赢后回到地图并结算「地图探索完成」
-- 地图血量与战斗血量打通
-
-**尚未打通的**：
-- 刻印效果在出牌时**实际触发**
-- 大招 / 钥令的**实际战斗效果**
-- 战斗胜利后的**奖励选择界面**
-- Buff / Debuff 的 UI 呈现
+**尚未打通的**：刻印效果实际触发 · 大招/钥令实际效果 · 战斗胜利后的奖励选择界面 · Buff/Debuff UI 呈现。
 
 ---
 
-## 6. 踩过的坑 / 经验
+## 6. 已知陷阱与经验
 
-### 6.1 文档与代码会失同步（本项目最大的坑）
+完整的 15 条记在 **[`docs/踩坑记录.md`](docs/踩坑记录.md)**，改代码前建议扫一眼。最要命的几条：
 
-真实发生过的失真，**改任何状态类表格都要同步**：
+| 坑 | 一句话 | 详见 |
+|---|---|---|
+| 文档失同步 | 改了任务行忘改统计表 → 数字骗人 | §1 |
+| `.tscn` 根节点漏绑 script | 组件一直是空的，但**不崩所以没人发现** | §8 |
+| 无头环境模拟点击失效 | 依赖 `GetLocalMousePosition()` 的路径测不到 → 改用临时 C# 集成测试 | §4 |
+| `git push` 上传大文件 | 推的是「远端缺失的对象」，不是增量 diff | §5 |
+| MCP 污染 `project.godot` | 跑测试期间 `git add .` 会把 `McpBridge` autoload 带进仓库 | §12 |
 
-| 文档 | 失真表现 |
-|---|---|
-| `tasks.md` 统计表 | 自称 61 任务 / 23 完成，实际 87 行 / 33 完成（写完商店那轮 Sprint 后没回头更新） |
-| `CODE_WIKI.md` | 说 `GlobalData` 是独立文件，实际在 `LevelMap.cs` 末尾；`HexEventType` 首项写 `None` 实际是 `Empty` |
-| `docs/六边形地图算法.md` | 尺寸停留在 120×104 旧几何，与代码差了一整代 |
-| `GameDesign.md` | 第 14/15 章子节编号撞号（都用 14.x），`14.14 验收标准` 出现两次 |
-
-**教训**：凡是"统计/状态/进度"类表格，只要任务行变了就得跟着改；文档与代码冲突时以源码为准，并顺手把文档修掉。
-
-### 6.2 `.tscn` 是布局的唯一真相
-
-`SilverKeyProgressIndicator.cs` 找 `ValueLabel` / `MaxLabel`，但 `.tscn` 里它们嵌在 `VBoxContainer` 下 → 每次进地图报 2 次 `Node not found`，而且**银钥圈里的数字从来没显示过**。
-`HexMapUI.cs` 连 `SceneTree.screen_resized`——**Godot 4 已移除该信号**，应为 `Viewport.SizeChanged`。
-
-**教训**：`GetNode` 路径必须和 `.tscn` 实际层级一致；用 `GetNodeOrNull` 让缺失降级为警告而不是错误堆栈。跨 Godot 版本迁移时重点查信号名。
-
-### 6.3 C# ↔ GDScript 的桥接限制（调试时会撞墙）
-
-- C# 属性不加 `[Export]` → **GDScript 读不到**（`get("CurrentMap")` 返回 null）
-- C# 的 public 方法 → **GDScript 也调不到**（`call("GetSavedMap")` 报 `Nonexistent function`）
-- `.tscn` 里 Control 的位置存的是 `offset_left/offset_top`，不是 `position`
-
-**教训**：跨语言调试要么写 C# 侧代码，要么改用 Godot 原生 API（Label.text、Control.mouse_filter、Node.is_processing_input 等）去观察。
-
-### 6.4 无头 / 后台窗口里模拟点击不可靠
-
-godot-runtime MCP 的 `run_project(background: true)` 把窗口放在**屏幕外 `(-9999,-9999)`**，`Control.GetLocalMousePosition()` 读的是**真实 OS 光标**位置，合成事件改不了它 → 任何"点击命中某控件"的代码路径都测不到。
-`HexTileView` 正是用 `GetLocalMousePosition()` 判断点击是否落在格子内。
-
-**可行的替代**：写一个**临时 C# 集成测试**（临时注册成 autoload 以跨场景存活），由 C# 直接调游戏自己的 API 驱动流程，断言结果写进 `user://` 文件；测完把 autoload 注册和测试文件一并删掉。2026-10-20 用这招跑通了 24 项断言。
-
-### 6.5 `git push` 会真的上传大文件
-
-push 传输的是「**远端缺失的对象**」，不是增量 diff。若某个待推送提交引入了大文件而远端还没有，push 会真把那些 blob 传上去（实测 2.4GB 传了 4 分钟还没完），**哪怕下一个提交就删了它们**。
-
-**正确做法**：先改写**从未推送过的**本地历史再推：
-
-```powershell
-git filter-repo --force --path <路径> --invert-paths --refs <远端SHA>..HEAD
-```
-
-只改写远端没有的提交，**不影响已推送历史，无需 force push**。
-配套：改写后要清掉 IDE 留的记账引用（Trae 的 `refs/trae_merge/*`，用 `git update-ref -d <ref>`），再 `git reflog expire --expire=now --all` + `git gc --prune=now` 才会真正回收磁盘空间。
-
-### 6.6 工具链在 Windows 上的坑
-
-- `winget install GitHub.cli` → `0x8007029c`（安装器断言失败）
-- 官方 MSI 静默安装 → `msiexec` 返回 **1603**
-- ✅ **便携版 ZIP 直接解压即可**，放到 `C:\Users\yutue\Tools\gh\bin` 并加进用户 PATH
-- `git-filter-repo` 用 `pip install`（脚本装到 `%APPDATA%\Python\Python314\Scripts`，同样要加 PATH）
-- **PowerShell 里 `\"` 不能转义双引号**（要用反引号），`git commit -m "含 \" 引号\""` 会被拆成多个参数 → **多行提交信息一律用 `git commit -F 文件`**
-
-### 6.7 Godot 细节备忘
-
-- JSON 里的整数经 `Godot.Collections.Dictionary` 取出是 **long**，要 `(int)(long)` 或按 `Variant.VariantType` 判断
-- `Control` 子节点的 `mouse_filter` 默认是 `Stop`，会吃掉点击；`Label` 默认 `Ignore`
-- 地图格子颜色直接编码事件类型（`HexTileView.EventColors`），可用来在无头环境下识别格子
-
-### 6.8 `.tscn` 根节点漏绑 script → 组件静默退化成空节点
-
-2026-10-20 在战斗场景排查报错时发现：`AttackerDisplayUI.tscn`、`RageDisplayUI.tscn`、
-`KeyOrderSelectionUI.tscn` **三个场景的根节点都没有 `script = ExtResource(...)`**（ext_resource 声明了脚本，但没挂到根节点上）。
-
-后果很隐蔽：`BattleManager.LoadUIComponent<T>()` 里的 `packedScene.Instantiate<T>()` 因为类型不匹配返回 null，
-于是走**代码兜底** `new T()` —— 得到一个**没有任何子节点的空 Control**。
-于是运行日志里出现：
-
-```
-[BattleManager] 攻击体角色显示UI初始化成功      ← 看着像成功
-ERROR: Node not found: "VBoxContainer/TeamStatsLabel"   ← 其实是空节点
-```
-
-**攻击体编队、怒气槽、钥令选择这三个 UI 实际上一直是空的**，只是没有崩所以没人发现。
-修法就是在根节点补一行 `script = ExtResource("1")`。
-
-**教训**：
-- 新建 `.tscn` 时，**根节点一定要绑脚本**——只声明 ext_resource 不等于挂上了
-- 「从场景加载: xxx.tscn」这条日志是组件是否真的走了场景路径的判据；缺它就说明退回了代码兜底
-- 一键排查：`Scenes/**/*.tscn` 里凡是有 Script ext_resource 的，根节点都要有 `script =`
-
-### 6.9 引用的资源必须真的存在
-
-`CardUI.cs` / `KeyOrderSelectionUI.cs` 引用了 `sword.png` `shield.png` `star.png`，
-但 `Assets/Icons/` 里根本没有这三个 png（只有 svg）。因为代码有 null 兜底，不崩，只是图标不显示 + 每次刷 "Resource file not found"。
-已改指向现有资源：`intent_attack.svg`（剑）、`intent_defend.svg`（盾）、`intent_buff.svg`（增益）、`relic_charm.svg`（恢复）。
-
-### 6.10 子节点的脚本也要挂，而且一个 .cs 只能挂一个类
-
-接 6.8：修好根节点的 script 之后，`AttackerDisplayUI` / `RageDisplayUI` 虽然能加载了，
-但它们的 **4 个槽位节点（`CharacterSlot0..3` / `RageSlot0..3`）还是空 Panel**，日志报
-「未找到角色槽位节点」。原因有两层：
-
-1. 槽位节点也没挂脚本 → `GetNode<Panel>(path) as CharacterSlotUI` 得到 null
-2. **`CharacterSlotUI` / `RageSlotUI` 原本和宿主类写在同一个 .cs 文件里**
-   （Godot 一个脚本文件只能对应一个类，`.tscn` 挂脚本时按文件绑定），
-   必须先拆成 `Scripts/UI/CharacterSlotUI.cs` / `Scripts/UI/RageSlotUI.cs` 再挂
-
-另外 `RageDisplayUI` 的槽位路径本身也写错了：实际是 `VBoxContainer/RageSlotsContainer/RageSlotN`，
-代码写的是 `RageSlotsContainer/RageSlotN`（少一层）。修正前 UI 显示的是 .tscn 里的静态占位文字
-「怒气值 0/100 0/100…」，修正后才显示「鼠 0/100 0%　牛…　虎…　兔…」+「总怒气 0」。
-
-**教训**：新建带子组件的 UI 场景时，**每个需要脚本的节点都要单独挂脚本，且对应独立的 .cs 文件**；
-写完用 `HasNode(path)` 验证过的路径去取，取不到时 Godot 只报「未找到」不崩，很容易被忽略。
-
-### 6.11 血条初始值需要手动推一次
-
-`HexMapUI` 只在 `OnHealthChanged` 事件里更新血条，但 `HexMapController` 比 `HexMapUI` **先**就绪，
-初始那次事件早于订阅，**不会被补发** —— 所以血条一直显示 .tscn 里的默认值 100/100，
-跟队伍总血量（125）毫无关系。修法是在订阅后手动推一次：
-
-```csharp
-_healthBar?.SetHealth(_controller.PlayerCurrentHealth, _controller.PlayerMaxHealth);
-```
-
-**教训**：跨节点的"初始状态同步"不会自动发生，凡是 UI 靠事件驱动的值，都要在订阅后手动同步一次。
+> 规矩：**跑测试期间只 `git add` 具体文件**。
 
 ---
 
 ## 7. 下一步做什么
 
-### P0 · 战斗闭环补全（`tasks.md` 高优先级）
+**本轮迭代（UI 对标参考图）** —— 11 个条目，逐条走「需求 → 开发 → 验证」三步流程：
+[`docs/开发计划.md`](docs/开发计划.md)
 
-| 任务 | 现状 | 入口 |
-|---|---|---|
-| 战斗奖励选择界面（1.3） | 0/6 | 需新建 `BattleRewardUI.tscn` + `BattleRewardManager` |
-| 刻印效果实际触发（1.2） | 1/5 | `Scripts/Battle/Effects/EffectResolver.cs` |
-| 大招实际效果（1.4） | 1/5 | `Scripts/Battle/CharacterSystem/UltimateSkill.cs` |
-| 钥令实际效果（1.5） | 1/4 | `Scripts/Battle/SilverKeySystem/KeyOrderManager.cs` |
-| Buff/Debuff UI（1.1） | 1/6 | `Scripts/Battle/BuffDebuffDisplay.cs` |
+**功能缺口** —— `tasks.md` 高优先级 5 组（战斗奖励界面 / 刻印触发 / 大招 / 钥令 / Buff-Debuff UI）尚未完成，进度见 §5。
 
-### P1 · 体验与工程
+**其他待办**（散落在 `tasks.md` 与 `.trae/plans/`，未进本轮迭代）：
 
-- **战斗奖励发放**：现在打赢 BOSS 只结算「地图完成」，没有发奖（金币/造物/刻印）——与 1.3 一起做
-- **点击远距离格子移动**：现在悬停会高亮整条路径，但点击只接受相邻格子（`HexMapUI.OnTileClicked`）
-- **存档持久化到磁盘**：所有跨场景状态目前只在内存，重启即丢
-- **造物装备界面 / 金币系统**（`tasks.md` 中优先级，2.1 / 2.2）
-- **`.trae/plans/hexmapui-refactor-plan.md` 阶段 6**：`HexMapUI.cs` 拆分 `TopRightButtonsPanel` / `PlayerStatusPanel` / `RageCirclesPanel` / `HexMapView`（目标 802 行 → <400 行）
-
-### ⚠️ 用 Agent 跑测试时的提交陷阱
-
-`godot-runtime` MCP 启动项目时会**往 `project.godot` 的 `[autoload]` 注入一行**：
-
-```ini
-McpBridge="*res://.mcp/godot-runtime/bridge/mcp_bridge.gd"
-```
-
-测试会话运行期间 `git status` 会显示 `M project.godot`（**这是正常的**），停止/关闭项目后会自动还原。
-
-**但如果你在会话运行期间执行 `git add .` 或 `git commit -a`**，这行会被提交进仓库 —— 而 `.mcp/` 本身是 gitignore 的，别人克隆后这条 autoload 指向不存在的脚本，**项目直接启动失败**。
-
-**规矩**：跑测试期间只 `git add` 具体文件；确认 `project.godot` 没有意外改动再提交。
+- 战斗奖励发放 —— 现在打赢 BOSS 只结算「地图完成」，没发奖（金币/造物/刻印）
+- 点击远距离格子移动 —— 现在悬停会高亮整条路径，但点击只接受相邻格子（`HexMapUI.OnTileClicked`）
+- 存档持久化到磁盘 —— 所有跨场景状态目前只在内存，重启即丢
+- `HexMapUI.cs` 拆分 —— `.trae/plans/hexmapui-refactor-plan.md` 阶段 6（目标 802 行 → <400 行）
 
 ---
 
@@ -464,6 +283,9 @@ McpBridge="*res://.mcp/godot-runtime/bridge/mcp_bridge.gd"
 
 | 日期 | 内容 |
 |---|---|
+| 2026-10-20 | **README 重构为「主干 + 专题文档外链」**：抽出 `docs/踩坑记录.md`（15 条）与 `docs/调试场景准备器.md`；本文只留现状/架构/进度/导航；规模数字校正为 117 cs / 18,664 行 / 31 tscn / 11 JSON |
+| 2026-10-20 | 新增 `docs/开发计划.md`：本轮迭代「需求→开发→验证」三步流程 + 11 个条目 + 参考图索引 R-01~R-14；校验器扩到四处互校 |
+| 2026-10-20 | 参考图压缩入库：29.8MB PNG → 3.19MB JPG（1920 宽），原 PNG 留本地；新增 `tools/convert-reference-images.ps1` |
 | 2026-10-20 | 打通 BOSS 触发（终点格子走上去即打 BOSS，打赢结算地图完成）与血量打通（队伍总血量=地图血量=战斗血量，战斗胜利写回） |
 | 2026-10-20 | 修掉战斗场景 3 个 UI 组件静默失效的根因：.tscn 根节点/槽位节点漏绑 script；CharacterSlotUI / RageSlotUI 拆分为独立脚本；RageDisplayUI 槽位路径少一层 VBoxContainer/；HexMapUI 血条初始值手动推送 |
 | 2026-10-20 | 文档与代码对齐：`tasks.md` 统计表实算校准、`GameDesign.md` 章节编号去撞号、`docs/六边形地图算法.md` 常量同步、补「边↔方向」对应表 |
@@ -475,20 +297,35 @@ McpBridge="*res://.mcp/godot-runtime/bridge/mcp_bridge.gd"
 
 ## 9. 文档索引
 
+### 主干与规则
+
 | 路径 | 内容 |
 |---|---|
+| **本文** | 主干：现状 / 架构 / 进度 / 下一步 |
 | `.trae/rules/project_rules.md` | **开发铁律**（第一准则、UI 规范、日志规范、六边形常量） |
+| `docs/开发计划.md` | **本轮迭代执行计划**：需求→开发→验证三步流程 + 11 个条目 + 参考图索引 |
 | `tasks.md` | 87 行任务清单 + 依赖 + 状态 |
 | `GameDesign.md` | 完整策划案 18 章 + 未完成功能清单 |
 | `checklist.md` | 12 大类验收清单 |
-| `CODE_WIKI.md` | 自动生成技术档案（**已滞后**） |
-| `plan.md` | 商店 Bug 修复专项计划（历史） |
-| `docs/开发计划.md` | **本轮迭代执行计划**：需求→开发→验证三步流程 + 11 个条目 + 参考图索引 |
-| `docs/screenshots/` | 界面参考图（目标效果基准，JPG 版入库；原始 PNG 只留本地） |
+
+### 专题技术文档
+
+| 路径 | 内容 |
+|---|---|
+| `docs/踩坑记录.md` | **15 条真实踩坑与规矩**（改代码前扫一眼） |
+| `docs/调试场景准备器.md` | 调试场景准备器用法、8 个预设、命令行参数、加预设的方法 |
 | `docs/六边形地图算法.md` | 六边形坐标权威文档 |
 | `docs/手牌预览功能使用说明.md` | 手牌扇形调试面板用法 |
+| `docs/原始策划案.md` | 项目立项需求原文 |
+| `docs/screenshots/` | 界面参考图（目标效果基准，JPG 版入库；原始 PNG 只留本地） |
+
+### 历史 / 归档
+
+| 路径 | 内容 |
+|---|---|
+| `CODE_WIKI.md` | 自动生成技术档案（**已滞后**） |
+| `plan.md` | 商店 Bug 修复专项计划（历史） |
 | `docs/修复六边形地图Bug.md` | 早期 AI 思考过程存档（归档性质） |
 | `docs/战斗场景布局.md` | 残稿，未写完 |
-| `docs/原始策划案.md` | 项目立项需求原文 |
 | `.trae/plan_hexmap_battle_trigger.md` | 地图战斗触发系统实现计划（部分已完成，勾选框未同步） |
 | `.trae/plans/hexmapui-refactor-plan.md` | HexMapUI 组件拆分计划（阶段 1-5 完成，阶段 6 待做） |
