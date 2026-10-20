@@ -215,10 +215,10 @@
 
 ### 需要新建/修改的文件
 - `Scenes/UI/ArtifactDescriptionUI.tscn` ⬜ (新建)
-- `Scripts/UI/HexMapUI/ArtifactDescriptionUI.cs` ⬜ (新建)
+- `Scripts/UI/ArtifactDescriptionUI/ArtifactDescriptionUI.cs` ⬜ (新建)
 - `Scenes/UI/EngravingCardSelectionUI.tscn` ⬜ (新建)
-- `Scripts/UI/HexMapUI/EngravingCardSelectionUI.cs` ⬜ (新建)
-- `Scripts/UI/HexMapUI/KeyOrderDescriptionUI.cs` ⬜ (修改)
+- `Scripts/UI/EngravingCardSelectionUI/EngravingCardSelectionUI.cs` ⬜ (新建)
+- `Scripts/UI/KeyOrderDescriptionUI.cs` ⬜ (修改)
 
 ### 复用文件
 - `Scenes/UI/KeyOrderDescriptionUI.tscn` (复用现有)
