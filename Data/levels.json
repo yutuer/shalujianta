@@ -1,0 +1,50 @@
+{
+  "_comment": "关卡展示页（D10）的元数据。章节、关卡编号、标题、难度、推荐等级、解锁状态都在这里改。",
+  "_placeholder": "progress.resonance 是占位值：项目目前没有「共鸣」系统（战斗结算里的同调率只是单次增量，不累计），UI 已按参考图 R-01 落位，数值待策划确认。",
+  "_progress_note": "星级评分进度不在这里配 —— 它由关卡是否通关实时算出来（每关最高 3 星）。",
+  "chapters": [
+    {
+      "id": "chapter_1",
+      "name": "初探",
+      "levels": [
+        {
+          "mapId": "map_01",
+          "number": "1-1",
+          "title": "森林深处",
+          "difficulty": "normal",
+          "recommendedLevel": 1,
+          "unlocked": true
+        }
+      ]
+    },
+    {
+      "id": "chapter_2",
+      "name": "蜕变",
+      "levels": [
+        {
+          "mapId": "map_02",
+          "number": "2-1",
+          "title": "沼泽地带",
+          "difficulty": "normal",
+          "recommendedLevel": 5,
+          "unlocked": true
+        },
+        {
+          "mapId": "map_03",
+          "number": "2-2",
+          "title": "龙之巢穴",
+          "difficulty": "hard",
+          "recommendedLevel": 10,
+          "unlocked": false
+        }
+      ]
+    }
+  ],
+  "progress": {
+    "uid": "101329458",
+    "resonance": {
+      "current": 5,
+      "total": 12
+    }
+  }
+}
