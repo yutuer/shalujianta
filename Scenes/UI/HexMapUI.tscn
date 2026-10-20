@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/UI/RageCircle.tscn" id="4_ragecircle"]
 [ext_resource type="PackedScene" uid="uid://silver_key_progress" path="res://Scenes/UI/SilverKeyProgressIndicator.tscn" id="5_silverkey"]
 [ext_resource type="PackedScene" uid="uid://ArtifactDetailUI_scene_001" path="res://Scenes/UI/ArtifactDetailUI.tscn" id="6_artifact_detail"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/ScorePanel.tscn" id="7_scorepanel"]
 
 [node name="HexMapUI" type="Control"]
 layout_mode = 3
@@ -179,3 +180,10 @@ text = "设置"
 theme_override_font_sizes/font_size = 20
 
 [node name="ArtifactDetailUI" parent="." instance=ExtResource("6_artifact_detail")]
+
+[node name="ScorePanel" parent="." instance=ExtResource("7_scorepanel")]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 300.0
+offset_right = 456.0
+offset_bottom = 600.0

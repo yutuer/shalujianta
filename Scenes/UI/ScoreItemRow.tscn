@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/ScoreItemRow.cs" id="1"]
+
+[node name="ScoreItemRow" type="HBoxContainer"]
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+script = ExtResource("1")
+
+[node name="Marker" type="Label" parent="."]
+custom_minimum_size = Vector2(22, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
+text = "•"
+vertical_alignment = 0
+
+[node name="Text" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.92, 0.94, 0.98, 1)
+autowrap_mode = 3

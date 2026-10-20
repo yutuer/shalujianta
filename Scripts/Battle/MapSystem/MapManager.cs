@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 public partial class MapManager : Node
@@ -16,7 +17,22 @@ public partial class MapManager : Node
 
     private List<MapDefinition> _availableMaps = new List<MapDefinition>();
 
+    /// <summary>上次完成这张图的日期（yyyy-MM-dd），空串 = 从未完成过</summary>
+    private string _lastCompletionDate = "";
+
     public int MaxCreatureCount => _maxCreatureCount;
+
+    /// <summary>地图进度变化时触发（战斗推进 / 关卡开始 / 关卡完成），供评分项面板等订阅者刷新</summary>
+    public event Action OnProgressChanged;
+
+    /// <summary>今天是不是这张图的首次游玩（用来判定「每日首次游玩」类评分项）</summary>
+    public bool IsFirstPlayToday => _lastCompletionDate != DateTime.Now.ToString("yyyy-MM-dd");
+
+    /// <summary>今天是否已经玩过这张图</summary>
+    public bool HasPlayedToday => !IsFirstPlayToday;
+
+    /// <summary>上次完成这张图的日期（yyyy-MM-dd）</summary>
+    public string LastCompletionDate => _lastCompletionDate;
 
     public override void _Ready()
     {
@@ -37,6 +53,7 @@ public partial class MapManager : Node
         _silverKeyValue = 0;
         _characterRageValues.Clear();
         _maxCreatureCount = 10;
+        OnProgressChanged?.Invoke();
     }
 
     public void SetMaxCreatureCount(int count)
@@ -85,6 +102,7 @@ public partial class MapManager : Node
         {
             CompleteMap();
         }
+        OnProgressChanged?.Invoke();
     }
 
     public void CompleteMap()
@@ -93,7 +111,13 @@ public partial class MapManager : Node
         if (_currentMap != null)
         {
             _currentMap.IsCompleted = true;
+            // 地图完成 = 所有战斗都打完了：战斗索引推进到总数，
+            // 这样「剩余战斗数」才算得对（评分项面板的 remaining_battles 判定依赖它）
+            _currentBattleIndex = _currentMap.BattleCount;
         }
+        // 记下今天的日期：今天再进这张图就不再是「每日首次游玩」了
+        _lastCompletionDate = DateTime.Now.ToString("yyyy-MM-dd");
+        GD.Print($"[MapManager] 关卡完成，记录完成日期: {_lastCompletionDate}");
     }
 
     public bool IsMapCompleted()
@@ -109,6 +133,7 @@ public partial class MapManager : Node
     public void AddSilverKey(int value)
     {
         _silverKeyValue = value;
+        OnProgressChanged?.Invoke();
     }
 
     public int GetSilverKey()

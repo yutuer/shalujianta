@@ -40,6 +40,9 @@ namespace FishEatFish.UI.HexMap
         private FishEatFish.UI.ShopUI.ShopUI _shopUI;
         private FishEatFish.UI.BackpackUI.BackpackUI _backpackUI;
 
+        /// <summary>左侧评分项面板（D6）</summary>
+        private FishEatFish.UI.ScorePanel _scorePanel;
+
         private Dictionary<HexCoord, HexTileView> _tileViews = new Dictionary<HexCoord, HexTileView>();
         private List<RageCircle> _rageCircles = new List<RageCircle>();
 
@@ -275,6 +278,13 @@ namespace FishEatFish.UI.HexMap
                     }
                 }
             }
+
+            // 左侧评分项面板（D6）
+            _scorePanel = GetNodeOrNull<FishEatFish.UI.ScorePanel>("ScorePanel");
+            if (_scorePanel != null)
+            {
+                GD.Print("[HexMapUI] ScorePanel found");
+            }
         }
 
         private void ConnectButton(string path, Action handler)
@@ -362,7 +372,19 @@ namespace FishEatFish.UI.HexMap
                 BlackMarkShopManager.Instance.OnBlackMarkChanged -= UpdateBlackMarkDisplay;
             }
 
+            // 同理：MapManager 是 autoload，事件必须退订，否则场景释放后还会被回调
+            if (MapManager.Instance != null)
+            {
+                MapManager.Instance.OnProgressChanged -= RefreshScorePanel;
+            }
+
             base._ExitTree();
+        }
+
+        /// <summary>刷新左侧评分项面板（D6）</summary>
+        private void RefreshScorePanel()
+        {
+            _scorePanel?.Refresh();
         }
 
         private void OnScreenResized()
@@ -378,7 +400,7 @@ namespace FishEatFish.UI.HexMap
             if (_controller != null)
             {
                 _controller.OnPlayerMoved += OnPlayerMoved;
-            _controller.OnRevealedChanged += UpdateFogAndHighlight;
+                _controller.OnRevealedChanged += UpdateFogAndHighlight;
                 _controller.OnPlayerTeleported += OnPlayerTeleported;
                 _controller.OnTileTriggered += OnTileTriggered;
                 _controller.OnTeleportTriggered += OnTeleportTriggered;
@@ -389,6 +411,12 @@ namespace FishEatFish.UI.HexMap
                 _controller.OnChallengeFailed += OnChallengeFailed;
                 _controller.OnShopOpened += OnShopOpened;
                 _controller.OnShopClosed += OnShopClosed;
+            }
+
+            // MapManager 是 autoload（跨场景存活），地图进度变化时刷新评分项面板（D6）
+            if (MapManager.Instance != null)
+            {
+                MapManager.Instance.OnProgressChanged += RefreshScorePanel;
             }
 
             if (_playerIcon != null)
@@ -432,6 +460,9 @@ namespace FishEatFish.UI.HexMap
             CenterOnPlayer(_controller.CurrentPosition, false);
             UpdatePlayerPosition();
             UpdatePlayerCurrentTile(_controller.CurrentPosition);
+
+            // 左侧评分项面板（D6）：进地图时刷一次
+            RefreshScorePanel();
         }
 
         private void CenterOnPlayer(HexCoord playerCoord, bool animate = true)

@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/ScorePanel.cs" id="1"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/ScoreItemRow.tscn" id="2"]
+
+[node name="ScorePanel" type="Control"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 400.0
+offset_bottom = 300.0
+script = ExtResource("1")
+RowScene = ExtResource("2")
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 0
+offset_right = 400.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.95, 0.95, 0.98, 1)
+text = "评分项"
+
+[node name="ItemsBox" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_top = 36.0
+offset_right = 400.0
+offset_bottom = 36.0
+theme_override_constants/separation = 8

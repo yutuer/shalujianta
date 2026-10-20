@@ -1,0 +1,31 @@
+{
+  "_comment": "地图左侧评分项面板的数据源。每条评分项的文案与判定条件都在这里改，不用动代码。",
+  "_states": "condition 决定三态：active=✓绿勾（已达成）/ expired=✗红叉（已失效）/ pending=•白点（未触发）",
+  "_placeholders": "可用占位符：{remainingBattles} {totalBattles} {battleIndex} {teamSize} {silverKey} {mapName}",
+  "items": [
+    {
+      "id": "remaining_battles",
+      "text": "每剩余 1 场战斗额外获得 20 分。（当前剩余战斗：{remainingBattles}）",
+      "condition": "remaining_battles",
+      "param": 1
+    },
+    {
+      "id": "silver_key",
+      "text": "每持有 1 枚银钥额外获得 10 分。（当前银钥：{silverKey}）",
+      "condition": "silver_key",
+      "param": 1
+    },
+    {
+      "id": "team_size",
+      "text": "使用 {teamSize}/4 名角色出战时，获得 250/500 分。（当前出战：{teamSize}）",
+      "condition": "team_size",
+      "param": 4
+    },
+    {
+      "id": "daily_first",
+      "text": "每日首次游玩获得 500 分。",
+      "condition": "daily_first",
+      "param": 0
+    }
+  ]
+}
