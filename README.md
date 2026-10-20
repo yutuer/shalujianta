@@ -484,6 +484,7 @@ McpBridge="*res://.mcp/godot-runtime/bridge/mcp_bridge.gd"
 | `CODE_WIKI.md` | 自动生成技术档案（**已滞后**） |
 | `plan.md` | 商店 Bug 修复专项计划（历史） |
 | `docs/开发计划.md` | **本轮迭代执行计划**：需求→开发→验证三步流程 + 11 个条目 + 参考图索引 |
+| `docs/screenshots/` | 界面参考图（目标效果基准，JPG 版入库；原始 PNG 只留本地） |
 | `docs/六边形地图算法.md` | 六边形坐标权威文档 |
 | `docs/手牌预览功能使用说明.md` | 手牌扇形调试面板用法 |
 | `docs/修复六边形地图Bug.md` | 早期 AI 思考过程存档（归档性质） |

@@ -16,3 +16,8 @@
 /qianye.pck
 *.tpz
 *.rar
+
+# 参考图原始 PNG（不入库）
+# docs/screenshots/*.jpg 是入库版本（1920 宽，约 3.2MB）
+# 原 PNG 保留在本地 _原始PNG/ 备查，约 30MB，不进版本库
+/docs/screenshots/_原始PNG/
