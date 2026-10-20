@@ -8,10 +8,11 @@
     （自称 61 任务 / 23 完成，实际 87 行 / 33 完成），因为改了任务行却没人回头改表。
     本脚本把「统计」变成可自动校验的东西，任何一处漂移都会当场暴露。
 
-    校验三处：
+    校验四处：
       1. tasks.md  一~五节 任务行实算  vs  tasks.md  「六、任务统计」表
       2. tasks.md  一~五节 任务行实算  vs  README.md「5. 当前进度基线」表
-      3. 任务行里是否存在一行含多个状态标记（可能是笔误）
+      3. docs/开发计划.md 需求池总表状态  vs  逐项展开标题状态  vs  「6. 统计」表
+      4. 任务行里是否存在一行含多个状态标记（可能是笔误）
 
 .PARAMETER RepoRoot
     仓库根目录。默认为本脚本所在目录的上一级。
@@ -67,7 +68,7 @@ function Get-SectionRows {
       取出指定小节内的表格数据行，返回 PSCustomObject 列表。
       每项: Section(小节名) / Row(原始行) / Status(状态列文本)
     #>
-    param([string[]]$Lines, [string]$StartPattern, [string]$EndPattern)
+    param([string[]]$Lines, [string]$StartPattern, [string]$EndPattern, [int]$StatusIndex = 2)
 
     $start = -1
     for ($i = 0; $i -lt $Lines.Count; $i++) {
@@ -85,8 +86,8 @@ function Get-SectionRows {
         $line = $Lines[$i]
         if (-not $line.StartsWith('|')) { continue }
         $cells = $line.Split('|')
-        if ($cells.Count -lt 3) { continue }
-        $status = $cells[2]   # 所有任务表的状态都在第 2 列
+        if ($cells.Count -le $StatusIndex) { continue }
+        $status = $cells[$StatusIndex]   # 状态列位置由调用方指定（tasks.md=2，开发计划总表=6）
         $hasMarker = $false
         foreach ($m in $Markers) { if ($status.Contains($m)) { $hasMarker = $true; break } }
         if (-not $hasMarker) { continue }
@@ -235,7 +236,80 @@ if (Test-Path $readmePath) {
     }
 }
 
-# ---------- 4. 一行多个状态标记（可能是笔误）----------
+# ---------- 4. 开发计划（docs/开发计划.md）三处互校 ----------
+#    1) 需求池总表的状态列
+#    2) 逐项展开标题里的状态
+#    3) 第 6 节统计表的数字
+#    改一处状态必须三处同步，改漏任何一处都会当场报出来。
+$planPath = Join-Path $RepoRoot 'docs\开发计划.md'
+if (Test-Path $planPath) {
+    $planLines = Get-Content $planPath -Encoding UTF8
+
+    # 4a. 需求池总表实算（状态在第 6 列：ID|名称|类型|关联|参考图|状态）
+    $planRows = Get-SectionRows -Lines $planLines `
+        -StartPattern '^##\s*3\.\s*需求池总表' -EndPattern '^##\s*4\.' -StatusIndex 6
+
+    if ($planRows.Count -eq 0) {
+        $problems += 'docs/开发计划.md 里找不到「3. 需求池总表」的条目行'
+    } else {
+        $pDone = 0; $pDoing = 0; $pTodo = 0; $pBlock = 0
+        $planStatus = @{}
+        foreach ($r in $planRows) {
+            $found = @()
+            foreach ($m in $Markers) { if ($r.Status.Contains($m)) { $found += $m } }
+            if ($found.Count -gt 1) { $problems += "开发计划条目含多个状态标记: $($r.Row.Trim())" }
+            if ($found.Count -eq 0) { continue }
+            switch ($found[0]) {
+                $Done  { $pDone++ }
+                $Doing { $pDoing++ }
+                $Todo  { $pTodo++ }
+                $Block { $pBlock++ }
+            }
+            $cells = $r.Row.Split('|')
+            $planStatus[$cells[1].Trim()] = $found[0]
+        }
+        $pTotal = $pDone + $pDoing + $pTodo + $pBlock
+
+        # 4b. 与逐项展开标题里的状态对比
+        $esc = ($Markers | ForEach-Object { [regex]::Escape($_) }) -join '|'
+        $titlePattern = '^(###\s*(D\d+)\s*·.*?)(' + $esc + ')\s*$'
+        $titleStatus = @{}
+        foreach ($line in $planLines) {
+            if ($line -match $titlePattern) {
+                $titleStatus[$Matches[2]] = $Matches[3]
+            }
+        }
+        foreach ($id in $planStatus.Keys) {
+            if (-not $titleStatus.ContainsKey($id)) {
+                $problems += "开发计划条目 [$id] 在需求池总表有，但逐项展开缺对应标题"
+            } elseif ($titleStatus[$id] -ne $planStatus[$id]) {
+                $problems += "开发计划 [$id] 状态不一致：总表=$($planStatus[$id]) 展开标题=$($titleStatus[$id])"
+            }
+        }
+        foreach ($id in $titleStatus.Keys) {
+            if (-not $planStatus.ContainsKey($id)) {
+                $problems += "开发计划条目 [$id] 在逐项展开有，但需求池总表缺对应行"
+            }
+        }
+
+        # 4c. 与第 6 节统计表对比
+        $planTable = Get-ExpectedTable -Lines $planLines -StartPattern '^##\s*6\.' -EndPattern '^##\s*7\.'
+        if ($planTable.Count -eq 0) {
+            $problems += 'docs/开发计划.md 里找不到「6. 统计」表'
+        } else {
+            $prow = $null
+            foreach ($k in $planTable.Keys) { $prow = $planTable[$k]; break }
+            if ($prow.Total -ne $pTotal) { $problems += "开发计划统计表 总数 表内=$($prow.Total) 实算=$pTotal" }
+            if ($prow.Done  -ne $pDone)  { $problems += "开发计划统计表 完成 表内=$($prow.Done) 实算=$pDone" }
+            if ($prow.Doing -ne $pDoing) { $problems += "开发计划统计表 进行 表内=$($prow.Doing) 实算=$pDoing" }
+            if ($prow.Todo  -ne $pTodo)  { $problems += "开发计划统计表 待开 表内=$($prow.Todo) 实算=$pTodo" }
+        }
+    }
+} else {
+    Write-Host '提示: 未找到 docs\开发计划.md，跳过开发计划校验' -ForegroundColor DarkGray
+}
+
+# ---------- 5. 一行多个状态标记（可能是笔误）----------
 foreach ($row in $multiMarker) {
     $problems += "任务行含多个状态标记（可能笔误）: $row"
 }
@@ -244,6 +318,9 @@ foreach ($row in $multiMarker) {
 if ($problems.Count -eq 0) {
     Write-Host ''
     Write-Host ('OK  统计一致: tasks.md 实算 / tasks.md 统计表 / README 进度基线 三处完全相同 (共 ' + $grandTotal + ' 行)') -ForegroundColor Green
+    if (Test-Path (Join-Path $RepoRoot 'docs\开发计划.md')) {
+        Write-Host ('OK  开发计划一致: 需求池总表 / 逐项展开标题 / 6.统计表 三处完全相同 (共 ' + $pTotal + ' 条)') -ForegroundColor Green
+    }
     exit 0
 }
 
@@ -252,4 +329,5 @@ Write-Host '发现 ' $problems.Count ' 处不一致：' -ForegroundColor Yellow
 foreach ($p in $problems) { Write-Host ('  - ' + $p) -ForegroundColor Yellow }
 Write-Host ''
 Write-Host '修复方式：更新 tasks.md「六、任务统计」与 README.md「5. 当前进度基线」两张表，使其与实算一致。' -ForegroundColor Yellow
+Write-Host '          若报的是开发计划：需求池总表的状态列、逐项展开标题的状态、「6. 统计」表三处必须同步改。' -ForegroundColor Yellow
 exit 1
