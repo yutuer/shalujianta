@@ -11,6 +11,7 @@ anchor_right = 1
 anchor_bottom = 1
 grow_horizontal = 2
 grow_vertical = 2
+z_index = 50
 
 [node name="ShopContainer" type="PanelContainer" parent="."]
 visible = false

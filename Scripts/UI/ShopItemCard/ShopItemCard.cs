@@ -50,12 +50,21 @@ namespace FishEatFish.UI.ShopItemCard
             bool hasTexture = false;
             if (!string.IsNullOrEmpty(item.Icon))
             {
-                var texture = GD.Load<Texture2D>(item.Icon);
-                if (texture != null && _iconRect != null)
+                // 先判存在再加载：刻印图标（Assets/Icons/engravings/*.png）有一部分还没做，
+                // 直接 GD.Load 会刷一堆 "Error loading resource" 错误
+                if (!ResourceLoader.Exists(item.Icon))
                 {
-                    _iconRect.Texture = texture;
-                    if (_emojiLabel != null) _emojiLabel.Visible = false;
-                    hasTexture = true;
+                    GD.Print($"[ShopItemCard] 图标不存在，回退到符号: {item.Icon}");
+                }
+                else
+                {
+                    var texture = GD.Load<Texture2D>(item.Icon);
+                    if (texture != null && _iconRect != null)
+                    {
+                        _iconRect.Texture = texture;
+                        if (_emojiLabel != null) _emojiLabel.Visible = false;
+                        hasTexture = true;
+                    }
                 }
             }
 

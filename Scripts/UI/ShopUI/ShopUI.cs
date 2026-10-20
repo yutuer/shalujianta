@@ -32,6 +32,10 @@ namespace FishEatFish.UI.ShopUI
         private FishEatFish.UI.ArtifactDescriptionUI.ArtifactDescriptionUI _artifactDescriptionUI;
         private FishEatFish.UI.EngravingCardSelectionUI.EngravingCardSelectionUI _engravingCardSelectionUI;
 
+        /// <summary>刷新二次确认弹窗（D11）</summary>
+        private FishEatFish.UI.ConfirmDialog _confirmDialog;
+        private PackedScene _confirmDialogScene;
+
         public event Action<ShopItem> OnEngravingItemConfirmed;
         public event Action<ShopItem> OnArtifactItemConfirmed;
         public event Action OnCloseClicked;
@@ -226,8 +230,64 @@ namespace FishEatFish.UI.ShopUI
                 return;
             }
 
+            // D11：刷新前必须二次确认（参考图 R-13）
+            var dialog = GetOrCreateConfirmDialog();
+            if (dialog == null)
+            {
+                GD.PrintErr("[ShopUI] 确认弹窗不可用，直接刷新");
+                DoRefresh();
+                return;
+            }
+
+            dialog.ShowConfirm(
+                "确认刷新",
+                "刷新将会更新刻印和造物，唤醒体觉醒和出售指令卡的次数不会重置，是否确认？");
+            SetInteractionEnabled(false);
+        }
+
+        /// <summary>玩家在确认弹窗里点了「确认」→ 真正刷新</summary>
+        private void DoRefresh()
+        {
+            GD.Print("[ShopUI] DoRefresh: 已确认，执行刷新");
             OnRefreshClicked?.Invoke(_currentRefreshCount, MaxRefreshCount);
-            GD.Print($"[ShopUI] OnRefreshPressed completed");
+            SetInteractionEnabled(true);
+        }
+
+        /// <summary>玩家点了「取消」</summary>
+        private void OnRefreshCancelled()
+        {
+            GD.Print("[ShopUI] OnRefreshCancelled: 已取消");
+            SetInteractionEnabled(true);
+        }
+
+        /// <summary>获取（必要时创建）二次确认弹窗</summary>
+        private FishEatFish.UI.ConfirmDialog GetOrCreateConfirmDialog()
+        {
+            if (_confirmDialog != null) return _confirmDialog;
+
+            if (_confirmDialogScene == null)
+            {
+                _confirmDialogScene = GD.Load<PackedScene>("res://Scenes/UI/ConfirmDialog.tscn");
+            }
+            if (_confirmDialogScene == null)
+            {
+                GD.PrintErr("[ShopUI] 确认弹窗场景加载失败");
+                return null;
+            }
+
+            _confirmDialog = _confirmDialogScene.Instantiate<FishEatFish.UI.ConfirmDialog>();
+            if (_confirmDialog != null)
+            {
+                AddChild(_confirmDialog);
+
+                // 事件**只订阅一次**：确认框会被反复打开（每次点刷新），
+                // 每次打开都订阅的话，点一次确认会触发多次刷新。
+                _confirmDialog.OnConfirm += DoRefresh;
+                _confirmDialog.OnCancel += OnRefreshCancelled;
+
+                GD.Print("[ShopUI] ConfirmDialog created");
+            }
+            return _confirmDialog;
         }
 
         public bool TrySpendRefresh()
@@ -489,6 +549,7 @@ namespace FishEatFish.UI.ShopUI
             HideArtifactDescription();
             HideEngravingDescription();
             HideEngravingCardSelection();
+            _confirmDialog?.Close();
 
             GD.Print($"[ShopUI] HideShop completed");
         }
