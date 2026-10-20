@@ -100,8 +100,16 @@ namespace FishEatFish.UI
 		{
 			if (_optionBox == null) return;
 
+			// ⚠️ 必须先 RemoveChild 再 QueueFree —— 只调 QueueFree 的话，旧按钮在**本帧结束前**
+			// 仍然留在容器里（QueueFree 是延迟删除），于是新按钮会叠在旧按钮上面：
+			//   第二次打开弹窗 → 容器里有 4 个按钮（旧的 2 个 + 新的 2 个）
+			//   点上面那两个旧的 → 它们已被标记删除但还没释放 → **点了没反应**
+			//   新按钮被压在下面 → 面板看着"卡住"关不掉
+			// 这就是「双向门第一次能跳、第二次点了没反应」的根因。
+			// 手法与 ShopUI 一致（见踩坑记录 §27）。
 			foreach (Node child in _optionBox.GetChildren())
 			{
+				_optionBox.RemoveChild(child);
 				child.QueueFree();
 			}
 

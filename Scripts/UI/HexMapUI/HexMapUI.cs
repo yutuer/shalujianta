@@ -825,6 +825,11 @@ namespace FishEatFish.UI.HexMap
                 return;
             }
 
+            // ⚠️ 必须把探照灯的订阅摘掉 —— 它是在 ShowSearchlightEvent 里 += 上的，
+            // 而探照灯的选项回调会**无条件**执行（驱散迷雾），跟当前事件无关。
+            // 不摘的话：踩过一次探照灯后，再踩传送门点选项 → 两个回调都跑。
+            _eventDialog.OnOptionSelected -= OnSearchlightOptionSelected;
+
             _eventDialog.ShowEvent(FishEatFish.Battle.MapEventData.Load(eventId));
             SetInteractionBlocked(true);
         }

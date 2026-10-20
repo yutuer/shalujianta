@@ -16,6 +16,15 @@ theme = ExtResource("4_theme")
 script = ExtResource("1")
 SlotScene = ExtResource("3")
 
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 0
+color = Color(0.08, 0.09, 0.12, 0.92)
+
 [node name="TeamDisplay" parent="." instance=ExtResource("2")]
 layout_mode = 0
 offset_left = 16.0
