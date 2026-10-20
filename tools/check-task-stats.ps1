@@ -266,7 +266,8 @@ if (Test-Path $planPath) {
                 $Block { $pBlock++ }
             }
             $cells = $r.Row.Split('|')
-            $planStatus[$cells[1].Trim()] = $found[0]
+            # 归一化 ID：剥掉 markdown 强调/代码标记，让表格可以自由加粗（**D12** 与 D12 视为同一个）
+            $planStatus[($cells[1].Trim() -replace '[\*`~]', '')] = $found[0]
         }
         $pTotal = $pDone + $pDoing + $pTodo + $pBlock
 
@@ -276,7 +277,7 @@ if (Test-Path $planPath) {
         $titleStatus = @{}
         foreach ($line in $planLines) {
             if ($line -match $titlePattern) {
-                $titleStatus[$Matches[2]] = $Matches[3]
+                $titleStatus[($Matches[2] -replace '[\*`~]', '')] = $Matches[3]
             }
         }
         foreach ($id in $planStatus.Keys) {
