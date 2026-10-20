@@ -693,9 +693,16 @@ namespace FishEatFish.UI.HexMap
 
         private void OnPlayerTeleported(HexCoord newPos)
         {
+            GD.Print($"[HexMapUI] OnPlayerTeleported called: {newPos}");
             if (_playerIcon == null) return;
 
             CenterOnPlayer(newPos, false);
+
+            // 传送到哪照亮哪（周围一圈）+ 刷新迷雾与高亮
+            // ⚠️ 必须和 OnPlayerMoved 保持一致：传送后不照亮 → 落点周围一片黑，
+            // 玩家看不见自己站在哪、也看不见相邻可走的格子。
+            _controller?.RevealTiles(newPos, 1);
+            UpdateFogAndHighlight();
 
             var iconSize = _playerIcon.Size == Vector2.Zero
                 ? _playerIcon.CustomMinimumSize
@@ -707,6 +714,8 @@ namespace FishEatFish.UI.HexMap
 
             UpdatePlayerCurrentTile(newPos);
             ClearPathHighlights();
+
+            GD.Print($"[HexMapUI] OnPlayerTeleported completed: {newPos}");
         }
 
         private void UpdatePlayerCurrentTile(HexCoord playerPos)
