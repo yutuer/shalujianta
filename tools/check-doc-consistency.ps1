@@ -68,9 +68,35 @@ $mdFiles = Get-ChildItem -Path $RepoRoot -Filter *.md -Recurse -File |
 
 Write-Host "扫描 $($mdFiles.Count) 个 markdown 文件..." -ForegroundColor Cyan
 
+# 生成 GitHub 风格的标题锚点集合（小写、去标点、空格转连字符）
+function Get-Anchors([string]$md) {
+    $set = @{}
+    foreach ($line in ($md -split "`n")) {
+        if ($line -match '^#{1,6}\s+(.+?)\s*$') {
+            $t = $Matches[1]
+            $t = $t -replace '\[(.*?)\]\(.*?\)', '$1'   # 去掉行内链接语法
+            $t = $t -replace '[`*_~]', ''                    # 去掉强调/代码标记
+            $a = $t.ToLower()
+            $a = $a -replace '[^\p{L}\p{N}\s\-_]', ''      # 去掉标点
+            $a = $a.Trim() -replace '\s', '-'               # 每个空格各转一个连字符（与 GitHub 一致）
+            if ($a) { $set[$a] = $true }
+        }
+    }
+    return $set
+}
+
+# 预读所有 md 的内容与锚点，供链接检查用
+$fileText = @{}
+$fileAnchors = @{}
+foreach ($f in $mdFiles) {
+    $rel = $f.FullName.Substring($RepoRoot.Length).TrimStart('\')
+    $fileText[$rel] = [System.IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8)
+    $fileAnchors[$rel] = Get-Anchors $fileText[$rel]
+}
+
 # ---------- 1~3. 逐文件检查 ----------
 foreach ($f in $mdFiles) {
-    $raw = [System.IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8)
+    $raw = $fileText[$f.FullName.Substring($RepoRoot.Length).TrimStart('\')]
     $rel = $f.FullName.Substring($RepoRoot.Length).TrimStart('\')
 
     # 2. 换行符一致性
@@ -104,14 +130,36 @@ foreach ($f in $mdFiles) {
         }
     }
 
-    # 1. 内部链接
+    # 1. 内部链接（含 #锚点 的锚点有效性）
     $dir = Split-Path -Parent $f.FullName
-    foreach ($m in [regex]::Matches($raw, '\]\(([^)#][^)]*)\)')) {
+    foreach ($m in [regex]::Matches($raw, '\]\(([^)]+)\)')) {
         $link = $m.Groups[1].Value
         if ($link -match '^(https?|mailto)') { continue }
-        $target = Join-Path $dir ($link -replace '/', '\')
+
+        $pathPart = $link
+        $anchor = ''
+        $hashPos = $link.IndexOf('#')
+        if ($hashPos -ge 0) {
+            $pathPart = $link.Substring(0, $hashPos)
+            $anchor = $link.Substring($hashPos + 1)
+        }
+
+        if ($pathPart -eq '') {
+            $target = $f.FullName          # 同文件内锚点
+        } else {
+            $target = Join-Path $dir ($pathPart -replace '/', '\')
+        }
+
         if (-not (Test-Path $target)) {
             $problems += "[$rel] 坏链：$link"
+            continue
+        }
+
+        if ($anchor) {
+            $tRel = $target.Substring($RepoRoot.Length).TrimStart('\')
+            if ($fileAnchors.ContainsKey($tRel) -and -not $fileAnchors[$tRel].ContainsKey($anchor)) {
+                $problems += "[$rel] 锚点失效：$link（目标文件里没有能生成该锚点的标题）"
+            }
         }
     }
 }
