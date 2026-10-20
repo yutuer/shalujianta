@@ -17,6 +17,9 @@ namespace FishEatFish.Battle.HexMap
         /// <summary>簇结构生成器（D12，多簇时非空）</summary>
         private ClusterBuilder _clusterBuilder;
 
+        /// <summary>本轮挖掉的「空洞」格子（地图里没有这些格子 → 不可到达）</summary>
+        private readonly List<HexCoord> _carvedVoidCells = new List<HexCoord>();
+
         /// <summary>最近一次生成用掉的重试次数（0 = 一次就成）</summary>
         public int LastRetryCount { get; private set; }
 
@@ -54,8 +57,8 @@ namespace FishEatFish.Battle.HexMap
             int radius = RadiusFromTileCount(spec.TotalTiles);
 
             // 可满足性检查：放不下就明确报错，不静默产出残缺地图
-            // （传送门每对占 2 个格子：入口 + 出口）
-            int available = Mathf.Max(0, spec.TotalTiles - 2 - spec.Quota.TeleportTileCount);
+            // （传送门每对占 2 个格子：入口 + 出口；空洞会从地图里挖掉格子）
+            int available = Mathf.Max(0, spec.TotalTiles - 2 - spec.Quota.TeleportTileCount - spec.Quota.VoidTileCount);
             spec.Validate(available);
 
             var generator = new HexMapGenerator(spec.Seed);
@@ -152,6 +155,12 @@ namespace FishEatFish.Battle.HexMap
             // 配额来源：规格优先，没有规格才按难度配置
             MapQuota quota = quotaOverride ?? ToQuota(GetDifficultyConfig(playerLevel));
 
+            // 挖空洞：地图**中间**留出「根本没有格子」的区域（不可到达）
+            // 必须早于所有事件铺放（传送门 / 洞 / 探照灯 / 沼泽 / 战斗…）——
+            // 否则事件会落在被挖掉的格子上，地图就自相矛盾了。
+            _carvedVoidCells.Clear();
+            CarveVoidRegions(tiles, startCoord, endCoord, quota.Void);
+
             HashSet<HexCoord> criticalSet;
             if (clusterCount > 1)
             {
@@ -174,6 +183,17 @@ namespace FishEatFish.Battle.HexMap
             if (clusterCount > 1)
             {
                 RemoveHolesThatAreNotArticulationPoints(tiles, startCoord, endCoord);
+
+                // 复检后如果洞的数量不够配额 → **补放**
+                // （挖空洞会改变割点集合，原本是割点的落位可能失效，
+                //  不补就会出现「配额偏差：洞 期望 N 实际 N-1」）
+                int currentHoles = tiles.Values.Count(t => t.EventType == HexEventType.Hole);
+                int shortfall = quota.Hole - currentHoles;
+                if (shortfall > 0)
+                {
+                    GD.Print($"[HexMapGenerator] 复检后洞只有 {currentHoles} 个，补放 {shortfall} 个");
+                    PlaceHoleTiles(tiles, criticalSet, shortfall, startCoord, endCoord, clusterCount);
+                }
             }
 
             PlaceSearchlightTiles(tiles, criticalSet, quota.Searchlight);
@@ -197,6 +217,18 @@ namespace FishEatFish.Battle.HexMap
             PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.GainBlackMark, quota.BlackMark);
             PlaceRandomEvents(tiles, nonCriticalEmptyTiles, HexEventType.Shop, quota.Shop);
 
+            // 自洽校验：挖空洞之后，**每一个事件格都必须能从起点到达**。
+            // 有事件落在不可达的格子上 = 玩家永远触发不到它 = 地图自相矛盾 → 重生成。
+            if (!VerifyAllEventTilesReachable(tiles, startCoord))
+            {
+                GD.PrintErr("[HexMapGenerator] 验证失败: 有事件落在不可达的格子上，重新生成地图...");
+                if (attempt < MaxGenerateAttempts)
+                {
+                    return GenerateInternal(radius, playerLevel, attempt + 1, quotaOverride, clusterCount);
+                }
+                return new HexMap(tiles, startCoord, endCoord, playerLevel, _carvedVoidCells);
+            }
+
             if (!VerifyNoAdjacentSameEvents(tiles))
             {
                 GD.PrintErr("[HexMapGenerator] 验证失败: 检测到相同事件出现在相邻格子，重新生成地图...");
@@ -204,7 +236,7 @@ namespace FishEatFish.Battle.HexMap
                 {
                     return GenerateInternal(radius, playerLevel, attempt + 1, quotaOverride, clusterCount);
                 }
-                return new HexMap(tiles, startCoord, endCoord, playerLevel);
+                return new HexMap(tiles, startCoord, endCoord, playerLevel, _carvedVoidCells);
             }
 
             EnsurePathConnectivity(tiles, startCoord, endCoord);
@@ -220,10 +252,10 @@ namespace FishEatFish.Battle.HexMap
                 {
                     return GenerateInternal(radius, playerLevel, attempt + 1, quotaOverride, clusterCount);
                 }
-                return new HexMap(tiles, startCoord, endCoord, playerLevel);
+                return new HexMap(tiles, startCoord, endCoord, playerLevel, _carvedVoidCells);
             }
 
-            var map = new HexMap(tiles, startCoord, endCoord, playerLevel);
+            var map = new HexMap(tiles, startCoord, endCoord, playerLevel, _carvedVoidCells);
 
             // D13 自检：用通用校验器兜底（人工关卡与参数生成共用同一套判定标准）
             MapValidationReport report = new MapValidator().Validate(new HexMapGraph(map));
@@ -492,7 +524,10 @@ namespace FishEatFish.Battle.HexMap
 		        if (count <= 0) return;
 
 		        var candidates = tiles.Keys
-		            .Where(c => !criticalSet.Contains(c))
+		            .Where(c => !criticalSet.Contains(c)
+		                // ⚠️ 必须只落在空格上：否则探照灯会**盖掉洞或传送门**，
+		                // 让「洞」的配额悄悄少一个、传送门配对断掉。
+		                && tiles[c].EventType == HexEventType.Empty)
 		            .ToList();
 
 		        int placed = 0;
@@ -637,7 +672,8 @@ namespace FishEatFish.Battle.HexMap
         /// 判定结果与「所有洞都在图上」的最终状态不一致 —— 会出现「生成器认为是割点、
         /// 校验器说不是」的情况。后置复检保证生成器与 D13 校验器**口径完全一致**。
         /// </summary>
-        private void RemoveHolesThatAreNotArticulationPoints(Dictionary<HexCoord, HexTile> tiles,
+        /// <returns>被撤销的洞数（调用方据此补放，保持配额）</returns>
+        private int RemoveHolesThatAreNotArticulationPoints(Dictionary<HexCoord, HexTile> tiles,
             HexCoord startCoord, HexCoord endCoord)
         {
             List<HexCoord> holes = tiles.Values
@@ -663,6 +699,8 @@ namespace FishEatFish.Battle.HexMap
             {
                 GD.Print($"[HexMapGenerator] 撤销了 {removed} 个非割点的洞");
             }
+
+            return removed;
         }
 
         /// <summary>
@@ -1164,7 +1202,10 @@ namespace FishEatFish.Battle.HexMap
 
             Shuffle(candidates);
 
-            for (int i = 0; i < Math.Min(count, candidates.Count); i++)
+            // ⚠️ 必须**遍历全部候选**、遇到不合格的继续下一个 ——
+            // 否则「沼泽不能挨着沼泽」这条规则会白白吃掉配额（期望 2 个只放下 1 个）。
+            int placed = 0;
+            for (int i = 0; i < candidates.Count && placed < count; i++)
             {
                 var coord = candidates[i];
                 if (!CanPlaceEventAt(tiles, coord, HexEventType.Swamp))
@@ -1177,6 +1218,7 @@ namespace FishEatFish.Battle.HexMap
                 tiles[coord].Damage = 10;
                 tiles[coord].DisplayName = "沼泽";
                 tiles[coord].IconPath = "res://Assets/Icons/swamp.png";
+                placed++;
             }
         }
 
@@ -1370,6 +1412,209 @@ namespace FishEatFish.Battle.HexMap
             }
 
             return reachable;
+        }
+
+        // ===== 空洞（地图中间「没有格子」的区域）=====
+
+        /// <summary>
+        /// 挖「空洞」：从地图**中间**挖掉一片格子 —— 那片地方**根本没有格子**，所以不可到达。
+        ///
+        /// 与「洞」（<see cref="HexEventType.Hole"/>）是两回事，别混：
+        ///   - 洞：**有**格子，踩上去才塌陷消失（一次性节点）
+        ///   - 空洞：**一开始就没有**格子，是地图的空白区（永远走不进去）
+        ///
+        /// 三条规则保证逻辑自洽：
+        ///   1. 只挖**内部**格子（6 个邻居都还在图里）→ 空洞是"地图中间的一个洞"，不是边缘缺口
+        ///   2. 只挖**不是割点**的格子 → 挖完地图仍然连通，起点→终点仍然连着
+        ///   3. 整片挖完再复检（起终点还在 + 连通块数没变），不满足就回滚重试
+        ///
+        /// 事件是在挖完之后才铺的，所以事件**不可能**落在被挖掉的格子上。
+        /// </summary>
+        /// <returns>实际挖出的空洞数</returns>
+        private int CarveVoidRegions(Dictionary<HexCoord, HexTile> tiles, HexCoord start, HexCoord end, int voidCount)
+        {
+            if (voidCount <= 0) return 0;
+
+            // 挖洞用**独立的随机流** —— 不打乱后续（传送门 / 洞 / 事件）的布局，
+            // 只在原地图上"挖掉几格"，其余内容保持原样。
+            var rng = _seed.HasValue ? new Random(_seed.Value ^ 0x5EED) : new Random();
+
+            int componentsBefore = CountAdjacentComponents(tiles, null);
+            var carved = new HashSet<HexCoord>();
+            int voidCountDone = 0;
+
+            for (int attempt = 0; attempt < voidCount * 15 && voidCountDone < voidCount; attempt++)
+            {
+                // 种子候选：内部格、非起终点、挖掉不会把地图切断
+                var seeds = tiles.Keys
+                    .Where(c => c != start && c != end)
+                    .Where(c => IsStrictInterior(tiles, c, carved))
+                    .Where(c => !IsCutVertex(tiles, c))
+                    .ToList();
+                if (seeds.Count == 0) break;
+
+                var blob = new List<HexCoord> { seeds[rng.Next(seeds.Count)] };
+
+                // 扩展成一片（2~4 格），每加一格都单独检查
+                int targetSize = 2 + rng.Next(3);
+                int guard = 0;
+                while (blob.Count < targetSize && guard++ < 60)
+                {
+                    var frontier = new List<HexCoord>();
+                    foreach (var b in blob)
+                    {
+                        foreach (var n in b.GetNeighbors())
+                        {
+                            // 候选 = 还在图里的格 + 已经是空洞的格（挨着空洞可以并成一个大洞）
+                            if (blob.Contains(n) || frontier.Contains(n)) continue;
+                            if (!tiles.ContainsKey(n) && !carved.Contains(n)) continue;
+                            frontier.Add(n);
+                        }
+                    }
+                    if (frontier.Count == 0) break;
+
+                    var pick = frontier[rng.Next(frontier.Count)];
+                    if (pick == start || pick == end) continue;
+                    if (!IsStrictInterior(tiles, pick, carved)) continue;
+                    if (tiles.ContainsKey(pick) && IsCutVertex(tiles, pick)) continue;
+                    blob.Add(pick);
+                }
+
+                // 只挖到 1 格不像空洞（那更像"少画了一格"），放弃换种子
+                if (blob.Count < 2) continue;
+
+                // 整片挖掉（已经是空洞的格跳过）
+                var removed = new List<HexCoord>();
+                foreach (var c in blob)
+                {
+                    if (!tiles.ContainsKey(c)) continue;
+                    tiles.Remove(c);
+                    removed.Add(c);
+                }
+
+                // 复检：起终点还在、连通块数没变（没把地图切断）
+                bool ok = tiles.ContainsKey(start) && tiles.ContainsKey(end)
+                          && CountAdjacentComponents(tiles, null) == componentsBefore;
+                if (!ok)
+                {
+                    // 回滚
+                    foreach (var c in removed) tiles[c] = new HexTile(c, HexEventType.Empty);
+                    GD.Print("[HexMapGenerator] 空洞候选会切断地图，回滚重试");
+                    continue;
+                }
+
+                foreach (var c in removed)
+                {
+                    carved.Add(c);
+                    _carvedVoidCells.Add(c);
+                }
+                voidCountDone++;
+                GD.Print($"[HexMapGenerator] 挖出空洞 #{voidCountDone}：{removed.Count} 格（{string.Join(",", removed)}）");
+            }
+
+            if (voidCountDone < voidCount)
+            {
+                GD.Print($"[HexMapGenerator] 警告: 计划挖 {voidCount} 片空洞，实际只挖出 {voidCountDone} 片");
+            }
+
+            return voidCountDone;
+        }
+
+        /// <summary>
+        /// 该格是否在地图「内部」—— 6 个邻居要么**在图里**，要么**已经是空洞**。
+        ///
+        /// 「已经是空洞」也算内部：两片空洞挨在一起是允许的（视觉上就是一个大洞），
+        /// 但空洞**不能**碰到地图的外边缘（那会像"地图缺了一块"，不是"中间有个洞"）。
+        /// </summary>
+        private bool IsStrictInterior(Dictionary<HexCoord, HexTile> tiles, HexCoord coord,
+            HashSet<HexCoord> voidCells)
+        {
+            foreach (var n in coord.GetNeighbors())
+            {
+                if (tiles.ContainsKey(n)) continue;
+                if (voidCells != null && voidCells.Contains(n)) continue;
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 该格是不是「割点」—— 挖掉它会不会把地图切断。
+        /// 用连通块数变化判断（多簇时是"每簇各自仍然连通"的语义）。
+        /// </summary>
+        private bool IsCutVertex(Dictionary<HexCoord, HexTile> tiles, HexCoord coord)
+        {
+            int before = CountAdjacentComponents(tiles, null);
+            int after = CountAdjacentComponents(tiles, coord);
+            return after > before;
+        }
+
+        /// <summary>
+        /// 从起点出发的可达格集合（**传送门算超边**）——
+        /// 多簇之后跨簇只能靠传送门，所以可达性判定必须把传送算进来。
+        /// </summary>
+        private HashSet<HexCoord> GetReachableTilesWithTeleports(Dictionary<HexCoord, HexTile> tiles, HexCoord start)
+        {
+            var teleports = BuildTeleportIndex(tiles);
+            var reachable = new HashSet<HexCoord>();
+            var queue = new Queue<HexCoord>();
+            queue.Enqueue(start);
+            reachable.Add(start);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+
+                foreach (var neighbor in current.GetNeighbors())
+                {
+                    if (!tiles.ContainsKey(neighbor) || reachable.Contains(neighbor)) continue;
+                    var tile = tiles[neighbor];
+                    if (tile == null || !tile.CanEnter) continue;
+                    reachable.Add(neighbor);
+                    queue.Enqueue(neighbor);
+                }
+
+                List<HexCoord> teleTargets;
+                if (!teleports.TryGetValue(current, out teleTargets)) continue;
+                foreach (HexCoord target in teleTargets)
+                {
+                    if (!tiles.ContainsKey(target) || reachable.Contains(target)) continue;
+                    var tile = tiles[target];
+                    if (tile == null || !tile.CanEnter) continue;
+                    reachable.Add(target);
+                    queue.Enqueue(target);
+                }
+            }
+
+            return reachable;
+        }
+
+        /// <summary>
+        /// 自洽校验：**每一个带事件的格子都必须能从起点到达**（传送门算超边）。
+        ///
+        /// 挖空洞之后如果还有事件落在不可达的格子上，地图就自相矛盾
+        /// （玩家永远触发不到那个事件）→ 必须重生成。
+        /// </summary>
+        private bool VerifyAllEventTilesReachable(Dictionary<HexCoord, HexTile> tiles, HexCoord start)
+        {
+            var reachable = GetReachableTilesWithTeleports(tiles, start);
+
+            foreach (var kv in tiles)
+            {
+                var tile = kv.Value;
+                if (tile == null) continue;
+
+                bool isEvent = tile.EventType != HexEventType.Empty || tile.IsStart || tile.IsEnd;
+                if (!isEvent) continue;
+
+                if (!reachable.Contains(kv.Key))
+                {
+                    GD.PrintErr($"[HexMapGenerator] 事件格不可达: {kv.Key} {tile.EventType}");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void PlaceRandomEvents(Dictionary<HexCoord, HexTile> tiles, List<HexCoord> candidates,

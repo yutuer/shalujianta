@@ -94,6 +94,7 @@ namespace FishEatFish.Battle.HexMap
 						BlackMark = ReadInt(q, "blackMark"),
 						Swamp = ReadInt(q, "swamp"),
 						Hole = ReadInt(q, "hole"),
+						Void = ReadInt(q, "void"),
 						Searchlight = ReadInt(q, "searchlight"),
 						TeleportOneWay = ReadInt(q, "teleportOneWay"),
 						TeleportTwoWay = ReadInt(q, "teleportTwoWay")
@@ -162,6 +163,12 @@ namespace FishEatFish.Battle.HexMap
 			{
 				throw new System.InvalidOperationException(
 					$"关卡 [{MapId}] 规格不可满足：洞数量必须是 1~3（当前 {Quota.Hole}）");
+			}
+
+			if (Quota.Void < 0 || Quota.Void > 4)
+			{
+				throw new System.InvalidOperationException(
+					$"关卡 [{MapId}] 规格不可满足：空洞数量必须是 0~4（当前 {Quota.Void}）");
 			}
 
 			if (Clusters < 1)

@@ -28,6 +28,15 @@ namespace FishEatFish.Battle.HexMap
 		/// <summary>洞（消耗型格）数量</summary>
 		public int Hole;
 
+		/// <summary>
+		/// 空洞（**没有格子的区域**）数量 —— 地图**中间**挖掉几片格子。
+		///
+		/// 与 <see cref="Hole"/> 是两回事：
+		///   - 洞：有格子，踩上去才塌陷消失（一次性节点）
+		///   - 空洞：**一开始就没有格子**，是地图的空白区（不可到达）
+		/// </summary>
+		public int Void;
+
 		/// <summary>探照灯数量</summary>
 		public int Searchlight;
 
@@ -53,10 +62,16 @@ namespace FishEatFish.Battle.HexMap
 			get { return (TeleportOneWay + TeleportTwoWay) * 2; }
 		}
 
+		/// <summary>空洞**最多**会挖掉的格子总数（每片空洞最多 6 格）</summary>
+		public int VoidTileCount
+		{
+			get { return Void * 6; }
+		}
+
 		public override string ToString()
 		{
 			return $"战斗{Battle}/精英{Elite}/商店{Shop}/治疗{Heal}/黑印{BlackMark}"
-				+ $"/沼泽{Swamp}/洞{Hole}/探照灯{Searchlight}"
+				+ $"/沼泽{Swamp}/洞{Hole}/空洞{Void}/探照灯{Searchlight}"
 				+ $"/单向门{TeleportOneWay}/双向门{TeleportTwoWay}";
 		}
 	}

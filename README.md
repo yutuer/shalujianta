@@ -10,9 +10,9 @@
 |---|---|
 | 引擎 | Godot 4.6.1-stable **mono**（.NET 8.0 / `net8.0`） |
 | 仓库 | <https://github.com/yutuer/shalujianta.git>（分支 `main`） |
-| 规模 | 156 个 C# 脚本 / 25,625 行 · 47 个 `.tscn` · 15 张 JSON 数据表 |
+| 规模 | 156 个 C# 脚本 / 25,912 行（非空行） · 47 个 `.tscn` · 15 张 JSON 数据表 |
 | 原始需求 | [`docs/原始策划案.md`](docs/原始策划案.md) |
-| 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 14 个条目 |
+| 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 20 个条目 |
 
 ---
 

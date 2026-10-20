@@ -7,16 +7,25 @@ namespace FishEatFish.Battle.HexMap
     public partial class HexMap
     {
         private readonly Dictionary<HexCoord, HexTile> _tiles;
+        private readonly List<HexCoord> _voidCells;
         public HexCoord Start { get; }
         public HexCoord End { get; }
         public int PlayerLevel { get; }
 
-        public HexMap(Dictionary<HexCoord, HexTile> tiles, HexCoord start, HexCoord end, int playerLevel = 1)
+        /// <summary>
+        /// 被挖掉的「空洞」格子 —— 地图里**没有**这些格子，所以那里走不进去。
+        /// （与「洞」是两回事：洞有格子，踩上去才塌陷消失。）
+        /// </summary>
+        public IReadOnlyList<HexCoord> VoidCells => _voidCells;
+
+        public HexMap(Dictionary<HexCoord, HexTile> tiles, HexCoord start, HexCoord end, int playerLevel = 1,
+            List<HexCoord> voidCells = null)
         {
             _tiles = tiles;
             Start = start;
             End = end;
             PlayerLevel = playerLevel;
+            _voidCells = voidCells ?? new List<HexCoord>();
         }
 
         public HexTile GetTile(HexCoord coord)
