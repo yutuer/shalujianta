@@ -33,9 +33,7 @@ namespace FishEatFish.UI.HexMap
         private bool _isInteractionBlocked;
         private HexCoord? _pendingMoveTarget;
 
-        private Control _teleportDialog;
-        private Button _teleportConfirmButton;
-        private Button _teleportCancelButton;
+        private FishEatFish.UI.EventDialog _eventDialog;
 
         private Control _failurePanel;
 
@@ -220,25 +218,21 @@ namespace FishEatFish.UI.HexMap
 
             UpdateDeathResistanceDisplay(GetCurrentDeathResistance());
 
-            _teleportDialog = GetNodeOrNull<Control>("TeleportDialog");
-            if (_teleportDialog == null)
+            // 通用事件弹窗（标题 / 主图 / 文案 / 多个选项），数据来自 Data/events.json
+            _eventDialog = GetNodeOrNull<FishEatFish.UI.EventDialog>("EventDialog");
+            if (_eventDialog == null)
             {
-                var teleportScene = GD.Load<PackedScene>("res://Scenes/UI/TeleportDialog.tscn");
-                if (teleportScene != null)
+                var eventScene = GD.Load<PackedScene>("res://Scenes/UI/EventDialog.tscn");
+                if (eventScene != null)
                 {
-                    var teleportNode = teleportScene.Instantiate();
-                    AddChild(teleportNode);
-                    _teleportDialog = teleportNode as Control;
+                    var eventNode = eventScene.Instantiate();
+                    AddChild(eventNode);
+                    _eventDialog = eventNode as FishEatFish.UI.EventDialog;
                 }
             }
-            if (_teleportDialog != null)
+            if (_eventDialog != null)
             {
-                var dialog = _teleportDialog as FishEatFish.UI.TeleportDialog.TeleportDialog;
-                if (dialog != null)
-                {
-                    dialog.OnConfirmPressed += OnTeleportConfirmPressed;
-                    dialog.OnCancelPressed += OnTeleportCancelPressed;
-                }
+                _eventDialog.OnOptionSelected += OnEventOptionSelected;
             }
 
             _failurePanel = GetNodeOrNull<Control>("FailurePanel");
@@ -704,11 +698,23 @@ namespace FishEatFish.UI.HexMap
 
         private void OnTeleportTriggered(HexCoord position)
         {
-            var dialog = _teleportDialog as FishEatFish.UI.TeleportDialog.TeleportDialog;
-            if (dialog != null)
+            GD.Print($"[HexMapUI] OnTeleportTriggered: {position}");
+            ShowEventDialog("teleport_two_way");
+        }
+
+        /// <summary>
+        /// 显示一个事件弹窗（按事件 id 从 Data/events.json 取文案）
+        /// </summary>
+        private void ShowEventDialog(string eventId)
+        {
+            if (_eventDialog == null)
             {
-                dialog.Show();
+                GD.PrintErr($"[HexMapUI] ShowEventDialog: 事件弹窗不存在，事件 {eventId} 不会弹出");
+                return;
             }
+
+            _eventDialog.ShowEvent(FishEatFish.Battle.MapEventData.Load(eventId));
+            SetInteractionBlocked(true);
         }
 
         public void SetInteractionBlocked(bool blocked)
@@ -717,24 +723,22 @@ namespace FishEatFish.UI.HexMap
             _isInteractionBlocked = blocked;
         }
 
-        private void OnTeleportConfirmPressed()
+        /// <summary>
+        /// 事件弹窗选项回调：第 0 项 = 确认（进入），第 1 项 = 取消（离开）
+        /// </summary>
+        private void OnEventOptionSelected(int index)
         {
-            var dialog = _teleportDialog as FishEatFish.UI.TeleportDialog.TeleportDialog;
-            if (dialog != null)
-            {
-                dialog.Hide();
-            }
-            _controller?.ConfirmTeleport();
-        }
+            GD.Print($"[HexMapUI] OnEventOptionSelected: index={index}");
+            SetInteractionBlocked(false);
 
-        private void OnTeleportCancelPressed()
-        {
-            var dialog = _teleportDialog as FishEatFish.UI.TeleportDialog.TeleportDialog;
-            if (dialog != null)
+            if (index == 0)
             {
-                dialog.Hide();
+                _controller?.ConfirmTeleport();
             }
-            _controller?.CancelTeleport();
+            else
+            {
+                _controller?.CancelTeleport();
+            }
         }
 
         private void OnHealthChanged(float current, float max)

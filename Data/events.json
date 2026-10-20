@@ -1,0 +1,41 @@
+{
+    "events": {
+        "teleport_two_way": {
+            "title": "双向隧道",
+            "image": "res://Assets/Icons/relic_charm.svg",
+            "body": "隧道深处传来回响，像有什么东西在另一端等待。\n两条路都通向未知，但至少这一次，你可以选择不走。",
+            "hidden": false,
+            "options": [
+                { "text": "【进入】穿过迷雾，抵达另一端。", "action": "confirm" },
+                { "text": "【离开】留在此处。", "action": "cancel" }
+            ]
+        },
+        "teleport_one_way": {
+            "title": "单向通道",
+            "image": "res://Assets/Icons/arrow_reserve.svg",
+            "body": "通道只容一人通过，身后的门已经合拢。",
+            "hidden": false,
+            "options": [
+                { "text": "【继续】", "action": "confirm" }
+            ]
+        },
+        "searchlight": {
+            "title": "探照灯",
+            "image": "res://Assets/Icons/relic_lantern.svg",
+            "body": "前人遗留下来的照明装置，能驱散四周的黑色迷雾。\n它周围的雾气规律地波动着，像是被它的呼吸惊扰。",
+            "hidden": true,
+            "options": [
+                { "text": "【打开开关】扩大当前视野。", "action": "confirm" }
+            ]
+        },
+        "swamp": {
+            "title": "沼泽",
+            "image": "res://Assets/Icons/relic_whetstone.svg",
+            "body": "泥泞的水面下似乎有什么在缓慢蠕动。",
+            "hidden": false,
+            "options": [
+                { "text": "【踏入】", "action": "confirm" }
+            ]
+        }
+    }
+}
