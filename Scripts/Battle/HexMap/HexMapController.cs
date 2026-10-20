@@ -76,6 +76,15 @@ namespace FishEatFish.Battle.HexMap
         private BattleTransitionManager _battleTransitionManager;
         private bool _isRestored = false;
 
+        // ===== 洞（消耗型格子）的时序状态 =====
+        // 规则（主人确认）：踩上去格子还在，但**不允许退回进入的那个格子**；**离开之后**该格被删除。
+        private bool _hasHoleContext;
+        private HexCoord _currentHole;
+        private HexCoord _holeEntrySource;
+
+        /// <summary>已经被消耗掉的洞（离开洞时删除的格子）</summary>
+        private readonly HashSet<HexCoord> _consumedHoles = new HashSet<HexCoord>();
+
         public override void _Ready()
         {
             _instance = this;
@@ -161,6 +170,9 @@ namespace FishEatFish.Battle.HexMap
 
             // 战争迷雾：战斗结束回到地图后，把已照亮的格子恢复回来
             RestoreRevealedTiles();
+
+            // D12：已消耗的洞也要恢复（洞是一次性的，但战斗往返不能让它复活）
+            RestoreConsumedHoles();
 
             GD.Print($"[HexMapController] 恢复地图状态: 位置={_currentPosition}, 等级={_playerLevel}, 生命={_playerCurrentHealth}/{_playerMaxHealth}, 黑印={savedBlackMark}");
 
@@ -299,6 +311,62 @@ namespace FishEatFish.Battle.HexMap
             GD.Print("[HexMapController] 玩家死亡!");
         }
 
+        /// <summary>
+        /// 洞被消耗：格子从地图上删除（变黑洞），并记进存档。
+        /// </summary>
+        private void ConsumeHole(HexTile tile)
+        {
+            if (tile == null) return;
+
+            tile.TriggerHole();
+            _currentMap?.RemoveTile(tile.Coord);
+
+            _hasHoleContext = false;
+            _currentHole = default;
+            _holeEntrySource = default;
+
+            _consumedHoles.Add(tile.Coord);
+            _battleTransitionManager?.SaveConsumedHoles(_consumedHoles);
+
+            GD.Print($"[HexMapController] 洞 {tile.Coord} 被消耗，已从地图删除");
+
+            // 通知 UI：格子要消失（HexMapUI 看到 IsDisappeared 会播消失动画并移除视图）
+            OnTileTriggered?.Invoke(tile);
+        }
+
+        /// <summary>恢复存档里「已经被消耗的洞」</summary>
+        private void RestoreConsumedHoles()
+        {
+            HashSet<HexCoord> saved = _battleTransitionManager?.GetSavedConsumedHoles();
+            if (saved == null || saved.Count == 0) return;
+
+            int restored = 0;
+            foreach (HexCoord coord in saved)
+            {
+                HexTile tile = _currentMap?.GetTile(coord);
+                if (tile == null) continue;
+
+                tile.TriggerHole();
+                _currentMap.RemoveTile(coord);
+                _consumedHoles.Add(coord);
+                restored++;
+            }
+
+            GD.Print($"[HexMapController] 恢复已消耗的洞: {restored} 个");
+        }
+
+        /// <summary>已消耗的洞集合（供测试与存档使用）</summary>
+        public IReadOnlyCollection<HexCoord> ConsumedHoles => _consumedHoles;
+
+        /// <summary>玩家当前是否站在洞里</summary>
+        public bool IsInHole => _hasHoleContext;
+
+        /// <summary>当前所在洞的坐标（不在洞里时是默认值）</summary>
+        public HexCoord CurrentHole => _currentHole;
+
+        /// <summary>进入当前洞的来源格（洞规则禁止退回这里）</summary>
+        public HexCoord HoleEntrySource => _holeEntrySource;
+
         public bool MoveTo(HexCoord targetCoord)
         {
             if (_currentState != HexMapState.Idle)
@@ -350,6 +418,15 @@ namespace FishEatFish.Battle.HexMap
             }
 
             var nextCoord = _currentPath[_pathIndex];
+
+            // 洞规则：站在洞里时**不允许退回**进入该洞的那个格子
+            if (_hasHoleContext && nextCoord == _holeEntrySource)
+            {
+                GD.Print($"[HexMapController] 洞规则：禁止退回进入洞的格子 {nextCoord}");
+                _currentState = HexMapState.Idle;
+                return;
+            }
+
             _previousPosition = _currentPosition;
             _currentPosition = nextCoord;
             OnPlayerMoved?.Invoke(nextCoord);
@@ -358,6 +435,22 @@ namespace FishEatFish.Battle.HexMap
             if (previousTile != null && (previousTile.EventType == HexEventType.TwoWayTeleport || previousTile.EventType == HexEventType.OneDirectionTele))
             {
                 previousTile.HasTriggeredThisVisit = false;
+            }
+
+            // 离开洞 → 该洞被消耗（从地图上删除）
+            if (previousTile != null && previousTile.EventType == HexEventType.Hole)
+            {
+                ConsumeHole(previousTile);
+            }
+
+            // 进入洞 → 记下来源，之后不许退回
+            var nextTile = _currentMap.GetTile(nextCoord);
+            if (nextTile != null && nextTile.EventType == HexEventType.Hole)
+            {
+                _hasHoleContext = true;
+                _currentHole = nextCoord;
+                _holeEntrySource = _previousPosition;
+                GD.Print($"[HexMapController] 进入洞 {nextCoord}（来源 {_previousPosition}，禁止退回）");
             }
 
             await ToSignal(GetTree().CreateTimer(0.3f), Timer.SignalName.Timeout);
@@ -372,6 +465,12 @@ namespace FishEatFish.Battle.HexMap
         {
             if (_currentState != HexMapState.Idle)
                 return false;
+
+            // 洞规则：站在洞里时不允许退回进入该洞的格子
+            if (_hasHoleContext && neighbor == _holeEntrySource)
+            {
+                return false;
+            }
 
             var currentTile = _currentMap.GetTile(_currentPosition);
             if (currentTile == null)
@@ -483,12 +582,27 @@ namespace FishEatFish.Battle.HexMap
                 return;
             }
 
+            HexCoord previous = _currentPosition;
             _currentPosition = targetCoord;
             _currentState = HexMapState.Idle;
-
             OnPlayerMoved?.Invoke(_currentPosition);
 
+            // D12 洞时序：离开洞 → 消耗；进入洞 → 记录来源（禁止退回）
+            var previousTile = _currentMap.GetTile(previous);
+            if (previousTile != null && previousTile.EventType == HexEventType.Hole)
+            {
+                ConsumeHole(previousTile);
+            }
+
             var tile = _currentMap.GetTile(_currentPosition);
+            if (tile != null && tile.EventType == HexEventType.Hole)
+            {
+                _hasHoleContext = true;
+                _currentHole = _currentPosition;
+                _holeEntrySource = previous;
+                GD.Print($"[HexMapController] 进入洞 {_currentPosition}（来源 {previous}，禁止退回）");
+            }
+
             if (tile != null)
             {
                 ProcessTile(tile);
@@ -605,8 +719,9 @@ namespace FishEatFish.Battle.HexMap
 
             if (tile.EventType == HexEventType.Hole)
             {
-                tile.TriggerHole();
-                OnTileTriggered?.Invoke(tile);
+                // D12 洞规则：进入时格子**还在**（可以站在上面），
+                // 只有**离开**这一格时才会被消耗（删除）—— 由移动逻辑（ConsumeHole）负责。
+                GD.Print($"[HexMapController] 站在洞 {tile.Coord} 上（离开时才会被消耗）");
                 return;
             }
 

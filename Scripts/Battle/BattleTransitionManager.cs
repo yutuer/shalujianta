@@ -22,6 +22,23 @@ namespace FishEatFish.Battle
         /// <summary>已照亮集合所属的关卡标识（空 = 无存档）</summary>
         private string _savedRevealedMapId = string.Empty;
 
+        /// <summary>已消耗的洞（一次性格子，用掉就从地图上删除）</summary>
+        private HashSet<HexMap.HexCoord> _savedConsumedHoles = new HashSet<HexMap.HexCoord>();
+
+        /// <summary>保存已消耗的洞集合（D12：战斗返回后不能丢）</summary>
+        public void SaveConsumedHoles(HashSet<HexMap.HexCoord> holes)
+        {
+            _savedConsumedHoles = holes != null
+                ? new HashSet<HexMap.HexCoord>(holes)
+                : new HashSet<HexMap.HexCoord>();
+        }
+
+        /// <summary>读取已消耗的洞集合</summary>
+        public HashSet<HexMap.HexCoord> GetSavedConsumedHoles()
+        {
+            return _savedConsumedHoles;
+        }
+
         public bool IsInBattle { get; private set; }
         public HexMap.HexEventType CurrentBattleType => _currentBattleType;
         public string CurrentEnemyConfig => _currentEnemyConfig;
@@ -254,6 +271,7 @@ namespace FishEatFish.Battle
             _currentEnemyConfig = null;
             _savedRevealedTiles = new HashSet<HexMap.HexCoord>();
             _savedRevealedMapId = string.Empty;
+            _savedConsumedHoles = new HashSet<HexMap.HexCoord>();
             GD.Print("[BattleTransitionManager] Saved state cleared");
         }
     }

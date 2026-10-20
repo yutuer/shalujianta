@@ -5,7 +5,7 @@
     {
       "mapId": "map_01",
       "seed": 20261020,
-      "clusters": 1,
+      "clusters": 2,
       "totalTiles": 121,
       "quota": {
         "battle": 2,
@@ -23,7 +23,7 @@
     {
       "mapId": "map_02",
       "seed": 20261021,
-      "clusters": 1,
+      "clusters": 2,
       "totalTiles": 121,
       "quota": {
         "battle": 3,
@@ -41,7 +41,7 @@
     {
       "mapId": "map_03",
       "seed": 20261022,
-      "clusters": 1,
+      "clusters": 2,
       "totalTiles": 121,
       "quota": {
         "battle": 4,

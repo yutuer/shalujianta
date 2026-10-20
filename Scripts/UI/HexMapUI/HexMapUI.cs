@@ -756,7 +756,8 @@ namespace FishEatFish.UI.HexMap
                 GD.Print($"[HexMapUI] OnTileTriggered: found tileView, calling SetTile");
                 tileView.SetTile(tile);
 
-                if (tile.EventType == HexEventType.Hole && tile.IsDisappeared)
+                // 洞被消耗时 EventType 已经被清成 Empty 了，所以只看 IsDisappeared
+                if (tile.IsDisappeared)
                 {
                     tileView.AnimateDisappear();
                     _tileViews.Remove(tile.Coord);
