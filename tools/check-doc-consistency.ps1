@@ -176,6 +176,106 @@ if (Test-Path $statsScript) {
     }
 }
 
+# ---------- 6. 声明数字回读（规模 / 条目数 / 踩坑条数）----------
+# 背景：文档里到处写「N 个 .cs / N 行 / N 个条目 / N 条踩坑」，
+# 这些数字过期了没人会发现 —— 本块把它们与实算值逐一对一遍。
+function Get-NonEmptyLineCount([string]$dir) {
+    $total = 0
+    foreach ($f in (Get-ChildItem $dir -Recurse -Filter '*.cs' -File)) {
+        # ⚠️ 必须 -Encoding UTF8：不加就按 ANSI 解码，中文注释会被解码坏并**截断后面的行**，
+        #    行数少算几百行（2026-10-21 实测 29,969 vs 30,489）。
+        foreach ($l in (Get-Content -LiteralPath $f.FullName -Encoding UTF8)) {
+            if ($l.Trim() -ne '') { $total++ }
+        }
+    }
+    return $total
+}
+
+$readmePath = Join-Path $RepoRoot 'README.md'
+$planPath = Join-Path $RepoRoot 'docs\开发计划.md'
+$pitPath = Join-Path $RepoRoot 'docs\踩坑记录.md'
+
+if ((Test-Path $readmePath) -and (Test-Path $planPath) -and (Test-Path $pitPath)) {
+    $readmeLines = Get-Content -LiteralPath $readmePath -Encoding UTF8
+    $planLines = Get-Content -LiteralPath $planPath -Encoding UTF8
+    $pitLines = Get-Content -LiteralPath $pitPath -Encoding UTF8
+
+    # --- 6.1 README 规模数字 ---
+    $csCount = (Get-ChildItem (Join-Path $RepoRoot 'Scripts') -Recurse -Filter '*.cs' -File).Count
+    $csLines = Get-NonEmptyLineCount (Join-Path $RepoRoot 'Scripts')
+    $tscnCount = (Get-ChildItem (Join-Path $RepoRoot 'Scenes') -Recurse -Filter '*.tscn' -File).Count
+    $jsonCount = (Get-ChildItem (Join-Path $RepoRoot 'Data') -Filter '*.json' -File).Count
+
+    $scaleLine = @($readmeLines | Where-Object { $_ -match '^\|\s*规模\s*\|' })[0]
+    if ($null -ne $scaleLine) {
+        $doc = @{}
+        if ($scaleLine -match '(\d+)\s*个 C# 脚本') { $doc['cs'] = [int]$matches[1] }
+        if ($scaleLine -match '([\d,]+)\s*行') { $doc['lines'] = [int]($matches[1] -replace ',', '') }
+        if ($scaleLine -match '(\d+)\s*个\s*`?\.tscn') { $doc['tscn'] = [int]$matches[1] }
+        if ($scaleLine -match '(\d+)\s*张 JSON') { $doc['json'] = [int]$matches[1] }
+
+        $real = @{ 'cs' = $csCount; 'lines' = $csLines; 'tscn' = $tscnCount; 'json' = $jsonCount }
+        $label = @{ 'cs' = 'C# 脚本数'; 'lines' = 'C# 非空行数'; 'tscn' = '.tscn 数'; 'json' = 'Data JSON 表数' }
+        foreach ($k in @('cs', 'lines', 'tscn', 'json')) {
+            if ($doc.ContainsKey($k) -and $doc[$k] -ne $real[$k]) {
+                $problems += "[README.md] 规模数字漂移：$($label[$k]) 文档写 $($doc[$k])，实算 $($real[$k])"
+            }
+        }
+    }
+
+    # --- 6.2 踩坑记录条数（实际标题数 vs 各处声明）---
+    # ⚠️ 变更记录里的行（| 2026-10-20 | ...）是**历史快照**，不该参与核对 —— 跳过。
+    $pitActual = @($pitLines | Where-Object { $_ -match '^## \d+\. ' }).Count
+    $claims = @()
+    foreach ($l in $readmeLines) {
+        if ($l -match '^\|\s*\d{4}-\d{2}-\d{2}\s*\|') { continue }
+        if ($l -match '历史上踩过的\s*(\d+)\s*个坑') { $claims += , @('README.md', [int]$matches[1]) }
+        if ($l -match '\*\*(\d+)\s*条真实踩坑与规矩\*\*') { $claims += , @('README.md', [int]$matches[1]) }
+    }
+    foreach ($l in $planLines) {
+        if ($l -match '^\|\s*\d{4}-\d{2}-\d{2}\s*\|') { continue }
+        if ($l -match '\|\s*`docs/踩坑记录\.md`\s*\|\s*(\d+)\s*条真实踩坑与规矩\s*\|') { $claims += , @('docs/开发计划.md', [int]$matches[1]) }
+    }
+    foreach ($c in $claims) {
+        if ($c[1] -ne $pitActual) {
+            $problems += "[$($c[0])] 踩坑记录条数漂移：写 $($c[1])，实算 $pitActual"
+        }
+    }
+
+    # --- 6.3 踩坑记录目录表必须覆盖全部条目 ---
+    $tocNums = @($pitLines | Where-Object { $_ -match '^\|\s*(\d+)\s*\|' } | ForEach-Object { [int]($_ -replace '^\|\s*(\d+)\s*\|.*$', '$1') })
+    $headNums = @($pitLines | Where-Object { $_ -match '^## (\d+)\. ' } | ForEach-Object { [int]$matches[1] })
+    $missing = @($headNums | Where-Object { $tocNums -notcontains $_ })
+    if ($missing.Count -gt 0) {
+        $problems += "[docs/踩坑记录.md] 目录表漏了条目：$(($missing | Sort-Object) -join ', ')"
+    }
+
+    # --- 6.4 开发计划条目数（逐项展开标题 vs 统计表 vs README 声明）---
+    $dActual = @($planLines | Where-Object { $_ -match '^### D\d+ ' }).Count
+    $dStat = $null
+    foreach ($l in $planLines) {
+        if ($l -match '^\|\s*本轮迭代\s*\|\s*(\d+)\s*\|') { $dStat = [int]$matches[1] }
+    }
+    if ($null -ne $dStat -and $dStat -ne $dActual) {
+        $problems += "[docs/开发计划.md] 本轮迭代条目数漂移：统计表 $dStat，逐项展开 $dActual"
+    }
+    foreach ($l in $readmeLines) {
+        if ($l -match '^\|\s*\d{4}-\d{2}-\d{2}\s*\|') { continue }   # 变更记录是历史快照
+        if ($l -match 'docs/开发计划\.md`\]\s*·\s*(\d+)\s*个条目') {
+            if ([int]$matches[1] -ne $dActual) {
+                $problems += "[README.md] 迭代条目数漂移：写 $($matches[1])，实算 $dActual"
+            }
+        }
+        if ($l -match '三步流程\s*\+\s*(\d+)\s*个条目') {
+            if ([int]$matches[1] -ne $dActual) {
+                $problems += "[README.md] 文档索引里的迭代条目数漂移：写 $($matches[1])，实算 $dActual"
+            }
+        }
+    }
+
+    Write-Host '  声明数字回读：已核对（规模 / 条目数 / 踩坑条数 / 目录表覆盖）' -ForegroundColor Green
+}
+
 # ---------- 可选：远端回读比对 ----------
 if ($CheckRemote) {
     # gh 可能只装在用户级 PATH（某些 shell 会话不继承），找不到时兜底常见便携版路径
