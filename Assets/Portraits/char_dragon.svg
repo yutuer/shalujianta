@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_dragon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2F7E93"/>
+      <stop offset="1" stop-color="#205664"/>
+    </linearGradient>
+    <linearGradient id="headGrad_dragon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5998A9"/>
+      <stop offset="1" stop-color="#2F7E93"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M110 132 C88.4 135 69.2 144 62 158 C66 188 76 202 80 214 C82 230 78 241 72 250 L69 296 L187 296 L184 250 C178 241 174 230 176 214 C180 202 190 188 194 158 C153.2 144 172.4 135 146 132 Z" fill="url(#bodyGrad_dragon)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#67A6AE" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_dragon)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <path d="M106 74 C90 58 76 60 62 74" fill="none" stroke="#8FE6F2" stroke-width="10" stroke-linecap="round" />
+  <path d="M150 74 C166 58 180 60 194 74" fill="none" stroke="#8FE6F2" stroke-width="10" stroke-linecap="round" />
+  <polygon points="190,158 220,150 198,180" fill="#8FE6F2" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <polygon points="198,188 224,184 202,212" fill="#8FE6F2" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <polygon points="196,218 220,220 198,244" fill="#8FE6F2" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <circle cx="128" cy="128" r="5" fill="#B1EEF6" stroke="#0B0E14" stroke-width="2.5" />
+  <polygon points="128,190 131.8,199.7 142.3,200.4 134.2,207 136.8,217.1 128,211.5 119.2,217.1 121.8,207 113.7,200.4 124.2,199.7" fill="#8FE6F2" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

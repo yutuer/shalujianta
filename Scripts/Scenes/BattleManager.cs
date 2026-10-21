@@ -37,14 +37,12 @@ namespace FishEatFish.Scenes
 	private Button endTurnButton;
 	private Label handInfoLabel;
 	private Button mapButton;
-	private Label silverKeyLabel;
 	private Button keyOrderButton;
 
 	// ========== UI组件 ==========
 	private List<EnemyUI> enemyUIs = new List<EnemyUI>();
 	private List<CardUI> cardUIs = new List<CardUI>();
 	private PlayerStatsUI playerStatsUI;
-	private BuffDebuffDisplay _buffDebuffDisplay;
 	private PlayerZoneUI playerZoneUI;
 
 	private BattleLogWindow battleLogWindow;
@@ -207,12 +205,11 @@ namespace FishEatFish.Scenes
 		GD.Print("[BattleManager] 开始初始化UI...");
 
 		handContainer = GetNodeOrNull<HBoxContainer>("UI/HandArea/HandContainer");
-		enemyContainer = GetNodeOrNull<HBoxContainer>("UI/MainArea/BattleZones/EnemyZone/EnemyContainer");
+		enemyContainer = GetNodeOrNull<HBoxContainer>("UI/EnemyZone/EnemyContainer");
 		playerStatsContainer = GetNodeOrNull<HBoxContainer>("UI/TopBar/PlayerStats");
 		endTurnButton = GetNodeOrNull<Button>("UI/BottomBar/EndTurnButton");
 		handInfoLabel = GetNodeOrNull<Label>("UI/BottomBar/HandInfo");
 		mapButton = GetNodeOrNull<Button>("UI/BottomBar/MapButton");
-		silverKeyLabel = GetNodeOrNull<Label>("UI/TopBar/SilverKeyLabel");
 		keyOrderButton = GetNodeOrNull<Button>("UI/BottomBar/KeyOrderButton");
 
 		if (handContainer == null || enemyContainer == null || endTurnButton == null)
@@ -223,12 +220,15 @@ namespace FishEatFish.Scenes
 
 		GD.Print("[BattleManager] UI节点获取成功");
 
-		if (HasNode("UI/MainArea/BattleZones/PlayerZone"))
+		// 玩家区：场景里已经是 PlayerZoneUI 组件（带立绘 / 血条 / buff 条 / 钥令徽标）
+		playerZoneUI = GetNodeOrNull<PlayerZoneUI>("UI/PlayerZone");
+		if (playerZoneUI != null)
 		{
-			Control playerZone = GetNode<Control>("UI/MainArea/BattleZones/PlayerZone");
-			playerZoneUI = new PlayerZoneUI();
-			playerZone.AddChild(playerZoneUI);
-			GD.Print("[BattleManager] PlayerZoneUI初始化成功");
+			GD.Print("[BattleManager] PlayerZoneUI 从场景节点加载成功");
+		}
+		else
+		{
+			GD.PrintErr("[BattleManager] 未找到 UI/PlayerZone 节点");
 		}
 
 		cardLayoutManagerNode = GetNodeOrNull<CardLayoutManager>("CardLayoutManager");
@@ -267,68 +267,60 @@ namespace FishEatFish.Scenes
 	{
 		GD.Print("[BattleManager] 开始初始化新UI组件...");
 
-		var uiCanvas = GetNode<CanvasLayer>("UI");
+		// 各组件的**位置全部由 .tscn 的锚定容器决定**，
+		// 代码里不再写死坐标（之前散落着 new Vector2(200,10) / (20,150) / (50,400)，
+		// 元素会随内容长度漂移，是「画面乱」的主因）。
+		var teamSlot = GetNodeOrNull<Control>("UI/TopBar/TeamSlot");
+		var silverKeySlot = GetNodeOrNull<Control>("UI/TopBar/SilverKeySlot");
 
-		silverKeyProgressIndicator = LoadUIComponent<SilverKeyProgressIndicator>(
-			"res://Scenes/UI/SilverKeyProgressIndicator.tscn",
-			() => new SilverKeyProgressIndicator(),
-			uiCanvas
-		);
-		if (silverKeyProgressIndicator != null)
+		if (silverKeySlot != null)
 		{
-			silverKeyProgressIndicator.Position = new Vector2(50, 400);
+			silverKeyProgressIndicator = LoadUIComponent<SilverKeyProgressIndicator>(
+				"res://Scenes/UI/SilverKeyProgressIndicator.tscn",
+				() => new SilverKeyProgressIndicator(),
+				silverKeySlot
+			);
+			GD.Print("[BattleManager] 银钥进度指示器初始化成功");
 		}
-		GD.Print("[BattleManager] 银钥进度指示器初始化成功");
 
-		attackerDisplayUI = LoadUIComponent<AttackerDisplayUI>(
-			"res://Scenes/UI/AttackerDisplayUI.tscn",
-			() => new AttackerDisplayUI(),
-			uiCanvas
-		);
-		if (attackerDisplayUI != null)
+		if (teamSlot != null)
 		{
-			attackerDisplayUI.Position = new Vector2(200, 10);
-			if (attacker != null)
+			attackerDisplayUI = LoadUIComponent<AttackerDisplayUI>(
+				"res://Scenes/UI/AttackerDisplayUI.tscn",
+				() => new AttackerDisplayUI(),
+				teamSlot
+			);
+			if (attackerDisplayUI != null)
 			{
-				attackerDisplayUI.SetAttacker(attacker);
+				if (attacker != null)
+				{
+					attackerDisplayUI.SetAttacker(attacker);
+				}
+				// 点击角色槽位释放大招（怒气满时才可点）
+				attackerDisplayUI.SetUltimateClickCallback(OnUltimateSlotClicked);
 			}
-			// 点击角色槽位释放大招（怒气满时才可点）
-			attackerDisplayUI.SetUltimateClickCallback(OnUltimateSlotClicked);
+			GD.Print("[BattleManager] 攻击体角色显示UI初始化成功");
 		}
-		GD.Print("[BattleManager] 攻击体角色显示UI初始化成功");
 
-		rageDisplayUI = LoadUIComponent<RageDisplayUI>(
-			"res://Scenes/UI/RageDisplayUI.tscn",
-			() => new RageDisplayUI(),
-			uiCanvas
-		);
-		if (rageDisplayUI != null)
-		{
-			rageDisplayUI.Position = new Vector2(20, 150);
-		}
 		InitializeCharacterPositions();
-		GD.Print("[BattleManager] 怒气显示UI初始化成功");
+		GD.Print("[BattleManager] 角色位置初始化完成");
+
+		// 怒气条已经画在顶部头像的圆环上（CharacterSlotUI），
+		// 旧的左上角「怒气值 0/100」文字条是重复信息 —— 不再实例化。
+		rageDisplayUI = null;
 
 		keyOrderSelectionUI = LoadUIComponent<KeyOrderSelectionUI>(
 			"res://Scenes/UI/KeyOrderSelectionUI.tscn",
 			() => new KeyOrderSelectionUI(),
-			uiCanvas
+			GetNode<CanvasLayer>("UI")
 		);
-		if (keyOrderSelectionUI != null)
-		{
-			keyOrderSelectionUI.Position = new Vector2(100, 200);
-		}
 		GD.Print("[BattleManager] 钥令选择UI初始化成功");
 
 		keyOrderDescriptionUI = LoadUIComponent<KeyOrderDescriptionUI>(
 			"res://Scenes/UI/KeyOrderDescriptionUI.tscn",
 			() => new KeyOrderDescriptionUI(),
-			uiCanvas
+			GetNode<CanvasLayer>("UI")
 		);
-		if (keyOrderDescriptionUI != null)
-		{
-			keyOrderDescriptionUI.Position = new Vector2(300, 250);
-		}
 		GD.Print("[BattleManager] 钥令说明UI初始化成功");
 	}
 
@@ -583,10 +575,41 @@ namespace FishEatFish.Scenes
 
 		EnemyUI enemyUI = resourceManager.EnemyScene.Instantiate<EnemyUI>();
 		enemyUI.Setup(enemy);
-		enemyUI.SetSprite(resourceManager.EnemyTexture);
+		enemyUI.SetSprite(ResolveEnemyPortrait(enemy));
 		enemyContainer.AddChild(enemyUI);
 		enemyUIs.Add(enemyUI);
 		GD.Print($"[BattleManager] 创建敌人UI: {enemy.EnemyName}");
+	}
+
+	/// <summary>
+	/// 敌人类型 → 立绘资源路径（程序化占位；找不到就退回通用贴图）
+	/// </summary>
+	private static readonly System.Collections.Generic.Dictionary<string, string> EnemyPortraits =
+		new System.Collections.Generic.Dictionary<string, string>
+		{
+			{ "守卫", "res://Assets/Portraits/enemy_guard.svg" },
+			{ "游兵", "res://Assets/Portraits/enemy_raider.svg" },
+			{ "斥候", "res://Assets/Portraits/enemy_scout.svg" },
+			{ "精锐·虎", "res://Assets/Portraits/enemy_elite_tiger.svg" },
+			{ "精锐·蛇", "res://Assets/Portraits/enemy_elite_snake.svg" },
+			{ "千夜之主", "res://Assets/Portraits/enemy_boss.svg" }
+		};
+
+	/// <summary>
+	/// 取敌人立绘（没有专属立绘时退回通用贴图）
+	/// </summary>
+	private Texture2D ResolveEnemyPortrait(Enemy enemy)
+	{
+		if (enemy != null)
+		{
+			string path;
+			if (EnemyPortraits.TryGetValue(enemy.EnemyName, out path) && ResourceLoader.Exists(path))
+			{
+				Texture2D portrait = ResourceLoader.Load<Texture2D>(path);
+				if (portrait != null) return portrait;
+			}
+		}
+		return resourceManager.EnemyTexture;
 	}
 
 	private void ClearEnemyUI()
@@ -650,12 +673,7 @@ namespace FishEatFish.Scenes
 	/// </summary>
 	private void UpdateBuffDebuffDisplay()
 	{
-		if (_buffDebuffDisplay == null)
-		{
-		_buffDebuffDisplay = GetNodeOrNull<BuffDebuffDisplay>("UI/MainArea/BattleZones/PlayerZone/VBoxContainer/BuffDebuffDisplay");
-		}
-		if (_buffDebuffDisplay == null) return;
-		_buffDebuffDisplay.RefreshStatus(player?.StatusEffects);
+		// 玩家侧状态条在 PlayerZone 里（血条下方那排图标）		if (playerZoneUI == null) return;		playerZoneUI.SetStatus(player?.StatusEffects);
 	}
 
 	/// <summary>
@@ -927,10 +945,7 @@ namespace FishEatFish.Scenes
 	/// </summary>
 	private void UpdateRageDisplay()
 	{
-		if (rageDisplayUI == null || characterPositions.Count == 0) return;
-
-		var rageValues = rageManager.GetAllRageValues();
-		rageDisplayUI.UpdateAllRage(rageValues);
+		if (characterPositions.Count == 0) return;
 
 		for (int i = 0; i < characterPositions.Count; i++)
 		{
@@ -966,7 +981,7 @@ namespace FishEatFish.Scenes
 
 				GD.Print($"[BattleManager] 位置{i}获得{actualGain}怒气 (基础:{result.BaseRage}, 奖励:{result.BonusRage})");
 
-				rageDisplayUI?.ShowRageGainAnimation(i, actualGain);
+				attackerDisplayUI?.PlayRageGainAnimation(i);
 			}
 		}
 
@@ -1006,9 +1021,20 @@ namespace FishEatFish.Scenes
 		bool canPlay = isPlayerTurn && player.CurrentEnergy >= card.Cost;
 		cardUI.Setup(card, cardIndex, canPlay);
 
-		if (resourceManager.CardTextures.TryGetValue(card.Name, out Texture2D texture))
+		// 插画优先用卡牌数据里的 spritePath（42 张卡都有），没有再退回旧的按名字硬编码映射
+		Texture2D cardTexture = null;
+		CardData cardData = CardConfigLoader.GetCardData(card.CardId);
+		if (cardData != null && !string.IsNullOrEmpty(cardData.SpritePath) && ResourceLoader.Exists(cardData.SpritePath))
 		{
-			cardUI.SetTexture(texture);
+				cardTexture = ResourceLoader.Load<Texture2D>(cardData.SpritePath);
+		}
+		if (cardTexture == null && resourceManager.CardTextures.TryGetValue(card.Name, out Texture2D legacyTexture))
+		{
+				cardTexture = legacyTexture;
+		}
+		if (cardTexture != null)
+		{
+				cardUI.SetTexture(cardTexture);
 		}
 
 		int capturedIndex = cardIndex;
@@ -1127,11 +1153,6 @@ namespace FishEatFish.Scenes
 
 	private void UpdateSilverKeyUI()
 	{
-		if (silverKeyLabel != null)
-		{
-			silverKeyLabel.Text = $"银钥: {currentSilverKey}/{silverKeyConfig.BaseMaxSilverKey}";
-		}
-
 		if (silverKeyProgressIndicator != null)
 		{
 			silverKeyProgressIndicator.SetValue(currentSilverKey);

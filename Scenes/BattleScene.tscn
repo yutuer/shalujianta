@@ -1,24 +1,38 @@
-[gd_scene format=3 uid="uid://cg7pfcricr231"]
+[gd_scene load_steps=12 format=3 uid="uid://cg7pfcricr231"]
 
 [ext_resource type="Script" uid="uid://g0n4d8440ta4" path="res://Scripts/Scenes/BattleManager.cs" id="1_battle"]
 [ext_resource type="Script" uid="uid://dofgf2yjjym2n" path="res://Scripts/UI/HandCardPreview.cs" id="2_preview"]
 [ext_resource type="Script" uid="uid://0k25fywn32tc" path="res://Scripts/Battle/CardLayoutManager.cs" id="3_card_layout"]
 [ext_resource type="PackedScene" uid="uid://ArtifactDetailUI_scene_001" path="res://Scenes/UI/ArtifactDetailUI.tscn" id="4_artifact_detail"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CommonHUD.tscn" id="5_common_hud"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/BuffDebuffDisplay.tscn" id="6_buffdebuff"]
 [ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="7_theme"]
 [ext_resource type="SystemFont" path="res://Assets/Themes/TitleFont.tres" id="8_titlefont"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/PlayerZone.tscn" id="9_player_zone"]
+
+[sub_resource type="Gradient" id="Gradient_battle_bg"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.094, 0.11, 0.16, 1, 0.055, 0.066, 0.098, 1, 0.031, 0.035, 0.055, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_battle_bg"]
+gradient = SubResource("Gradient_battle_bg")
+width = 8
+height = 256
+fill_from = Vector2(0, 0)
+fill_to = Vector2(0, 1)
 
 [node name="BattleScene" type="Node2D" unique_id=1960259589]
 script = ExtResource("1_battle")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.15, 0.17, 0.2, 1)
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_battle_bg")
+expand_mode = 1
+stretch_mode = 1
 
 [node name="CardLayoutManager" type="Node" parent="." unique_id=123456789]
 script = ExtResource("3_card_layout")
@@ -32,129 +46,90 @@ _handHoverScale = 1.3
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=706672011]
 
-[node name="TopBar" type="HBoxContainer" parent="UI" unique_id=2140713231]
+[node name="TopBar" type="Control" parent="UI" unique_id=2140713231]
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 128.0
-offset_bottom = 168.0
+offset_bottom = 104.0
 grow_horizontal = 2
 theme = ExtResource("7_theme")
 
-[node name="ArtifactDetailUI" parent="UI" instance=ExtResource("4_artifact_detail")]
-
-[node name="Title" type="Label" parent="UI/TopBar" unique_id=877999875]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.93, 0.85, 1)
-theme_override_fonts/font = ExtResource("8_titlefont")
-text = "FishEatFish"
-
-[node name="FloorInfo" type="Label" parent="UI/TopBar" unique_id=459992778]
-layout_mode = 2
-text = "楼层: 1"
-
-[node name="Spacer" type="Control" parent="UI/TopBar" unique_id=1603848874]
-layout_mode = 2
-size_flags_horizontal = 3
+[node name="TeamSlot" type="Control" parent="UI/TopBar" unique_id=901111001]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 4.0
+offset_right = 436.0
+offset_bottom = 100.0
+grow_horizontal = 2
 
 [node name="PlayerStats" type="HBoxContainer" parent="UI/TopBar" unique_id=1782152917]
-layout_mode = 2
-
-[node name="SilverKeyLabel" type="Label" parent="UI/TopBar" unique_id=1754407400]
-layout_mode = 2
-text = "银钥: 0/1000"
-
-[node name="MainArea" type="VBoxContainer" parent="UI" unique_id=671973020]
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -870.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="BattleZones" type="HBoxContainer" parent="UI/MainArea" unique_id=496655171]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="PlayerZone" type="Panel" parent="UI/MainArea/BattleZones" unique_id=1092735748]
-custom_minimum_size = Vector2(300, 400)
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/MainArea/BattleZones/PlayerZone" unique_id=1499945426]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-
-[node name="PlayerName" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=302640767]
-layout_mode = 2
-text = "玩家"
-horizontal_alignment = 1
-
-[node name="PlayerIcon" type="TextureRect" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=687323976]
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 4
-
-[node name="HealthBar" type="ProgressBar" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=75131468]
-custom_minimum_size = Vector2(0, 25)
-layout_mode = 2
-
-[node name="HealthLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=429952254]
-layout_mode = 2
-text = "100/100"
-horizontal_alignment = 1
-
-[node name="ShieldLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=1464598258]
-layout_mode = 2
-text = "护盾: 0"
-horizontal_alignment = 1
-
-[node name="EnergyLabel" type="Label" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" unique_id=1708676063]
-layout_mode = 2
-text = "能量: 3/3"
-horizontal_alignment = 1
-
-[node name="BuffDebuffDisplay" parent="UI/MainArea/BattleZones/PlayerZone/VBoxContainer" instance=ExtResource("6_buffdebuff")]
-[node name="EnemyZone" type="Panel" parent="UI/MainArea/BattleZones" unique_id=762201044]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 2.0
-
-[node name="EnemyContainer" type="HBoxContainer" parent="UI/MainArea/BattleZones/EnemyZone" unique_id=663287302]
-layout_mode = 1
-anchors_preset = 1
+anchors_preset = 10
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -620.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = 200.0
-grow_horizontal = 0
+offset_left = -470.0
+offset_top = 14.0
+offset_right = -20.0
+offset_bottom = 90.0
+grow_horizontal = 2
 alignment = 2
+theme_override_constants/separation = 18
 
-[node name="Spacer" type="Control" parent="UI/MainArea" unique_id=654335520]
+[node name="SilverKeySlot" type="Control" parent="UI/TopBar" unique_id=901111002]
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -560.0
+offset_top = 14.0
+offset_right = -480.0
+offset_bottom = 90.0
+grow_horizontal = 2
+
+[node name="CommonHUD" parent="UI" instance=ExtResource("5_common_hud")]
+ShowTeamSection = false
+ShowStatsSection = false
+
+[node name="PlayerZone" parent="UI" instance=ExtResource("9_player_zone")]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -560.0
+offset_right = 684.0
+offset_bottom = -360.0
+grow_vertical = 0
+
+[node name="EnemyZone" type="HBoxContainer" parent="UI" unique_id=762201044]
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -820.0
+offset_top = 120.0
+offset_right = -20.0
+offset_bottom = 520.0
+grow_horizontal = 2
+alignment = 2
+theme_override_constants/separation = 16
+
+[node name="EnemyContainer" type="HBoxContainer" parent="UI/EnemyZone" unique_id=663287302]
 layout_mode = 2
-size_flags_vertical = 3
+alignment = 2
+theme_override_constants/separation = 16
 
-[node name="HandArea" type="Panel" parent="UI" unique_id=1462648875]
+[node name="HandArea" type="Control" parent="UI" unique_id=1462648875]
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -300.0
+offset_left = 300.0
+offset_top = -330.0
+offset_right = -300.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
 
 [node name="HandContainer" type="HBoxContainer" parent="UI/HandArea" unique_id=1002692378]
 layout_mode = 1
@@ -168,9 +143,10 @@ offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
+mouse_filter = 2
 
 [node name="HandCardPreview" type="Control" parent="UI/HandArea/HandContainer" unique_id=26487472]
-custom_minimum_size = Vector2(1200, 400)
+custom_minimum_size = Vector2(1200, 320)
 layout_mode = 2
 script = ExtResource("2_preview")
 _editorPreviewCardCount = 15
@@ -190,8 +166,10 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -46.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_constants/separation = 10
 
 [node name="EndTurnButton" type="Button" parent="UI/BottomBar" unique_id=1192792991]
 layout_mode = 2
@@ -216,7 +194,6 @@ size_flags_horizontal = 3
 [node name="HandInfo" type="Label" parent="UI/BottomBar" unique_id=646114592]
 layout_mode = 2
 text = "手牌: 5"
+vertical_alignment = 1
 
-[node name="CommonHUD" parent="UI" instance=ExtResource("5_common_hud")]
-ShowTeamSection = false
-ShowStatsSection = false
+[node name="ArtifactDetailUI" parent="UI" instance=ExtResource("4_artifact_detail")]

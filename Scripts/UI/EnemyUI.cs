@@ -35,11 +35,11 @@ public partial class EnemyUI : Panel
         enemySprite = GetNode<TextureRect>("VBoxContainer/EnemySprite");
         healthBar = GetNode<ProgressBar>("VBoxContainer/HealthBar");
         healthLabel = GetNode<Label>("VBoxContainer/HealthLabel");
-        intentLabel = GetNode<Label>("VBoxContainer/IntentLabel");
+        intentLabel = GetNode<Label>("VBoxContainer/IntentRow/IntentLabel");
 
-        if (HasNode("VBoxContainer/IntentIcon"))
+        if (HasNode("VBoxContainer/IntentRow/IntentIcon"))
         {
-            intentIcon = GetNode<TextureRect>("VBoxContainer/IntentIcon");
+            intentIcon = GetNode<TextureRect>("VBoxContainer/IntentRow/IntentIcon");
         }
 
         _statusIconContainer = GetNodeOrNull<HBoxContainer>("VBoxContainer/StatusIconContainer");
@@ -51,6 +51,12 @@ public partial class EnemyUI : Panel
 
         nameLabel.AddThemeColorOverride("font_color", new Color(1f, 1f, 1f));
         healthLabel.AddThemeColorOverride("font_color", new Color(1f, 1f, 1f));
+
+        // 敌人卡片**不要底框**（对照参考图 R-08：敌人是站在场景里的，不是装在框里）
+        var panelStyle = new StyleBoxFlat();
+        panelStyle.BgColor = new Color(0f, 0f, 0f, 0f);
+        panelStyle.SetBorderWidthAll(0);
+        AddThemeStyleboxOverride("panel", panelStyle);
 
         ApplyPendingSetup();
         GD.Print("[EnemyUI] _Ready completed");

@@ -33,12 +33,12 @@ public partial class CardUI : Panel
 
     public override void _Ready()
     {
-        nameLabel = GetNode<Label>("VBoxContainer/NameLabel");
+        nameLabel = GetNode<Label>("VBoxContainer/HeaderRow/NameLabel");
         cardImage = GetNode<TextureRect>("VBoxContainer/ImageContainer/CardImage");
-        costLabel = GetNode<Label>("VBoxContainer/CostLabel");
+        costLabel = GetNode<Label>("CostBadge/CostLabel");
         descLabel = GetNode<Label>("VBoxContainer/DescLabel");
         playButton = GetNode<Button>("VBoxContainer/PlayButton");
-        typeIcon = GetNode<TextureRect>("VBoxContainer/TypeIcon");
+        typeIcon = GetNode<TextureRect>("VBoxContainer/HeaderRow/TypeIcon");
         hoverHint = GetNode<Label>("VBoxContainer/HoverHint");
 
         Node levelNode = GetNodeOrNull("VBoxContainer/LevelLabel");
@@ -54,13 +54,43 @@ public partial class CardUI : Panel
         }
 
         nameLabel.AddThemeColorOverride("font_color", new Color(1f, 1f, 1f));
-        costLabel.AddThemeColorOverride("font_color", new Color(0.3f, 0.7f, 1f));
-        descLabel.AddThemeColorOverride("font_color", new Color(0.8f, 0.8f, 0.8f));
+        costLabel.AddThemeColorOverride("font_color", new Color(0.72f, 0.9f, 1f));
+        descLabel.AddThemeColorOverride("font_color", new Color(0.82f, 0.82f, 0.84f));
+
+        // 费用角标：深色圆底 + 亮色数字（对照参考图 R-08 的左上角圆标）
+        var badge = GetNodeOrNull<PanelContainer>("CostBadge");
+        if (badge != null)
+        {
+            var badgeStyle = new StyleBoxFlat();
+            badgeStyle.BgColor = new Color(0.08f, 0.1f, 0.16f, 0.95f);
+            badgeStyle.BorderColor = new Color(0.45f, 0.62f, 0.85f, 0.9f);
+            badgeStyle.SetBorderWidthAll(2);
+            badgeStyle.SetCornerRadiusAll(17);
+            badge.AddThemeStyleboxOverride("panel", badgeStyle);
+        }
 
         Scale = baseScale;
         hoverHint.Modulate = new Color(1f, 1f, 1f, 0f);
 
+        // 「使用」按钮与提示**悬停才出现**（之前常驻，把牌面挤成一堆字）
+        MouseEntered += OnCardMouseEntered;
+        MouseExited += OnCardMouseExited;
+
         ApplyPendingSetup();
+    }
+
+    /// <summary>悬停：显示「使用」按钮与提示</summary>
+    private void OnCardMouseEntered()
+    {
+        if (playButton != null) playButton.Visible = true;
+        if (hoverHint != null) hoverHint.Visible = true;
+    }
+
+    /// <summary>离开悬停：隐藏</summary>
+    private void OnCardMouseExited()
+    {
+        if (playButton != null) playButton.Visible = false;
+        if (hoverHint != null) hoverHint.Visible = false;
     }
 
     private void ApplyPendingSetup()

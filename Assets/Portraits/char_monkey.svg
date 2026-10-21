@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_monkey" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#B5814A"/>
+      <stop offset="1" stop-color="#7B5832"/>
+    </linearGradient>
+    <linearGradient id="headGrad_monkey" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C49A6E"/>
+      <stop offset="1" stop-color="#B5814A"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <circle cx="200" cy="244" r="22" fill="#F0CE96" stroke="#0B0E14" stroke-width="4" />
+  <path d="M180 250 C192 260 202 258 206 248" fill="none" stroke="#B5814A" stroke-width="10" stroke-linecap="round" />
+  <path d="M110 132 C89.3 135 70.9 144 64 158 C68 188 76 202 80 214 C82 230 78 241 72 250 L69 296 L187 296 L184 250 C178 241 174 230 176 214 C180 202 188 188 192 158 C152.9 144 171.3 135 146 132 Z" fill="url(#bodyGrad_monkey)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#AD946C" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_monkey)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="92" cy="100" r="15" fill="url(#headGrad_monkey)" stroke="#0B0E14" stroke-width="4.5" />
+  <circle cx="164" cy="100" r="15" fill="url(#headGrad_monkey)" stroke="#0B0E14" stroke-width="4.5" />
+  <circle cx="92" cy="100" r="7" fill="#F0CE96" stroke="#0B0E14" stroke-width="2.5" />
+  <circle cx="164" cy="100" r="7" fill="#F0CE96" stroke="#0B0E14" stroke-width="2.5" />
+  <ellipse cx="128" cy="122" rx="20" ry="14" fill="#F0CE96" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="120" cy="119" r="2.6" fill="#0B0E14" />
+  <circle cx="136" cy="119" r="2.6" fill="#0B0E14" />
+  <path d="M113 210 C121 192 129 220 143 201" fill="none" stroke="#F0CE96" stroke-width="6" stroke-linecap="round" />
+</svg>

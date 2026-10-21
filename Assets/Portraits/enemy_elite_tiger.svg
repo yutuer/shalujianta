@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_elite_tiger" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C97A28"/>
+      <stop offset="1" stop-color="#89531B"/>
+    </linearGradient>
+    <linearGradient id="headGrad_elite_tiger" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D49553"/>
+      <stop offset="1" stop-color="#C97A28"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M110 132 C81.2 135 55.6 158 46 172 C50 208 52 222 56 234 C58 242 54 253 48 262 L45 296 L211 296 L208 262 C202 253 198 242 200 234 C204 222 206 208 210 172 C155.6 158 181.2 135 146 132 Z" fill="url(#bodyGrad_elite_tiger)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#B8A379" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="88" r="44" fill="url(#headGrad_elite_tiger)" stroke="#0B0E14" stroke-width="5" />
+  <path d="M100 84 L120 90" fill="none" stroke="#FFE2A8" stroke-width="6" stroke-linecap="round" />
+  <path d="M156 84 L136 90" fill="none" stroke="#FFE2A8" stroke-width="6" stroke-linecap="round" />
+  <circle cx="92" cy="48" r="15" fill="#89531B" stroke="#0B0E14" stroke-width="4.5" />
+  <circle cx="164" cy="48" r="15" fill="#89531B" stroke="#0B0E14" stroke-width="4.5" />
+  <circle cx="92" cy="48" r="7" fill="#FFE2A8" stroke="#0B0E14" stroke-width="2.5" />
+  <circle cx="164" cy="48" r="7" fill="#FFE2A8" stroke="#0B0E14" stroke-width="2.5" />
+  <path d="M110 60 L107 78" fill="none" stroke="#89531B" stroke-width="5" stroke-linecap="round" />
+  <path d="M128 54 L128 74" fill="none" stroke="#89531B" stroke-width="5" stroke-linecap="round" />
+  <path d="M146 60 L149 78" fill="none" stroke="#89531B" stroke-width="5" stroke-linecap="round" />
+  <ellipse cx="128" cy="116" rx="30" ry="18" fill="#FFE2A8" stroke="#0B0E14" stroke-width="4" />
+  <path d="M120 104 L136 104 L128 116 Z" fill="#0B0E14" />
+  <path d="M110 126 L119 126 L114 148 Z" fill="#FFF6E0" stroke="#0B0E14" stroke-width="2.5" stroke-linejoin="round" />
+  <path d="M137 126 L146 126 L142 148 Z" fill="#FFF6E0" stroke="#0B0E14" stroke-width="2.5" stroke-linejoin="round" />
+  <rect x="116" y="195" width="24" height="4" rx="2" fill="#FFE2A8" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <rect x="116" y="203" width="24" height="4" rx="2" fill="#FFE2A8" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <rect x="116" y="211" width="24" height="4" rx="2" fill="#FFE2A8" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

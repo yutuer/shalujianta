@@ -13,27 +13,27 @@ public static class EffectRegistry
 
     /// <summary>
     /// buffId -> 图标资源路径。
-    /// 项目目前没有专门的 buff/debuff 图标，先用 Assets/Icons 里已有的 svg 占位，
-    /// 等正式美术资源到位后只改这张表即可（UI 侧不用动）。
+    /// 图标是程序化占位（Assets/Icons/status_*.svg，64×64），
+    /// 以后换成正式美术只改这张表即可（UI 侧不用动）。
     /// </summary>
     private static readonly Dictionary<string, string> BuffIcons = new Dictionary<string, string>
     {
-        { "strength", "res://Assets/Icons/intent_attack.svg" },
-        { "attack_up", "res://Assets/Icons/intent_attack.svg" },
-        { "vampirism", "res://Assets/Icons/intent_attack.svg" },
-        { "defense", "res://Assets/Icons/intent_defend.svg" },
-        { "defense_up", "res://Assets/Icons/intent_defend.svg" },
-        { "regeneration", "res://Assets/Icons/relic_charm.svg" },
-        { "thorns", "res://Assets/Icons/skull.svg" },
-        { "fury", "res://Assets/Icons/intent_buff.svg" },
-        { "weak", "res://Assets/Icons/intent_defend.svg" },
-        { "vulnerable", "res://Assets/Icons/intent_attack.svg" },
-        { "poison", "res://Assets/Icons/skull.svg" },
-        { "burn", "res://Assets/Icons/skull.svg" },
-        { "bleed", "res://Assets/Icons/skull.svg" },
-        { "slow", "res://Assets/Icons/arrow_reserve.svg" },
-        { "silence", "res://Assets/Icons/relic_anchor.svg" },
-        { "defense_down", "res://Assets/Icons/intent_defend.svg" }
+        { "strength", "res://Assets/Icons/status_strength.svg" },
+        { "attack_up", "res://Assets/Icons/status_attack_up.svg" },
+        { "vampirism", "res://Assets/Icons/status_vampirism.svg" },
+        { "defense", "res://Assets/Icons/status_defense.svg" },
+        { "defense_up", "res://Assets/Icons/status_defense_up.svg" },
+        { "regeneration", "res://Assets/Icons/status_regeneration.svg" },
+        { "thorns", "res://Assets/Icons/status_thorns.svg" },
+        { "fury", "res://Assets/Icons/status_fury.svg" },
+        { "weak", "res://Assets/Icons/status_weak.svg" },
+        { "vulnerable", "res://Assets/Icons/status_vulnerable.svg" },
+        { "poison", "res://Assets/Icons/status_poison.svg" },
+        { "burn", "res://Assets/Icons/status_burn.svg" },
+        { "bleed", "res://Assets/Icons/status_bleed.svg" },
+        { "slow", "res://Assets/Icons/status_slow.svg" },
+        { "silence", "res://Assets/Icons/status_silence.svg" },
+        { "defense_down", "res://Assets/Icons/status_defense_down.svg" }
     };
 
     /// <summary>

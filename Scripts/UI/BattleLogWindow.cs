@@ -40,11 +40,16 @@ public partial class BattleLogWindow : Control
         Size = new Vector2(DefaultWidth, DefaultHeight);
         
         var viewportSize = GetViewportRect().Size;
+
+        // 停靠右下角（不压手牌区：手牌在底部中间，日志在右下）
         Position = new Vector2(
             viewportSize.X - DefaultWidth - 20,
-            viewportSize.Y - DefaultHeight - 280
+            viewportSize.Y - DefaultHeight - 20
         );
-        
+
+        // 默认收起：只留标题条，点「□」展开 —— 之前默认展开压在手牌上方
+        SetMinimized(true);
+
         autoScrollEnabled = true;
     }
 
@@ -253,14 +258,22 @@ public partial class BattleLogWindow : Control
 
     private void OnMinimizePressed()
     {
-        isMinimized = !isMinimized;
-        
+        SetMinimized(!isMinimized);
+    }
+
+    /// <summary>
+    /// 收起 / 展开窗口（收起时只保留标题条）。
+    /// </summary>
+    private void SetMinimized(bool minimized)
+    {
+        isMinimized = minimized;
+
         if (isMinimized)
         {
             scrollContainer.Visible = false;
             clearButton.Visible = false;
-            CustomMinimumSize = new Vector2(MinWidth, 60);
-            Size = new Vector2(Size.X, 60);
+            CustomMinimumSize = new Vector2(MinWidth, 40);
+            Size = new Vector2(Size.X, 40);
             minimizeButton.Text = "□";
         }
         else

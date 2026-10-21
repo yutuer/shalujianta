@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_rabbit" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D9A8BE"/>
+      <stop offset="1" stop-color="#947281"/>
+    </linearGradient>
+    <linearGradient id="headGrad_rabbit" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E1B9CB"/>
+      <stop offset="1" stop-color="#D9A8BE"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <circle cx="192" cy="238" r="12" fill="#FFF0F6" stroke="#0B0E14" stroke-width="4" />
+  <path d="M110 132 C92 135 76 144 70 158 C74 188 82 202 86 214 C88 230 84 241 78 250 L75 296 L181 296 L178 250 C172 241 168 230 170 214 C174 202 182 188 186 158 C152 144 168 135 146 132 Z" fill="url(#bodyGrad_rabbit)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#B8ADB1" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_rabbit)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="110" cy="46" rx="12" ry="34" fill="url(#headGrad_rabbit)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="146" cy="46" rx="12" ry="34" fill="url(#headGrad_rabbit)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="110" cy="48" rx="5" ry="22" fill="#FFF0F6" stroke="#0B0E14" stroke-width="2.5" />
+  <ellipse cx="146" cy="48" rx="5" ry="22" fill="#FFF0F6" stroke="#0B0E14" stroke-width="2.5" />
+  <path d="M124 118 L132 118 L128 126 Z" fill="#947281" stroke="#0B0E14" stroke-width="2" stroke-linejoin="round" />
+  <polygon points="128,191 141,198 141,210 128,219 115,210 115,198" fill="#FFF0F6" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

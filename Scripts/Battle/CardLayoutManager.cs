@@ -6,9 +6,9 @@ public partial class CardLayoutManager : Node
 {
 	[ExportGroup("Card Size")]
 	[Export(PropertyHint.Range, "80,200,1")]
-	private float _cardWidth = 140f;
+	private float _cardWidth = 165f;
 	[Export(PropertyHint.Range, "100,300,1")]
-	private float _cardHeight = 200f;
+	private float _cardHeight = 235f;
 
 	[ExportGroup("Card Overlap")]
 	[Export(PropertyHint.Range, "50,150,1")]

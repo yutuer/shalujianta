@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_rooster" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C9502F"/>
+      <stop offset="1" stop-color="#893620"/>
+    </linearGradient>
+    <linearGradient id="headGrad_rooster" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D47359"/>
+      <stop offset="1" stop-color="#C9502F"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M110 132 C92 135 76 144 70 158 C74 188 82 202 86 214 C88 230 84 241 78 250 L75 296 L181 296 L178 250 C172 241 168 230 170 214 C174 202 182 188 186 158 C152 144 168 135 146 132 Z" fill="url(#bodyGrad_rooster)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#B89C63" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_rooster)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="112" cy="102" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="144" cy="102" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="114" cy="54" r="10" fill="#FFD98A" stroke="#0B0E14" stroke-width="4" />
+  <circle cx="128" cy="44" r="12" fill="#FFD98A" stroke="#0B0E14" stroke-width="4" />
+  <circle cx="142" cy="54" r="10" fill="#FFD98A" stroke="#0B0E14" stroke-width="4" />
+  <rect x="106" y="60" width="44" height="11" rx="5" fill="#FFD98A" stroke="#0B0E14" stroke-width="4" />
+  <path d="M118 124 L138 124 L128 148 Z" fill="#FFD98A" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <circle cx="128" cy="147" r="7" fill="#C9502F" stroke="#0B0E14" stroke-width="3" />
+  <path d="M115 203 L128 215 L141 203" fill="none" stroke="#FFD98A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M115 193 L128 205 L141 193" fill="none" stroke="#FFD98A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

@@ -50,9 +50,6 @@ namespace FishEatFish.UI
 		private const int CollectionSlotCount = 8;
 
 		private AttackerDisplayUI _teamDisplay;
-		private PanelContainer _keyOrderDisc;
-		private Label _keyOrderInitial;
-		private Label _keyOrderLabel;
 		private HBoxContainer _collectionBox;
 		private readonly List<CommonHUDSlot> _collectionSlots = new List<CommonHUDSlot>();
 
@@ -64,9 +61,6 @@ namespace FishEatFish.UI
 			GD.Print("[CommonHUD] _Ready called");
 
 			_teamDisplay = GetNodeOrNull<AttackerDisplayUI>("TeamDisplay");
-			_keyOrderDisc = GetNodeOrNull<PanelContainer>("KeyOrderBox/KeyOrderDisc");
-			_keyOrderInitial = GetNodeOrNull<Label>("KeyOrderBox/KeyOrderDisc/KeyOrderInitial");
-			_keyOrderLabel = GetNodeOrNull<Label>("KeyOrderBox/KeyOrderLabel");
 			_collectionBox = GetNodeOrNull<HBoxContainer>("CollectionBox");
 
 			for (int i = 0; i < 4; i++)
@@ -126,7 +120,6 @@ namespace FishEatFish.UI
 		public void Refresh()
 		{
 			RefreshTeam();
-			RefreshKeyOrder();
 			RefreshCollection();
 			RefreshStats();
 		}
@@ -150,37 +143,6 @@ namespace FishEatFish.UI
 			_teamDisplay.SetAttacker(attacker);
 			// attacker 是游离 Node（没加进场景树），用完必须显式释放，否则退出时 ObjectDB 报泄漏
 			attacker.Dispose();
-		}
-
-		/// <summary>
-		/// 当前钥令
-		/// </summary>
-		private void RefreshKeyOrder()
-		{
-			KeyOrder key = GlobalData.EquippedKeyOrder;
-
-			if (_keyOrderLabel != null)
-			{
-				_keyOrderLabel.Text = key != null ? key.Name : "无钥令";
-			}
-
-			if (_keyOrderInitial != null)
-			{
-				_keyOrderInitial.Text = key != null && !string.IsNullOrEmpty(key.Name)
-					? key.Name.Substring(0, 1)
-					: "—";
-			}
-
-			// 钥令没有图标资源，先用圆形色块表示
-			if (_keyOrderDisc != null)
-			{
-				StyleBoxFlat disc = new StyleBoxFlat();
-				disc.BgColor = new Color(0.16f, 0.18f, 0.24f);
-				disc.BorderColor = new Color(0.85f, 0.75f, 0.45f);
-				disc.SetBorderWidthAll(2);
-				disc.SetCornerRadiusAll(30);
-				_keyOrderDisc.AddThemeStyleboxOverride("panel", disc);
-			}
 		}
 
 		/// <summary>

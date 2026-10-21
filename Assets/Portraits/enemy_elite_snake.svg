@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_elite_snake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4E9A62"/>
+      <stop offset="1" stop-color="#356943"/>
+    </linearGradient>
+    <linearGradient id="headGrad_elite_snake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#71AE81"/>
+      <stop offset="1" stop-color="#4E9A62"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M128 150 C104 154 88 172 88 196 C88 220 104 234 128 234 C152 234 168 220 168 196 C168 172 152 154 128 150 Z" fill="url(#bodyGrad_elite_snake)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <circle cx="128" cy="112" r="34" fill="url(#headGrad_elite_snake)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="128" cy="108" rx="13" ry="10" fill="#F0F8E0" stroke="#0B0E14" stroke-width="3" />
+  <ellipse cx="128" cy="108" rx="4" ry="9" fill="#0B0E14" />
+  <ellipse cx="128" cy="268" rx="76" ry="22" fill="none" stroke="#356943" stroke-width="20" />
+  <ellipse cx="128" cy="222" rx="62" ry="18" fill="none" stroke="#4E9A62" stroke-width="18" />
+  <ellipse cx="128" cy="182" rx="48" ry="15" fill="none" stroke="#71AE81" stroke-width="16" />
+  <path d="M128 146 L128 176" fill="none" stroke="#4E9A62" stroke-width="22" stroke-linecap="round" />
+  <circle cx="96" cy="180" r="4" fill="#C0F0CC" fill-opacity="0.55" />
+  <circle cx="160" cy="180" r="4" fill="#C0F0CC" fill-opacity="0.55" />
+  <circle cx="80" cy="222" r="4" fill="#C0F0CC" fill-opacity="0.55" />
+  <circle cx="176" cy="222" r="4" fill="#C0F0CC" fill-opacity="0.55" />
+  <path d="M128 142 L128 156" fill="none" stroke="#D0405A" stroke-width="4" stroke-linecap="round" />
+  <path d="M128 156 L119 166" fill="none" stroke="#D0405A" stroke-width="4" stroke-linecap="round" />
+  <path d="M128 156 L137 166" fill="none" stroke="#D0405A" stroke-width="4" stroke-linecap="round" />
+  <path d="M137 191 C117 198 140 208 120 213" fill="none" stroke="#C0F0CC" stroke-width="6" stroke-linecap="round" />
+</svg>

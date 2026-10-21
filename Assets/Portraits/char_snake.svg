@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_snake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3E9455"/>
+      <stop offset="1" stop-color="#2A653A"/>
+    </linearGradient>
+    <linearGradient id="headGrad_snake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#65A977"/>
+      <stop offset="1" stop-color="#3E9455"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <ellipse cx="66" cy="268" rx="30" ry="14" fill="none" stroke="#B6F0C6" stroke-width="12" />
+  <path d="M96 270 C108 254 96 238 82 244" fill="none" stroke="#3E9455" stroke-width="12" stroke-linecap="round" />
+  <path d="M110 132 C92.9 135 77.7 144 72 158 C76 188 84 202 88 214 C90 230 86 241 80 250 L77 296 L179 296 L176 250 C170 241 166 230 168 214 C172 202 180 188 184 158 C151.7 144 166.9 135 146 132 Z" fill="url(#bodyGrad_snake)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#83AD8F" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_snake)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="114" cy="106" rx="4.5" ry="8" fill="#0B0E14" />
+  <ellipse cx="142" cy="106" rx="4.5" ry="8" fill="#0B0E14" />
+  <path d="M106 70 L128 38 L150 70 Z" fill="#B6F0C6" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <rect x="104" y="66" width="48" height="10" rx="4" fill="#3E9455" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="128" cy="62" r="5" fill="#CCF4D7" stroke="#0B0E14" stroke-width="2.5" />
+  <path d="M115 191 L141 191 L128 219 Z" fill="#B6F0C6" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

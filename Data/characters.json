@@ -2,6 +2,7 @@
     "characters": [
         {
             "characterId": "rat",
+            "portrait": "res://Assets/Portraits/char_rat.svg",
             "name": "鼠",
             "nameEn": "Rat",
             "baseHealth": 25,
@@ -28,6 +29,7 @@
         },
         {
             "characterId": "ox",
+            "portrait": "res://Assets/Portraits/char_ox.svg",
             "name": "牛",
             "nameEn": "Ox",
             "baseHealth": 45,
@@ -54,6 +56,7 @@
         },
         {
             "characterId": "tiger",
+            "portrait": "res://Assets/Portraits/char_tiger.svg",
             "name": "虎",
             "nameEn": "Tiger",
             "baseHealth": 35,
@@ -80,6 +83,7 @@
         },
         {
             "characterId": "rabbit",
+            "portrait": "res://Assets/Portraits/char_rabbit.svg",
             "name": "兔",
             "nameEn": "Rabbit",
             "baseHealth": 20,
@@ -106,6 +110,7 @@
         },
         {
             "characterId": "dragon",
+            "portrait": "res://Assets/Portraits/char_dragon.svg",
             "name": "龙",
             "nameEn": "Dragon",
             "baseHealth": 40,
@@ -132,6 +137,7 @@
         },
         {
             "characterId": "snake",
+            "portrait": "res://Assets/Portraits/char_snake.svg",
             "name": "蛇",
             "nameEn": "Snake",
             "baseHealth": 25,
@@ -158,6 +164,7 @@
         },
         {
             "characterId": "horse",
+            "portrait": "res://Assets/Portraits/char_horse.svg",
             "name": "马",
             "nameEn": "Horse",
             "baseHealth": 30,
@@ -184,6 +191,7 @@
         },
         {
             "characterId": "goat",
+            "portrait": "res://Assets/Portraits/char_goat.svg",
             "name": "羊",
             "nameEn": "Goat",
             "baseHealth": 30,
@@ -210,6 +218,7 @@
         },
         {
             "characterId": "monkey",
+            "portrait": "res://Assets/Portraits/char_monkey.svg",
             "name": "猴",
             "nameEn": "Monkey",
             "baseHealth": 25,
@@ -236,6 +245,7 @@
         },
         {
             "characterId": "rooster",
+            "portrait": "res://Assets/Portraits/char_rooster.svg",
             "name": "鸡",
             "nameEn": "Rooster",
             "baseHealth": 20,
@@ -262,6 +272,7 @@
         },
         {
             "characterId": "dog",
+            "portrait": "res://Assets/Portraits/char_dog.svg",
             "name": "狗",
             "nameEn": "Dog",
             "baseHealth": 30,
@@ -288,6 +299,7 @@
         },
         {
             "characterId": "pig",
+            "portrait": "res://Assets/Portraits/char_pig.svg",
             "name": "猪",
             "nameEn": "Pig",
             "baseHealth": 35,

@@ -15,13 +15,35 @@ namespace FishEatFish.UI.HexMap
 		private float _targetRagePercent = 0f;
 		private float _smoothSpeed = 3f;
 
+		/// <summary>直径（像素）</summary>
+		[Export]
+		public int Diameter = 120;
+
+		/// <summary>
+		/// 是否画底色圆。
+		/// 战斗场景把它**叠在头像外面**当「怒气环」用 → 关掉底色，只留弧。
+		/// </summary>
+		[Export]
+		public bool DrawBackground = true;
+
+		/// <summary>是否画外圈灰环</summary>
+		[Export]
+		public bool DrawOuterRing = true;
+
 		public override void _Ready()
 		{
 			GD.Print($"[RageCircle] _Ready - Name: {Name}");
 			_rageLabel = GetNodeOrNull<Label>("RageLabel");
-			CustomMinimumSize = new Vector2(120, 120);
+			CustomMinimumSize = new Vector2(Diameter, Diameter);
 			SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
 			SizeFlagsVertical = SizeFlags.ShrinkBegin;
+
+			// 环模式（叠在头像外面）→ 中间是头像，不需要再画数字
+			if (!DrawBackground && _rageLabel != null)
+			{
+				_rageLabel.Visible = false;
+			}
+
 			GD.Print($"[RageCircle] _Ready complete - Name: {Name}, MinSize: {CustomMinimumSize}");
 			QueueRedraw();
 		}
@@ -42,9 +64,15 @@ namespace FishEatFish.UI.HexMap
 			float radius = Mathf.Min(Size.X, Size.Y) / 2 - 4;
 			Vector2 center = new Vector2(Size.X / 2, Size.Y / 2);
 
-			DrawCircle(center, radius, _backgroundColor);
+			if (DrawBackground)
+			{
+				DrawCircle(center, radius, _backgroundColor);
+			}
 
-			DrawArc(center, radius, 0, (float)(System.Math.PI * 2), 32, new Color(0.5f, 0.5f, 0.5f, 1), 2, true);
+			if (DrawOuterRing)
+			{
+				DrawArc(center, radius, 0, (float)(System.Math.PI * 2), 32, new Color(0.5f, 0.5f, 0.5f, 1), 2, true);
+			}
 
 			if (_displayRagePercent > 0)
 			{

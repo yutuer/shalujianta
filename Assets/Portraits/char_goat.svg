@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_goat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#CDBB84"/>
+      <stop offset="1" stop-color="#8B7F5A"/>
+    </linearGradient>
+    <linearGradient id="headGrad_goat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D7C99D"/>
+      <stop offset="1" stop-color="#CDBB84"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M110 132 C88.4 135 69.2 144 62 158 C66 188 76 202 80 214 C82 230 78 241 72 250 L69 296 L187 296 L184 250 C178 241 174 230 176 214 C180 202 190 188 194 158 C153.2 144 172.4 135 146 132 Z" fill="url(#bodyGrad_goat)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#B8B19D" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_goat)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <path d="M104 76 C88 72 78 56 88 46 C98 36 114 44 108 56 C104 63 96 60 99 54" fill="none" stroke="#FFF6DA" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M152 76 C168 72 178 56 168 46 C158 36 142 44 148 56 C152 63 160 60 157 54" fill="none" stroke="#FFF6DA" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M118 136 L128 176 L138 136 Z" fill="#FFF6DA" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <path d="M123 191 H133 V200 H142 V210 H133 V219 H123 V210 H114 V200 H123 Z" fill="#FFF6DA" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

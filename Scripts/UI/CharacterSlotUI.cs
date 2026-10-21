@@ -1,10 +1,16 @@
 using Godot;
 using System;
 using FishEatFish.Battle.CharacterSystem;
+using FishEatFish.UI.HexMap;
 
 /// <summary>
-/// 简化版角色槽位UI组件
-/// 显示内容：圆形头像 + 角色名称 + 圆形怒气进度条 + 大招就绪徽标
+/// 战斗场景顶部左侧的角色槽位。
+///
+/// 版式（对照参考图 R-08 顶部左）：**立绘头像 + 环形怒气 + 角色名 + 可释放徽标**。
+///
+/// 怒气环复用 <see cref="RageCircle"/>（地图场景同款，自绘弧），
+/// 以「环模式」叠在头像外面 —— 原来这里是一个失效的 TextureRect
+/// （给 TextureRect 加 panel 样式框不生效，怒气其实一直没画出来）。
 /// </summary>
 public partial class CharacterSlotUI : Panel
 {
@@ -19,7 +25,7 @@ public partial class CharacterSlotUI : Panel
 
     private TextureRect _avatarRect;
     private Label _nameLabel;
-    private TextureRect _rageCircle;
+    private RageCircle _rageRing;
     private Label _ultReadyLabel;
 
     private CharacterDefinition _character;
@@ -30,6 +36,7 @@ public partial class CharacterSlotUI : Panel
 
     private System.Action _clickCallback;
     private Tween _ultReadyTween;
+    private Tween _rageGainTween;
 
     private const int MaxRage = 100;
 
@@ -49,14 +56,14 @@ public partial class CharacterSlotUI : Panel
 
     private void SetupUI()
     {
-        _avatarRect = GetNodeOrNull<TextureRect>("HBoxContainer/AvatarRect");
-        _nameLabel = GetNodeOrNull<Label>("HBoxContainer/VBoxContainer/NameLabel");
-        _rageCircle = GetNodeOrNull<TextureRect>("HBoxContainer/VBoxContainer/RageCircle");
+        _avatarRect = GetNodeOrNull<TextureRect>("VBoxContainer/AvatarBox/AvatarRect");
+        _nameLabel = GetNodeOrNull<Label>("VBoxContainer/NameLabel");
+        _rageRing = GetNodeOrNull<RageCircle>("VBoxContainer/AvatarBox/RageRing");
         _ultReadyLabel = FindUltReadyLabel();
 
         if (_avatarRect == null)
         {
-            GD.PrintErr("[CharacterSlotUI] 未找到节点：HBoxContainer/AvatarRect");
+            GD.PrintErr("[CharacterSlotUI] 未找到节点：VBoxContainer/AvatarBox/AvatarRect");
         }
         else
         {
@@ -66,16 +73,16 @@ public partial class CharacterSlotUI : Panel
 
         if (_nameLabel == null)
         {
-            GD.PrintErr("[CharacterSlotUI] 未找到节点：HBoxContainer/VBoxContainer/NameLabel");
+            GD.PrintErr("[CharacterSlotUI] 未找到节点：VBoxContainer/NameLabel");
         }
 
-        if (_rageCircle == null)
+        if (_rageRing == null)
         {
-            GD.PrintErr("[CharacterSlotUI] 未找到节点：HBoxContainer/VBoxContainer/RageCircle");
+            GD.PrintErr("[CharacterSlotUI] 未找到节点：VBoxContainer/AvatarBox/RageRing");
         }
         else
         {
-            _rageCircle.MouseFilter = MouseFilterEnum.Ignore;
+            _rageRing.MouseFilter = MouseFilterEnum.Ignore;
         }
 
         if (_ultReadyLabel == null)
@@ -86,7 +93,7 @@ public partial class CharacterSlotUI : Panel
     }
 
     /// <summary>
-    /// 查找「可释放」徽标 Label（优先槽位直接子节点，其次 HBoxContainer 下）
+    /// 查找「可释放」徽标 Label（优先槽位直接子节点，其次 VBoxContainer 下）
     /// </summary>
     private Label FindUltReadyLabel()
     {
@@ -101,7 +108,7 @@ public partial class CharacterSlotUI : Panel
 
         foreach (string nodeName in UltReadyLabelNames)
         {
-            Label label = GetNodeOrNull<Label>($"HBoxContainer/{nodeName}");
+            Label label = GetNodeOrNull<Label>($"VBoxContainer/{nodeName}");
             if (label != null)
             {
                 return label;
@@ -135,28 +142,44 @@ public partial class CharacterSlotUI : Panel
             {
                 _nameLabel.Text = "空";
             }
+            if (_avatarRect != null)
+            {
+                _avatarRect.Texture = null;
+            }
         }
 
         UpdateAppearance();
     }
 
+    /// <summary>
+    /// 载入角色头像（用角色立绘裁出头部区域）。
+    /// 没有立绘资源时退回到通用图标。
+    /// </summary>
     private void LoadCharacterAvatar(CharacterDefinition character)
     {
-        if (_avatarRect == null)
+        if (_avatarRect == null) return;
+
+        string path = character.GetPortraitPath();
+        if (!string.IsNullOrEmpty(path) && ResourceLoader.Exists(path))
         {
-            return;
+            Texture2D portrait = ResourceLoader.Load<Texture2D>(path);
+            if (portrait != null)
+            {
+                _avatarRect.Texture = portrait;
+                return;
+            }
         }
 
-        string avatarPath = $"res://Assets/Icons/enemy_elite.svg";
-        Texture2D avatar = ResourceLoader.Load<Texture2D>(avatarPath);
-        if (avatar != null)
+        // 没有立绘 → 退回通用图标
+        Texture2D fallback = ResourceLoader.Load<Texture2D>("res://Assets/Icons/enemy_elite.svg");
+        if (fallback != null)
         {
-            _avatarRect.Texture = avatar;
+            _avatarRect.Texture = fallback;
         }
     }
 
     /// <summary>
-    /// 更新怒气状态显示 - 圆形进度条样式
+    /// 更新怒气状态显示 —— 画在头像外的**圆环**上。
     /// 怒气条颜色渐变：灰(0-30%) → 蓝(30-70%) → 黄(70-100%) → 橙(满)
     /// </summary>
     /// <param name="rageValue">怒气值 (0-MaxRage)</param>
@@ -183,12 +206,10 @@ public partial class CharacterSlotUI : Panel
             barColor = new Color(0.5f, 0.5f, 0.5f);
         }
 
-        if (_rageCircle != null)
+        if (_rageRing != null)
         {
-            var rageStyle = new StyleBoxFlat();
-            rageStyle.BgColor = barColor;
-            rageStyle.SetCornerRadiusAll(15);
-            _rageCircle.AddThemeStyleboxOverride("panel", rageStyle);
+            _rageRing.SetCircleColor(barColor);
+            _rageRing.SetRage(_currentRage, MaxRage);
         }
 
         // 「可释放」徽标 + 可点击状态 + 脉冲高亮
@@ -198,15 +219,32 @@ public partial class CharacterSlotUI : Panel
     }
 
     /// <summary>
+    /// 怒气增长时的反馈动画（头像弹一下）
+    /// </summary>
+    public void PlayRageGainAnimation()
+    {
+        if (_rageGainTween != null && _rageGainTween.IsValid())
+        {
+            _rageGainTween.Kill();
+        }
+
+        var avatarBox = GetNodeOrNull<Control>("VBoxContainer/AvatarBox");
+        if (avatarBox == null) return;
+
+        _rageGainTween = CreateTween();
+        _rageGainTween.TweenProperty(avatarBox, "scale", new Vector2(1.25f, 1.25f), 0.12f)
+            .SetTrans(Tween.TransitionType.Back)
+            .SetEase(Tween.EaseType.Out);
+        _rageGainTween.TweenProperty(avatarBox, "scale", Vector2.One, 0.18f)
+            .SetTrans(Tween.TransitionType.Back)
+            .SetEase(Tween.EaseType.In);
+    }
+
+    /// <summary>
     /// 显示/隐藏「可释放」徽标
     /// </summary>
     private void SetUltReadyIndicator(bool ready)
     {
-        if (_ultReadyLabel == null)
-        {
-            _ultReadyLabel = FindUltReadyLabel();
-        }
-
         if (_ultReadyLabel == null)
         {
             if (!_ultReadyLabelMissingReported)
@@ -335,20 +373,22 @@ public partial class CharacterSlotUI : Panel
     {
         var styleBox = new StyleBoxFlat();
 
+        // 头像槽**不画底框**（对照参考图 R-08：头像是浮在场景里的）
+        styleBox.BgColor = new Color(0f, 0f, 0f, 0f);
+
         if (_character != null)
         {
-            styleBox.BgColor = new Color(0.15f, 0.18f, 0.25f);
             styleBox.BorderColor = _isHighlighted ? new Color(1f, 0.7f, 0.2f) : new Color(0.4f, 0.4f, 0.5f);
+            styleBox.SetBorderWidthAll(_isHighlighted ? 2 : 0);
         }
         else
         {
-            styleBox.BgColor = new Color(0.1f, 0.1f, 0.15f);
             styleBox.BorderColor = new Color(0.2f, 0.2f, 0.3f);
+            styleBox.SetBorderWidthAll(0);
         }
 
-        styleBox.SetBorderWidthAll(2);
         styleBox.SetCornerRadiusAll(8);
-        styleBox.SetContentMarginAll(5);
+        styleBox.SetContentMarginAll(2);
 
         AddThemeStyleboxOverride("panel", styleBox);
     }

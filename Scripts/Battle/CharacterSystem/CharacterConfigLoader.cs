@@ -54,6 +54,7 @@ public class CharacterConfigLoader
                     CharacterId = charDict.ContainsKey("characterId") ? charDict["characterId"].ToString() : "",
                     Name = charDict.ContainsKey("name") ? charDict["name"].ToString() : "",
                     NameEn = charDict.ContainsKey("nameEn") ? charDict["nameEn"].ToString() : "",
+                    Portrait = charDict.ContainsKey("portrait") ? charDict["portrait"].ToString() : "",
                     BaseHealth = charDict.ContainsKey("baseHealth") ? (int)(long)charDict["baseHealth"] : 30,
                     BaseEnergy = charDict.ContainsKey("baseEnergy") ? (int)(long)charDict["baseEnergy"] : 2,
                     BaseDrawCount = charDict.ContainsKey("baseDrawCount") ? (int)(long)charDict["baseDrawCount"] : 2,

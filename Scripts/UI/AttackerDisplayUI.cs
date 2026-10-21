@@ -21,7 +21,7 @@ public partial class AttackerDisplayUI : Control
 
     private void SetupLayout()
     {
-        _teamStatsLabel = GetNode<Label>("VBoxContainer/TeamStatsLabel");
+        _teamStatsLabel = GetNodeOrNull<Label>("VBoxContainer/TeamStatsLabel");
         _characterContainer = GetNode<HBoxContainer>("VBoxContainer/CharacterContainer");
 
         if (_characterContainer != null)
@@ -129,6 +129,16 @@ public partial class AttackerDisplayUI : Control
         }
 
         GD.Print("[AttackerDisplayUI] SetUltimateClickCallback completed");
+    }
+
+    /// <summary>
+    /// 怒气增长时的反馈动画（对应槽位头像弹一下）
+    /// </summary>
+    /// <param name="slotIndex">角色槽位索引 (0-3)</param>
+    public void PlayRageGainAnimation(int slotIndex)
+    {
+        if (slotIndex < 0 || slotIndex >= _characterSlots.Count) return;
+        _characterSlots[slotIndex]?.PlayRageGainAnimation();
     }
 
     /// <summary>

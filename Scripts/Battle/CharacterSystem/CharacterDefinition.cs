@@ -13,6 +13,24 @@ public partial class CharacterDefinition : Resource
     [Export]
     public string NameEn;
 
+    /// <summary>
+    /// 立绘资源路径（如 "res://Assets/Portraits/char_rat.svg"）。
+    /// 战斗场景左下角的角色立绘用；为空时战斗场景不显示立绘。
+    /// </summary>
+    [Export]
+    public string Portrait;
+
+    /// <summary>
+    /// 取立绘资源路径：优先用数据里的 <see cref="Portrait"/>；
+    /// 没有（硬编码工厂造出来的角色）就按 characterId 推导。
+    /// </summary>
+    public string GetPortraitPath()
+    {
+        if (!string.IsNullOrEmpty(Portrait)) return Portrait;
+        if (!string.IsNullOrEmpty(CharacterId)) return $"res://Assets/Portraits/char_{CharacterId}.svg";
+        return "";
+    }
+
     [Export]
     public CharacterRace Race = CharacterRace.Chaos;
 

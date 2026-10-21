@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_pig" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C58AB0"/>
+      <stop offset="1" stop-color="#865E78"/>
+    </linearGradient>
+    <linearGradient id="headGrad_pig" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D1A1C0"/>
+      <stop offset="1" stop-color="#C58AB0"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M110 132 C83.9 135 60.7 144 52 158 C56 188 64 202 68 214 C70 230 64 241 58 250 L55 296 L201 296 L198 250 C192 241 186 230 188 214 C192 202 200 188 204 158 C154.7 144 177.9 135 146 132 Z" fill="url(#bodyGrad_pig)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#B8A1AE" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_pig)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="112" cy="96" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="144" cy="96" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="100" cy="66" r="14" fill="url(#headGrad_pig)" stroke="#0B0E14" stroke-width="4.5" />
+  <circle cx="156" cy="66" r="14" fill="url(#headGrad_pig)" stroke="#0B0E14" stroke-width="4.5" />
+  <ellipse cx="128" cy="118" rx="17" ry="12" fill="#FFE0F2" stroke="#0B0E14" stroke-width="3.5" />
+  <circle cx="121" cy="118" r="3" fill="#0B0E14" />
+  <circle cx="135" cy="118" r="3" fill="#0B0E14" />
+  <ellipse cx="128" cy="205" rx="15" ry="9" fill="#FFE0F2" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

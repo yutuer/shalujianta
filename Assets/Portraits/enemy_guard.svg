@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_guard" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5A6470"/>
+      <stop offset="1" stop-color="#3D444C"/>
+    </linearGradient>
+    <linearGradient id="headGrad_guard" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7B838D"/>
+      <stop offset="1" stop-color="#5A6470"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M110 132 C82.1 135 57.3 144 48 158 C52 192 58 206 62 218 C64 232 58 243 52 252 L49 296 L207 296 L204 252 C198 243 192 232 194 218 C198 206 204 192 208 158 C155.3 144 180.1 135 146 132 Z" fill="url(#bodyGrad_guard)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#79828A" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="92" r="30" fill="url(#headGrad_guard)" stroke="#0B0E14" stroke-width="5" />
+  <rect x="106" y="100" width="16" height="7" rx="3" fill="#C2CAD3" stroke="#0B0E14" stroke-width="2" />
+  <rect x="134" y="100" width="16" height="7" rx="3" fill="#C2CAD3" stroke="#0B0E14" stroke-width="2" />
+  <path d="M94 94 C94 62 108 46 128 46 C148 46 162 62 162 94 Z" fill="#A8B4C0" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M128 20 L138 48 L118 48 Z" fill="#A8B4C0" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <rect x="46" y="150" width="62" height="136" rx="18" fill="#3D444C" stroke="#0B0E14" stroke-width="5" />
+  <rect x="56" y="160" width="42" height="116" rx="12" fill="none" stroke="#A8B4C0" stroke-width="3" stroke-opacity="0.7" />
+  <circle cx="77" cy="218" r="10" fill="#A8B4C0" stroke="#0B0E14" stroke-width="3" />
+  <path d="M115 191 L141 219 M141 191 L115 219" fill="none" stroke="#A8B4C0" stroke-width="6" stroke-linecap="round" />
+</svg>
