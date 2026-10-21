@@ -111,6 +111,12 @@ namespace FishEatFish.Battle.HexMap
             return true;
         }
 
+        /// <summary>
+        /// 该格的**相邻**可走格（只走六边形相邻，**不含传送门**）。
+        ///
+        /// ⚠️ 与 <see cref="IsReachable"/> 不是一回事：那个是「地图可达性判定」，
+        /// 必须认传送门；这个是「邻居」，语义上就是相邻格。
+        /// </summary>
         public List<HexCoord> GetReachableNeighbors(HexCoord coord)
         {
             var neighbors = coord.GetNeighbors();
@@ -127,47 +133,129 @@ namespace FishEatFish.Battle.HexMap
             return reachable;
         }
 
-        public bool IsReachable(HexCoord start, HexCoord end)
+        // ===== 可达性 / 寻路（**全项目唯一实现处**）=====
+        //
+        // ⚠️ 传送门（超边）有两种**语义相反**的处理口径，必须分开：
+        //   - **地图可达性判定**（IsReachable / VerifyMapReachable / GetCriticalPathTiles）
+        //     → 必须**认**传送门：它是地图的一部分，是跨簇唯一的通道。
+        //   - **自动寻路**（HexMapController.MoveTo，玩家点远处格子自动走）
+        //     → 必须**不认**：穿传送门要弹窗确认，不能自动走过去。
+        // 这两件事以前混在同一个方法里 → 跨簇地图上可达性被误判成「不可达」。
+
+        /// <summary>
+        /// 传送门索引：格子 → 可以直达的格子（传送超边）。
+        /// 双向门两个方向都连；单向门只连「入口 → 出口」（出口不能退回）。
+        /// </summary>
+        public static Dictionary<HexCoord, List<HexCoord>> ComputeTeleportIndex(Dictionary<HexCoord, HexTile> tiles)
         {
-            if (!_tiles.ContainsKey(start) || !_tiles.ContainsKey(end))
-                return false;
+            var index = new Dictionary<HexCoord, List<HexCoord>>();
 
-            var visited = new HashSet<HexCoord>();
-            var queue = new Queue<HexCoord>();
-            queue.Enqueue(start);
-
-            while (queue.Count > 0)
+            void Link(HexCoord from, HexCoord to)
             {
-                var current = queue.Dequeue();
-
-                if (current == end)
-                    return true;
-
-                if (visited.Contains(current))
-                    continue;
-
-                visited.Add(current);
-
-                foreach (var neighbor in current.GetNeighbors())
+                if (!index.TryGetValue(from, out var list))
                 {
-                    if (_tiles.ContainsKey(neighbor) && !visited.Contains(neighbor))
+                    list = new List<HexCoord>();
+                    index[from] = list;
+                }
+                if (!list.Contains(to)) list.Add(to);
+            }
+
+            foreach (HexTile tile in tiles.Values)
+            {
+                if (string.IsNullOrEmpty(tile.TeleportPairId)) continue;
+
+                foreach (HexTile other in tiles.Values)
+                {
+                    if (other.Coord == tile.Coord) continue;
+                    if (other.TeleportPairId != tile.TeleportPairId) continue;
+
+                    if (tile.EventType == HexEventType.TwoWayTeleport)
                     {
-                        var tile = _tiles[neighbor];
-                        if (tile.CanEnter)
-                        {
-                            queue.Enqueue(neighbor);
-                        }
+                        Link(tile.Coord, other.Coord);
+                        Link(other.Coord, tile.Coord);
+                    }
+                    else if (tile.EventType == HexEventType.OneDirectionTele
+                             && tile.TeleportRole == TeleportRole.Entry)
+                    {
+                        Link(tile.Coord, other.Coord);
                     }
                 }
             }
 
-            return false;
+            return index;
         }
 
-        public List<HexCoord> FindShortestPath(HexCoord start, HexCoord end)
+        /// <summary>展开一个格子的后继（相邻格 + 可选的传送超边），并过滤掉进不去的格。</summary>
+        private static IEnumerable<HexCoord> ExpandTargets(Dictionary<HexCoord, HexTile> tiles,
+            Dictionary<HexCoord, List<HexCoord>> teleports, HexCoord current)
         {
-            if (!_tiles.ContainsKey(start) || !_tiles.ContainsKey(end))
-                return new List<HexCoord>();
+            foreach (var neighbor in current.GetNeighbors())
+            {
+                if (!tiles.ContainsKey(neighbor)) continue;
+                var tile = tiles[neighbor];
+                if (tile == null || !tile.CanEnter) continue;
+                yield return neighbor;
+            }
+
+            if (teleports == null) yield break;
+            if (!teleports.TryGetValue(current, out var targets)) yield break;
+
+            foreach (var target in targets)
+            {
+                if (!tiles.ContainsKey(target)) continue;
+                var tile = tiles[target];
+                if (tile == null || !tile.CanEnter) continue;
+                yield return target;
+            }
+        }
+
+        /// <summary>
+        /// 从起点出发的可达格集合。
+        /// </summary>
+        /// <param name="includeTeleports">
+        /// true = 把传送门算成超边（**地图可达性判定**用）；
+        /// false = 只走六边形相邻（**自动寻路**用）。
+        /// </param>
+        public static HashSet<HexCoord> ComputeReachableTiles(Dictionary<HexCoord, HexTile> tiles, HexCoord start,
+            bool includeTeleports)
+        {
+            var reachable = new HashSet<HexCoord>();
+            if (!tiles.ContainsKey(start)) return reachable;
+
+            var teleports = includeTeleports ? ComputeTeleportIndex(tiles) : null;
+
+            var queue = new Queue<HexCoord>();
+            queue.Enqueue(start);
+            reachable.Add(start);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                foreach (var next in ExpandTargets(tiles, teleports, current))
+                {
+                    if (reachable.Contains(next)) continue;
+                    reachable.Add(next);
+                    queue.Enqueue(next);
+                }
+            }
+
+            return reachable;
+        }
+
+        /// <summary>
+        /// 起点 → 终点的最短路径（返回含起点与终点的序列；走不通返回空表）。
+        /// </summary>
+        /// <param name="includeTeleports">
+        /// true = 把传送门算成超边（**地图可达性判定**用）；
+        /// false = 只走六边形相邻（**自动寻路**用 —— 穿传送门要弹窗确认）。
+        /// </param>
+        public static List<HexCoord> ComputeShortestPath(Dictionary<HexCoord, HexTile> tiles, HexCoord start,
+            HexCoord end, bool includeTeleports)
+        {
+            var result = new List<HexCoord>();
+            if (!tiles.ContainsKey(start) || !tiles.ContainsKey(end)) return result;
+
+            var teleports = includeTeleports ? ComputeTeleportIndex(tiles) : null;
 
             var visited = new HashSet<HexCoord>();
             var cameFrom = new Dictionary<HexCoord, HexCoord>();
@@ -178,31 +266,42 @@ namespace FishEatFish.Battle.HexMap
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
+                if (current == end) return ReconstructPath(cameFrom, end);
 
-                if (current == end)
+                foreach (var next in ExpandTargets(tiles, teleports, current))
                 {
-                    return ReconstructPath(cameFrom, end);
-                }
-
-                foreach (var neighbor in current.GetNeighbors())
-                {
-                    if (_tiles.ContainsKey(neighbor) && !visited.Contains(neighbor))
-                    {
-                        var tile = _tiles[neighbor];
-                        if (tile.CanEnter)
-                        {
-                            visited.Add(neighbor);
-                            cameFrom[neighbor] = current;
-                            queue.Enqueue(neighbor);
-                        }
-                    }
+                    if (visited.Contains(next)) continue;
+                    visited.Add(next);
+                    cameFrom[next] = current;
+                    queue.Enqueue(next);
                 }
             }
 
-            return new List<HexCoord>();
+            return result;
         }
 
-        private List<HexCoord> ReconstructPath(Dictionary<HexCoord, HexCoord> cameFrom, HexCoord current)
+        /// <summary>起点到终点是否可达（**认传送门**）。</summary>
+        public bool IsReachable(HexCoord start, HexCoord end)
+        {
+            if (!_tiles.ContainsKey(start) || !_tiles.ContainsKey(end))
+                return false;
+
+            return ComputeReachableTiles(_tiles, start, true).Contains(end);
+        }
+
+        /// <summary>
+        /// 起点 → 终点的最短路径（返回含起点与终点的序列；走不通返回空表）。
+        /// </summary>
+        /// <param name="includeTeleports">
+        /// true = 把传送门算成超边（**地图可达性判定**用）；
+        /// false = 只走六边形相邻（**自动寻路**用 —— 穿传送门要弹窗确认）。
+        /// </param>
+        public List<HexCoord> FindShortestPath(HexCoord start, HexCoord end, bool includeTeleports)
+        {
+            return ComputeShortestPath(_tiles, start, end, includeTeleports);
+        }
+
+        private static List<HexCoord> ReconstructPath(Dictionary<HexCoord, HexCoord> cameFrom, HexCoord current)
         {
             var path = new List<HexCoord> { current };
             while (cameFrom.ContainsKey(current))
@@ -213,10 +312,10 @@ namespace FishEatFish.Battle.HexMap
             return path;
         }
 
+        /// <summary>起点→终点的关键路径（**认传送门**）。</summary>
         public HashSet<HexCoord> GetCriticalPathTiles()
         {
-            var path = FindShortestPath(Start, End);
-            return new HashSet<HexCoord>(path);
+            return new HashSet<HexCoord>(ComputeShortestPath(_tiles, Start, End, true));
         }
 
         public bool VerifyMapReachable()

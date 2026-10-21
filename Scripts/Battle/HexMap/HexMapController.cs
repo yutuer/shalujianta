@@ -382,7 +382,8 @@ namespace FishEatFish.Battle.HexMap
                 return false;
             }
 
-            var path = _currentMap.FindShortestPath(_currentPosition, targetCoord);
+            // ⚠️ 自动寻路**不穿传送门**（穿门要弹窗确认，不能自动走过去）→ includeTeleports = false
+            var path = _currentMap.FindShortestPath(_currentPosition, targetCoord, false);
             if (path.Count == 0)
             {
                 GD.Print($"[HexMapController] 无法找到路径: {_currentPosition} -> {targetCoord}");
@@ -839,7 +840,8 @@ namespace FishEatFish.Battle.HexMap
 
         public List<HexCoord> GetPathTo(HexCoord target)
         {
-            return _currentMap.FindShortestPath(_currentPosition, target);
+            // 同 MoveTo：自动寻路不穿传送门
+            return _currentMap.FindShortestPath(_currentPosition, target, false);
         }
 
         public float GetDistanceTo(HexCoord target)
