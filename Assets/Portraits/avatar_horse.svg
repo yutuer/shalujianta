@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg_horse" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#CFA095"/>
+      <stop offset="1" stop-color="#A8523F"/>
+    </linearGradient>
+    <linearGradient id="head_horse" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#B97565"/>
+      <stop offset="1" stop-color="#A8523F"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="64" fill="#0B0E14" />
+  <circle cx="64" cy="64" r="60" fill="url(#bg_horse)" />
+  <circle cx="64" cy="70" r="30" fill="url(#head_horse)" stroke="#0B0E14" stroke-width="4" />
+  <ellipse cx="54" cy="68" rx="4" ry="5" fill="#0B0E14" />
+  <ellipse cx="74" cy="68" rx="4" ry="5" fill="#0B0E14" />
+  <path d="M46 48 L40 16 L58 40 Z" fill="#F0C0A0" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <path d="M82 48 L88 16 L70 40 Z" fill="#F0C0A0" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <path d="M50 42 C56 26 72 26 78 42" fill="none" stroke="#F4D0B8" stroke-width="8" stroke-linecap="round" />
+  <ellipse cx="64" cy="88" rx="16" ry="10" fill="#F4D0B8" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="64" cy="64" r="60" fill="none" stroke="#F0C0A0" stroke-width="4" />
+</svg>

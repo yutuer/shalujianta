@@ -11,6 +11,7 @@ namespace FishEatFish.UI.HexMap
 		private Color _backgroundColor = new Color(0.3f, 0.3f, 0.3f, 0.9f);
 
 		private Label _rageLabel;
+		private Label _rageValueLabel;
 		private float _displayRagePercent = 0f;
 		private float _targetRagePercent = 0f;
 		private float _smoothSpeed = 3f;
@@ -34,14 +35,24 @@ namespace FishEatFish.UI.HexMap
 		{
 			GD.Print($"[RageCircle] _Ready - Name: {Name}");
 			_rageLabel = GetNodeOrNull<Label>("RageLabel");
+			_rageValueLabel = GetNodeOrNull<Label>("RageValueLabel");
+			if (_rageValueLabel == null)
+			{
+				GD.PrintErr("[RageCircle] 未找到节点：RageValueLabel");
+			}
 			CustomMinimumSize = new Vector2(Diameter, Diameter);
 			SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
 			SizeFlagsVertical = SizeFlags.ShrinkBegin;
 
-			// 环模式（叠在头像外面）→ 中间是头像，不需要再画数字
-			if (!DrawBackground && _rageLabel != null)
+			// 环模式（叠在头像外面）→ 中间是头像，中心大数字用不了，
+			// 改成在头像底部显示怒气数值（小字 + 描边，压在立绘上也读得清）
+			if (_rageLabel != null)
 			{
-				_rageLabel.Visible = false;
+				_rageLabel.Visible = DrawBackground;
+			}
+			if (_rageValueLabel != null)
+			{
+				_rageValueLabel.Visible = !DrawBackground;
 			}
 
 			GD.Print($"[RageCircle] _Ready complete - Name: {Name}, MinSize: {CustomMinimumSize}");
@@ -71,13 +82,22 @@ namespace FishEatFish.UI.HexMap
 
 			if (DrawOuterRing)
 			{
-				DrawArc(center, radius, 0, (float)(System.Math.PI * 2), 32, new Color(0.5f, 0.5f, 0.5f, 1), 2, true);
+				// 环要比背景亮一档，否则暗底上完全看不见（战斗场景的四个头像就是这么"消失"的）
+				DrawArc(center, radius, 0, (float)(System.Math.PI * 2), 32, new Color(0.85f, 0.8f, 0.62f, 1f), 3, true);
+			}
+
+			if (!DrawBackground)
+			{
+				// 环模式：内圈补一圈**进度槽底**。
+				// 没有槽底时，怒气 0 和怒气满都只剩同一条装饰圆环，
+				// 玩家看不出这是个怒气槽 —— 这正是"没有怒气的显示效果"的由来。
+				DrawArc(center, radius - 3, 0, (float)(System.Math.PI * 2), 32, new Color(0.16f, 0.17f, 0.22f, 1f), 4, true);
 			}
 
 			if (_displayRagePercent > 0)
 			{
 				float fillAngle = _displayRagePercent * 360f;
-				DrawArc(center, radius - 2, Mathf.DegToRad(-90), Mathf.DegToRad(-90 + fillAngle), 32, _rageColor, 4, true);
+				DrawArc(center, radius - 3, Mathf.DegToRad(-90), Mathf.DegToRad(-90 + fillAngle), 32, _rageColor, 4, true);
 			}
 		}
 
@@ -90,6 +110,10 @@ namespace FishEatFish.UI.HexMap
 			if (_rageLabel != null)
 			{
 				_rageLabel.Text = $"{_currentRage}";
+			}
+			if (_rageValueLabel != null)
+			{
+				_rageValueLabel.Text = $"{_currentRage}";
 			}
 			QueueRedraw();
 		}

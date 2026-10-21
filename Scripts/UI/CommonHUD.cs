@@ -39,6 +39,15 @@ namespace FishEatFish.UI
 		public bool ShowStatsSection = true;
 
 		/// <summary>
+		/// 是否显示顶部深色底板。
+		/// 战斗场景自己有 TopBar（角色头像 / 血量 / 回合），CommonHUD 的底板是
+		/// 92% 不透明的深色矩形且绘制在 TopBar **之上**，会把整个顶栏压暗
+		/// （表现为"左上角头像看不见"），所以战斗接入时设为 false。
+		/// </summary>
+		[Export]
+		public bool ShowBackground = true;
+
+		/// <summary>
 		/// 是否显示收集品（造物）槽区。
 		/// 地图场景的 HexMapUI 已有既有的 BackpackUI 造物栏（常驻顶部居中，支持点击查看详情），
 		/// 两套同时显示会互相重叠，所以地图接入时设为 false，只保留 BackpackUI 那一套。
@@ -90,6 +99,12 @@ namespace FishEatFish.UI
 			if (_collectionBox != null)
 			{
 				_collectionBox.Visible = ShowCollectionSection;
+			}
+
+			ColorRect background = GetNodeOrNull<ColorRect>("Background");
+			if (background != null)
+			{
+				background.Visible = ShowBackground;
 			}
 
 			Refresh();

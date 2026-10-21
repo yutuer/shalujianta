@@ -38,6 +38,7 @@ namespace FishEatFish.Scenes
 	private Label handInfoLabel;
 	private Button mapButton;
 	private Button keyOrderButton;
+	private Button logButton;
 
 	// ========== UI组件 ==========
 	private List<EnemyUI> enemyUIs = new List<EnemyUI>();
@@ -211,6 +212,7 @@ namespace FishEatFish.Scenes
 		handInfoLabel = GetNodeOrNull<Label>("UI/BottomBar/HandInfo");
 		mapButton = GetNodeOrNull<Button>("UI/BottomBar/MapButton");
 		keyOrderButton = GetNodeOrNull<Button>("UI/BottomBar/KeyOrderButton");
+	logButton = GetNodeOrNull<Button>("UI/BottomBar/LogButton");
 
 		if (handContainer == null || enemyContainer == null || endTurnButton == null)
 		{
@@ -253,6 +255,12 @@ namespace FishEatFish.Scenes
 			keyOrderButton.Disabled = true;
 		}
 
+		// 战斗日志：默认隐藏，点底部「日志」按钮开/关
+		if (logButton != null)
+		{
+			logButton.Pressed += OnLogButtonPressed;
+		}
+
 		InitializeNewUIComponents();
 		InitializeBattleLogWindow();
 		GD.Print("[BattleManager] UI初始化完成");
@@ -271,17 +279,8 @@ namespace FishEatFish.Scenes
 		// 代码里不再写死坐标（之前散落着 new Vector2(200,10) / (20,150) / (50,400)，
 		// 元素会随内容长度漂移，是「画面乱」的主因）。
 		var teamSlot = GetNodeOrNull<Control>("UI/TopBar/TeamSlot");
-		var silverKeySlot = GetNodeOrNull<Control>("UI/TopBar/SilverKeySlot");
-
-		if (silverKeySlot != null)
-		{
-			silverKeyProgressIndicator = LoadUIComponent<SilverKeyProgressIndicator>(
-				"res://Scenes/UI/SilverKeyProgressIndicator.tscn",
-				() => new SilverKeyProgressIndicator(),
-				silverKeySlot
-			);
-			GD.Print("[BattleManager] 银钥进度指示器初始化成功");
-		}
+		// 银钥进度环不再放在顶部 —— 银钥数挪到**左下角玩家区**的钥令徽标旁（信息只留一处）
+		silverKeyProgressIndicator = null;
 
 		if (teamSlot != null)
 		{
@@ -361,6 +360,16 @@ namespace FishEatFish.Scenes
 
 		CheckGameOver();
 		GD.Print($"[BattleManager] OnUltimateSlotClicked completed: slot={slotIndex}");
+	}
+
+	/// <summary>
+	/// 战斗日志默认隐藏，点底部「日志」按钮切换开/关。
+	/// </summary>
+	private void OnLogButtonPressed()
+	{
+		GD.Print("[BattleManager] OnLogButtonPressed called");
+		battleLogWindow?.ToggleWindow();
+		GD.Print("[BattleManager] OnLogButtonPressed completed");
 	}
 
 	/// <summary>
@@ -1023,10 +1032,17 @@ namespace FishEatFish.Scenes
 
 		// 插画优先用卡牌数据里的 spritePath（42 张卡都有），没有再退回旧的按名字硬编码映射
 		Texture2D cardTexture = null;
-		CardData cardData = CardConfigLoader.GetCardData(card.CardId);
+		// 1) 通用卡：cards.json 里的 spritePath
+		CardData cardData = CardConfigLoader.TryGetCardData(card.CardId);
 		if (cardData != null && !string.IsNullOrEmpty(cardData.SpritePath) && ResourceLoader.Exists(cardData.SpritePath))
 		{
 				cardTexture = ResourceLoader.Load<Texture2D>(cardData.SpritePath);
+		}
+		// 2) 角色专属卡：按 cardId 推导（专属卡不在 cards.json 里）
+		if (cardTexture == null && !string.IsNullOrEmpty(card.CardId))
+		{
+				string derived = $"res://Assets/Cards/card_{card.CardId}.svg";
+				if (ResourceLoader.Exists(derived)) cardTexture = ResourceLoader.Load<Texture2D>(derived);
 		}
 		if (cardTexture == null && resourceManager.CardTextures.TryGetValue(card.Name, out Texture2D legacyTexture))
 		{
@@ -1153,6 +1169,8 @@ namespace FishEatFish.Scenes
 
 	private void UpdateSilverKeyUI()
 	{
+		// 银钥数显示在左下角玩家区（钥令徽标旁）
+		playerZoneUI?.RefreshKeyOrderInfo();
 		if (silverKeyProgressIndicator != null)
 		{
 			silverKeyProgressIndicator.SetValue(currentSilverKey);

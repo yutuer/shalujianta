@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg_saga" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A4A9CF"/>
+      <stop offset="1" stop-color="#5A63A8"/>
+    </linearGradient>
+    <linearGradient id="head_saga" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7B82B9"/>
+      <stop offset="1" stop-color="#5A63A8"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="64" fill="#0B0E14" />
+  <circle cx="64" cy="64" r="60" fill="url(#bg_saga)" />
+  <path d="M26 84 C26 48 42 34 64 34 C86 34 102 48 102 84 Z" fill="#3A406D" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <path d="M34 66 H94" fill="none" stroke="#B4BCF0" stroke-width="6" stroke-linecap="round" />
+  <circle cx="64" cy="70" r="30" fill="url(#head_saga)" stroke="#0B0E14" stroke-width="4" />
+  <ellipse cx="54" cy="68" rx="4" ry="5" fill="#0B0E14" />
+  <ellipse cx="74" cy="68" rx="4" ry="5" fill="#0B0E14" />
+  <path d="M50 10 L64 32 L78 10 M64 32 L64 44" fill="none" stroke="#B4BCF0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="64" cy="64" r="60" fill="none" stroke="#B4BCF0" stroke-width="4" />
+</svg>

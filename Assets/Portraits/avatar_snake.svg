@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg_snake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#95C4A2"/>
+      <stop offset="1" stop-color="#3E9455"/>
+    </linearGradient>
+    <linearGradient id="head_snake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#65A977"/>
+      <stop offset="1" stop-color="#3E9455"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="64" fill="#0B0E14" />
+  <circle cx="64" cy="64" r="60" fill="url(#bg_snake)" />
+  <circle cx="64" cy="70" r="30" fill="url(#head_snake)" stroke="#0B0E14" stroke-width="4" />
+  <ellipse cx="54" cy="68" rx="4" ry="5" fill="#0B0E14" />
+  <ellipse cx="74" cy="68" rx="4" ry="5" fill="#0B0E14" />
+  <path d="M28 96 C18 74 22 46 64 46 C106 46 110 74 100 96 Z" fill="#B6F0C6" fill-opacity="0.45" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <path d="M64 88 L64 104" fill="none" stroke="#C8F4D4" stroke-width="4" stroke-linecap="round" />
+  <path d="M64 104 L58 114" fill="none" stroke="#C8F4D4" stroke-width="4" stroke-linecap="round" />
+  <path d="M64 104 L70 114" fill="none" stroke="#C8F4D4" stroke-width="4" stroke-linecap="round" />
+  <circle cx="64" cy="64" r="60" fill="none" stroke="#B6F0C6" stroke-width="4" />
+</svg>

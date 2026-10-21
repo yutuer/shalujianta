@@ -47,8 +47,8 @@ public partial class BattleLogWindow : Control
             viewportSize.Y - DefaultHeight - 20
         );
 
-        // 默认收起：只留标题条，点「□」展开 —— 之前默认展开压在手牌上方
-        SetMinimized(true);
+        // 默认**隐藏**：战斗画面以角色/敌人/手牌为主，日志按需点底部的「日志」按钮打开
+        Visible = false;
 
         autoScrollEnabled = true;
     }

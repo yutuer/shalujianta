@@ -56,8 +56,6 @@ grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
 stretch_mode = 5
-region_enabled = true
-region_rect = Rect2(46, 40, 164, 130)
 [node name="RageRing" parent="VBoxContainer/CharacterContainer/CharacterSlot0/VBoxContainer/AvatarBox" instance=ExtResource("3_rage_circle")]
 layout_mode = 1
 anchors_preset = 15
@@ -107,8 +105,6 @@ grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
 stretch_mode = 5
-region_enabled = true
-region_rect = Rect2(46, 40, 164, 130)
 [node name="RageRing" parent="VBoxContainer/CharacterContainer/CharacterSlot1/VBoxContainer/AvatarBox" instance=ExtResource("3_rage_circle")]
 layout_mode = 1
 anchors_preset = 15
@@ -158,8 +154,6 @@ grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
 stretch_mode = 5
-region_enabled = true
-region_rect = Rect2(46, 40, 164, 130)
 [node name="RageRing" parent="VBoxContainer/CharacterContainer/CharacterSlot2/VBoxContainer/AvatarBox" instance=ExtResource("3_rage_circle")]
 layout_mode = 1
 anchors_preset = 15
@@ -209,8 +203,6 @@ grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
 stretch_mode = 5
-region_enabled = true
-region_rect = Rect2(46, 40, 164, 130)
 [node name="RageRing" parent="VBoxContainer/CharacterContainer/CharacterSlot3/VBoxContainer/AvatarBox" instance=ExtResource("3_rage_circle")]
 layout_mode = 1
 anchors_preset = 15

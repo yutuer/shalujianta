@@ -152,25 +152,46 @@ public partial class CharacterSlotUI : Panel
     }
 
     /// <summary>
-    /// 载入角色头像（用角色立绘裁出头部区域）。
-    /// 没有立绘资源时退回到通用图标。
+    /// 载入角色头像：优先用**圆形头像图**（Assets/Portraits/avatar_*.svg），
+    /// 没有就退回立绘裁头部，最后退回通用图标。
     /// </summary>
     private void LoadCharacterAvatar(CharacterDefinition character)
     {
         if (_avatarRect == null) return;
 
+        if (!string.IsNullOrEmpty(character.CharacterId))
+        {
+            string avatarPath = $"res://Assets/Portraits/avatar_{character.CharacterId}.svg";
+            if (ResourceLoader.Exists(avatarPath))
+            {
+                Texture2D avatar = ResourceLoader.Load<Texture2D>(avatarPath);
+                if (avatar != null)
+                {
+                    _avatarRect.Texture = avatar;
+                    return;
+                }
+            }
+        }
+
+        // 没有圆形头像 → 用立绘裁出头部
+        // ⚠️ Godot 4 的 TextureRect **没有** region_enabled / region_rect（那是 Godot 3 的 Sprite 属性），
+        //    裁剪要用 AtlasTexture。
         string path = character.GetPortraitPath();
         if (!string.IsNullOrEmpty(path) && ResourceLoader.Exists(path))
         {
             Texture2D portrait = ResourceLoader.Load<Texture2D>(path);
             if (portrait != null)
             {
-                _avatarRect.Texture = portrait;
+                _avatarRect.Texture = new AtlasTexture
+                {
+                    Atlas = portrait,
+                    Region = new Rect2(46, 40, 164, 130)
+                };
                 return;
             }
         }
 
-        // 没有立绘 → 退回通用图标
+        // 都没有 → 退回通用图标
         Texture2D fallback = ResourceLoader.Load<Texture2D>("res://Assets/Icons/enemy_elite.svg");
         if (fallback != null)
         {

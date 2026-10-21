@@ -99,6 +99,22 @@ public class CardConfigLoader
 		return null;
 	}
 
+	/// <summary>
+	/// 查卡牌数据但**不报错**。
+	/// 角色专属卡本来就不在 cards.json 里（它们在 character_cards.json），
+	/// 用 GetCardData 会每场战斗刷一屏 "Card not found" 假错，掩盖真正的报错。
+	/// </summary>
+	public static CardData TryGetCardData(string cardId)
+	{
+		if (!isLoaded) LoadCards();
+
+		if (cardDatabase.ContainsKey(cardId))
+		{
+			return cardDatabase[cardId];
+		}
+
+		return null;
+	}
 	public static List<Card> CreateDeck(string deckId = "")
 	{
 		if (!isLoaded) LoadCards();

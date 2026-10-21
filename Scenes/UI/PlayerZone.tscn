@@ -22,9 +22,10 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="HealthBar" type="ProgressBar" parent="HealthRow"]
-custom_minimum_size = Vector2(300, 22)
+custom_minimum_size = Vector2(240, 22)
 layout_mode = 2
 size_flags_horizontal = 3
+show_percentage = false
 
 [node name="HealthLabel" type="Label" parent="HealthRow"]
 layout_mode = 2
@@ -37,25 +38,46 @@ theme_override_colors/font_color = Color(0.96, 0.93, 0.84, 1)
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="EnergyBadge" type="PanelContainer" parent="HealthRow"]
+custom_minimum_size = Vector2(74, 40)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="EnergyLabel" type="Label" parent="HealthRow/EnergyBadge"]
+layout_mode = 2
+text = "0/0"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.55, 0.85, 1, 1)
+
 [node name="KeyOrderBadge" type="PanelContainer" parent="HealthRow"]
 custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="KeyOrderInitial" type="Label" parent="HealthRow/KeyOrderBadge"]
+[node name="KeyOrderIcon" type="TextureRect" parent="HealthRow/KeyOrderBadge"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-text = "—"
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(1, 0.94, 0.78, 1)
+expand_mode = 1
+stretch_mode = 5
 
-[node name="KeyOrderLabel" type="Label" parent="HealthRow"]
+[node name="KeyOrderInfo" type="VBoxContainer" parent="HealthRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="KeyOrderLabel" type="Label" parent="HealthRow/KeyOrderInfo"]
 layout_mode = 2
 text = "无钥令"
-size_flags_vertical = 4
 theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
+
+[node name="SilverKeyLabel" type="Label" parent="HealthRow/KeyOrderInfo"]
+layout_mode = 2
+text = "银钥 0/1000"
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.72, 0.75, 0.82, 1)
 
 [node name="BuffDebuffDisplay" parent="." instance=ExtResource("2")]
 layout_mode = 2

@@ -27,9 +27,11 @@ public partial class PlayerZoneUI : Control
     private HBoxContainer _portraitRow;
     private ProgressBar _healthBar;
     private Label _healthLabel;
+    private Label _energyLabel;
     private PanelContainer _keyOrderBadge;
-    private Label _keyOrderInitial;
+    private TextureRect _keyOrderIcon;
     private Label _keyOrderLabel;
+    private Label _silverKeyLabel;
     private BuffDebuffDisplay _buffDisplay;
 
     private readonly List<TextureRect> _portraits = new List<TextureRect>();
@@ -42,9 +44,11 @@ public partial class PlayerZoneUI : Control
         _portraitRow = GetNodeOrNull<HBoxContainer>("PortraitRow");
         _healthBar = GetNodeOrNull<ProgressBar>("HealthRow/HealthBar");
         _healthLabel = GetNodeOrNull<Label>("HealthRow/HealthLabel");
+        _energyLabel = GetNodeOrNull<Label>("HealthRow/EnergyBadge/EnergyLabel");
         _keyOrderBadge = GetNodeOrNull<PanelContainer>("HealthRow/KeyOrderBadge");
-        _keyOrderInitial = GetNodeOrNull<Label>("HealthRow/KeyOrderBadge/KeyOrderInitial");
-        _keyOrderLabel = GetNodeOrNull<Label>("HealthRow/KeyOrderLabel");
+        _keyOrderIcon = GetNodeOrNull<TextureRect>("HealthRow/KeyOrderBadge/KeyOrderIcon");
+        _keyOrderLabel = GetNodeOrNull<Label>("HealthRow/KeyOrderInfo/KeyOrderLabel");
+        _silverKeyLabel = GetNodeOrNull<Label>("HealthRow/KeyOrderInfo/SilverKeyLabel");
         _buffDisplay = GetNodeOrNull<BuffDebuffDisplay>("BuffDebuffDisplay");
 
         if (_healthLabel != null)
@@ -53,7 +57,7 @@ public partial class PlayerZoneUI : Control
         }
 
         BuildPortraits();
-        RefreshKeyOrder();
+        RefreshKeyOrderInfo();
 
         GD.Print("[PlayerZoneUI] _Ready completed");
     }
@@ -89,7 +93,9 @@ public partial class PlayerZoneUI : Control
         SetPortraits(GlobalData.SelectedCharacters);
     }
 
-    /// <summary>刷新血条</summary>
+    /// <summary>
+    /// 刷新血条 + 能量（当前算力）。
+    /// </summary>
     public void UpdateStats()
     {
         if (_playerData == null) return;
@@ -103,22 +109,22 @@ public partial class PlayerZoneUI : Control
         {
             _healthLabel.Text = $"{_playerData.CurrentHealth}/{_playerData.MaxHealth}";
         }
+        if (_energyLabel != null)
+        {
+            _energyLabel.Text = $"{_playerData.CurrentEnergy}/{_playerData.MaxEnergy}";
+        }
     }
 
     /// <summary>血量变化时刷新</summary>
     public void UpdateHealth()
     {
-        if (_playerData == null) return;
+        UpdateStats();
+    }
 
-        if (_healthBar != null)
-        {
-            _healthBar.MaxValue = _playerData.MaxHealth;
-            _healthBar.Value = _playerData.CurrentHealth;
-        }
-        if (_healthLabel != null)
-        {
-            _healthLabel.Text = $"{_playerData.CurrentHealth}/{_playerData.MaxHealth}";
-        }
+    /// <summary>能量变化时刷新</summary>
+    public void UpdateEnergy()
+    {
+        UpdateStats();
     }
 
     /// <summary>设置角色立绘（按上阵顺序；没上阵的位置留空）</summary>
@@ -156,9 +162,9 @@ public partial class PlayerZoneUI : Control
     }
 
     /// <summary>
-    /// 钥令徽标：圆形牌 + 名字（放左下角，对照参考图 R-08 的左下角布局）。
+    /// 钥令徽标：图标 + 名称 + 银钥持有数（对照参考图 R-08 左下角）。
     /// </summary>
-    private void RefreshKeyOrder()
+    public void RefreshKeyOrderInfo()
     {
         KeyOrder key = GlobalData.EquippedKeyOrder;
 
@@ -167,14 +173,30 @@ public partial class PlayerZoneUI : Control
             _keyOrderLabel.Text = key != null ? key.Name : "无钥令";
         }
 
-        if (_keyOrderInitial != null)
+        // 钥令图标（没有专属资源时用通用钥令图标）
+        string iconPath = "res://Assets/Icons/keyorder.svg";
+        if (_keyOrderIcon != null)
         {
-            _keyOrderInitial.Text = key != null && !string.IsNullOrEmpty(key.Name)
-                ? key.Name.Substring(0, 1)
-                : "—";
+            if (ResourceLoader.Exists(iconPath))
+            {
+                _keyOrderIcon.Texture = ResourceLoader.Load<Texture2D>(iconPath);
+                _keyOrderIcon.Visible = true;
+            }
+            else
+            {
+                _keyOrderIcon.Visible = false;
+            }
         }
 
-        // 钥令没有图标资源，先用圆形色块表示
+        // 银钥持有 / 消耗上限
+        if (_silverKeyLabel != null)
+        {
+            int owned = MapManager.Instance?.GetSilverKey() ?? 0;
+            int cost = key != null ? key.SilverKeyCost : 1000;
+            _silverKeyLabel.Text = $"银钥 {owned}/{cost}";
+        }
+
+        // 钥令徽标：深色圆底 + 金边
         if (_keyOrderBadge != null)
         {
             StyleBoxFlat disc = new StyleBoxFlat();
