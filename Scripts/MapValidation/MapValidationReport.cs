@@ -31,6 +31,15 @@ namespace MapValidation
 		/// <summary>是否存在通关走法（状态空间判定结果；无洞时等价于「终点可达」）</summary>
 		public bool CanCompleteGoal = true;
 
+		/// <summary>
+		/// **无论怎么走都能到终点**（全称判定）——
+		/// 没有任何可达状态是死局。比 <see cref="CanCompleteGoal"/>（存在性）更强。
+		/// </summary>
+		public bool CanAlwaysReachGoal = true;
+
+		/// <summary>死局状态的数量（走进去就再也到不了终点的那种状态）</summary>
+		public int DeadEndStateCount;
+
 		/// <summary>状态空间搜索的状态数（无洞时为 0）</summary>
 		public int ExploredStateCount;
 

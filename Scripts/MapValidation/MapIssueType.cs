@@ -30,6 +30,12 @@ namespace MapValidation
 		BranchRequiredUnreachable = 7,
 
 		/// <summary>多簇提示：地图被切成了多块（信息项，不一定是错误）</summary>
-		MultiCluster = 8
+		MultiCluster = 8,
+
+		/// <summary>
+		/// 死局状态：**存在某个可达状态，从那里出发无论怎么走都到不了终点**。
+		/// （比 StateDeadlock 更强 —— 那个是"没有走法"，这个是"不是所有走法都行"）
+		/// </summary>
+		DeadEndState = 9
 	}
 }

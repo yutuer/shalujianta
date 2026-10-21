@@ -179,22 +179,6 @@ namespace FishEatFish.Battle.HexMap
             }
 
             PlaceHoleTiles(tiles, criticalSet, quota.Hole, startCoord, endCoord, clusterCount);
-            // D12：洞全部放好之后统一复检「是不是割点」，不是的撤掉
-            if (clusterCount > 1)
-            {
-                RemoveHolesThatAreNotArticulationPoints(tiles, startCoord, endCoord);
-
-                // 复检后如果洞的数量不够配额 → **补放**
-                // （挖空洞会改变割点集合，原本是割点的落位可能失效，
-                //  不补就会出现「配额偏差：洞 期望 N 实际 N-1」）
-                int currentHoles = tiles.Values.Count(t => t.EventType == HexEventType.Hole);
-                int shortfall = quota.Hole - currentHoles;
-                if (shortfall > 0)
-                {
-                    GD.Print($"[HexMapGenerator] 复检后洞只有 {currentHoles} 个，补放 {shortfall} 个");
-                    PlaceHoleTiles(tiles, criticalSet, shortfall, startCoord, endCoord, clusterCount);
-                }
-            }
 
             PlaceSearchlightTiles(tiles, criticalSet, quota.Searchlight);
 
@@ -268,9 +252,21 @@ namespace FishEatFish.Battle.HexMap
                     return GenerateInternal(radius, playerLevel, attempt + 1, quotaOverride, clusterCount);
                 }
             }
+            else if (!report.CanAlwaysReachGoal)
+            {
+                // 全称判定：**存在死局状态**（某个可达状态走进去就再也到不了 BOSS）。
+                // 「存在一条走法能通」不够 —— 玩家随便走都可能把自己走死。
+                GD.PrintErr($"[HexMapGenerator] 校验失败: 存在 {report.DeadEndStateCount} 个死局状态"
+                    + "（走进去就再也到不了 BOSS），重新生成地图...");
+                GD.PrintErr(report.ToString());
+                if (attempt < MaxGenerateAttempts)
+                {
+                    return GenerateInternal(radius, playerLevel, attempt + 1, quotaOverride, clusterCount);
+                }
+            }
             else if (!report.IsValid)
             {
-                // 只是提示（软锁 / 不可达区域之类），不阻断生成
+                // 只是提示（不可达区域之类），不阻断生成
                 GD.Print($"[HexMapGenerator] 校验提示（不阻断）: {report.Issues.Count} 项问题");
                 foreach (MapIssue issue in report.Issues)
                 {
@@ -462,83 +458,124 @@ namespace FishEatFish.Battle.HexMap
 
 		        GD.Print($"[HexMapGenerator] 放置探照灯 {placed} 个");
 		    }
+        /// <summary>
+        /// 放置洞（消耗型格）。
+        ///
+        /// ⚠️ **能不能当洞，由 D13 校验器的「全称判定」说了算** ——
+        /// 试放一个洞，跑一次「无论怎么走都能到终点」的判定：
+        /// 通过（消耗掉它玩家不会被困死）就留下，不通过就撤掉换下一个候选。
+        /// 判据只有一份实现（校验器），生成器不自己再抄一遍（抄了就会口径分叉）。
+        /// </summary>
         private void PlaceHoleTiles(Dictionary<HexCoord, HexTile> tiles, HashSet<HexCoord> criticalSet, int count,
             HexCoord startCoord, HexCoord endCoord, int clusterCount)
         {
-            var candidates = tiles.Keys
-                .Where(c => !criticalSet.Contains(c)
-                    // 洞不能盖住传送门 / 已有的事件格（否则配额对不上）
-                    && (clusterCount > 1 ? tiles[c].EventType == HexEventType.Empty : true))
+            if (count <= 0) return;
+
+            // 候选：所有空格。**割点优先** —— 消耗掉割点地图才会分裂（D12 的核心观感），
+            // 但最终能不能当洞由全称判定裁决。
+            HashSet<HexCoord> cutVertices = FindCutVertices(tiles);
+            List<HexCoord> candidates = tiles.Keys
+                .Where(c => c != startCoord && c != endCoord && tiles[c].EventType == HexEventType.Empty)
                 .ToList();
+            Shuffle(candidates);
+            candidates = candidates.OrderBy(c => cutVertices.Contains(c) ? 0 : 1).ToList();
+
+            GD.Print($"[HexMapGenerator] 洞候选 {candidates.Count} 个（总格数 {tiles.Count}，关键路径 {criticalSet.Count}，"
+                + $"其中割点 {cutVertices.Count} 个 —— 逐个试放，用全称判定裁决）");
 
             int placed = 0;
-            int attempts = 0;
-            int maxAttempts = candidates.Count * 2;
-            int skippedNeighbors = 0;
-
-            GD.Print($"[HexMapGenerator] 洞候选 {candidates.Count} 个（总格数 {tiles.Count}，关键路径 {criticalSet.Count}）");
-
-            // 簇模式：**优先把洞放在簇的「窄口」上** ——
-            // 窄口本来就是两块子区域之间唯一的连接（= 割点），消耗掉它这一簇就裂成两块
-            if (clusterCount > 1 && _clusterBuilder != null)
+            int rejected = 0;
+            foreach (HexCoord coord in candidates)
             {
-                for (int c = 0; c < _clusterBuilder.ClusterCount && placed < count; c++)
-                {
-                    HexCoord bottleneck;
-                    if (!_clusterBuilder.Bottlenecks.TryGetValue(c, out bottleneck)) continue;
-                    if (criticalSet.Contains(bottleneck)) continue;
-                    if (!tiles.ContainsKey(bottleneck)) continue;
-                    if (tiles[bottleneck].EventType != HexEventType.Empty) continue;
+                if (placed >= count) break;
+                if (!tiles.ContainsKey(coord)) continue;
+                if (tiles[coord].EventType != HexEventType.Empty) continue;
 
-                    if (IsHoleArticulationPoint(tiles, bottleneck, startCoord, endCoord))
-                    {
-                        PlaceHole(tiles, bottleneck);
-                        placed++;
-                        GD.Print($"[HexMapGenerator] 洞放在簇 {c} 的窄口 {bottleneck}（割点）");
-                    }
+                PlaceHole(tiles, coord);
+
+                if (CanAlwaysReachGoal(tiles, startCoord, endCoord))
+                {
+                    placed++;
+                }
+                else
+                {
+                    UnplaceHole(tiles, coord);
+                    rejected++;
                 }
             }
 
-            while (placed < count && attempts < maxAttempts && candidates.Count > 0)
+            GD.Print($"[HexMapGenerator] 放置了 {placed} 个洞穴"
+                + $"（试放后被否决 {rejected} 个：消耗掉会把玩家困死）");
+        }
+
+        /// <summary>
+        /// 洞试放裁决：**消耗掉这些洞之后，玩家无论怎么走都能到终点吗？**
+        /// 走 D13 校验器的全称判定（唯一实现处）。
+        /// </summary>
+        private bool CanAlwaysReachGoal(Dictionary<HexCoord, HexTile> tiles, HexCoord startCoord, HexCoord endCoord)
+        {
+            HexMap mapView = new HexMap(tiles, startCoord, endCoord);
+            MapValidationReport report = new MapValidator().Validate(new HexMapGraph(mapView));
+            return report.CanAlwaysReachGoal;
+        }
+
+        /// <summary>找出所有割点（删掉它之后图会断开）—— 按「邻接 + 传送超边」算</summary>
+        private HashSet<HexCoord> FindCutVertices(Dictionary<HexCoord, HexTile> tiles)
+        {
+            HashSet<HexCoord> result = new HashSet<HexCoord>();
+            int full = ComputeComponentsWithTeleports(tiles, null).Count;
+
+            foreach (HexCoord coord in tiles.Keys.ToList())
             {
-                attempts++;
-                var coord = candidates[_random.Next(candidates.Count)];
+                if (ComputeComponentsWithTeleports(tiles, coord).Count > full) result.Add(coord);
+            }
+            return result;
+        }
 
-                var neighbors = coord.GetNeighbors()
-                    .Where(n => tiles.ContainsKey(n) && !criticalSet.Contains(n))
-                    .ToList();
+        /// <summary>按「邻接 + 传送超边」算连通块（洞的割点判定必须带传送边，
+        /// 否则跨簇的洞会被按纯邻接误判）。</summary>
+        private List<HashSet<HexCoord>> ComputeComponentsWithTeleports(
+            Dictionary<HexCoord, HexTile> tiles, HexCoord? removeCoord)
+        {
+            Dictionary<HexCoord, List<HexCoord>> teleports = HexMap.ComputeTeleportIndex(tiles);
 
-                if (neighbors.Count < 2)
+            HashSet<HexCoord> all = new HashSet<HexCoord>(tiles.Keys);
+            if (removeCoord.HasValue) all.Remove(removeCoord.Value);
+
+            List<HashSet<HexCoord>> components = new List<HashSet<HexCoord>>();
+            HashSet<HexCoord> visited = new HashSet<HexCoord>();
+
+            foreach (HexCoord seed in all)
+            {
+                if (visited.Contains(seed)) continue;
+
+                HashSet<HexCoord> comp = new HashSet<HexCoord>();
+                Queue<HexCoord> queue = new Queue<HexCoord>();
+                queue.Enqueue(seed);
+                visited.Add(seed);
+
+                while (queue.Count > 0)
                 {
-                    skippedNeighbors++;
-                    candidates.Remove(coord);
-                    continue;
-                }
+                    HexCoord current = queue.Dequeue();
+                    comp.Add(current);
 
-                {                    // D12：洞要落在**割点**上（消耗后该簇才会真的裂成两块）。
-                    // 这里先用轻量判据初筛（移除后邻接连通分量增加），
-                    // 全部放完之后再统一用 D13 口径复检（IsHoleArticulationPoint）。
-                    bool placeable;
-                    if (clusterCount > 1)
+                    foreach (HexCoord neighbor in current.GetNeighbors())
                     {
-                        placeable = CountAdjacentComponents(tiles, coord) > CountAdjacentComponents(tiles, null);
-                    }
-                    else
-                    {
-                        placeable = VerifyHolePlacement(tiles, coord, neighbors, criticalSet);
+                        if (all.Contains(neighbor) && visited.Add(neighbor)) queue.Enqueue(neighbor);
                     }
 
-                    if (placeable)
+                    List<HexCoord> teleTargets;
+                    if (!teleports.TryGetValue(current, out teleTargets)) continue;
+                    foreach (HexCoord target in teleTargets)
                     {
-                        PlaceHole(tiles, coord);
-                        placed++;
+                        if (all.Contains(target) && visited.Add(target)) queue.Enqueue(target);
                     }
                 }
 
-                candidates.Remove(coord);
+                components.Add(comp);
             }
 
-            GD.Print($"[HexMapGenerator] 放置了 {placed} 个洞穴（邻格不足而跳过 {skippedNeighbors} 次）");
+            return components;
         }
 
         /// <summary>在某个格子上放一个洞</summary>
@@ -548,6 +585,16 @@ namespace FishEatFish.Battle.HexMap
             tiles[coord].TriggerCount = 1;
             tiles[coord].DisplayName = "洞穴";
             tiles[coord].IconPath = "res://Assets/Icons/hole.png";
+        }
+
+        /// <summary>把洞撤掉（试放失败时回滚）</summary>
+        private static void UnplaceHole(Dictionary<HexCoord, HexTile> tiles, HexCoord coord)
+        {
+            HexTile tile = tiles[coord];
+            tile.EventType = HexEventType.Empty;
+            tile.TriggerCount = 0;
+            tile.DisplayName = "";
+            tile.IconPath = "";
         }
 
         /// <summary>
@@ -575,35 +622,6 @@ namespace FishEatFish.Battle.HexMap
         /// 校验器说不是」的情况。后置复检保证生成器与 D13 校验器**口径完全一致**。
         /// </summary>
         /// <returns>被撤销的洞数（调用方据此补放，保持配额）</returns>
-        private int RemoveHolesThatAreNotArticulationPoints(Dictionary<HexCoord, HexTile> tiles,
-            HexCoord startCoord, HexCoord endCoord)
-        {
-            List<HexCoord> holes = tiles.Values
-                .Where(t => t.EventType == HexEventType.Hole)
-                .Select(t => t.Coord)
-                .ToList();
-
-            int removed = 0;
-            foreach (HexCoord hole in holes)
-            {
-                if (IsHoleArticulationPoint(tiles, hole, startCoord, endCoord)) continue;
-
-                HexTile tile = tiles[hole];
-                tile.EventType = HexEventType.Empty;
-                tile.TriggerCount = 0;
-                tile.DisplayName = "";
-                tile.IconPath = "";
-                removed++;
-                GD.Print($"[HexMapGenerator] 洞 {hole} 不是割点，撤销");
-            }
-
-            if (removed > 0)
-            {
-                GD.Print($"[HexMapGenerator] 撤销了 {removed} 个非割点的洞");
-            }
-
-            return removed;
-        }
 
         /// <summary>
         /// 按**邻接边**算连通分量数（不看传送）。

@@ -147,10 +147,36 @@ namespace MapValidation
 						$"消耗型格子（{consumables.Count} 个）用掉之后找不到能通关的走法"
 						+ $"（已枚举 {stateResult.ExploredStates} 个状态）"));
 				}
+
+				// ===== 全称判定：**无论怎么走都能到终点** =====
+				// 「存在一条走法能通」不等于「怎么走都能通」——
+				// 只要有一个可达状态是死局（走进去就再也到不了 BOSS），玩家就可能被卡住。
+				DeadEndResult deadEndResult = SearchDeadEndStates(graph, consumables);
+				report.CanAlwaysReachGoal = deadEndResult.AllCanReachGoal;
+				report.DeadEndStateCount = deadEndResult.DeadEndStates;
+
+				if (!deadEndResult.AllCanReachGoal)
+				{
+					foreach (int node in deadEndResult.DeadEndSamples)
+					{
+						report.AddIssue(new MapIssue(MapIssueType.DeadEndState, node, graph.GetNodeLabel(node),
+							"走进来之后就再也到不了 BOSS（无论怎么走都出不去）"));
+					}
+					if (deadEndResult.DeadEndStates > deadEndResult.DeadEndSamples.Count)
+					{
+						report.AddIssue(new MapIssue(MapIssueType.DeadEndState, -1, "",
+							$"共 {deadEndResult.DeadEndStates} 个死局状态（已枚举 {deadEndResult.ExploredStates} 个状态）"));
+					}
+				}
 			}
 			else
 			{
 				report.CanCompleteGoal = end >= 0 && end < graph.NodeCount && reachable[end];
+
+				// 没有消耗型格子 → 状态空间退化成静态图：
+				// 「怎么走都能到终点」等价于「没有软锁格」
+				report.CanAlwaysReachGoal = report.CanCompleteGoal
+					&& report.CountOf(MapIssueType.SoftLock) == 0;
 			}
 
 			return report;
@@ -354,40 +380,15 @@ namespace MapValidation
 					return result;
 				}
 
-				bool posIsHole = holeBit.ContainsKey(pos);
-				int posHoleBit = posIsHole ? holeBit[pos] : -1;
-
 				IReadOnlyList<int> outs = graph.GetOutgoingEdges(pos);
 				for (int i = 0; i < outs.Count; i++)
 				{
 					int z = outs[i];
-					if (z < 0 || z >= graph.NodeCount) continue;
-					if (graph.IsBlocking(z)) continue;
 
-					bool zIsHole = holeBit.ContainsKey(z);
-					int zHoleBit = zIsHole ? holeBit[z] : -1;
-
-					// 已消耗的洞 = 格子已删除，不可走
-					if (zIsHole && (consumedMask & (1 << zHoleBit)) != 0) continue;
-
-					int nextConsumed = consumedMask;
-					int nextSource = -1;
-
-					if (posIsHole)
+					// 转移规则统一走 TryStep（与全称判定同一份实现，不会口径分叉）
+					if (!TryStep(graph, holeBit, pos, consumedMask, sourceId, z, out int nextConsumed, out int nextSource))
 					{
-						// 在洞内：不能退回进入来源格
-						if (z == sourceId) continue;
-
-						// 离开洞 → 该洞被消耗
-						nextConsumed = consumedMask | (1 << posHoleBit);
-
-						// 若走进另一个洞，来源格 = 刚离开的这个洞格子
-						nextSource = zIsHole ? pos : -1;
-					}
-					else
-					{
-						// 普通格 → 走进未消耗的洞：进入它，来源 = 当前格
-						nextSource = zIsHole ? pos : -1;
+						continue;
 					}
 
 					int nextVisited = visitedMask;
@@ -403,6 +404,192 @@ namespace MapValidation
 
 			result.ExploredStates = visited.Count;
 			return result;
+		}
+
+		/// <summary>
+		/// 状态转移规则（**唯一实现处**）：玩家在（位置 pos，已消耗洞集合 consumedMask，
+		/// 进洞来源格 sourceId）时走向 z，会得到什么新状态。
+		/// 返回 false = 这一步走不了。
+		/// </summary>
+		private static bool TryStep(IMapGraph graph, Dictionary<int, int> holeBit,
+			int pos, int consumedMask, int sourceId, int z,
+			out int nextConsumed, out int nextSource)
+		{
+			nextConsumed = consumedMask;
+			nextSource = -1;
+
+			if (z < 0 || z >= graph.NodeCount) return false;
+			if (graph.IsBlocking(z)) return false;
+
+			bool posIsHole = holeBit.ContainsKey(pos);
+			bool zIsHole = holeBit.ContainsKey(z);
+
+			// 已消耗的洞 = 格子已删除，不可走
+			if (zIsHole && (consumedMask & (1 << holeBit[z])) != 0) return false;
+
+			if (posIsHole)
+			{
+				// 在洞内：不能退回进入来源格
+				if (z == sourceId) return false;
+
+				// 离开洞 → 该洞被消耗
+				nextConsumed = consumedMask | (1 << holeBit[pos]);
+
+				// 若走进另一个洞，来源格 = 刚离开的这个洞格子
+				nextSource = zIsHole ? pos : -1;
+			}
+			else
+			{
+				// 普通格 → 走进未消耗的洞：进入它，来源 = 当前格
+				nextSource = zIsHole ? pos : -1;
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// 全称判定：**无论怎么走都能到终点**。
+		///
+		/// 与 <see cref="SearchStateSpace"/> 的「存在性」是**两回事**：
+		///   - 存在性：存在**一条**走法能通关
+		///   - 全称性：任何走法都不会把玩家困死 —— **没有一个可达状态是死局**
+		///
+		/// 做法：
+		///   1. 正向枚举所有可达状态（位置, 已消耗洞集合, 进洞来源格），并记录状态之间的边
+		///   2. 建反向边，从「站在终点」的状态反向 BFS → 得到「还能到终点的状态」集合
+		///   3. 可达状态里凡是不在那个集合里的，就是**死局状态**（走进去就再也到不了 BOSS）
+		/// <summary>
+		/// 全称判定：**无论怎么走都能到终点**。
+		///
+		/// 与 <see cref="SearchStateSpace"/> 的「存在性」是**两回事**：
+		///   - 存在性：存在**一条**走法能通关
+		///   - 全称性：任何走法都不会把玩家困死 —— **没有一个可达状态是死局**
+		///
+		/// 做法：
+		///   1. 正向枚举所有可达状态（位置, 已消耗洞集合, 进洞来源格），并记录状态之间的边
+		///   2. 建反向边，从「站在终点」的状态反向 BFS → 得到「还能到终点的状态」集合
+		///   3. 可达状态里凡是不在那个集合里的，就是**死局状态**（走进去就再也到不了 BOSS）
+		/// </summary>
+		public class DeadEndResult
+		{
+			/// <summary>是否所有可达状态都能到终点</summary>
+			public bool AllCanReachGoal = true;
+
+			/// <summary>枚举到的状态数</summary>
+			public int ExploredStates;
+
+			/// <summary>死局状态数</summary>
+			public int DeadEndStates;
+
+			/// <summary>死局状态的样例位置（格子 id）</summary>
+			public List<int> DeadEndSamples = new List<int>();
+		}
+
+		/// <summary>
+		/// 全称判定：找出会把玩家困死的**死局状态**。
+		/// </summary>
+		public DeadEndResult SearchDeadEndStates(IMapGraph graph, HashSet<int> consumables)
+		{
+			DeadEndResult result = new DeadEndResult();
+
+			int end = graph.GetEndNode();
+			int start = graph.GetStartNode();
+			if (start < 0 || start >= graph.NodeCount) return result;
+
+			Dictionary<int, int> holeBit = new Dictionary<int, int>();
+			List<int> holeList = new List<int>(consumables);
+			for (int i = 0; i < holeList.Count; i++) holeBit[holeList[i]] = i;
+
+			// 1. 正向枚举所有可达状态，并记录状态之间的边
+			var visited = new HashSet<long>();
+			var edges = new Dictionary<long, List<long>>();
+			var queue = new Queue<long[]>();
+
+			queue.Enqueue(new long[] { start, 0, -1 });
+			visited.Add(PackState(start, 0, -1));
+
+			while (queue.Count > 0)
+			{
+				long[] st = queue.Dequeue();
+				int pos = (int)st[0];
+				int consumed = (int)st[1];
+				int source = (int)st[2];
+
+				List<long> outs = new List<long>();
+				edges[PackState(pos, consumed, source)] = outs;
+
+				IReadOnlyList<int> targets = graph.GetOutgoingEdges(pos);
+				for (int i = 0; i < targets.Count; i++)
+				{
+					int z = targets[i];
+					if (!TryStep(graph, holeBit, pos, consumed, source, z, out int nextConsumed, out int nextSource))
+					{
+						continue;
+					}
+
+					long key = PackState(z, nextConsumed, nextSource);
+					outs.Add(key);
+					if (visited.Add(key)) queue.Enqueue(new long[] { z, nextConsumed, nextSource });
+				}
+			}
+
+			result.ExploredStates = visited.Count;
+
+			// 2. 建反向边，从「站在终点」的状态倒推「还能到终点的状态」
+			var reverse = new Dictionary<long, List<long>>();
+			foreach (var kv in edges)
+			{
+				foreach (long to in kv.Value)
+				{
+					if (!reverse.TryGetValue(to, out var list))
+					{
+						list = new List<long>();
+						reverse[to] = list;
+					}
+					list.Add(kv.Key);
+				}
+			}
+
+			var canReach = new HashSet<long>();
+			var back = new Queue<long>();
+			foreach (long key in visited)
+			{
+				if ((int)(key & 0xFFFF) != end) continue;
+				if (canReach.Add(key)) back.Enqueue(key);
+			}
+
+			while (back.Count > 0)
+			{
+				long cur = back.Dequeue();
+				if (!reverse.TryGetValue(cur, out var preds)) continue;
+				foreach (long p in preds)
+				{
+					if (canReach.Add(p)) back.Enqueue(p);
+				}
+			}
+
+			// 3. 死局 = 可达但到不了终点
+			foreach (long key in visited)
+			{
+				if (canReach.Contains(key)) continue;
+				result.DeadEndStates++;
+				if (result.DeadEndSamples.Count < MaxIssuesPerType)
+				{
+					result.DeadEndSamples.Add((int)(key & 0xFFFF));
+				}
+			}
+
+			result.AllCanReachGoal = result.DeadEndStates == 0;
+			return result;
+		}
+
+		/// <summary>把状态（位置 / 已消耗洞集合 / 进洞来源格）打包成一个 long</summary>
+		private static long PackState(int pos, int consumedMask, int sourceId)
+		{
+			long v = (long)(uint)pos;
+			v |= (long)(uint)consumedMask << 16;
+			v |= (long)(uint)(sourceId + 1) << 32;
+			return v;
 		}
 
 		/// <summary>把状态打包成一个 long（用于哈希集合）</summary>
