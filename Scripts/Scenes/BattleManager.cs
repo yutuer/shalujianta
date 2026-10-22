@@ -9,6 +9,7 @@ using FishEatFish.Battle.EngravingSystem;
 using FishEatFish.Scenes;
 using FishEatFish.AI;
 using FishEatFish.Shop;
+using FishEatFish.UI;
 
 namespace FishEatFish.Scenes
 {
@@ -35,7 +36,8 @@ namespace FishEatFish.Scenes
 	private HBoxContainer enemyContainer;
 	private HBoxContainer playerStatsContainer;
 	private Button endTurnButton;
-	private Label handInfoLabel;
+	private DeckStatusPanel deckStatusPanel;
+	private DrawPileViewer drawPileViewer;
 	private Button mapButton;
 	private Button keyOrderButton;
 	private Button logButton;
@@ -209,7 +211,18 @@ namespace FishEatFish.Scenes
 		enemyContainer = GetNodeOrNull<HBoxContainer>("UI/EnemyZone/EnemyContainer");
 		playerStatsContainer = GetNodeOrNull<HBoxContainer>("UI/TopBar/PlayerStats");
 		endTurnButton = GetNodeOrNull<Button>("UI/BottomBar/EndTurnButton");
-		handInfoLabel = GetNodeOrNull<Label>("UI/BottomBar/HandInfo");
+		deckStatusPanel = GetNodeOrNull<DeckStatusPanel>("UI/BottomBar/DeckStatusPanel");
+		drawPileViewer = GetNodeOrNull<DrawPileViewer>("UI/DrawPileViewer");
+
+		// 抽牌堆图标可点击 → 打开抽牌池查看器（看还剩哪些牌）
+		if (deckStatusPanel != null)
+		{
+			deckStatusPanel.SetDrawPileClickCallback(OnDrawPileIconClicked);
+		}
+		else
+		{
+			GD.PrintErr("[BattleManager] 未找到 DeckStatusPanel 节点，右下角牌堆面板不可用");
+		}
 		mapButton = GetNodeOrNull<Button>("UI/BottomBar/MapButton");
 		keyOrderButton = GetNodeOrNull<Button>("UI/BottomBar/KeyOrderButton");
 	logButton = GetNodeOrNull<Button>("UI/BottomBar/LogButton");
@@ -924,9 +937,36 @@ namespace FishEatFish.Scenes
 		{
 			playerZoneUI.Setup(player);
 		}
-		handInfoLabel.Text = $"手牌: {player.Hand.Count} | 抽牌堆: {player.Deck.Count} | 弃牌堆: {player.DiscardPile.Count}";
+		// 右下角牌堆面板：手牌 x/x + 抽牌堆张数 + 弃牌堆张数（对照参考图 R-08 右下角）
+		if (deckStatusPanel != null && player != null)
+		{
+			deckStatusPanel.Setup(player.Hand.Count, player.MaxHandSize, player.Deck.Count, player.DiscardPile.Count);
+		}
 
 		UpdateRageDisplay();
+	}
+
+	/// <summary>
+	/// 右下角**抽牌堆图标被点击**：打开抽牌池查看器，列出抽牌池里还剩哪些牌。
+	/// （对照参考图 R-08 右下角：点牌堆图标能看剩余卡牌）
+	/// </summary>
+	private void OnDrawPileIconClicked()
+	{
+		GD.Print("[BattleManager] OnDrawPileIconClicked called");
+
+		if (drawPileViewer == null)
+		{
+			GD.PrintErr("[BattleManager] 未找到 DrawPileViewer 节点，无法显示抽牌池");
+			return;
+		}
+		if (player == null)
+		{
+			GD.PrintErr("[BattleManager] player 为空，无法显示抽牌池");
+			return;
+		}
+
+		drawPileViewer.ShowCards(player.Deck);
+		GD.Print("[BattleManager] OnDrawPileIconClicked completed");
 	}
 
 	/// <summary>

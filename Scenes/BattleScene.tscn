@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cg7pfcricr231"]
+[gd_scene load_steps=14 format=3 uid="uid://cg7pfcricr231"]
 
 [ext_resource type="Script" uid="uid://g0n4d8440ta4" path="res://Scripts/Scenes/BattleManager.cs" id="1_battle"]
 [ext_resource type="Script" uid="uid://dofgf2yjjym2n" path="res://Scripts/UI/HandCardPreview.cs" id="2_preview"]
@@ -8,6 +8,8 @@
 [ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="7_theme"]
 [ext_resource type="SystemFont" path="res://Assets/Themes/TitleFont.tres" id="8_titlefont"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/PlayerZone.tscn" id="9_player_zone"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/DeckStatusPanel.tscn" id="10_deck_panel"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/DrawPileViewer.tscn" id="11_draw_viewer"]
 
 [sub_resource type="Gradient" id="Gradient_battle_bg"]
 offsets = PackedFloat32Array(0, 0.55, 1)
@@ -185,9 +187,23 @@ text = "日志"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HandInfo" type="Label" parent="UI/BottomBar" unique_id=646114592]
+[node name="DeckStatusPanel" parent="UI/BottomBar" instance=ExtResource("10_deck_panel")]
 layout_mode = 2
-text = "手牌: 5"
-vertical_alignment = 1
+size_flags_vertical = 4
+
+[node name="DrawPileViewer" parent="UI" instance=ExtResource("11_draw_viewer")]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -210.0
+offset_right = 150.0
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="ArtifactDetailUI" parent="UI" instance=ExtResource("4_artifact_detail")]
