@@ -25,6 +25,16 @@ public partial class CardLayoutManager : Node
 	private float _handArcRadiusMin = 720f;
 	[Export(PropertyHint.Range, "100,1500,1")]
 	private float _handArcRadiusMax = 1080f;
+
+	/// <summary>
+	/// 手牌**横向间距**（相邻两张牌中心/左边缘的间隔，px）。
+	///
+	/// ⚠️ 以前没有这个参数：布局是「固定半径 + 固定角度」算出来的，
+	/// 于是间距 = 2R·sin(A)/(n-1) → **牌越多挤得越近**（8 张时只有 35px，全叠在一起）。
+	/// 现在改成**先定间距、再由间距反推半径**，牌数变了间距也不变。
+	/// </summary>
+	[Export(PropertyHint.Range, "40,220,1")]
+	private float _handCardSpacing = 110f;
 	[Export(PropertyHint.Range, "-400,400,1")]
 	private float _handArcCenterOffsetX = 0f;
 	[Export(PropertyHint.Range, "-80,120,1")]
@@ -58,6 +68,7 @@ public partial class CardLayoutManager : Node
 	public float GetArcAngleMax() => _handArcAngleMaxDegrees;
 	public float GetArcRadiusMin() => _handArcRadiusMin;
 	public float GetArcRadiusMax() => _handArcRadiusMax;
+	public float GetCardSpacing() => _handCardSpacing;
 	public float GetBottomPadding() => _handBottomPadding;
 	public float GetPivotYOffsetFactor() => _handPivotYOffsetFactor;
 	public float GetHoverLift() => _handHoverLift;
@@ -310,7 +321,13 @@ public partial class CardLayoutManager : Node
 		pivotBaseY = container.Size.Y - (cardSize.Y - pivotOffset.Y) - _handBottomPadding;
 		var spreadFactor = Mathf.Clamp((count - 1) / 7f, 0f, 1f);
 		maxAngle = Mathf.DegToRad(Mathf.Lerp(_handArcAngleMinDegrees, _handArcAngleMaxDegrees, spreadFactor));
-		radius = Mathf.Lerp(_handArcRadiusMax, _handArcRadiusMin, spreadFactor);
+
+		// 横向间距固定 → 半径由「间距 / 角度 / 牌数」反推（见 _handCardSpacing 的注释）
+		float denom = 2f * Mathf.Sin(maxAngle);
+		radius = denom > 0.0001f
+			? _handCardSpacing * Mathf.Max(1, count - 1) / denom
+			: Mathf.Max(100f, _handArcRadiusMin);
+
 		startAngle = -maxAngle;
 		angleStep = count <= 1 ? 0f : (maxAngle * 2f) / (count - 1);
 	}

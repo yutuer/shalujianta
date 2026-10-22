@@ -1,21 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="bg_rooster" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#E19F8D"/>
-      <stop offset="1" stop-color="#C9502F"/>
-    </linearGradient>
-    <linearGradient id="head_rooster" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#D47359"/>
-      <stop offset="1" stop-color="#C9502F"/>
-    </linearGradient>
+    <linearGradient id="bg_avatar_rooster" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D47359"/><stop offset="1" stop-color="#893620"/></linearGradient>
   </defs>
-  <circle cx="64" cy="64" r="64" fill="#0B0E14" />
-  <circle cx="64" cy="64" r="60" fill="url(#bg_rooster)" />
-  <circle cx="64" cy="70" r="30" fill="url(#head_rooster)" stroke="#0B0E14" stroke-width="4" />
-  <ellipse cx="54" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <ellipse cx="74" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <path d="M52 42 C52 28 60 26 64 34 C68 24 76 26 76 40 Z" fill="#FFD98A" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
-  <path d="M76 68 L92 74 L76 80 Z" fill="#FFE2A7" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
-  <path d="M48 54 C36 62 36 78 48 84" fill="none" stroke="#FFD98A" stroke-width="6" stroke-linecap="round" />
-  <circle cx="64" cy="64" r="60" fill="none" stroke="#FFD98A" stroke-width="4" />
+  <circle cx="64" cy="64" r="60" fill="url(#bg_avatar_rooster)" />
+  <circle cx="64" cy="64" r="60" fill="none" stroke="#0B0E14" stroke-width="3" />
+  <path d="M 25.4 110 Q 30 82 64 82 Q 98 82 102.6 110 A 60 60 0 0 1 25.4 110 Z" fill="#893620" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="64" cy="58" r="26" fill="#FFD98A" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="55.68" cy="38.76" r="5.72" fill="#893620" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="64" cy="34.08" r="6.76" fill="#893620" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="72.32" cy="38.76" r="5.72" fill="#893620" stroke="#0B0E14" stroke-width="3" />
+  <polygon points="63.48,60.08 76.48,65.28 63.48,69.44" fill="#893620" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <ellipse cx="66.08" cy="74.12" rx="3.64" ry="5.72" fill="#893620" stroke="#0B0E14" stroke-width="2.4" />
+  <ellipse cx="56.72" cy="57.48" rx="2.6" ry="3.12" fill="#0B0E14" />
+  <ellipse cx="69.2" cy="57.48" rx="2.6" ry="3.12" fill="#0B0E14" />
 </svg>

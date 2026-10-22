@@ -28,6 +28,8 @@ public partial class HandCardPreview : Control
 	private float _handArcRadiusMin = 200f;
 	[Export(PropertyHint.Range, "100,1000,1")]
 	private float _handArcRadiusMax = 350f;
+	[Export(PropertyHint.Range, "40,220,1")]
+	private float _handCardSpacing = 110f;
 	[Export(PropertyHint.Range, "-20,20,0.1")]
 	private float _handArcPhaseOffsetDegrees = 0f;
 	[Export(PropertyHint.Range, "-400,400,1")]
@@ -158,6 +160,7 @@ public partial class HandCardPreview : Control
 			_handArcAngleMaxDegrees,
 			_handArcRadiusMin,
 			_handArcRadiusMax,
+			_handCardSpacing,
 			_handBottomPadding,
 			_handPivotYOffsetFactor,
 			_handHoverLift,
@@ -203,6 +206,7 @@ public partial class HandCardPreview : Control
 		_handArcAngleMaxDegrees = _linkedCardLayoutManager.GetArcAngleMax();
 		_handArcRadiusMin = _linkedCardLayoutManager.GetArcRadiusMin();
 		_handArcRadiusMax = _linkedCardLayoutManager.GetArcRadiusMax();
+		_handCardSpacing = _linkedCardLayoutManager.GetCardSpacing();
 		_handBottomPadding = _linkedCardLayoutManager.GetBottomPadding();
 		_handPivotYOffsetFactor = _linkedCardLayoutManager.GetPivotYOffsetFactor();
 		_handHoverLift = _linkedCardLayoutManager.GetHoverLift();
@@ -456,7 +460,13 @@ public partial class HandCardPreview : Control
 		pivotBaseY = Size.Y - (cardSize.Y - pivotOffset.Y) - _handBottomPadding;
 		var spreadFactor = Mathf.Clamp((count - 1) / 7f, 0f, 1f);
 		maxAngle = Mathf.DegToRad(Mathf.Lerp(_handArcAngleMinDegrees, _handArcAngleMaxDegrees, spreadFactor));
-		radius = Mathf.Lerp(_handArcRadiusMax, _handArcRadiusMin, spreadFactor);
+
+		// 横向间距固定 → 半径由间距反推（与 CardLayoutManager 同一套算法）
+		float denom = 2f * Mathf.Sin(maxAngle);
+		radius = denom > 0.0001f
+			? _handCardSpacing * Mathf.Max(1, count - 1) / denom
+			: Mathf.Max(100f, _handArcRadiusMin);
+
 		startAngle = -maxAngle;
 		angleStep = count <= 1 ? 0f : (maxAngle * 2f) / (count - 1);
 	}

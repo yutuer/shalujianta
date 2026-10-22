@@ -28,6 +28,9 @@ public partial class PlayerZoneUI : Control
     private ProgressBar _healthBar;
     private Label _healthLabel;
     private Label _energyLabel;
+    private Label _shieldValue;
+    private ColorRect _incomingDamage;
+    private Label _incomingDamageLabel;
     private PanelContainer _keyOrderBadge;
     private TextureRect _keyOrderIcon;
     private Label _keyOrderLabel;
@@ -37,14 +40,20 @@ public partial class PlayerZoneUI : Control
     private readonly List<TextureRect> _portraits = new List<TextureRect>();
     private Player _playerData;
 
+    /// <summary>敌人这一回合预告要打掉的血量（画在血条上的深红段）</summary>
+    private int _incomingDamageAmount = 0;
+
     public override void _Ready()
     {
         GD.Print("[PlayerZoneUI] _Ready called");
 
         _portraitRow = GetNodeOrNull<HBoxContainer>("PortraitRow");
-        _healthBar = GetNodeOrNull<ProgressBar>("HealthRow/HealthBar");
-        _healthLabel = GetNodeOrNull<Label>("HealthRow/HealthLabel");
+        _healthBar = GetNodeOrNull<ProgressBar>("HealthRow/HealthStack/HealthBar");
+        _healthLabel = GetNodeOrNull<Label>("HealthRow/HealthStack/HealthLabel");
         _energyLabel = GetNodeOrNull<Label>("BottomInfoRow/EnergyBlock/EnergyValue");
+        _shieldValue = GetNodeOrNull<Label>("HealthRow/ShieldBadge/ShieldInner/ShieldValue");
+        _incomingDamage = GetNodeOrNull<ColorRect>("HealthRow/HealthStack/IncomingDamage");
+        _incomingDamageLabel = GetNodeOrNull<Label>("HealthRow/HealthStack/IncomingDamageLabel");
         _keyOrderBadge = GetNodeOrNull<PanelContainer>("BottomInfoRow/KeyOrderBlock/KeyOrderBadge");
         _keyOrderIcon = GetNodeOrNull<TextureRect>("BottomInfoRow/KeyOrderBlock/KeyOrderBadge/KeyOrderIcon");
         _keyOrderLabel = GetNodeOrNull<Label>("BottomInfoRow/KeyOrderBlock/KeyOrderInfo/KeyOrderLabel");
@@ -113,6 +122,11 @@ public partial class PlayerZoneUI : Control
         {
             _energyLabel.Text = $"{_playerData.CurrentEnergy} / {_playerData.MaxEnergy}";
         }
+        // 护盾（盾量）：从顶部 PlayerStats 挪到了**血条末端**的盾牌徽标上
+        if (_shieldValue != null)
+        {
+            _shieldValue.Text = _playerData.Shield.ToString();
+        }
     }
 
     /// <summary>血量变化时刷新</summary>
@@ -125,6 +139,80 @@ public partial class PlayerZoneUI : Control
     public void UpdateEnergy()
     {
         UpdateStats();
+    }
+
+    /// <summary>
+    /// 设置「敌人这一回合预告要打掉的血量」。
+    /// 它会画成玩家血条上紧跟着绿条的**深红段**，并在下面标出「-XXX」
+    /// （对照参考图 R-08：血条上绿=当前血、红=即将损失）。
+    /// </summary>
+    /// <param name="damage">预计将要承受的伤害</param>
+    public void SetIncomingDamage(int damage)
+    {
+        _incomingDamageAmount = Mathf.Max(0, damage);
+        UpdateIncomingDamageVisual();
+    }
+
+    public override void _Process(double delta)
+    {
+        // 血条宽度会随布局变化（窗口大小 / 布局重排），
+        // 所以深红段的位置每帧跟着重算一次。
+        if (_incomingDamageAmount > 0)
+        {
+            UpdateIncomingDamageVisual();
+        }
+    }
+
+    /// <summary>把「预扣血」画成血条上的深红段 + 数字</summary>
+    private void UpdateIncomingDamageVisual()
+    {
+        if (_incomingDamage == null) return;
+
+        if (_incomingDamageAmount <= 0 || _playerData == null || _playerData.MaxHealth <= 0)
+        {
+            _incomingDamage.Visible = false;
+            if (_incomingDamageLabel != null) _incomingDamageLabel.Visible = false;
+            return;
+        }
+
+        float barWidth = _healthBar != null ? _healthBar.Size.X : 0f;
+        if (barWidth <= 0f) return;
+
+        float max = _playerData.MaxHealth;
+        float current = Mathf.Clamp(_playerData.CurrentHealth, 0f, max);
+        float damage = Mathf.Min(_incomingDamageAmount, max);
+        if (damage <= 0f)
+        {
+            _incomingDamage.Visible = false;
+            if (_incomingDamageLabel != null) _incomingDamageLabel.Visible = false;
+            return;
+        }
+
+        // 血条刻度 = max(血量上限, 当前血 + 即将损失)
+        // → 满血时深红段也画得出来（条会为"即将损失"变长），对照参考图 R-08
+        float scale = Mathf.Max(max, current + damage);
+        if (_healthBar != null)
+        {
+            _healthBar.MaxValue = scale;
+            _healthBar.Value = current;
+        }
+
+        float x = barWidth * (current / scale);
+        float w = barWidth * (damage / scale);
+
+        _incomingDamage.Visible = true;
+        _incomingDamage.OffsetLeft = x;
+        _incomingDamage.OffsetRight = x + w;
+        _incomingDamage.OffsetTop = 0f;
+        _incomingDamage.OffsetBottom = 22f;
+
+        if (_incomingDamageLabel != null)
+        {
+            _incomingDamageLabel.Visible = true;
+            _incomingDamageLabel.Text = $"-{Mathf.RoundToInt(damage)}";
+            _incomingDamageLabel.OffsetLeft = x - 30f;
+            _incomingDamageLabel.OffsetRight = x + w + 30f;
+        }
     }
 
     /// <summary>设置角色立绘（按上阵顺序；没上阵的位置留空）</summary>

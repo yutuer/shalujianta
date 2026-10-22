@@ -53,6 +53,12 @@ public partial class CardUI : Panel
     /// <summary>横向拖动上限（防止把牌拖飞）</summary>
     private const float DragMaxHorizontal = 90f;
 
+    /// <summary>
+    /// 拖拽放大 / 复原的过渡速度（每秒推进多少）。
+    /// 14 ≈ 0.07 秒走完全程，够快但不是"啪"地一下跳过去。
+    /// </summary>
+    private const float DragBlendSpeed = 14f;
+
     private DragPhase _dragPhase = DragPhase.None;
     private Vector2 _pressMouseGlobal;
     private Vector2 _dragDelta = Vector2.Zero;
@@ -134,13 +140,23 @@ public partial class CardUI : Panel
 
     public override void _Process(double delta)
     {
-        // 取消出牌后：卡牌平滑滑回牌堆（_dragBlend 与 _dragDelta 一起归零）
-        // ⚠️ 拖拽状态**不靠轮询判断松手** —— 按下之后 Godot 会把鼠标焦点锁在这张牌上，
+        // 拖拽状态**不靠轮询判断松手** —— 按下之后 Godot 会把鼠标焦点锁在这张牌上，
         // 移动与松手事件都会继续送到这里（标准拖拽模式）。
         // 之前用 Input.IsMouseButtonPressed 轮询，在某些情况下会误判成"已松手"把拖拽掐掉。
-        if (_dragPhase == DragPhase.None && _dragBlend > 0.001f)
+        if (_dragPhase != DragPhase.None)
         {
-            _dragBlend = Mathf.Max(0f, _dragBlend - (float)delta * 5f);
+            // ⚠️ 放大过渡**必须每帧推进**：
+            // 之前只在"收到鼠标移动事件"时推进 → 鼠标按住不动就永远推不到 1，
+            // 卡牌就一直是半大不大的样子，看起来"放大非常缓慢"（其实是卡住了）。
+            _dragBlend = Mathf.MoveToward(_dragBlend, 1f, (float)delta * DragBlendSpeed);
+            ApplyTransform();
+            return;
+        }
+
+        // 取消出牌后：卡牌平滑滑回牌堆（_dragBlend 与 _dragDelta 一起归零）
+        if (_dragBlend > 0.001f)
+        {
+            _dragBlend = Mathf.Max(0f, _dragBlend - (float)delta * DragBlendSpeed);
             _dragDelta = _dragDelta.Lerp(Vector2.Zero, Mathf.Min(1f, (float)delta * 12f));
             ApplyTransform();
         }
@@ -208,7 +224,6 @@ public partial class CardUI : Panel
         // 刚按住时（鼠标还没动）也要明显高出牌堆
         if (_dragDelta.Y > -PressedMinLift) _dragDelta.Y = -PressedMinLift;
 
-        _dragBlend = Mathf.MoveToward(_dragBlend, 1f, (float)delta * 6f);
 
         bool ready = -_dragDelta.Y >= DragReadyThreshold;
         if (ready)

@@ -1,22 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="bg_rabbit" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#EACFDB"/>
-      <stop offset="1" stop-color="#D9A8BE"/>
-    </linearGradient>
-    <linearGradient id="head_rabbit" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#E1B9CB"/>
-      <stop offset="1" stop-color="#D9A8BE"/>
-    </linearGradient>
+    <linearGradient id="bg_avatar_rabbit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E1B9CB"/><stop offset="1" stop-color="#947281"/></linearGradient>
   </defs>
-  <circle cx="64" cy="64" r="64" fill="#0B0E14" />
-  <circle cx="64" cy="64" r="60" fill="url(#bg_rabbit)" />
-  <circle cx="64" cy="70" r="30" fill="url(#head_rabbit)" stroke="#0B0E14" stroke-width="4" />
-  <ellipse cx="54" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <ellipse cx="74" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <ellipse cx="50" cy="26" rx="9" ry="24" fill="#FFF0F6" stroke="#0B0E14" stroke-width="4" />
-  <ellipse cx="78" cy="26" rx="9" ry="24" fill="#FFF0F6" stroke="#0B0E14" stroke-width="4" />
-  <ellipse cx="50" cy="27" rx="4" ry="15" fill="#FFF4F8" />
-  <ellipse cx="78" cy="27" rx="4" ry="15" fill="#FFF4F8" />
-  <circle cx="64" cy="64" r="60" fill="none" stroke="#FFF0F6" stroke-width="4" />
+  <circle cx="64" cy="64" r="60" fill="url(#bg_avatar_rabbit)" />
+  <circle cx="64" cy="64" r="60" fill="none" stroke="#0B0E14" stroke-width="3" />
+  <path d="M 25.4 110 Q 30 82 64 82 Q 98 82 102.6 110 A 60 60 0 0 1 25.4 110 Z" fill="#947281" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="64" cy="58" r="26" fill="#FFF0F6" stroke="#0B0E14" stroke-width="3" />
+  <ellipse cx="54.9" cy="32" rx="6.24" ry="18.2" fill="#FFF0F6" stroke="#0B0E14" stroke-width="3" />
+  <ellipse cx="54.9" cy="32.52" rx="2.6" ry="11.96" fill="#947281" stroke="#0B0E14" stroke-width="2.1" />
+  <ellipse cx="73.1" cy="32" rx="6.24" ry="18.2" fill="#FFF0F6" stroke="#0B0E14" stroke-width="3" />
+  <ellipse cx="73.1" cy="32.52" rx="2.6" ry="11.96" fill="#947281" stroke="#0B0E14" stroke-width="2.1" />
+  <ellipse cx="56.2" cy="58.78" rx="2.86" ry="3.38" fill="#0B0E14" />
+  <ellipse cx="71.8" cy="58.78" rx="2.86" ry="3.38" fill="#0B0E14" />
+  <path d="M 61.66 64.24 L 66.34 64.24 L 64 66.84 Z" fill="#D9A8BE" stroke="#0B0E14" stroke-width="1.8" stroke-linejoin="round" />
 </svg>

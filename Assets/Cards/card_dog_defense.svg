@@ -1,33 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="220" height="140" viewBox="0 0 220 140">
   <defs>
-    <linearGradient id="bg_dog_defense" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2C3E66"/>
-      <stop offset="1" stop-color="#172035"/>
-    </linearGradient>
-    <radialGradient id="glow_dog_defense" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#B6CCF5" stop-opacity="0.52"/>
-      <stop offset="1" stop-color="#B6CCF5" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="hill_dog_defense" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4B6BB0"/>
-      <stop offset="1" stop-color="#2C3E66"/>
-    </linearGradient>
+    <linearGradient id="bg_card_dog_defense" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C2333"/><stop offset="1" stop-color="#12151D"/></linearGradient>
+    <radialGradient id="glow_card_dog_defense" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#B6CCF5" stop-opacity="0.45"/><stop offset="0.55" stop-color="#B6CCF5" stop-opacity="0.14"/><stop offset="1" stop-color="#B6CCF5" stop-opacity="0"/></radialGradient>
   </defs>
-  <rect x="0" y="0" width="220" height="140" fill="url(#bg_dog_defense)" />
-  <g stroke="#B6CCF5" stroke-width="10" stroke-opacity="0.06" stroke-linecap="round">
-    <path d="M-10 118 L96 12" />
-    <path d="M40 132 L150 22" />
-    <path d="M96 140 L210 26" />
-  </g>
-  <circle cx="110" cy="66" r="72" fill="url(#glow_dog_defense)" />
-  <g fill="none" stroke="#8197C8" stroke-width="4" stroke-opacity="0.28"><path d="M58 96 A58 58 0 0 1 58 34" /><path d="M42 102 A78 78 0 0 1 42 28" /></g>
-  <g transform="translate(110 66) scale(1.15) translate(-110 -66)">
-  <path d="M110 20 L148 36 L148 70 C148 94 128 108 110 114 C92 108 72 94 72 70 L72 36 Z" fill="#B6CCF5" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
-  <path d="M110 38 L133 47 L133 69 C133 85 120 95 110 99 C100 95 87 85 87 69 L87 47 Z" fill="#8197C8" fill-opacity="0.45" />
-  </g>
-  <path d="M0 120 C40 110 72 126 110 118 C150 109 182 126 220 114 L220 140 L0 140 Z" fill="url(#hill_dog_defense)" fill-opacity="0.55" />
-  <path d="M0 132 C46 124 78 136 118 130 C156 124 190 136 220 128 L220 140 L0 140 Z" fill="#172035" fill-opacity="0.5" />
-  <path d="M118 16 A42 42 0 0 1 162 34" fill="none" stroke="#8197C8" stroke-width="4" stroke-opacity="0.3" stroke-linecap="round" />
-  <path d="M15 125 L35 125 L15 105 Z" fill="#B6CCF5" fill-opacity="0.85" />
-  <rect x="1.5" y="1.5" width="217" height="137" fill="none" stroke="#0B0E14" stroke-width="3" />
+  <rect x="2" y="2" width="216" height="136" rx="14" fill="#12151D" stroke="#0B0E14" stroke-width="4" />
+  <rect x="8" y="8" width="204" height="124" rx="10" fill="url(#bg_card_dog_defense)" />
+  <circle cx="150" cy="64" r="56" fill="url(#glow_card_dog_defense)" />
+  <circle cx="44" cy="70" r="31" fill="#1A2030" />
+  <circle cx="44" cy="70" r="31" fill="none" stroke="#0B0E14" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="44" cy="70" r="31" fill="none" stroke="#4B6BB0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="44" cy="70" r="18" fill="#4B6BB0" stroke="#0B0E14" stroke-width="3" />
+  <ellipse cx="30.68" cy="71.8" rx="4.86" ry="9" fill="#334978" stroke="#0B0E14" stroke-width="3" />
+  <ellipse cx="57.32" cy="71.8" rx="4.86" ry="9" fill="#334978" stroke="#0B0E14" stroke-width="3" />
+  <ellipse cx="38.96" cy="68.92" rx="1.8" ry="2.16" fill="#0B0E14" />
+  <ellipse cx="49.04" cy="68.92" rx="1.8" ry="2.16" fill="#0B0E14" />
+  <ellipse cx="44" cy="77.92" rx="7.92" ry="5.4" fill="#B6CCF5" stroke="#0B0E14" stroke-width="3" />
+  <ellipse cx="44" cy="75.4" rx="2.7" ry="1.98" fill="#0B0E14" />
+  <path d="M 22 110 Q 44 119 66 110" fill="none" stroke="#0B0E14" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 22 110 Q 44 119 66 110" fill="none" stroke="#B6CCF5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <rect x="85" y="18" width="2" height="104" fill="#2C3547" />
+  <circle cx="150" cy="64" r="30.6" fill="none" stroke="#0B0E14" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="150" cy="64" r="30.6" fill="none" stroke="#B6CCF5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="150" cy="64" r="37.2" fill="none" stroke="#0B0E14" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="150" cy="64" r="37.2" fill="none" stroke="#6F89C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  <g transform="rotate(0 150 64)"><rect x="147.3" y="28" width="5.4" height="9" rx="2.4" fill="#B6CCF5" /></g>
+  <g transform="rotate(90 150 64)"><rect x="147.3" y="28" width="5.4" height="9" rx="2.4" fill="#B6CCF5" /></g>
+  <g transform="rotate(180 150 64)"><rect x="147.3" y="28" width="5.4" height="9" rx="2.4" fill="#B6CCF5" /></g>
+  <g transform="rotate(270 150 64)"><rect x="147.3" y="28" width="5.4" height="9" rx="2.4" fill="#B6CCF5" /></g>
+  <path d="M 150 36.4 L 171 46.6 L 168 70 Q 164.4 85.6 150 92.2 Q 135.6 85.6 132 70 L 129 46.6 Z" fill="#6F89C0" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
+  <polygon points="150,48.4 157.8,58.6 150,76 142.2,58.6" fill="#B6CCF5" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="196" cy="118" r="4" fill="#B6CCF5" />
+  <circle cx="182" cy="124" r="2.5" fill="#6F89C0" />
+  <polygon points="202,100 205,107 212,110 205,113 202,120 199,113 192,110 199,107" fill="#B6CCF5" />
 </svg>

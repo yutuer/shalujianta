@@ -929,6 +929,28 @@ namespace FishEatFish.Scenes
 		UpdateRageDisplay();
 	}
 
+	/// <summary>
+	/// 敌人这一回合**预告**要对玩家造成的总伤害。
+	/// 显示在玩家血条上：紧跟绿条的深红段 + 下面的「-XXX」（对照参考图 R-08）。
+	/// </summary>
+	private int GetPredictedIncomingDamage()
+	{
+		if (intentDisplay == null || player == null) return 0;
+
+		int total = 0;
+		foreach (Enemy enemy in enemies)
+		{
+			if (enemy == null || enemy.IsDead) continue;
+
+			AIAction predicted = intentDisplay.PredictEnemyAction(enemy, player, enemies);
+			if (predicted != null && predicted.Type == AIActionType.Attack)
+			{
+				total += Mathf.Max(0, predicted.Value);
+			}
+		}
+		return total;
+	}
+
 	private void UpdateEnemyUI()
 	{
 		for (int i = 0; i < enemies.Count && i < enemyUIs.Count; i++)
@@ -944,6 +966,9 @@ namespace FishEatFish.Scenes
 				}
 			}
 		}
+
+		// 敌人这一回合预告要打掉的血 → 反映到玩家血条上（深红段 + 「-XXX」）
+		playerZoneUI?.SetIncomingDamage(GetPredictedIncomingDamage());
 	}
 
 	/// <summary>

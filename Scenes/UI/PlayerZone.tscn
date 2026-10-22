@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/UI/PlayerZoneUI.cs" id="1"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/BuffDebuffDisplay.tscn" id="2"]
 [ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="3"]
+[ext_resource type="Texture2D" path="res://Assets/Icons/shield.svg" id="4_shield"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
 bg_color = Color(0.44, 0.09, 0.1, 1)
@@ -33,22 +34,85 @@ alignment = 1
 
 [node name="HealthRow" type="HBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
-[node name="HealthBar" type="ProgressBar" parent="HealthRow"]
-custom_minimum_size = Vector2(240, 22)
+[node name="HealthStack" type="Control" parent="HealthRow"]
+custom_minimum_size = Vector2(300, 44)
 layout_mode = 2
-size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="HealthBar" type="ProgressBar" parent="HealthRow/HealthStack"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 22.0
+grow_horizontal = 2
+mouse_filter = 2
 show_percentage = false
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
 
-[node name="HealthLabel" type="Label" parent="HealthRow"]
-layout_mode = 2
+[node name="IncomingDamage" type="ColorRect" parent="HealthRow/HealthStack"]
+layout_mode = 0
+offset_top = 0.0
+offset_bottom = 22.0
+mouse_filter = 2
+color = Color(0.72, 0.16, 0.16, 1)
+
+[node name="IncomingDamageLabel" type="Label" parent="HealthRow/HealthStack"]
+visible = false
+layout_mode = 0
+offset_top = 21.0
+offset_bottom = 43.0
+mouse_filter = 2
+text = "-0"
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.98, 0.45, 0.4, 1)
+horizontal_alignment = 1
+
+[node name="HealthLabel" type="Label" parent="HealthRow/HealthStack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 22.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 text = "0/0"
+horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.96, 0.93, 0.84, 1)
+
+[node name="ShieldBadge" type="PanelContainer" parent="HealthRow"]
+custom_minimum_size = Vector2(54, 44)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="ShieldInner" type="HBoxContainer" parent="HealthRow/ShieldBadge"]
+layout_mode = 2
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="ShieldIcon" type="TextureRect" parent="HealthRow/ShieldBadge/ShieldInner"]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("4_shield")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ShieldValue" type="Label" parent="HealthRow/ShieldBadge/ShieldInner"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+text = "0"
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.62, 0.9, 0.68, 1)
 
 [node name="BuffDebuffDisplay" parent="." instance=ExtResource("2")]
 layout_mode = 2

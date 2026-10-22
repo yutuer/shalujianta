@@ -1,33 +1,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="220" height="140" viewBox="0 0 220 140">
   <defs>
-    <linearGradient id="bg_ox_special" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#5A412A"/>
-      <stop offset="1" stop-color="#2F2216"/>
-    </linearGradient>
-    <radialGradient id="glow_ox_special" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#E8C89A" stop-opacity="0.52"/>
-      <stop offset="1" stop-color="#E8C89A" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="hill_ox_special" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#9C7048"/>
-      <stop offset="1" stop-color="#5A412A"/>
-    </linearGradient>
+    <linearGradient id="bg_card_ox_special" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C2333"/><stop offset="1" stop-color="#12151D"/></linearGradient>
+    <radialGradient id="glow_card_ox_special" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#E8C89A" stop-opacity="0.45"/><stop offset="0.55" stop-color="#E8C89A" stop-opacity="0.14"/><stop offset="1" stop-color="#E8C89A" stop-opacity="0"/></radialGradient>
   </defs>
-  <rect x="0" y="0" width="220" height="140" fill="url(#bg_ox_special)" />
-  <g stroke="#E8C89A" stroke-width="10" stroke-opacity="0.06" stroke-linecap="round">
-    <path d="M-10 118 L96 12" />
-    <path d="M40 132 L150 22" />
-    <path d="M96 140 L210 26" />
-  </g>
-  <circle cx="110" cy="66" r="72" fill="url(#glow_ox_special)" />
-  <polygon points="110,8 162,36 162,90 110,118 58,90 58,36" fill="none" stroke="#BA9B7F" stroke-width="4" stroke-opacity="0.26" stroke-linejoin="round" />
-  <g transform="translate(110 66) scale(1.15) translate(-110 -66)">
-  <polygon points="110,22 117.3,48.4 141.1,34.9 127.6,58.7 154,66 127.6,73.3 141.1,97.1 117.3,83.6 110,110 102.7,83.6 78.9,97.1 92.4,73.3 66,66 92.4,58.7 78.9,34.9 102.7,48.4" fill="#E8C89A" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
-  <circle cx="110" cy="66" r="13" fill="#BA9B7F" fill-opacity="0.55" />
-  </g>
-  <path d="M0 120 C40 110 72 126 110 118 C150 109 182 126 220 114 L220 140 L0 140 Z" fill="url(#hill_ox_special)" fill-opacity="0.55" />
-  <path d="M0 132 C46 124 78 136 118 130 C156 124 190 136 220 128 L220 140 L0 140 Z" fill="#2F2216" fill-opacity="0.5" />
-  <path d="M58 126 H100" fill="none" stroke="#BA9B7F" stroke-width="3" stroke-opacity="0.35" stroke-linecap="round" />
-  <rect x="198" y="52" width="8" height="36" rx="4" fill="#E8C89A" fill-opacity="0.85" />
-  <rect x="1.5" y="1.5" width="217" height="137" fill="none" stroke="#0B0E14" stroke-width="3" />
+  <rect x="2" y="2" width="216" height="136" rx="14" fill="#12151D" stroke="#0B0E14" stroke-width="4" />
+  <rect x="8" y="8" width="204" height="124" rx="10" fill="url(#bg_card_ox_special)" />
+  <circle cx="150" cy="64" r="56" fill="url(#glow_card_ox_special)" />
+  <circle cx="44" cy="70" r="31" fill="#1A2030" />
+  <circle cx="44" cy="70" r="31" fill="none" stroke="#0B0E14" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="44" cy="70" r="31" fill="none" stroke="#9C7048" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="44" cy="70" r="18" fill="#9C7048" stroke="#0B0E14" stroke-width="3" />
+  <path d="M 36.44 59.2 C 29.6 53.44 26.18 57.04 27.44 51.64" fill="none" stroke="#0B0E14" stroke-width="6.6" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 36.44 59.2 C 29.6 53.44 26.18 57.04 27.44 51.64" fill="none" stroke="#E8C89A" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 51.56 59.2 C 58.4 53.44 61.82 57.04 60.56 51.64" fill="none" stroke="#0B0E14" stroke-width="6.6" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 51.56 59.2 C 58.4 53.44 61.82 57.04 60.56 51.64" fill="none" stroke="#E8C89A" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+  <ellipse cx="38.6" cy="70.54" rx="1.98" ry="2.34" fill="#0B0E14" />
+  <ellipse cx="49.4" cy="70.54" rx="1.98" ry="2.34" fill="#0B0E14" />
+  <ellipse cx="44" cy="80.8" rx="8.28" ry="5.4" fill="#E8C89A" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="40.94" cy="80.08" r="0.99" fill="#0B0E14" />
+  <circle cx="47.06" cy="80.08" r="0.99" fill="#0B0E14" />
+  <path d="M 22 110 Q 44 119 66 110" fill="none" stroke="#0B0E14" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 22 110 Q 44 119 66 110" fill="none" stroke="#E8C89A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <rect x="85" y="18" width="2" height="104" fill="#2C3547" />
+  <polygon points="150,34.6 154.82,49.16 167.28,40.21 162.62,54.83 177.96,54.91 165.6,64 177.96,73.09 162.62,73.17 167.28,87.79 154.82,78.84 150,93.4 145.18,78.84 132.72,87.79 137.38,73.17 122.04,73.09 134.4,64 122.04,54.91 137.38,54.83 132.72,40.21 145.18,49.16" fill="#E8C89A" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="150" cy="64" r="10.2" fill="#E8A050" stroke="#0B0E14" stroke-width="2.5" />
+  <circle cx="122.4" cy="49" r="2.7" fill="#E8A050" stroke="#0B0E14" stroke-width="2" />
+  <circle cx="178.5" cy="50.2" r="2.7" fill="#E8A050" stroke="#0B0E14" stroke-width="2" />
+  <circle cx="174" cy="85.6" r="2.7" fill="#E8A050" stroke="#0B0E14" stroke-width="2" />
+  <circle cx="124.8" cy="85" r="2.7" fill="#E8A050" stroke="#0B0E14" stroke-width="2" />
+  <circle cx="196" cy="118" r="4" fill="#E8C89A" />
+  <circle cx="182" cy="124" r="2.5" fill="#B08D6D" />
+  <polygon points="202,100 205,107 212,110 205,113 202,120 199,113 192,110 199,107" fill="#E8C89A" />
 </svg>

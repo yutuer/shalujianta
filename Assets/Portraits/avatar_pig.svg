@@ -1,23 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="bg_pig" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#DFBFD4"/>
-      <stop offset="1" stop-color="#C58AB0"/>
-    </linearGradient>
-    <linearGradient id="head_pig" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#D1A1C0"/>
-      <stop offset="1" stop-color="#C58AB0"/>
-    </linearGradient>
+    <linearGradient id="bg_avatar_pig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D1A1C0"/><stop offset="1" stop-color="#865E78"/></linearGradient>
   </defs>
-  <circle cx="64" cy="64" r="64" fill="#0B0E14" />
-  <circle cx="64" cy="64" r="60" fill="url(#bg_pig)" />
-  <circle cx="64" cy="70" r="30" fill="url(#head_pig)" stroke="#0B0E14" stroke-width="4" />
-  <ellipse cx="54" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <ellipse cx="74" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <path d="M40 48 L26 30 L44 40 Z" fill="#FFE0F2" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
-  <path d="M88 48 L102 30 L84 40 Z" fill="#FFE0F2" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
-  <ellipse cx="64" cy="88" rx="16" ry="12" fill="#FFE8F5" stroke="#0B0E14" stroke-width="3" />
-  <circle cx="59" cy="88" r="2.6" fill="#0B0E14" />
-  <circle cx="69" cy="88" r="2.6" fill="#0B0E14" />
-  <circle cx="64" cy="64" r="60" fill="none" stroke="#FFE0F2" stroke-width="4" />
+  <circle cx="64" cy="64" r="60" fill="url(#bg_avatar_pig)" />
+  <circle cx="64" cy="64" r="60" fill="none" stroke="#0B0E14" stroke-width="3" />
+  <path d="M 25.4 110 Q 30 82 64 82 Q 98 82 102.6 110 A 60 60 0 0 1 25.4 110 Z" fill="#865E78" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="64" cy="58" r="26" fill="#FFE0F2" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="48.4" cy="42.4" r="7.28" fill="#FFE0F2" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="79.6" cy="42.4" r="7.28" fill="#FFE0F2" stroke="#0B0E14" stroke-width="3" />
+  <ellipse cx="56.2" cy="56.44" rx="2.6" ry="3.12" fill="#0B0E14" />
+  <ellipse cx="71.8" cy="56.44" rx="2.6" ry="3.12" fill="#0B0E14" />
+  <ellipse cx="64" cy="68.92" rx="10.92" ry="7.8" fill="#865E78" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="60.1" cy="68.92" r="1.56" fill="#0B0E14" />
+  <circle cx="67.9" cy="68.92" r="1.56" fill="#0B0E14" />
 </svg>

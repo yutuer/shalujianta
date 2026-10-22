@@ -1,22 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="bg_dragon" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#8DB8C4"/>
-      <stop offset="1" stop-color="#2F7E93"/>
-    </linearGradient>
-    <linearGradient id="head_dragon" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#5998A9"/>
-      <stop offset="1" stop-color="#2F7E93"/>
-    </linearGradient>
+    <linearGradient id="bg_avatar_dragon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5998A9"/><stop offset="1" stop-color="#205664"/></linearGradient>
   </defs>
-  <circle cx="64" cy="64" r="64" fill="#0B0E14" />
-  <circle cx="64" cy="64" r="60" fill="url(#bg_dragon)" />
-  <circle cx="64" cy="70" r="30" fill="url(#head_dragon)" stroke="#0B0E14" stroke-width="4" />
-  <ellipse cx="54" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <ellipse cx="74" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <path d="M46 56 C32 46 24 46 16 54" fill="none" stroke="#8FE6F2" stroke-width="7" stroke-linecap="round" />
-  <path d="M82 56 C96 46 104 46 112 54" fill="none" stroke="#8FE6F2" stroke-width="7" stroke-linecap="round" />
-  <path d="M60 40 L64 22 L70 40 Z" fill="#ABECF5" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
-  <circle cx="64" cy="86" r="5" fill="#ABECF5" stroke="#0B0E14" stroke-width="2.5" />
-  <circle cx="64" cy="64" r="60" fill="none" stroke="#8FE6F2" stroke-width="4" />
+  <circle cx="64" cy="64" r="60" fill="url(#bg_avatar_dragon)" />
+  <circle cx="64" cy="64" r="60" fill="none" stroke="#0B0E14" stroke-width="3" />
+  <path d="M 25.4 110 Q 30 82 64 82 Q 98 82 102.6 110 A 60 60 0 0 1 25.4 110 Z" fill="#205664" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="64" cy="58" r="26" fill="#8FE6F2" stroke="#0B0E14" stroke-width="3" />
+  <path d="M 52.3 42.92 C 42.68 32.52 40.6 43.7 46.84 49.68" fill="none" stroke="#0B0E14" stroke-width="7.42" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 52.3 42.92 C 42.68 32.52 40.6 43.7 46.84 49.68" fill="none" stroke="#205664" stroke-width="4.42" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 75.7 42.92 C 85.32 32.52 87.4 43.7 81.16 49.68" fill="none" stroke="#0B0E14" stroke-width="7.42" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 75.7 42.92 C 85.32 32.52 87.4 43.7 81.16 49.68" fill="none" stroke="#205664" stroke-width="4.42" stroke-linecap="round" stroke-linejoin="round" />
+  <ellipse cx="56.2" cy="58.78" rx="2.86" ry="3.38" fill="#0B0E14" />
+  <ellipse cx="71.8" cy="58.78" rx="2.86" ry="3.38" fill="#0B0E14" />
+  <circle cx="64" cy="69.96" r="3.38" fill="#205664" stroke="#0B0E14" stroke-width="2.1" />
+  <polygon points="59.84,76.2 68.16,76.2 66.6,81.92 61.4,81.92" fill="#205664" stroke="#0B0E14" stroke-width="2.1" stroke-linejoin="round" />
 </svg>

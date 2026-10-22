@@ -24,8 +24,12 @@ public partial class PlayerStatsUI : HBoxContainer
         shieldLabel.AddThemeColorOverride("font_color", new Color(0.5f, 0.8f, 0.5f));
 
         // 能量（当前算力）挪到**左下角玩家区**显示（对照参考图 R-08 的左下角），
-        // 顶部这里只留生命 / 护盾 / 回合，避免同一信息出现两遍。
+        // 顶部这里只留生命 / 回合，避免同一信息出现两遍。
         energyLabel.Visible = false;
+
+        // 护盾（盾量）也挪到**玩家血条末端**的盾牌徽标上了（对照参考图 R-08），
+        // 顶部不再重复显示。
+        shieldLabel.Visible = false;
 
         ApplyPendingSetup();
     }

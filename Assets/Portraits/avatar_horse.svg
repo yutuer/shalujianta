@@ -1,22 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="bg_horse" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#CFA095"/>
-      <stop offset="1" stop-color="#A8523F"/>
-    </linearGradient>
-    <linearGradient id="head_horse" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#B97565"/>
-      <stop offset="1" stop-color="#A8523F"/>
-    </linearGradient>
+    <linearGradient id="bg_avatar_horse" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B97565"/><stop offset="1" stop-color="#72382B"/></linearGradient>
   </defs>
-  <circle cx="64" cy="64" r="64" fill="#0B0E14" />
-  <circle cx="64" cy="64" r="60" fill="url(#bg_horse)" />
-  <circle cx="64" cy="70" r="30" fill="url(#head_horse)" stroke="#0B0E14" stroke-width="4" />
-  <ellipse cx="54" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <ellipse cx="74" cy="68" rx="4" ry="5" fill="#0B0E14" />
-  <path d="M46 48 L40 16 L58 40 Z" fill="#F0C0A0" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
-  <path d="M82 48 L88 16 L70 40 Z" fill="#F0C0A0" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />
-  <path d="M50 42 C56 26 72 26 78 42" fill="none" stroke="#F4D0B8" stroke-width="8" stroke-linecap="round" />
-  <ellipse cx="64" cy="88" rx="16" ry="10" fill="#F4D0B8" stroke="#0B0E14" stroke-width="3" />
-  <circle cx="64" cy="64" r="60" fill="none" stroke="#F0C0A0" stroke-width="4" />
+  <circle cx="64" cy="64" r="60" fill="url(#bg_avatar_horse)" />
+  <circle cx="64" cy="64" r="60" fill="none" stroke="#0B0E14" stroke-width="3" />
+  <path d="M 25.4 110 Q 30 82 64 82 Q 98 82 102.6 110 A 60 60 0 0 1 25.4 110 Z" fill="#72382B" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="64" cy="58" r="26" fill="#F0C0A0" stroke="#0B0E14" stroke-width="3" />
+  <polygon points="47.36,45 52.56,30.44 59.32,41.88 64,27.84 68.68,41.88 75.44,30.44 80.64,45 71.8,49.68 56.2,49.68" fill="#72382B" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <ellipse cx="56.2" cy="58.78" rx="2.86" ry="3.38" fill="#0B0E14" />
+  <ellipse cx="71.8" cy="58.78" rx="2.86" ry="3.38" fill="#0B0E14" />
+  <ellipse cx="64" cy="73.08" rx="11.44" ry="7.28" fill="#72382B" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="59.84" cy="72.04" r="1.43" fill="#0B0E14" />
+  <circle cx="68.16" cy="72.04" r="1.43" fill="#0B0E14" />
 </svg>
