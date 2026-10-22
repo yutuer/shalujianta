@@ -52,8 +52,8 @@ public partial class PlayerZoneUI : Control
         _healthBar = GetNodeOrNull<ProgressBar>("HealthRow/HealthStack/HealthBar");
         _healthLabel = GetNodeOrNull<Label>("HealthRow/HealthStack/HealthLabel");
         _energyLabel = GetNodeOrNull<Label>("BottomInfoRow/EnergyBlock/EnergyValue");
-        _shieldValue = GetNodeOrNull<Label>("HealthRow/HealthStack/ShieldBadge/ShieldInner/ShieldValue");
-        _shieldBadge = GetNodeOrNull<PanelContainer>("HealthRow/HealthStack/ShieldBadge");
+        _shieldValue = GetNodeOrNull<Label>("HealthRow/ShieldBadge/ShieldInner/ShieldValue");
+        _shieldBadge = GetNodeOrNull<PanelContainer>("HealthRow/ShieldBadge");
         _incomingDamage = GetNodeOrNull<ColorRect>("HealthRow/HealthStack/IncomingDamage");
         _incomingDamageLabel = GetNodeOrNull<Label>("HealthRow/HealthStack/IncomingDamageLabel");
         _keyOrderBadge = GetNodeOrNull<PanelContainer>("BottomInfoRow/KeyOrderBlock/KeyOrderBadge");
@@ -132,10 +132,15 @@ public partial class PlayerZoneUI : Control
             _shieldValue.Text = _playerData.Shield.ToString();
         }
 
-        // 盾量为 0 时**不显示盾图标**（空盾牌徽标只是噪音）
+        // 盾量为 0 时**不显示盾图标**（空盾牌徽标只是噪音）。
+        //
+        // ⚠️ 用 **alpha=0** 而不是 `Visible = false`：徽标是「血条 + 盾」这一组的成员，
+        // 直接隐藏会让这一组变窄 → **整条血条被推走 32px**。
+        // 而护盾是**每回合清零**的（BattleManager.StartTurn 里 player.Shield = 0），
+        // 那样血条每个回合都会横跳一次。保留占位、只把内容透明掉就稳了。
         if (_shieldBadge != null)
         {
-            _shieldBadge.Visible = _playerData.Shield > 0;
+            _shieldBadge.Modulate = new Color(1f, 1f, 1f, _playerData.Shield > 0 ? 1f : 0f);
         }
     }
 

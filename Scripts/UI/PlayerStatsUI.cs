@@ -31,6 +31,18 @@ public partial class PlayerStatsUI : HBoxContainer
         // 顶部不再重复显示。
         shieldLabel.Visible = false;
 
+        // 血量（生命）也挪到**左下角玩家血条上**了（D30 起血量数字写在条里），
+        // 顶部再显示一份就是重复信息 → 去掉。
+        healthLabel.Visible = false;
+
+        // 顶栏现在只剩「回合」了 —— 那几个空格分隔符（原来用来隔开各项）就都成了多余的留白，
+        // 会把「回合」往左推 → 一起隐藏。
+        foreach (string spacerPath in new[] { "Spacer1", "Spacer2", "Spacer3" })
+        {
+            Label spacer = GetNodeOrNull<Label>(spacerPath);
+            if (spacer != null) spacer.Visible = false;
+        }
+
         ApplyPendingSetup();
     }
 
