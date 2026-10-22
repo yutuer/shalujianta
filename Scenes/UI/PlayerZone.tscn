@@ -35,7 +35,7 @@ alignment = 0
 [node name="HealthRow" type="HBoxContainer" parent="."]
 layout_mode = 2
 theme_override_constants/separation = 10
-alignment = 2
+alignment = 1
 
 [node name="HealthStack" type="Control" parent="HealthRow"]
 custom_minimum_size = Vector2(300, 44)
@@ -87,18 +87,20 @@ vertical_alignment = 1
 theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.96, 0.93, 0.84, 1)
 
-[node name="ShieldBadge" type="PanelContainer" parent="HealthRow"]
-custom_minimum_size = Vector2(54, 44)
-layout_mode = 2
-size_flags_vertical = 4
+[node name="ShieldBadge" type="PanelContainer" parent="HealthRow/HealthStack"]
+layout_mode = 1
+offset_left = 310.0
+offset_top = 0.0
+offset_right = 364.0
+offset_bottom = 44.0
 mouse_filter = 2
 
-[node name="ShieldInner" type="HBoxContainer" parent="HealthRow/ShieldBadge"]
+[node name="ShieldInner" type="HBoxContainer" parent="HealthRow/HealthStack/ShieldBadge"]
 layout_mode = 2
 theme_override_constants/separation = 3
 alignment = 1
 
-[node name="ShieldIcon" type="TextureRect" parent="HealthRow/ShieldBadge/ShieldInner"]
+[node name="ShieldIcon" type="TextureRect" parent="HealthRow/HealthStack/ShieldBadge/ShieldInner"]
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_vertical = 4
@@ -107,7 +109,7 @@ texture = ExtResource("4_shield")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ShieldValue" type="Label" parent="HealthRow/ShieldBadge/ShieldInner"]
+[node name="ShieldValue" type="Label" parent="HealthRow/HealthStack/ShieldBadge/ShieldInner"]
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -118,7 +120,7 @@ theme_override_colors/font_color = Color(0.62, 0.9, 0.68, 1)
 
 [node name="BuffDebuffDisplay" parent="." instance=ExtResource("2")]
 layout_mode = 2
-IconAlignment = 2
+IconAlignment = 1
 
 [node name="BottomSpacer" type="Control" parent="."]
 layout_mode = 2

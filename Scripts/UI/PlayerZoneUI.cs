@@ -52,8 +52,8 @@ public partial class PlayerZoneUI : Control
         _healthBar = GetNodeOrNull<ProgressBar>("HealthRow/HealthStack/HealthBar");
         _healthLabel = GetNodeOrNull<Label>("HealthRow/HealthStack/HealthLabel");
         _energyLabel = GetNodeOrNull<Label>("BottomInfoRow/EnergyBlock/EnergyValue");
-        _shieldValue = GetNodeOrNull<Label>("HealthRow/ShieldBadge/ShieldInner/ShieldValue");
-        _shieldBadge = GetNodeOrNull<PanelContainer>("HealthRow/ShieldBadge");
+        _shieldValue = GetNodeOrNull<Label>("HealthRow/HealthStack/ShieldBadge/ShieldInner/ShieldValue");
+        _shieldBadge = GetNodeOrNull<PanelContainer>("HealthRow/HealthStack/ShieldBadge");
         _incomingDamage = GetNodeOrNull<ColorRect>("HealthRow/HealthStack/IncomingDamage");
         _incomingDamageLabel = GetNodeOrNull<Label>("HealthRow/HealthStack/IncomingDamageLabel");
         _keyOrderBadge = GetNodeOrNull<PanelContainer>("BottomInfoRow/KeyOrderBlock/KeyOrderBadge");
