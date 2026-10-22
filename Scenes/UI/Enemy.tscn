@@ -3,14 +3,14 @@
 [ext_resource type="Script" path="res://Scripts/UI/EnemyUI.cs" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_hp_bg"]
-bg_color = Color(0.28, 0.06, 0.07, 1)
+bg_color = Color(0.44, 0.09, 0.1, 1)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_hp_fill"]
-bg_color = Color(0.78, 0.24, 0.26, 1)
+bg_color = Color(0.36, 0.82, 0.42, 1)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3

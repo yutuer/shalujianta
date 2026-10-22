@@ -695,73 +695,11 @@ namespace FishEatFish.Scenes
 		}
 	}
 
-	/// <summary>
-	/// 【临时】是否挂测试状态，用来预览「血条下方那排状态图标」的排版效果。
-	/// 验收完把这里改成 false 或整段删掉。
-	/// </summary>
-	private const bool DEBUG_SHOW_TEST_BUFFS = true;
-
-	/// <summary>
-	/// 【临时】给主玩家和敌人各挂几个状态（buff + debuff），
-	/// 用来确认玩家侧和敌人侧的状态图标排版都对。
-	/// </summary>
-	private void ApplyDebugTestBuffs()
-	{
-		if (!DEBUG_SHOW_TEST_BUFFS) return;
-
-		if (player != null)
-		{
-			AddTestStatusToPlayer("strength");
-			AddTestStatusToPlayer("regeneration");
-			AddTestStatusToPlayer("vulnerable");
-			AddTestStatusToPlayer("poison");
-		}
-
-		foreach (Enemy enemy in enemies)
-		{
-			if (enemy == null) continue;
-			AddTestStatusToEnemy(enemy, "fury");
-			AddTestStatusToEnemy(enemy, "slow");
-		}
-
-		UpdateBuffDebuffDisplay();
-		UpdateEnemyStatusIcons();
-		GD.Print("[BattleManager] 调试测试状态已挂上（DEBUG_SHOW_TEST_BUFFS）");
-	}
-
-	/// <summary>【临时】给主玩家挂一个 buff 或 debuff（按 id 自动判断类别）</summary>
-	private void AddTestStatusToPlayer(string statusId)
-	{
-		StatusEffect effect = CreateTestStatus(statusId);
-		if (effect == null) return;
-		player.AddStatusEffect(effect);
-	}
-
-	/// <summary>【临时】给某个敌人挂一个 buff 或 debuff</summary>
-	private void AddTestStatusToEnemy(Enemy enemy, string statusId)
-	{
-		StatusEffect effect = CreateTestStatus(statusId);
-		if (effect == null) return;
-		enemy.AddStatusEffect(effect);
-	}
-
-	/// <summary>【临时】按 id 造一个状态：先试 buff 再试 debuff（两者都带图标路径）</summary>
-	private static StatusEffect CreateTestStatus(string statusId)
-	{
-		StatusEffect effect = FishEatFish.Battle.Effects.EffectRegistry.CreateBuff(statusId);
-		if (effect == null)
-		{
-			effect = FishEatFish.Battle.Effects.EffectRegistry.CreateDebuff(statusId);
-		}
-		return effect;
-	}
-
 	private void StartBattle()
 	{
 		GD.Print("[BattleManager] ========== 战斗开始 ==========");
 		battleEndRageHandler?.OnBattleStart();
 		AddMessage("战斗开始!", LogType.System);
-		ApplyDebugTestBuffs();
 		StartTurn();
 	}
 

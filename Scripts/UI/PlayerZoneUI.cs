@@ -203,7 +203,7 @@ public partial class PlayerZoneUI : Control
             disc.BgColor = new Color(0.16f, 0.18f, 0.24f);
             disc.BorderColor = new Color(0.85f, 0.75f, 0.45f);
             disc.SetBorderWidthAll(2);
-            disc.SetCornerRadiusAll(22);
+            disc.SetCornerRadiusAll(38);   // 徽标 76x76 → 圆形底板半径跟着图标一起放大
             _keyOrderBadge.AddThemeStyleboxOverride("panel", disc);
         }
     }
