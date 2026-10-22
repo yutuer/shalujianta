@@ -192,7 +192,7 @@ namespace FishEatFish.Scenes
 			CardUI hoveredCard = cardUIs[hoveredCardIndex];
 			if (hoveredCard != null && isPlayerTurn && player.CurrentEnergy >= hoveredCard.GetCardData().Cost)
 			{
-				hoveredCard.GetPlayButton().EmitSignal("pressed");
+				hoveredCard.Play();
 			}
 		}
 	}

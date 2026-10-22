@@ -37,12 +37,12 @@ stretch_mode = 1
 [node name="CardLayoutManager" type="Node" parent="." unique_id=123456789]
 script = ExtResource("3_card_layout")
 _handArcAngleMinDegrees = 0.0
-_handArcAngleMaxDegrees = 18.0
+_handArcAngleMaxDegrees = 7.0
 _handArcRadiusMin = 739.0
 _handBottomPadding = 72.0
 _handPivotYOffsetFactor = 1.2
-_handHoverLift = 65.0
-_handHoverScale = 1.3
+_handHoverLift = 14.0
+_handHoverScale = 1.04
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=706672011]
 

@@ -18,9 +18,9 @@ public partial class CardLayoutManager : Node
 
 	[ExportGroup("Hand Layout")]
 	[Export(PropertyHint.Range, "0,60,0.5")]
-	private float _handArcAngleMinDegrees = 5f;
+	private float _handArcAngleMinDegrees = 0f;
 	[Export(PropertyHint.Range, "0,60,0.5")]
-	private float _handArcAngleMaxDegrees = 12f;
+	private float _handArcAngleMaxDegrees = 7f;
 	[Export(PropertyHint.Range, "100,1500,1")]
 	private float _handArcRadiusMin = 720f;
 	[Export(PropertyHint.Range, "100,1500,1")]
@@ -33,14 +33,17 @@ public partial class CardLayoutManager : Node
 	private float _handPivotYOffsetFactor = 0.92f;
 
 	[ExportGroup("Hover Effects")]
+	/// <summary>悬停时抬起的距离（**轻微**即可 —— 之前抬 65 又放大 1.3 倍，两端的牌会互相盖住）</summary>
 	[Export(PropertyHint.Range, "0,150,1")]
-	private float _handHoverLift = 80f;
+	private float _handHoverLift = 14f;
+	/// <summary>悬停时把邻居推开多少（0 = 不推，牌堆保持稳定）</summary>
 	[Export(PropertyHint.Range, "0,150,1")]
-	private float _handHoverNeighborPush = 20f;
+	private float _handHoverNeighborPush = 0f;
 	[Export(PropertyHint.Range, "0,80,1")]
-	private float _handHoverSecondaryPush = 8f;
+	private float _handHoverSecondaryPush = 0f;
+	/// <summary>悬停时的放大倍数（轻微）</summary>
 	[Export(PropertyHint.Range, "1.0,1.5,0.01")]
-	private float _handHoverScale = 1.12f;
+	private float _handHoverScale = 1.04f;
 
 	[ExportGroup("Use Advanced Arc Layout")]
 	[Export]
@@ -82,6 +85,17 @@ public partial class CardLayoutManager : Node
 		}
 	}
 
+	/// <summary>
+	/// 找出鼠标当前压着的是哪张牌。
+	///
+	/// ⚠️ 这里**必须按牌的真实变换（含旋转与缩放）来判定**：
+	/// 之前用的是「未旋转的轴对齐矩形」，而扇形里的牌是转着的 ——
+	/// 两端的牌差得最多，鼠标移过去命中的往往是**旁边那张**。
+	/// 现在把全局坐标反变换到牌面局部坐标再判矩形，旋转多少都准。
+	///
+	/// 遍历顺序：**从最上面那张往下找**（后加入的牌 Z 更高、压在上面），
+	/// 与实际看到的那张保持一致。
+	/// </summary>
 	public int CheckCardHover(
 		List<CardUI> cardUIs,
 		Control container,
@@ -90,34 +104,16 @@ public partial class CardLayoutManager : Node
 	{
 		if (cardUIs.Count == 0) return -1;
 
-		int totalCards = cardUIs.Count;
-		float handWidth = _overlapOffset * (totalCards - 1) + _cardWidth;
-		float startX = (container.Size.X - handWidth) / 2f;
-		float baseY = container.Size.Y - _cardHeight - 10;
-
-		Vector2 containerGlobalPos = container.GlobalPosition;
-		int newHoveredIndex = -1;
-
-		for (int i = 0; i < cardUIs.Count; i++)
+		for (int i = cardUIs.Count - 1; i >= 0; i--)
 		{
-			float x = startX + i * _overlapOffset;
-			float y = baseY;
-
-			Rect2 cardRect = new Rect2(
-				containerGlobalPos.X + x,
-				containerGlobalPos.Y + y,
-				_cardWidth,
-				_cardHeight
-			);
-
-			if (cardRect.HasPoint(mousePos))
-			{
-				newHoveredIndex = i;
-				break;
-			}
+			CardUI cardUI = cardUIs[i];
+			if (cardUI == null) continue;
+			if (cardUI.IsDragging) continue;      // 正在拖的牌不参与拾取
+			if (!cardUI.IsInteractive) continue;  // 不能出的牌不响应悬停
+			if (cardUI.ContainsGlobalPoint(mousePos)) return i;
 		}
 
-		return newHoveredIndex;
+		return -1;
 	}
 
 	public void UpdateCardPositions(
@@ -209,18 +205,20 @@ public partial class CardLayoutManager : Node
 				finalRot += rotationPush;
 			}
 
-			var pivotTopLeft = ConvertPivotToTopLeft(pivotPosition + liftOffset, pivotOffset, finalRot, scale);
+			// 位置/旋转/缩放统一交给 CardUI：它会把「扇形原位」和「拖拽位移」混合，
+			// 拖拽时才会脱离牌堆 + 摆正 + 放大。
+			var pivotTopLeft = ConvertPivotToTopLeft(pivotPosition + liftOffset, pivotOffset, finalRot, Vector2.One);
 
-			cardUI.OffsetLeft = pivotTopLeft.X;
-			cardUI.OffsetTop = pivotTopLeft.Y;
-			cardUI.OffsetRight = pivotTopLeft.X + _cardWidth;
-			cardUI.OffsetBottom = pivotTopLeft.Y + _cardHeight;
-
-			cardUI.Rotation = Mathf.DegToRad(finalRot);
-			cardUI.Scale = scale;
+			cardUI.SetHomeTransform(pivotTopLeft, finalRot, scale.X);
+			cardUI.ApplyTransform();
 
 			int zIndex = i;
-			if (i == hoveredCardIndex && isMouseInHandArea)
+			if (cardUI.IsDragging)
+			{
+				// 正在拖的牌永远压在最上面
+				zIndex = totalCards + 100;
+			}
+			else if (i == hoveredCardIndex && isMouseInHandArea)
 			{
 				zIndex = totalCards + 10;
 			}
@@ -289,15 +287,15 @@ public partial class CardLayoutManager : Node
 				cardUI.SetHovered(false);
 			}
 
-			cardUI.OffsetLeft = x;
-			cardUI.OffsetTop = y;
-			cardUI.OffsetRight = x + _cardWidth;
-			cardUI.OffsetBottom = y + _cardHeight;
-
-			cardUI.Rotation = rotation;
+			cardUI.SetHomeTransform(new Vector2(x, y), Mathf.RadToDeg(rotation), 1f);
+			cardUI.ApplyTransform();
 
 			int zIndex = i;
-			if (i == hoveredCardIndex && isMouseInHandArea)
+			if (cardUI.IsDragging)
+			{
+				zIndex = totalCards + 100;
+			}
+			else if (i == hoveredCardIndex && isMouseInHandArea)
 			{
 				zIndex = totalCards + 10;
 			}
@@ -343,11 +341,28 @@ public partial class CardLayoutManager : Node
 		);
 	}
 
+	/// <summary>
+	/// 抽牌动画的落点 —— 必须和扇形布局算出来的一致，
+	/// 否则牌会先落到一条平排上、再"跳"进扇形里。
+	/// </summary>
 	public (float targetX, float targetY) GetCardDrawTargetPosition(Control container, int cardIndex, int totalCards)
 	{
-		float handWidth = _overlapOffset * (totalCards - 1) + _cardWidth;
-		float targetX = (container.Size.X - handWidth) / 2f + cardIndex * _overlapOffset;
-		float targetY = container.Size.Y - _cardHeight - 10;
-		return (targetX, targetY);
+		Vector2 home = GetCardHomePosition(container, cardIndex, totalCards);
+		return (home.X, home.Y);
+	}
+
+	/// <summary>按扇形布局算出第 cardIndex 张牌的「原位」左上角</summary>
+	public Vector2 GetCardHomePosition(Control container, int cardIndex, int totalCards)
+	{
+		var cardSize = new Vector2(_cardWidth, _cardHeight);
+		GetHandArcMetrics(container, totalCards, cardSize, out var centerX, out var pivotOffset,
+			out var pivotBaseY, out var maxAngle, out var radius, out var startAngle, out var angleStep);
+
+		float angle = totalCards <= 1 ? 0f : startAngle + angleStep * cardIndex;
+		float pivotX = centerX + Mathf.Sin(angle) * radius;
+		float pivotY = pivotBaseY + (1f - Mathf.Cos(angle)) * radius;
+		float rot = Mathf.RadToDeg(angle);
+
+		return ConvertPivotToTopLeft(new Vector2(pivotX, pivotY), pivotOffset, rot, Vector2.One);
 	}
 }
