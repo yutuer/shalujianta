@@ -592,7 +592,10 @@ namespace FishEatFish.UI.HexMap
             ClearPathHighlights();
 
             var tile = tileView.Tile;
-            if (tile != null && tile.CanEnter)
+            // ⚠️ 只有**已照亮**的格子才画路径高亮：
+            // 迷雾里的格子虽然看不见了，但控件还在、照样能收到鼠标事件，
+            // 不挡一下的话，鼠标扫过迷雾区会直接把整条路径点亮 → 地形又被泄出去了。
+            if (tile != null && tile.CanEnter && _controller.IsRevealed(tile.Coord))
             {
                 var path = _controller.GetPathTo(tile.Coord);
                 HighlightPath(path);
@@ -656,7 +659,40 @@ namespace FishEatFish.UI.HexMap
 
 		        // 探照灯打开开关：驱散半径 3 格的迷雾（主人确认：3 格）
 		        _controller?.RevealTiles(_controller.CurrentPosition, 3);
+		        // 生效之后探照灯就"用完了"：作用消失，图标也要清掉
+		        ClearSearchlightIcon();
 		        UpdateFogAndHighlight();
+		    }
+
+		    /// <summary>
+		    /// 探照灯生效后清掉它的图标（作用也就到此为止）。
+		    ///
+		    /// ⚠️ 事件本身已经被 <c>HexTile.Trigger()</c> 清成 Empty（所以不会再触发第二次），
+		    /// 但 **IconPath 是生成器写在格子上的，Trigger 不会清它**
+		    /// → 不主动清的话，灯笼图标会一直留在格子上，看起来"探照灯还能用"。
+		    ///
+		    /// 认人靠 <c>DisplayName == "探照灯"</c>：Trigger 只清了 EventType，
+		    /// DisplayName 与 IconPath 都还在，遍历全图把这类格子一次性清干净。
+		    /// </summary>
+		    private void ClearSearchlightIcon()
+		    {
+		        if (_controller?.CurrentMap == null) return;
+
+		        int cleared = 0;
+		        foreach (HexTile t in _controller.CurrentMap.GetAllTiles())
+		        {
+		            if (t.DisplayName != "探照灯") continue;
+
+		            t.IconPath = "";
+		            t.DisplayName = "";
+
+		            if (_tileViews.TryGetValue(t.Coord, out HexTileView view) && view != null)
+		            {
+		                view.SetTile(t);
+		            }
+		            cleared++;
+		        }
+		        GD.Print($"[HexMapUI] 探照灯已生效，清除了 {cleared} 个探照灯图标");
 		    }
         private void OnPlayerMoved(HexCoord newPos)
         {

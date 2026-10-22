@@ -159,10 +159,16 @@ namespace FishEatFish.UI.HexMap
         {
             if (_tile == null || _hexShape == null) return;
 
-            // 迷雾：未照亮的格子全黑，图标与坐标都不显示
+            // 迷雾：未照亮的格子**整个不画**（六边形透明），图标与坐标也都不显示。
+            //
+            // ⚠️ 这里**不能画成"近黑色的六边形"** —— 那样只遮住了事件图标，
+            // **六边形的形状还在**，玩家一眼就能看出整条路径的地形
+            //（也就是"迷雾只能遮蔽事件，遮蔽不了地形"）。
+            // 画成透明后，未探索区 = 一整片背景色，
+            // 跟"没有格子的空洞区"完全一致 → **地形也一起遮住了**。
             if (_isFogged)
             {
-                _hexShape.Color = new Color(0.02f, 0.02f, 0.04f, 1f);
+                _hexShape.Color = new Color(0f, 0f, 0f, 0f);
                 if (_iconRect != null) _iconRect.Visible = false;
                 if (_iconLabel != null) _iconLabel.Visible = false;
                 if (_debugLabel != null) _debugLabel.Visible = false;
