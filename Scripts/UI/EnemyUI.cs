@@ -34,7 +34,7 @@ public partial class EnemyUI : Panel
         nameLabel = GetNode<Label>("VBoxContainer/NameLabel");
         enemySprite = GetNode<TextureRect>("VBoxContainer/EnemySprite");
         healthBar = GetNode<ProgressBar>("VBoxContainer/HealthBar");
-        healthLabel = GetNode<Label>("VBoxContainer/HealthLabel");
+        healthLabel = GetNode<Label>("VBoxContainer/HealthBar/HealthLabel");
         intentLabel = GetNode<Label>("VBoxContainer/IntentRow/IntentLabel");
 
         if (HasNode("VBoxContainer/IntentRow/IntentIcon"))

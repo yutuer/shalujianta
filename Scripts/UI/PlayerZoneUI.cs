@@ -29,6 +29,7 @@ public partial class PlayerZoneUI : Control
     private Label _healthLabel;
     private Label _energyLabel;
     private Label _shieldValue;
+    private PanelContainer _shieldBadge;
     private ColorRect _incomingDamage;
     private Label _incomingDamageLabel;
     private PanelContainer _keyOrderBadge;
@@ -52,6 +53,7 @@ public partial class PlayerZoneUI : Control
         _healthLabel = GetNodeOrNull<Label>("HealthRow/HealthStack/HealthLabel");
         _energyLabel = GetNodeOrNull<Label>("BottomInfoRow/EnergyBlock/EnergyValue");
         _shieldValue = GetNodeOrNull<Label>("HealthRow/ShieldBadge/ShieldInner/ShieldValue");
+        _shieldBadge = GetNodeOrNull<PanelContainer>("HealthRow/ShieldBadge");
         _incomingDamage = GetNodeOrNull<ColorRect>("HealthRow/HealthStack/IncomingDamage");
         _incomingDamageLabel = GetNodeOrNull<Label>("HealthRow/HealthStack/IncomingDamageLabel");
         _keyOrderBadge = GetNodeOrNull<PanelContainer>("BottomInfoRow/KeyOrderBlock/KeyOrderBadge");
@@ -83,6 +85,8 @@ public partial class PlayerZoneUI : Control
             {
                 Name = $"Portrait{i}",
                 CustomMinimumSize = new Vector2(PortraitDisplayHeight * 256 / 320, PortraitDisplayHeight),
+                // 均分整行宽度 → 4 个立绘**铺满**玩家区（而不是挤在中间）
+                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
                 ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
                 StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
                 MouseFilter = Control.MouseFilterEnum.Ignore
@@ -126,6 +130,12 @@ public partial class PlayerZoneUI : Control
         if (_shieldValue != null)
         {
             _shieldValue.Text = _playerData.Shield.ToString();
+        }
+
+        // 盾量为 0 时**不显示盾图标**（空盾牌徽标只是噪音）
+        if (_shieldBadge != null)
+        {
+            _shieldBadge.Visible = _playerData.Shield > 0;
         }
     }
 

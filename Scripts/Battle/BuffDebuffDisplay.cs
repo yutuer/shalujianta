@@ -18,6 +18,13 @@ public partial class BuffDebuffDisplay : Control
 
     private const int MaxDisplayIcons = 8;
 
+    /// <summary>
+    /// 状态图标的排布对齐（0=左 1=居中 2=右）。
+    /// 玩家区的血条右移后，图标跟着靠右排，和血条对齐。
+    /// </summary>
+    [Export]
+    public int IconAlignment { get; set; } = 1;
+
     /// <summary>当前显示中的状态图标：状态唯一键 → 图标控件</summary>
     private readonly Dictionary<string, Control> _iconNodes = new Dictionary<string, Control>();
 
@@ -35,7 +42,7 @@ public partial class BuffDebuffDisplay : Control
             return;
         }
 
-        _iconContainer.Alignment = HBoxContainer.AlignmentMode.Center;
+        _iconContainer.Alignment = (HBoxContainer.AlignmentMode)IconAlignment;
         GD.Print("[BuffDebuffDisplay] _Ready completed");
     }
 
