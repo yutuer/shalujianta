@@ -141,6 +141,21 @@ public class CharacterCardLoader
         return null;
     }
 
+    /// <summary>
+    /// 查一张角色卡；**查不到不报错**（调用方自己决定要不要回退）。
+    /// 队伍卡组构建时用这个：数据表里没有的卡要走旧的代码兜底，
+    /// 不能像 <see cref="GetCharacterCard"/> 那样每次都刷一条错误日志。
+    /// </summary>
+    /// <param name="cardId">卡牌 id</param>
+    /// <param name="card">查到的模板实例（查不到为 null）</param>
+    /// <returns>查到了返回 true</returns>
+    public static bool TryGetCharacterCard(string cardId, out FishEatFish.Battle.Card.Card card)
+    {
+        if (!isLoaded) LoadCharacterCards();
+
+        return characterCardDatabase.TryGetValue(cardId, out card);
+    }
+
     public static List<FishEatFish.Battle.Card.Card> GetCharacterCards(string characterId)
     {
         if (!isLoaded) LoadCharacterCards();

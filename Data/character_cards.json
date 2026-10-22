@@ -203,7 +203,7 @@
             "style": "striker",
             "cost": 0,
             "isAttack": false,
-            "buffValueBase": 50,
+            "buffValueBase": 3,
             "buffValuePerLevel": 10,
             "buffDuration": 1,
             "applyBuffName": "strength",

@@ -266,49 +266,159 @@ public partial class Card : Resource, ICardLevelable
 		Cost = Mathf.Max(0, Cost - amount);
 	}
 
+	/// <summary>
+	/// 造一份**独立副本**。
+	///
+	/// 为什么需要：<c>CharacterCardLoader</c> 返回的是**共享的模板实例**，
+	/// 而战斗里会改卡牌状态（费用 -1、刻印回填 <c>IsEngraved</c>、升级 <c>Level</c>…）——
+	/// 直接用模板会把这些改动漏到下一场战斗，甚至漏进刻印列表。
+	/// </summary>
+	public Card Clone()
+	{
+		return new Card
+		{
+			CardId = CardId,
+			Name = Name,
+			Description = Description,
+			Style = Style,
+			Level = Level,
+			MaxLevel = MaxLevel,
+			Cost = Cost,
+			BaseCost = BaseCost,
+			IsRetain = IsRetain,
+			IsAttack = IsAttack,
+			IsAreaAttack = IsAreaAttack,
+			IsDefense = IsDefense,
+			Target = Target,
+			TargetPosition = TargetPosition,
+			Damage = Damage,
+			ShieldGain = ShieldGain,
+			EnergyGain = EnergyGain,
+			HealAmount = HealAmount,
+			DrawCount = DrawCount,
+			BlockDuration = BlockDuration,
+			DamageBaseCoefficient = DamageBaseCoefficient,
+			ShieldBaseCoefficient = ShieldBaseCoefficient,
+			HealBaseCoefficient = HealBaseCoefficient,
+			CounterBaseCoefficient = CounterBaseCoefficient,
+			EnergyGainBase = EnergyGainBase,
+			EnergyGainPerLevel = EnergyGainPerLevel,
+			DrawCountBase = DrawCountBase,
+			DrawCountPerLevel = DrawCountPerLevel,
+			BuffValueBase = BuffValueBase,
+			BuffValuePerLevel = BuffValuePerLevel,
+			DebuffValueBase = DebuffValueBase,
+			DebuffValuePerLevel = DebuffValuePerLevel,
+			ApplyBuffName = ApplyBuffName,
+			ApplyBuffDuration = ApplyBuffDuration,
+			ApplyDebuffName = ApplyDebuffName,
+			ApplyDebuffDuration = ApplyDebuffDuration,
+			RageGainPerLevel = RageGainPerLevel,
+			EffectIds = new List<string>(EffectIds)
+		};
+	}
+
+	/// <summary>
+	/// 按卡牌数据造出要挂到目标身上的**增益**。
+	///
+	/// ⚠️ 这里曾经是 <c>switch</c> 直接 <c>new StrengthBuff()</c> 之类**裸 new**：
+	///   - 裸 buff 没有 <c>IconPath</c> → 状态生效了但**状态图标画不出来**
+	///   - 没有名称 / 描述 → 图标下方的数值与提示也是空的
+	///   - 时长直接写 <c>ApplyBuffDuration</c>，数据缺字段时是 0 → **挂上就过期**
+	/// 现在统一走 <see cref="EffectRegistry"/>：图标 / 名称 / 描述 / 默认时长都来自配置表
+	/// （<c>Data/buffs.json</c>），卡牌只负责「挂哪个 + 挂多久 + 数值多少」。
+	/// </summary>
 	public StatusEffect CreateBuffFromCard()
 	{
 		if (string.IsNullOrEmpty(ApplyBuffName)) return null;
 
-		StatusEffect buff = ApplyBuffName.ToLower() switch
+		StatusEffect buff = EffectRegistry.CreateBuff(ApplyBuffName);
+		if (buff == null)
 		{
-			"strength" => new StrengthBuff(),
-			"defense" => new DefenseBuff(),
-			"regeneration" => new RegenerationBuff(),
-			"thorns" => new ThornsBuff(),
-			"fury" => new FuryBuff(),
-			_ => null
-		};
-
-		if (buff != null)
-		{
-			buff.Duration = ApplyBuffDuration;
-			buff.Initialize();
+			GD.PrintErr($"[Card] CreateBuffFromCard 未知增益 id={ApplyBuffName}（卡牌 {CardId}）");
+			return null;
 		}
 
+		// 时长：卡牌指定的优先；缺省回落配置表（0 会被当成「立刻过期」）
+		if (ApplyBuffDuration > 0)
+		{
+			buff.Duration = ApplyBuffDuration;
+		}
+
+		// 数值：取卡牌数据里的 buffValue —— 卡面文案也是从同一个字段生成的，
+		// 这样「卡面写 +N」与「实际生效 +N」永远是同一个数。
+		ApplyBuffValue(buff, CalculatedBuffValue);
+
+		buff.Initialize();
 		return buff;
 	}
 
+	/// <summary>
+	/// 按卡牌数据造出要挂到目标身上的**减益**（与 <see cref="CreateBuffFromCard"/> 同构）。
+	/// </summary>
 	public StatusEffect CreateDebuffFromCard()
 	{
 		if (string.IsNullOrEmpty(ApplyDebuffName)) return null;
 
-		StatusEffect debuff = ApplyDebuffName.ToLower() switch
+		StatusEffect debuff = EffectRegistry.CreateDebuff(ApplyDebuffName);
+		if (debuff == null)
 		{
-			"weak" => new WeakDebuff(),
-			"vulnerable" => new VulnerableDebuff(),
-			"poison" => new PoisonDebuff(),
-			"slow" => new SlowDebuff(),
-			"silence" => new SilenceDebuff(),
-			_ => null
-		};
-
-		if (debuff != null)
-		{
-			debuff.Duration = ApplyDebuffDuration;
-			debuff.Initialize();
+			GD.PrintErr($"[Card] CreateDebuffFromCard 未知减益 id={ApplyDebuffName}（卡牌 {CardId}）");
+			return null;
 		}
 
+		if (ApplyDebuffDuration > 0)
+		{
+			debuff.Duration = ApplyDebuffDuration;
+		}
+
+		ApplyDebuffValue(debuff, CalculatedDebuffValue);
+
+		debuff.Initialize();
 		return debuff;
+	}
+
+	/// <summary>
+	/// 把卡牌的增益数值写进效果对象。
+	/// 不同增益的数值字段名字不一样（AttackBonus / DefenseBonus / HealPerTurn…），
+	/// 只能按类型分派 —— 没有对应字段的增益会打警告而不是静默丢掉数值。
+	/// </summary>
+	private static void ApplyBuffValue(StatusEffect buff, int value)
+	{
+		if (buff == null || value <= 0) return;
+
+		switch (buff)
+		{
+			case StrengthBuff sb: sb.AttackBonus = value; break;
+			case DefenseBuff db: db.DefenseBonus = value; break;
+			case RegenerationBuff rb: rb.HealPerTurn = value; break;
+			case ThornsBuff tb: tb.DamageReflect = value; break;
+			case FuryBuff fb: fb.AttackMultiplier = value; break;
+			default:
+				GD.PrintErr($"[Card] 增益「{buff.EffectName}」没有对应的数值字段，卡牌数值 {value} 未生效");
+				break;
+		}
+	}
+
+	/// <summary>
+	/// 把卡牌的减益数值写进效果对象。
+	/// ⚠️ 易伤 / 破甲是**百分比**口径（受到伤害 +N%），其余是固定值 ——
+	/// 数据表里的 debuffValue 目前没有任何卡在用，口径等主人定。
+	/// </summary>
+	private static void ApplyDebuffValue(StatusEffect debuff, int value)
+	{
+		if (debuff == null || value <= 0) return;
+
+		switch (debuff)
+		{
+			case WeakDebuff wd: wd.AttackReduction = value; break;
+			case PoisonDebuff pd: pd.DamagePerTurn = value; break;
+			case SlowDebuff sd: sd.EnergyReduction = value; break;
+			case VulnerableDebuff vd: vd.DamageIncrease = value; break;
+			case DefenseDownDebuff dd: dd.DamageIncreasePercent = value; break;
+			default:
+				GD.PrintErr($"[Card] 减益「{debuff.EffectName}」没有对应的数值字段，卡牌数值 {value} 未生效");
+				break;
+		}
 	}
 }

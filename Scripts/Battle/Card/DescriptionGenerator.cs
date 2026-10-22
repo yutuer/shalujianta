@@ -59,7 +59,9 @@ public static class DescriptionGenerator
         {
             int buffValue = attributes != null ? card.CalculatedBuffValue : card.BuffValueBase;
             string buffName = GetBuffDisplayName(card.ApplyBuffName);
-            parts.Add($"获得 {buffName} +{buffValue}，持续 {card.ApplyBuffDuration} 回合");
+            // 措辞按**实际作用对象**：卡牌增益目前落在敌人身上（见 BattleManager.ApplyCardEffects），
+            // 所以写「目标获得」而不是「获得」——卡面不能声称给自己加 buffs。
+            parts.Add($"目标获得 {buffName} +{buffValue}，持续 {card.ApplyBuffDuration} 回合");
         }
 
         if (!string.IsNullOrEmpty(card.ApplyDebuffName) && card.ApplyDebuffDuration > 0)
@@ -69,10 +71,11 @@ public static class DescriptionGenerator
             parts.Add($"目标获得 {debuffName} -{debuffValue}，持续 {card.ApplyDebuffDuration} 回合");
         }
 
-        if (card.RageGainPerLevel > 0 || card.Level > 1)
+        // 怒气：按战斗实际发放的口径（RageManager）显示，别用卡牌等级系统那套 5+perLevel
+        int cardRage = RageManager.GetRageForCard(card);
+        if (cardRage > 0)
         {
-            int rage = card.CalculatedRageGain;
-            parts.Add($"获得 {rage} 怒气");
+            parts.Add($"获得 {cardRage} 怒气");
         }
 
         if (card.IsRetain)

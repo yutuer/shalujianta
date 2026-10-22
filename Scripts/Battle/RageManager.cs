@@ -1,14 +1,31 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Card;
 using FishEatFish.Battle.Core;
 using FishEatFish.Battle.CharacterSystem;
 
 public partial class RageManager : Node
 {
-    private const int RageOnAttack = 15;
-    private const int RageOnDefense = 10;
-    private const int RageOnDamaged = 5;
-    private const int RageOnTurnEnd = 5;
+    public const int RageOnAttack = 15;
+    public const int RageOnDefense = 10;
+    public const int RageOnDamaged = 5;
+    public const int RageOnTurnEnd = 5;
+
+    /// <summary>
+    /// 打出这张牌能拿到多少怒气 —— **唯一真相源**。
+    ///
+    /// 卡面文案（<see cref="DescriptionGenerator"/>）与战斗结算（<c>BattleManager</c>）
+    /// 都从这里取数，避免出现「卡面写 5 点、实际给 15 点」这种自相矛盾。
+    /// </summary>
+    /// <param name="card">打出的卡牌</param>
+    /// <returns>本次获得的怒气值（不是攻击牌 / 防御牌则为 0）</returns>
+    public static int GetRageForCard(Card card)
+    {
+        if (card == null) return 0;
+        if (card.IsAttack) return RageOnAttack;
+        if (card.IsDefense || card.ShieldGain > 0) return RageOnDefense;
+        return 0;
+    }
 
     private List<CharacterPosition> _characterPositions = new List<CharacterPosition>();
 

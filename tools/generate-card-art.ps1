@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     生成「战斗专属美术」资源：角色专属卡插画 / 圆形头像 / 钥令图标。
@@ -16,9 +16,11 @@
     卡牌清单来自 Data\character_cards.json（当前 96 张 = 12 可玩角色 x5 + 12 BOSS x3），
     所以新增卡只要改 JSON 再跑一次本脚本即可，不用改代码。
 
-    ⚠️ **注意**：本脚本生成的是「程序化占位」，但其中 12 个可玩角色的卡面插画与头像
-    已经被主人**手工精修**过（2026-10-23）。再跑一次本脚本会**覆盖掉那些手改**。
-    要重新生成请先备份，或只把它当"初始版本生成器"用。
+    ⚠️ **默认不覆盖已存在的文件**（保护主人手工精修过的美术）。
+    12 个可玩角色的卡面插画与头像已经被主人**手工精修**过（2026-10-23），
+    本脚本生成的只是「程序化占位」—— 直接跑一遍会把那些手改**覆盖掉**。
+    所以默认行为是：**文件已存在就跳过**（保留手改版本），并如实报告「保留 N 个 / 重生成 M 个」。
+    确实要重生成时加 `-Force`（会覆盖，请先备份或先 `git stash`）。
 
     生成的 SVG 必须满足 Godot 4.6 的 ThorVG 导入器限制（每条都写进自检里）：
       - 根元素同时带 xmlns / width / height / viewBox，且 viewBox 必须从 "0 0 W H" 开始
@@ -31,13 +33,21 @@
 .PARAMETER RepoRoot
     仓库根目录。默认为本脚本所在目录的上一级。
 
+.PARAMETER Force
+    覆盖已存在的文件（重新生成）。**默认不覆盖**，以免冲掉手工精修过的美术。
+
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File tools\generate-card-art.ps1
-    退出码 0 = 全部文件生成且自检通过；非 0 = 有文件没过自检。
+    默认行为：已存在的文件保留不动，只补生成缺失的。
+
+.EXAMPLE
+    powershell -ExecutionPolicy Bypass -File tools\generate-card-art.ps1 -Force
+    强制重生成（会覆盖手工精修过的美术，先备份！）
 #>
 [CmdletBinding()]
 param(
-    [string]$RepoRoot = ''
+    [string]$RepoRoot = '',
+    [switch]$Force
 )
 
 $ErrorActionPreference = 'Stop'
@@ -585,8 +595,17 @@ function Write-SvgFile {
         [string]$Path,
         [string]$Content
     )
+    # ⚠️ 默认**不覆盖**已存在的文件。
+    # 理由：这些 SVG 是程序化占位，但其中一批已经被主人手工精修过（2026-10-23），
+    # 一次无脑重跑就会把手改冲掉 —— 而「重跑一次脚本」恰恰是最容易发生的操作。
+    # 要重生成就显式加 -Force。
+    if ((Test-Path -LiteralPath $Path) -and (-not $Force)) {
+        return $false
+    }
+
     $utf8 = New-Object System.Text.UTF8Encoding($false)
     [System.IO.File]::WriteAllText($Path, $Content, $utf8)
+    return $true
 }
 
 # ============================ 主流程 ============================
@@ -626,6 +645,8 @@ $familyOffset = @{
 
 $written = @()
 $skipped = @()
+$kept = @()
+$regenerated = @()
 
 foreach ($card in $cards) {
     $cardId = [string]$card.cardId
@@ -645,63 +666,105 @@ foreach ($card in $cards) {
     $overlay = ($idx + $familyOffset[$family]) % 12
 
     $svg = New-CardArtSvg -CardId $cardId -Main $pal.Main -Accent $pal.Accent -Family $family -Variant $variant -Overlay $overlay
-    Write-SvgFile -Path (Join-Path $CardDir "card_$cardId.svg") -Content $svg
-    $written += "Assets/Cards/card_$cardId.svg"
+    $rel = "Assets/Cards/card_$cardId.svg"
+    if (Write-SvgFile -Path (Join-Path $CardDir "card_$cardId.svg") -Content $svg) {
+        $regenerated += $rel
+    } else {
+        $kept += $rel
+    }
+    $written += $rel
 }
 
 # 圆形头像：12 可玩角色 + 12 BOSS
 foreach ($charId in $charOrder) {
     $pal = $AllPalette[$charId]
     $svg = New-AvatarSvg -CharId $charId -Main $pal.Main -Accent $pal.Accent -Feature $pal.Feature
-    Write-SvgFile -Path (Join-Path $PortraitDir "avatar_$charId.svg") -Content $svg
-    $written += "Assets/Portraits/avatar_$charId.svg"
+    $rel = "Assets/Portraits/avatar_$charId.svg"
+    if (Write-SvgFile -Path (Join-Path $PortraitDir "avatar_$charId.svg") -Content $svg) {
+        $regenerated += $rel
+    } else {
+        $kept += $rel
+    }
+    $written += $rel
 }
 
 # 钥令图标
-Write-SvgFile -Path (Join-Path $IconDir 'keyorder.svg') -Content (New-KeyOrderSvg)
-$written += 'Assets/Icons/keyorder.svg'
+$keyOrderRel = 'Assets/Icons/keyorder.svg'
+if (Write-SvgFile -Path (Join-Path $IconDir 'keyorder.svg') -Content (New-KeyOrderSvg)) {
+    $regenerated += $keyOrderRel
+} else {
+    $kept += $keyOrderRel
+}
+$written += $keyOrderRel
 
 # ============================ 自检 ============================
-
+# 规则：**这次真正写出来的文件**不过自检 → 失败（退出码 1）；
+#       「保留没动」的文件（可能是手工精修的）只报警告 —— 那是别人的成果，
+#       不该让脚本因为它退出码非零。
 $errors = @()
+$warnings = @()
 $utf8Strict = New-Object System.Text.UTF8Encoding($false, $true)
 
 foreach ($rel in $written) {
-    $path = Join-Path $RepoRoot ($rel -replace '/', '\')
-    if (-not (Test-Path -LiteralPath $path)) { $errors += "$rel : 文件不存在"; continue }
+    $issues = @()
 
-    $bytes = [System.IO.File]::ReadAllBytes($path)
-    # BOM 检查
-    if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
-        $errors += "$rel : 含 UTF-8 BOM"
+    $path = Join-Path $RepoRoot ($rel -replace '/', '\')
+    if (-not (Test-Path -LiteralPath $path)) {
+        $issues += "$rel : 文件不存在"
+    } else {
+        $bytes = [System.IO.File]::ReadAllBytes($path)
+        # BOM 检查
+        if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+            $issues += "$rel : 含 UTF-8 BOM"
+        }
+        # CRLF 检查
+        $text = [System.Text.Encoding]::UTF8.GetString($bytes)
+        if ($text.Contains("`r`n")) { $issues += "$rel : 含 CRLF 换行" }
+        if (-not $text.EndsWith("`n")) { $issues += "$rel : 末尾缺少换行" }
+        # 禁用元素
+        foreach ($tag in @('<text', '<filter', '<mask', '<clipPath', '<image', 'rgba(', 'rgb(')) {
+            if ($text.Contains($tag)) { $issues += "$rel : 含禁用内容 $tag" }
+        }
+        # 根元素
+        if (-not $text.StartsWith('<svg xmlns="http://www.w3.org/2000/svg" width="')) {
+            $issues += "$rel : 根元素格式不对"
+        }
+        if (-not $text.Contains('viewBox="0 0 ')) { $issues += "$rel : viewBox 必须以 0 0 开头" }
+        # 渐变 id 唯一
+        $ids = [regex]::Matches($text, 'id="([^"]+)"') | ForEach-Object { $_.Groups[1].Value }
+        if (($ids | Select-Object -Unique).Count -ne $ids.Count) { $issues += "$rel : 存在重复的 id" }
     }
-    # CRLF 检查
-    $text = [System.Text.Encoding]::UTF8.GetString($bytes)
-    if ($text.Contains("`r`n")) { $errors += "$rel : 含 CRLF 换行" }
-    if (-not $text.EndsWith("`n")) { $errors += "$rel : 末尾缺少换行" }
-    # 禁用元素
-    foreach ($tag in @('<text', '<filter', '<mask', '<clipPath', '<image', 'rgba(', 'rgb(')) {
-        if ($text.Contains($tag)) { $errors += "$rel : 含禁用内容 $tag" }
+
+    if ($issues.Count -gt 0) {
+        if ($kept -contains $rel) { $warnings += $issues } else { $errors += $issues }
     }
-    # 根元素
-    if (-not $text.StartsWith('<svg xmlns="http://www.w3.org/2000/svg" width="')) {
-        $errors += "$rel : 根元素格式不对"
-    }
-    if (-not $text.Contains('viewBox="0 0 ')) { $errors += "$rel : viewBox 必须以 0 0 开头" }
-    # 渐变 id 唯一
-    $ids = [regex]::Matches($text, 'id="([^"]+)"') | ForEach-Object { $_.Groups[1].Value }
-    if (($ids | Select-Object -Unique).Count -ne $ids.Count) { $errors += "$rel : 存在重复的 id" }
 }
 
 Write-Host ''
-Write-Host "已生成：$($written.Count) 个文件"
+Write-Host "文件总数：$($written.Count) 个"
 Write-Host "  卡面插画：$(($written | Where-Object { $_ -like 'Assets/Cards/*' }).Count) 张"
 Write-Host "  圆形头像：$(($written | Where-Object { $_ -like 'Assets/Portraits/*' }).Count) 个"
 Write-Host "  钥令图标：1 个"
+Write-Host ''
+if ($Force) {
+    Write-Host "已重生成（-Force 覆盖）：$($regenerated.Count) 个" -ForegroundColor Yellow
+} else {
+    Write-Host "已生成（新增）：$($regenerated.Count) 个"
+    Write-Host "已保留（默认不覆盖已存在的文件）：$($kept.Count) 个" -ForegroundColor Green
+    if ($kept.Count -gt 0) {
+        Write-Host '  提示：这批文件里有一部分是手工精修过的美术，要重生成请显式加 -Force。' -ForegroundColor DarkGray
+    }
+}
 if ($skipped.Count -gt 0) {
     Write-Host ''
     Write-Host "跳过：$($skipped.Count) 条"
     foreach ($s in $skipped) { Write-Host "  - $s" }
+}
+
+if ($warnings.Count -gt 0) {
+    Write-Host ''
+    Write-Host "警告（保留未动的文件里有 $((($warnings | ForEach-Object { ($_ -split ' : ')[0] }) | Select-Object -Unique).Count) 个文件不满足脚本的格式约束）：$($warnings.Count) 项" -ForegroundColor Yellow
+    foreach ($w in $warnings) { Write-Host "  - $w" -ForegroundColor Yellow }
 }
 
 if ($errors.Count -gt 0) {

@@ -1238,15 +1238,20 @@ namespace FishEatFish.Scenes
 			targetPosition = characterPositions[0];
 		}
 
-		if (card.IsAttack)
+		// 怒气：数值口径统一走 RageManager.GetRageForCard（与卡面文案同源）
+		int rageGained = RageManager.GetRageForCard(card);
+		if (rageGained > 0)
 		{
-			rageManager.OnAttackCardPlayed(targetPosition);
-			AddMessage($"获得15点怒气", LogType.System);
-		}
-		else if (card.IsDefense || card.ShieldGain > 0)
-		{
-			rageManager.OnDefenseCardPlayed(targetPosition);
-			AddMessage($"获得10点怒气", LogType.System);
+			if (card.IsAttack)
+			{
+				rageManager.OnAttackCardPlayed(targetPosition);
+			}
+			else
+			{
+				rageManager.OnDefenseCardPlayed(targetPosition);
+			}
+
+			AddMessage($"获得{rageGained}点怒气", LogType.System);
 		}
 
 		UpdateRageDisplay();
