@@ -1,6 +1,20 @@
-[gd_scene load_steps=2 format=3 uid="uid://enemy_ui_battle"]
+[gd_scene load_steps=4 format=3 uid="uid://enemy_ui_battle"]
 
 [ext_resource type="Script" path="res://Scripts/UI/EnemyUI.cs" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_hp_bg"]
+bg_color = Color(0.28, 0.06, 0.07, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_hp_fill"]
+bg_color = Color(0.78, 0.24, 0.26, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
 
 [node name="Enemy" type="Panel"]
 custom_minimum_size = Vector2(200, 300)
@@ -57,6 +71,8 @@ theme_override_font_sizes/font_size = 17
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_enemy_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_enemy_hp_fill")
 
 [node name="HealthLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2

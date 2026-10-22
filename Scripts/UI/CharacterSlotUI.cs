@@ -276,7 +276,11 @@ public partial class CharacterSlotUI : Panel
             return;
         }
 
-        _ultReadyLabel.Visible = ready;
+        // ⚠️ 这里**只能改文字，不能用 Visible=false 隐藏**：
+        // 一旦隐藏，这个槽位就比旁边少一行高度，VBox 又是居中排布
+        // → 该槽位的头像被顶上去，四个头像不在同一个水平面上。
+        // 所以「可释放」这一行**始终占位**，未就绪时文字为空。
+        _ultReadyLabel.Visible = true;
         _ultReadyLabel.Text = ready ? "可释放" : "";
     }
 

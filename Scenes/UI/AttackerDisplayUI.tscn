@@ -30,7 +30,7 @@ theme_override_constants/separation = 18
 alignment = 1
 
 [node name="CharacterSlot0" type="Panel" parent="VBoxContainer/CharacterContainer"]
-custom_minimum_size = Vector2(84, 96)
+custom_minimum_size = Vector2(84, 104)
 layout_mode = 2
 
 script = ExtResource("2")
@@ -79,7 +79,7 @@ theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(1, 0.82, 0.35, 1)
 
 [node name="CharacterSlot1" type="Panel" parent="VBoxContainer/CharacterContainer"]
-custom_minimum_size = Vector2(84, 96)
+custom_minimum_size = Vector2(84, 104)
 layout_mode = 2
 
 script = ExtResource("2")
@@ -128,7 +128,7 @@ theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(1, 0.82, 0.35, 1)
 
 [node name="CharacterSlot2" type="Panel" parent="VBoxContainer/CharacterContainer"]
-custom_minimum_size = Vector2(84, 96)
+custom_minimum_size = Vector2(84, 104)
 layout_mode = 2
 
 script = ExtResource("2")
@@ -177,7 +177,7 @@ theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(1, 0.82, 0.35, 1)
 
 [node name="CharacterSlot3" type="Panel" parent="VBoxContainer/CharacterContainer"]
-custom_minimum_size = Vector2(84, 96)
+custom_minimum_size = Vector2(84, 104)
 layout_mode = 2
 
 script = ExtResource("2")

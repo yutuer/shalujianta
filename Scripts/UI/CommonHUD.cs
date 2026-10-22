@@ -56,10 +56,17 @@ namespace FishEatFish.UI
 		[Export]
 		public bool ShowCollectionSection = true;
 
-		private const int CollectionSlotCount = 8;
+				/// <summary>
+		/// 收集品槽位总数。
+		/// 顶部中间是 8 列 × 2 排 = 16 格（对照参考图 R-08 顶部中间的网格状卡槽）。
+		/// </summary>
+		private const int CollectionSlotCount = 16;
+
+		/// <summary>网格列数（8 列 → 每排 8 个）</summary>
+		private const int CollectionColumns = 8;
 
 		private AttackerDisplayUI _teamDisplay;
-		private HBoxContainer _collectionBox;
+		private GridContainer _collectionBox;
 		private readonly List<CommonHUDSlot> _collectionSlots = new List<CommonHUDSlot>();
 
 		private readonly Label[] _statTitles = new Label[4];
@@ -70,7 +77,7 @@ namespace FishEatFish.UI
 			GD.Print("[CommonHUD] _Ready called");
 
 			_teamDisplay = GetNodeOrNull<AttackerDisplayUI>("TeamDisplay");
-			_collectionBox = GetNodeOrNull<HBoxContainer>("CollectionBox");
+			_collectionBox = GetNodeOrNull<GridContainer>("CollectionCenter/CollectionBox");
 
 			for (int i = 0; i < 4; i++)
 			{
@@ -113,7 +120,7 @@ namespace FishEatFish.UI
 		}
 
 		/// <summary>
-		/// 生成 8 个收集品槽位
+		/// 生成 16 个收集品槽位（8 列 × 2 排）
 		/// </summary>
 		private void BuildCollectionSlots()
 		{

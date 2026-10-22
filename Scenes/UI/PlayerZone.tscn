@@ -1,13 +1,27 @@
-[gd_scene load_steps=4 format=3 uid="uid://player_zone_battle"]
+[gd_scene load_steps=7 format=3 uid="uid://player_zone_battle"]
 
 [ext_resource type="Script" path="res://Scripts/UI/PlayerZoneUI.cs" id="1"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/BuffDebuffDisplay.tscn" id="2"]
 [ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="3"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
+bg_color = Color(0.44, 0.09, 0.1, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.36, 0.82, 0.42, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
 [node name="PlayerZone" type="VBoxContainer"]
-custom_minimum_size = Vector2(660, 240)
+custom_minimum_size = Vector2(660, 540)
 offset_right = 660.0
-offset_bottom = 240.0
+offset_bottom = 540.0
 theme = ExtResource("3")
 theme_override_constants/separation = 4
 script = ExtResource("1")
@@ -26,6 +40,8 @@ custom_minimum_size = Vector2(240, 22)
 layout_mode = 2
 size_flags_horizontal = 3
 show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
 
 [node name="HealthLabel" type="Label" parent="HealthRow"]
 layout_mode = 2
@@ -34,50 +50,64 @@ vertical_alignment = 1
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.96, 0.93, 0.84, 1)
 
-[node name="Spacer" type="Control" parent="HealthRow"]
+[node name="BuffDebuffDisplay" parent="." instance=ExtResource("2")]
 layout_mode = 2
-size_flags_horizontal = 3
 
-[node name="EnergyBadge" type="PanelContainer" parent="HealthRow"]
-custom_minimum_size = Vector2(74, 40)
+[node name="BottomSpacer" type="Control" parent="."]
 layout_mode = 2
-size_flags_vertical = 4
+size_flags_vertical = 3
 
-[node name="EnergyLabel" type="Label" parent="HealthRow/EnergyBadge"]
+[node name="BottomInfoRow" type="HBoxContainer" parent="."]
 layout_mode = 2
-text = "0/0"
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0.55, 0.85, 1, 1)
+theme_override_constants/separation = 18
+alignment = 0
 
-[node name="KeyOrderBadge" type="PanelContainer" parent="HealthRow"]
-custom_minimum_size = Vector2(44, 44)
-layout_mode = 2
-size_flags_vertical = 4
-
-[node name="KeyOrderIcon" type="TextureRect" parent="HealthRow/KeyOrderBadge"]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="KeyOrderInfo" type="VBoxContainer" parent="HealthRow"]
+[node name="EnergyBlock" type="VBoxContainer" parent="BottomInfoRow"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 0
 
-[node name="KeyOrderLabel" type="Label" parent="HealthRow/KeyOrderInfo"]
+[node name="EnergyTitle" type="Label" parent="BottomInfoRow/EnergyBlock"]
+layout_mode = 2
+text = "算力"
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.62, 0.66, 0.74, 1)
+
+[node name="EnergyValue" type="Label" parent="BottomInfoRow/EnergyBlock"]
+layout_mode = 2
+text = "0 / 0"
+theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(0.55, 0.85, 1, 1)
+
+[node name="KeyOrderBlock" type="HBoxContainer" parent="BottomInfoRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+
+[node name="KeyOrderBadge" type="PanelContainer" parent="BottomInfoRow/KeyOrderBlock"]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="KeyOrderIcon" type="TextureRect" parent="BottomInfoRow/KeyOrderBlock/KeyOrderBadge"]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="KeyOrderInfo" type="VBoxContainer" parent="BottomInfoRow/KeyOrderBlock"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="KeyOrderLabel" type="Label" parent="BottomInfoRow/KeyOrderBlock/KeyOrderInfo"]
 layout_mode = 2
 text = "无钥令"
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.9, 0.92, 0.96, 1)
 
-[node name="SilverKeyLabel" type="Label" parent="HealthRow/KeyOrderInfo"]
+[node name="SilverKeyLabel" type="Label" parent="BottomInfoRow/KeyOrderBlock/KeyOrderInfo"]
 layout_mode = 2
 text = "银钥 0/1000"
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.72, 0.75, 0.82, 1)
-
-[node name="BuffDebuffDisplay" parent="." instance=ExtResource("2")]
-layout_mode = 2

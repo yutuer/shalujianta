@@ -10,9 +10,9 @@
 |---|---|
 | 引擎 | Godot 4.6.1-stable **mono**（.NET 8.0 / `net8.0`） |
 | 仓库 | <https://github.com/yutuer/shalujianta.git>（分支 `main`） |
-| 规模 | 156 个 C# 脚本 / 26,368 行（非空行） · 48 个 `.tscn` · 15 张 JSON 数据表 |
+| 规模 | 156 个 C# 脚本 / 26,430 行（非空行） · 48 个 `.tscn` · 15 张 JSON 数据表 |
 | 原始需求 | [`docs/原始策划案.md`](docs/原始策划案.md) |
-| 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 24 个条目 |
+| 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 25 个条目 |
 
 ---
 
@@ -246,7 +246,7 @@ MainMenu
 4. **改完代码必须 `dotnet build` 通过**再让用户测
 5. **六边形坐标常量见 §3.3**
 
-> 这 5 条之外，历史上踩过的 47 个坑（`.tscn` 漏绑脚本、无头环境模拟点击失效、git push 上传大文件、PowerShell 编码……）都记在 [`docs/踩坑记录.md`](docs/踩坑记录.md)。
+> 这 5 条之外，历史上踩过的 48 个坑（`.tscn` 漏绑脚本、无头环境模拟点击失效、git push 上传大文件、PowerShell 编码……）都记在 [`docs/踩坑记录.md`](docs/踩坑记录.md)。
 
 ---
 
@@ -284,7 +284,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 ## 6. 已知陷阱与经验
 
-完整的 47 条记在 **[`docs/踩坑记录.md`](docs/踩坑记录.md)**，改代码前建议扫一眼。最要命的几条：
+完整的 48 条记在 **[`docs/踩坑记录.md`](docs/踩坑记录.md)**，改代码前建议扫一眼。最要命的几条：
 
 | 坑 | 一句话 | 详见 |
 |---|---|---|
@@ -346,6 +346,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 | 日期 | 内容 |
 |---|---|
+| 2026-10-22 | **D25 战斗场景按参考图 R-08 对齐（6 条）** —— ① 顶部装备栏改 **`GridContainer` 8 列 × 2 排 = 16 格**并居中；② **算力与钥令从血条那一行拆到屏幕左下角**，独立一块（大号 `算力 10 / 10` + 金钥匙徽标 + 银光斩 + 银钥 0/1000）；③ 血条改成 **绿填充 + 红底槽**（红底 = 已损失，敌人侧维持红条）；④ **「可释放」徽标改为始终占位**（只换文字、不隐藏）—— 隐藏会让该槽位少一行高度、VBox 居中 → 头像被顶上去，四个头像不在同一水平线；⑤ 加 `DEBUG_SHOW_TEST_BUFFS` 临时开关给主/敌人挂状态，预览血条下方的状态图标排版。**顺手修掉一个既有隐蔽 bug**：`BattleManager.UpdateBuffDebuffDisplay()` 的整个方法体被压成一行且以 `//` 开头 → **行尾注释把 `if` 和 `SetStatus` 全吃掉** → 玩家侧状态条**从来没刷新过**（敌人侧是另一个方法所以一直正常，掩盖了问题，详见踩坑记录 §48） |
 | 2026-10-21 | **D24 战斗场景美术补齐 + 顶栏压暗修复** —— ① **左上角头像「看不见」的根因不是没画，是被盖住了**：`CommonHUD` 顶层有个 92% 不透明的深色 `ColorRect` 铺满顶部 120px，且它在 `UI` 里排在 `TopBar` **之后** → 绘制在 TopBar **之上** → 整个顶栏被压暗 8 成（右上角血量/回合号也跟着发灰）。头像纹理本身是亮色（采样 `#A39AB6`/`#D8C8E8`），**用染色实测一次定位**（把节点 `self_modulate` 设成红色，被盖住的东西纹丝不动）。修法：`CommonHUD` 加 `ShowBackground` 导出开关（沿用 `ShowTeamSection`/`ShowStatsSection` 的既有模式），战斗场景关掉。② **专属卡插画补齐（方案 1）**：新增 `tools/generate-card-art.ps1`，按 `Data/character_cards.json` 生成 **96 张**专属卡插画（220×140，12 可玩角色 ×5 + 12 星座 BOSS ×3）+ **24 个**圆形头像（128×128）+ 钥令图标（金钥匙 64×64），共 121 个 SVG，脚本自带约束自检（BOM/CRLF/禁用标签/viewBox/id 唯一）。③ **怒气显示**：`RageCircle` 加 `RageValueLabel`（头像底部小字+描边）+ 环模式补一圈**进度槽底**，怒气 0 时也能看出是怒气槽；实测 5/30/65/100 显示灰/蓝/蓝/满橙弧。④ **战斗日志默认完全隐藏**（不是收起），底部加「日志」按钮。⑤ **怪物下移**与人物立绘同一地面线（`EnemyZone` `offset_top` 120→372）。⑥ **左下角**补当前算力 `10/10`、钥令图标、钥令名与银钥数（顶部的重复项删掉，同一信息只留一处）。顺手修掉专属卡每场刷一屏 `Card not found` 假错（`CardConfigLoader` 加 `TryGetCardData`），并修正 `踩坑记录.md` 里重复的两个 `## 45.` |
 | 2026-10-20 | **战斗机制闭环 5 组全部完成（D15~D19）** —— 上一轮 D1~D14 完成的是**界面**，这一轮补的是**机制**：D15 刻印触发 / D16 怒气大招 / D17 钥令效果 / D18 战斗奖励选择界面 / D19 Buff-Debuff UI。**根因全是「代码写了但没接线」**：EngravingManager.OnCardPlayed 零调用点、且卡组每场重建 → 刻印必丢；UltimateSkill.Execute 只跑空的 EffectIds → **大招实际效果为零**，且读的是字段更少的 characters.json 而非 ultimates.json；KeyOrderManager.ApplyKeyOrderEffect 内部记一次使用、BattleManager 又记一次 → **「每回合 2 次」实际只能用 1 次**。本轮还修掉两个更隐蔽的**减益失效**：DefenseDownDebuff 靠改防御值，敌人防御为 0 时完全无效；VulnerableDebuff 靠 _owner 判定，而 Enemy.AddStatusEffect 从不调 SetOwner → **易伤从来没生效过**（大招「龙王咆哮」因此打不出毒+易伤）。两处都改为**参与伤害计算**。新增 autoload 两个（EngravingManager / BattleRewardManager）。验证用临时 C# 集成测试，**75/75 断言通过**，测完即删 || 2026-10-20 | **本轮 14 条需求全部完成**（D1/D2/D3/D4/D5/D6/D7/D8/D9/D10/D11/D12/D13/D14）——每条走「需求 → 开发 → 验证」三步，用**临时 C# 集成测试**断言，测完即删。新增可复用资产：**地图校验器 `Scripts/MapValidation/`**（不依赖 Godot，整目录可拷到别的项目，有 `tools/verify-mapvalidation-portability.ps1` 守着可移植性）、**关卡规格 `Data/level_specs.json`**（配额 + 种子 → 确定性 + 可复用）、**统一主题 `Assets/Themes/MainTheme.tres`**。本轮还修掉一批**既有缺陷**：`MapDefinition.EnemyWaveIds` 指向不存在的波次 key（死配置）、`HexMapGenerator` 的 IconPath 指向 9 个不存在的 png、`HexTileView` 压根没读 IconPath、缺「不可满足规格」检查、洞的时序是「踩上去就消失」而不是「离开才消失」、`RestoreRevealedTiles` 写了却从没被调用。统计 129 行 / 74 完成 / 9 进行 / 46 待开 |
 | 2026-10-20 | **破甲语义变更的文案同步** —— D19 把「破甲」的实现从「降低防御值」改成「受到伤害 +N%」（前者对防御为 0 的敌人完全无效），**文案必须同步**，否则玩家看到「防御-10」实际打出「受伤+10%」会得出错误结论。同步了 7 处：`KeyOrder.CreateArmorBreak` 描述 / 战斗日志 / 两个钥令 UI 的效果描述 / 两个减益自身的 `Description` / `Data/debuffs.json` / 状态图标数值。字段 `DefenseReduction` → `DamageIncreasePercent`（旧名保留为别名），易伤默认值 3 → 50（百分比口径下 3% 几乎无感）。加了断言把「文案与实现一致」变成可自动检查 || 2026-10-20 | **回读测试**：从 GitHub 拉回 6 个文件与本地做 SHA256 逐字节比对，**全部一致**（推送完整）；同时全文扫描发现并修正一批前后不一致 —— **术语纠正「洞 = 桥（cut edge）」→ 洞是顶点，要判断的是「割点（articulation point）」**；「桥树」统一改称**簇图**（簇图要考虑双向传送超边与单向有向边，跟纯无向的桥树不是一回事）；`BridgeTreeAnalyzer.cs` → `ClusterGraphAnalyzer.cs`；例子块改用簇的视角重画；奇偶性段落的「区域」统一为「簇」 |
@@ -385,7 +386,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 |---|---|
 | **本文** | 主干：现状 / 架构 / 进度 / 下一步 |
 | `.trae/rules/project_rules.md` | **开发铁律**（第一准则、UI 规范、日志规范、六边形常量） |
-| `docs/开发计划.md` | **迭代执行计划**：需求→开发→验证三步流程 + 24 个条目 + 重要度/难度排序 + 参考图索引 |
+| `docs/开发计划.md` | **迭代执行计划**：需求→开发→验证三步流程 + 25 个条目 + 重要度/难度排序 + 参考图索引 |
 | `tasks.md` | 87 行任务清单 + 依赖 + 状态 |
 | `GameDesign.md` | 完整策划案 18 章 + 未完成功能清单 |
 | `checklist.md` | 12 大类验收清单 |
@@ -394,7 +395,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 | 路径 | 内容 |
 |---|---|
-| `docs/踩坑记录.md` | **47 条真实踩坑与规矩**（改代码前扫一眼） |
+| `docs/踩坑记录.md` | **48 条真实踩坑与规矩**（改代码前扫一眼） |
 | `docs/战斗场景改造计划.md` | **战斗场景改造计划**（🟢 P0~P2 已实施）—— 参考图对比 + 分批排期 + 美术缺口 |
 | `docs/调试场景准备器.md` | 调试场景准备器用法、8 个预设、命令行参数、加预设的方法 |
 | `docs/六边形地图算法.md` | 六边形坐标权威文档 |

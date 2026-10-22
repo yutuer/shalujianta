@@ -86,9 +86,9 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
-offset_top = -560.0
+offset_top = -640.0
 offset_right = 684.0
-offset_bottom = -360.0
+offset_bottom = -100.0
 grow_vertical = 0
 
 [node name="EnemyZone" type="HBoxContainer" parent="UI" unique_id=762201044]

@@ -44,11 +44,11 @@ public partial class PlayerZoneUI : Control
         _portraitRow = GetNodeOrNull<HBoxContainer>("PortraitRow");
         _healthBar = GetNodeOrNull<ProgressBar>("HealthRow/HealthBar");
         _healthLabel = GetNodeOrNull<Label>("HealthRow/HealthLabel");
-        _energyLabel = GetNodeOrNull<Label>("HealthRow/EnergyBadge/EnergyLabel");
-        _keyOrderBadge = GetNodeOrNull<PanelContainer>("HealthRow/KeyOrderBadge");
-        _keyOrderIcon = GetNodeOrNull<TextureRect>("HealthRow/KeyOrderBadge/KeyOrderIcon");
-        _keyOrderLabel = GetNodeOrNull<Label>("HealthRow/KeyOrderInfo/KeyOrderLabel");
-        _silverKeyLabel = GetNodeOrNull<Label>("HealthRow/KeyOrderInfo/SilverKeyLabel");
+        _energyLabel = GetNodeOrNull<Label>("BottomInfoRow/EnergyBlock/EnergyValue");
+        _keyOrderBadge = GetNodeOrNull<PanelContainer>("BottomInfoRow/KeyOrderBlock/KeyOrderBadge");
+        _keyOrderIcon = GetNodeOrNull<TextureRect>("BottomInfoRow/KeyOrderBlock/KeyOrderBadge/KeyOrderIcon");
+        _keyOrderLabel = GetNodeOrNull<Label>("BottomInfoRow/KeyOrderBlock/KeyOrderInfo/KeyOrderLabel");
+        _silverKeyLabel = GetNodeOrNull<Label>("BottomInfoRow/KeyOrderBlock/KeyOrderInfo/SilverKeyLabel");
         _buffDisplay = GetNodeOrNull<BuffDebuffDisplay>("BuffDebuffDisplay");
 
         if (_healthLabel != null)
@@ -111,7 +111,7 @@ public partial class PlayerZoneUI : Control
         }
         if (_energyLabel != null)
         {
-            _energyLabel.Text = $"{_playerData.CurrentEnergy}/{_playerData.MaxEnergy}";
+            _energyLabel.Text = $"{_playerData.CurrentEnergy} / {_playerData.MaxEnergy}";
         }
     }
 
