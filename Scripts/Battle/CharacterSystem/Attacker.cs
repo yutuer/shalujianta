@@ -87,6 +87,10 @@ public partial class Attacker : Node
             // 数据表的 rageGainPerLevel 是**每级成长值**、与实现不同口径，
             // 直接搬过来会让卡面显示一个和实际不符的怒气数字 → 不搬（卡面改按实现口径显示）。
             card.RageGainPerLevel = 0;
+
+            // 卡牌挂上**它自己角色的属性** —— 伤害/护盾按「属性 × 百分比」算，
+            // 卡面与战斗结算都走 Card.GetFinalDamage/GetFinalShield（同一个函数，不会漂）。
+            card.LinkedAttributes = character.GetAttributes();
         }
         else
         {

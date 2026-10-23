@@ -3,23 +3,21 @@
         {
             "cardId": "rat_attack",
             "characterId": "rat",
-            "name": "鼠牙乱咬",
+            "name": "打击",
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 8,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "rat_defense",
             "characterId": "rat",
-            "name": "鼠洞藏",
+            "name": "防御",
             "style": "striker",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 6,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 10,
             "rageGainPerLevel": 1
         },
         {
@@ -29,8 +27,7 @@
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 10,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 12,
             "drawCountBase": 1,
             "drawCountPerLevel": 0,
             "rageGainPerLevel": 1
@@ -42,8 +39,7 @@
             "style": "striker",
             "cost": 2,
             "isAttack": true,
-            "damage": 14,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 18,
             "rageGainPerLevel": 2
         },
         {
@@ -53,8 +49,7 @@
             "style": "striker",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 4,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 7,
             "drawCountBase": 2,
             "drawCountPerLevel": 0,
             "rageGainPerLevel": 1
@@ -62,23 +57,21 @@
         {
             "cardId": "ox_attack",
             "characterId": "ox",
-            "name": "牛牙咬",
+            "name": "打击",
             "style": "tank",
             "cost": 2,
             "isAttack": true,
-            "damage": 12,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "ox_defense",
             "characterId": "ox",
-            "name": "牛皮韧性",
+            "name": "防御",
             "style": "tank",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 10,
-            "shieldBaseCoefficient": 0.8,
+            "shieldPercent": 10,
             "rageGainPerLevel": 1
         },
         {
@@ -88,8 +81,7 @@
             "style": "tank",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 8,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 8,
             "energyGainBase": 3,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
@@ -101,8 +93,7 @@
             "style": "tank",
             "cost": 2,
             "isAttack": true,
-            "damage": 15,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 12,
             "rageGainPerLevel": 2
         },
         {
@@ -112,30 +103,27 @@
             "style": "tank",
             "cost": 2,
             "isAttack": false,
-            "shieldGain": 15,
-            "shieldBaseCoefficient": 0.8,
+            "shieldPercent": 15,
             "rageGainPerLevel": 2
         },
         {
             "cardId": "tiger_attack",
             "characterId": "tiger",
-            "name": "虎牙咬",
+            "name": "打击",
             "style": "striker",
             "cost": 2,
             "isAttack": true,
-            "damage": 15,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "tiger_defense",
             "characterId": "tiger",
-            "name": "虎踞龙盘",
+            "name": "防御",
             "style": "striker",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 8,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 10,
             "rageGainPerLevel": 1
         },
         {
@@ -145,8 +133,7 @@
             "style": "striker",
             "cost": 2,
             "isAttack": true,
-            "damage": 10,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 7,
             "rageGainPerLevel": 1,
             "isAreaAttack": true
         },
@@ -157,8 +144,7 @@
             "style": "striker",
             "cost": 2,
             "isAttack": true,
-            "damage": 16,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 11,
             "rageGainPerLevel": 2
         },
         {
@@ -168,8 +154,7 @@
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 8,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 5,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
@@ -177,18 +162,17 @@
         {
             "cardId": "rabbit_attack",
             "characterId": "rabbit",
-            "name": "蹬鹰一脚",
+            "name": "打击",
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 8,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "rabbit_defense",
             "characterId": "rabbit",
-            "name": "狡兔三窟",
+            "name": "防御",
             "style": "striker",
             "cost": 1,
             "isAttack": false,
@@ -217,8 +201,7 @@
             "style": "striker",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 5,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 10,
             "drawCountBase": 1,
             "drawCountPerLevel": 0,
             "rageGainPerLevel": 1
@@ -230,19 +213,17 @@
             "style": "striker",
             "cost": 2,
             "isAttack": true,
-            "damage": 12,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 15,
             "rageGainPerLevel": 2
         },
         {
             "cardId": "dragon_attack",
             "characterId": "dragon",
-            "name": "龙息",
+            "name": "打击",
             "style": "mage",
             "cost": 2,
             "isAttack": true,
-            "damage": 12,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "applyDebuffName": "poison",
             "applyDebuffDuration": 3,
             "debuffValueBase": 2,
@@ -252,12 +233,11 @@
         {
             "cardId": "dragon_defense",
             "characterId": "dragon",
-            "name": "龙鳞护体",
+            "name": "防御",
             "style": "mage",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 8,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 10,
             "rageGainPerLevel": 1
         },
         {
@@ -267,8 +247,7 @@
             "style": "mage",
             "cost": 2,
             "isAttack": true,
-            "damage": 5,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 4,
             "isAreaAttack": true,
             "applyDebuffName": "poison",
             "applyDebuffDuration": 2,
@@ -283,8 +262,7 @@
             "style": "mage",
             "cost": 2,
             "isAttack": true,
-            "damage": 14,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 12,
             "rageGainPerLevel": 2
         },
         {
@@ -294,8 +272,7 @@
             "style": "mage",
             "cost": 2,
             "isAttack": true,
-            "damage": 8,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 7,
             "isAreaAttack": true,
             "applyDebuffName": "poison",
             "applyDebuffDuration": 3,
@@ -306,12 +283,11 @@
         {
             "cardId": "snake_attack",
             "characterId": "snake",
-            "name": "毒牙咬",
+            "name": "打击",
             "style": "poison",
             "cost": 1,
             "isAttack": true,
-            "damage": 6,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "applyDebuffName": "poison",
             "applyDebuffDuration": 3,
             "debuffValueBase": 2,
@@ -321,12 +297,11 @@
         {
             "cardId": "snake_defense",
             "characterId": "snake",
-            "name": "蜕皮再生",
+            "name": "防御",
             "style": "poison",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 5,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 10,
             "healAmount": 3,
             "healBaseCoefficient": 0.4,
             "rageGainPerLevel": 1
@@ -338,7 +313,7 @@
             "style": "poison",
             "cost": 2,
             "isAttack": true,
-            "damage": 0,
+            "damagePercent": 0,
             "isAreaAttack": true,
             "applyDebuffName": "poison",
             "applyDebuffDuration": 3,
@@ -353,8 +328,7 @@
             "style": "poison",
             "cost": 1,
             "isAttack": true,
-            "damage": 8,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 13,
             "applyDebuffName": "poison",
             "applyDebuffDuration": 2,
             "debuffValueBase": 2,
@@ -368,8 +342,7 @@
             "style": "poison",
             "cost": 2,
             "isAttack": true,
-            "damage": 12,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 20,
             "applyDebuffName": "poison",
             "applyDebuffDuration": 3,
             "debuffValueBase": 3,
@@ -379,23 +352,21 @@
         {
             "cardId": "horse_attack",
             "characterId": "horse",
-            "name": "踏雪无痕",
+            "name": "打击",
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 8,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "horse_defense",
             "characterId": "horse",
-            "name": "马到功成",
+            "name": "防御",
             "style": "striker",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 5,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 10,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
@@ -407,8 +378,7 @@
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 6,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 8,
             "energyGainBase": 2,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
@@ -420,8 +390,7 @@
             "style": "striker",
             "cost": 2,
             "isAttack": true,
-            "damage": 12,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 15,
             "rageGainPerLevel": 2
         },
         {
@@ -431,8 +400,7 @@
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 8,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
@@ -440,23 +408,21 @@
         {
             "cardId": "goat_attack",
             "characterId": "goat",
-            "name": "羊角顶撞",
+            "name": "打击",
             "style": "healer",
             "cost": 1,
             "isAttack": true,
-            "damage": 5,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "goat_defense",
             "characterId": "goat",
-            "name": "羊毛护体",
+            "name": "防御",
             "style": "healer",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 6,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 10,
             "rageGainPerLevel": 1
         },
         {
@@ -468,8 +434,7 @@
             "isAttack": false,
             "healAmount": 10,
             "healBaseCoefficient": 0.6,
-            "shieldGain": 5,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 8,
             "rageGainPerLevel": 1
         },
         {
@@ -479,8 +444,7 @@
             "style": "healer",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 10,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 17,
             "rageGainPerLevel": 1
         },
         {
@@ -492,30 +456,27 @@
             "isAttack": false,
             "healAmount": 15,
             "healBaseCoefficient": 0.6,
-            "shieldGain": 8,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 13,
             "rageGainPerLevel": 2
         },
         {
             "cardId": "monkey_attack",
             "characterId": "monkey",
-            "name": "猴拳",
+            "name": "打击",
             "style": "debuffer",
             "cost": 1,
             "isAttack": true,
-            "damage": 6,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "monkey_defense",
             "characterId": "monkey",
-            "name": "猴毛护体",
+            "name": "防御",
             "style": "debuffer",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 5,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 10,
             "rageGainPerLevel": 1
         },
         {
@@ -525,7 +486,7 @@
             "style": "debuffer",
             "cost": 2,
             "isAttack": true,
-            "damage": 0,
+            "damagePercent": 0,
             "isAreaAttack": true,
             "applyDebuffName": "weak",
             "applyDebuffDuration": 2,
@@ -540,8 +501,7 @@
             "style": "debuffer",
             "cost": 1,
             "isAttack": false,
-            "damage": 4,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 7,
             "applyDebuffName": "weak",
             "applyDebuffDuration": 2,
             "debuffValueBase": 2,
@@ -555,8 +515,7 @@
             "style": "debuffer",
             "cost": 2,
             "isAttack": true,
-            "damage": 10,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 17,
             "applyDebuffName": "poison",
             "applyDebuffDuration": 3,
             "debuffValueBase": 3,
@@ -566,23 +525,21 @@
         {
             "cardId": "rooster_attack",
             "characterId": "rooster",
-            "name": "啄击",
+            "name": "打击",
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 7,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "rooster_defense",
             "characterId": "rooster",
-            "name": "羽毛护体",
+            "name": "防御",
             "style": "striker",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 4,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 10,
             "rageGainPerLevel": 1
         },
         {
@@ -592,8 +549,7 @@
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 5,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 7,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
@@ -605,8 +561,7 @@
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 7,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
@@ -618,8 +573,7 @@
             "style": "striker",
             "cost": 2,
             "isAttack": true,
-            "damage": 12,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 17,
             "energyGainBase": 2,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 2
@@ -627,23 +581,21 @@
         {
             "cardId": "dog_attack",
             "characterId": "dog",
-            "name": "犬牙撕咬",
+            "name": "打击",
             "style": "tank",
             "cost": 2,
             "isAttack": true,
-            "damage": 10,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "dog_defense",
             "characterId": "dog",
-            "name": "忠犬护主",
+            "name": "防御",
             "style": "tank",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 12,
-            "shieldBaseCoefficient": 0.8,
+            "shieldPercent": 10,
             "rageGainPerLevel": 1
         },
         {
@@ -653,8 +605,7 @@
             "style": "tank",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 8,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 7,
             "energyGainBase": 2,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 1
@@ -666,8 +617,7 @@
             "style": "tank",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 10,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 8,
             "rageGainPerLevel": 1
         },
         {
@@ -677,8 +627,7 @@
             "style": "tank",
             "cost": 2,
             "isAttack": false,
-            "shieldGain": 15,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 12,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
             "rageGainPerLevel": 2
@@ -686,23 +635,21 @@
         {
             "cardId": "pig_attack",
             "characterId": "pig",
-            "name": "蛮横冲撞",
+            "name": "打击",
             "style": "counter",
             "cost": 2,
             "isAttack": true,
-            "damage": 10,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "rageGainPerLevel": 1
         },
         {
             "cardId": "pig_defense",
             "characterId": "pig",
-            "name": "皮糙肉厚",
+            "name": "防御",
             "style": "counter",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 10,
-            "shieldBaseCoefficient": 0.8,
+            "shieldPercent": 10,
             "rageGainPerLevel": 1
         },
         {
@@ -712,8 +659,7 @@
             "style": "counter",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 6,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 6,
             "healAmount": 5,
             "healBaseCoefficient": 0.4,
             "rageGainPerLevel": 1
@@ -725,8 +671,7 @@
             "style": "counter",
             "cost": 2,
             "isAttack": true,
-            "damage": 10,
-            "damageBaseCoefficient": 0.6,
+            "damagePercent": 10,
             "counterBaseCoefficient": 0.5,
             "rageGainPerLevel": 2
         },
@@ -737,8 +682,7 @@
             "style": "counter",
             "cost": 1,
             "isAttack": false,
-            "shieldGain": 8,
-            "shieldBaseCoefficient": 0.6,
+            "shieldPercent": 8,
             "counterBaseCoefficient": 0.3,
             "rageGainPerLevel": 1
         }

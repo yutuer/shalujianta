@@ -15,19 +15,15 @@ public static class DescriptionGenerator
 
         var parts = new List<string>();
 
-        if (card.IsAttack && card.Damage > 0)
+        if (card.IsAttack && card.GetFinalDamage(attributes) > 0)
         {
-            int damage = attributes != null
-                ? card.CalculatedDamage
-                : card.Damage;
+            int damage = card.GetFinalDamage(attributes);
             parts.Add($"造成 {damage} 点伤害");
         }
 
-        if (card.ShieldGain > 0)
+        if (card.GetFinalShield(attributes) > 0)
         {
-            int shield = attributes != null
-                ? card.CalculatedShield
-                : card.ShieldGain;
+            int shield = card.GetFinalShield(attributes);
             parts.Add($"获得 {shield} 点护盾");
         }
 

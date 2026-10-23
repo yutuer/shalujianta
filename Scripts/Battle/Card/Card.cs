@@ -119,6 +119,34 @@ public partial class Card : Resource, ICardLevelable
 
 	public int CalculatedDrawCount => CardLevelSystem.CalculateFixedValue(Level, DrawCountBase, DrawCountPerLevel);
 
+	/// <summary>
+	/// **最终伤害**：优先走百分比口径（角色攻击 × 百分比 × 等级系数）；
+	/// 没有百分比时回退到卡牌写死的绝对值（兼容旧数据）。
+	/// 卡面文案与战斗结算**必须都调这个函数**（否则两边数值会漂）。
+	/// </summary>
+	/// <param name="attributes">角色属性（为空时按绝对值算）</param>
+	public int GetFinalDamage(CharacterAttributes attributes)
+	{
+		if (DamagePercent > 0 && attributes != null)
+		{
+			return CardLevelSystem.CalculateAttributeLinkedValue(Level, attributes.Attack, DamagePercent / 100f);
+		}
+		return CalculatedDamage;
+	}
+
+	/// <summary>
+	/// **最终护盾**：优先走百分比口径（角色防御 × 百分比 × 等级系数）；没有则回退绝对值。
+	/// </summary>
+	/// <param name="attributes">角色属性（为空时按绝对值算）</param>
+	public int GetFinalShield(CharacterAttributes attributes)
+	{
+		if (ShieldPercent > 0 && attributes != null)
+		{
+			return CardLevelSystem.CalculateAttributeLinkedValue(Level, attributes.Defense, ShieldPercent / 100f);
+		}
+		return CalculatedShield;
+	}
+
 	public void LevelUp()
 	{
 		if (Level < MaxLevel)
@@ -200,6 +228,19 @@ public partial class Card : Resource, ICardLevelable
 
 	[Export]
 	public int ApplyDebuffDuration { get; set; } = 0;
+
+	/// <summary>
+	/// 伤害百分比：**最终伤害 = 角色攻击 × 本百分比 × 等级系数**。
+	/// 卡牌不写死伤害绝对值（对照参考游戏：升级界面写的是「护盾：防御力*18%」）。
+	/// </summary>
+	[Export]
+	public int DamagePercent { get; set; } = 0;
+
+	/// <summary>
+	/// 护盾百分比：**最终护盾 = 角色防御 × 本百分比 × 等级系数**。
+	/// </summary>
+	[Export]
+	public int ShieldPercent { get; set; } = 0;
 
     [Export]
     public bool IsEngraved { get; set; } = false;
@@ -293,6 +334,8 @@ public partial class Card : Resource, ICardLevelable
 			TargetPosition = TargetPosition,
 			Damage = Damage,
 			ShieldGain = ShieldGain,
+			DamagePercent = DamagePercent,
+			ShieldPercent = ShieldPercent,
 			EnergyGain = EnergyGain,
 			HealAmount = HealAmount,
 			DrawCount = DrawCount,

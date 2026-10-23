@@ -832,10 +832,11 @@ namespace FishEatFish.Scenes
 
 	private void ApplyCardEffects(Card card)
 	{
-		if (card.ShieldGain > 0)
+		int finalShield = card.GetFinalShield(card.LinkedAttributes);
+		if (finalShield > 0)
 		{
-			player.AddShield(card.ShieldGain);
-			AddMessage($"你使用了{card.Name}，获得{card.ShieldGain}点护盾", LogType.Shield);
+			player.AddShield(finalShield);
+			AddMessage($"你使用了{card.Name}，获得{finalShield}点护盾", LogType.Shield);
 		}
 
 		if (card.EnergyGain > 0)
@@ -894,10 +895,11 @@ namespace FishEatFish.Scenes
 
 		if (card.IsAreaAttack)
 		{
+			int areaDamage = card.GetFinalDamage(card.LinkedAttributes);
 			foreach (Enemy enemy in enemyManager.GetLivingEnemies())
 			{
-				enemy.TakeDamage(card.Damage);
-				AddMessage($"你使用了{card.Name}，对{enemy.EnemyName}造成{card.Damage}点伤害", LogType.Damage);
+				enemy.TakeDamage(areaDamage);
+				AddMessage($"你使用了{card.Name}，对{enemy.EnemyName}造成{areaDamage}点伤害", LogType.Damage);
 			}
 
 			return;
@@ -914,7 +916,8 @@ namespace FishEatFish.Scenes
 			return;
 		}
 
-		target.TakeDamage(card.Damage);
+		int finalDamage = card.GetFinalDamage(card.LinkedAttributes);
+		target.TakeDamage(finalDamage);
 		string targetDescription = card.Target switch
 		{
 			TargetType.Front => $"最前的敌人{target.EnemyName}",
@@ -922,7 +925,7 @@ namespace FishEatFish.Scenes
 			_ => target.EnemyName
 		};
 
-		AddMessage($"你使用了{card.Name}，对{targetDescription}造成{card.Damage}点伤害", LogType.Damage);
+		AddMessage($"你使用了{card.Name}，对{targetDescription}造成{finalDamage}点伤害", LogType.Damage);
 	}
 
 	private void UpdateUI()

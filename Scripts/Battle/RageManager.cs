@@ -23,7 +23,8 @@ public partial class RageManager : Node
     {
         if (card == null) return 0;
         if (card.IsAttack) return RageOnAttack;
-        if (card.IsDefense || card.ShieldGain > 0) return RageOnDefense;
+        // 护盾判定用「实际护盾值」而不是卡牌上的绝对字段（现在是百分比口径）
+        if (card.IsDefense || card.GetFinalShield(card.LinkedAttributes) > 0) return RageOnDefense;
         return 0;
     }
 

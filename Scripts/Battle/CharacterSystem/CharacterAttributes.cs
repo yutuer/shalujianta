@@ -17,7 +17,12 @@ public class CharacterAttributes
 
     public int CurrentRage { get; set; } = 0;
 
-    public int MaxHealth => Constitution * 10;
+    /// <summary>
+    /// 生命上限 = 体质。
+    /// ⚠️ 体质已改用「参考游戏量级」（几十~一百多），所以这里不再乘 10 ——
+    /// 否则生命会变成几百上千（改之前的数值是 体质×10，量级重标定后等价）。
+    /// </summary>
+    public int MaxHealth => Constitution;
 
     public CharacterRace Race { get; set; } = CharacterRace.Chaos;
 

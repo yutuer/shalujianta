@@ -74,6 +74,9 @@ public class CharacterCardLoader
         card.IsAreaAttack = dict.ContainsKey("isAreaAttack") ? (bool)dict["isAreaAttack"] : false;
         card.Damage = dict.ContainsKey("damage") ? (int)(long)dict["damage"] : 0;
         card.ShieldGain = dict.ContainsKey("shieldGain") ? (int)(long)dict["shieldGain"] : 0;
+        // 百分比口径（对照参考游戏）：伤害 = 角色攻击 × 百分比，护盾 = 角色防御 × 百分比
+        card.DamagePercent = dict.ContainsKey("damagePercent") ? (int)(long)dict["damagePercent"] : 0;
+        card.ShieldPercent = dict.ContainsKey("shieldPercent") ? (int)(long)dict["shieldPercent"] : 0;
         card.EnergyGain = dict.ContainsKey("energyGainBase") ? (int)(long)dict["energyGainBase"] : 0;
         card.HealAmount = dict.ContainsKey("healAmount") ? (int)(long)dict["healAmount"] : 0;
         card.DrawCount = dict.ContainsKey("drawCountBase") ? (int)(long)dict["drawCountBase"] : 0;
