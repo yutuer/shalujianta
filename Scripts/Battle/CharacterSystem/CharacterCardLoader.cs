@@ -159,6 +159,34 @@ public class CharacterCardLoader
         return characterCardDatabase.TryGetValue(cardId, out card);
     }
 
+    /// <summary>
+    /// 取一张卡牌的**独立副本**（可选挂上角色属性）。
+    ///
+    /// ⚠️ <see cref="GetCharacterCard"/> 返回的是**共享的模板实例**，界面直接拿它展示有两个问题：
+    ///   1. **数值算不出来**：百分比卡牌要靠角色属性才算得出伤害/护盾，
+    ///      模板既没挂属性也没有绝对值 → 卡面 / 列表显示 0；
+    ///   2. **多界面共享同一实例**：谁改等级 / 费用都会互相影响。
+    /// 所以**界面展示一律走这个工厂**。
+    /// </summary>
+    /// <param name="cardId">卡牌 id</param>
+    /// <param name="attributes">该卡所属角色的属性（可为 null）</param>
+    /// <returns>独立副本；查不到返回 null</returns>
+    public static FishEatFish.Battle.Card.Card CreateInstance(string cardId, CharacterAttributes attributes = null)
+    {
+        if (!TryGetCharacterCard(cardId, out FishEatFish.Battle.Card.Card template))
+        {
+            GD.PrintErr($"[CharacterCardLoader] Character card not found: {cardId}");
+            return null;
+        }
+
+        FishEatFish.Battle.Card.Card instance = template.Clone();
+        if (attributes != null)
+        {
+            instance.LinkedAttributes = attributes;
+        }
+        return instance;
+    }
+
     public static List<FishEatFish.Battle.Card.Card> GetCharacterCards(string characterId)
     {
         if (!isLoaded) LoadCharacterCards();

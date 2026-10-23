@@ -490,7 +490,7 @@ public partial class CardUI : Panel
             glowColor = new Color(0.8f, 0.3f, 0.3f, 0.3f);
             iconPath = "res://Assets/Icons/intent_attack.svg";
         }
-        else if (cardData.ShieldGain > 0)
+        else if (cardData.IsDefenseCard())
         {
             bgColor = new Color(0.1f, 0.15f, 0.2f, 1f);
             borderColor = new Color(0.3f, 0.5f, 0.8f, 1f);
@@ -595,7 +595,7 @@ public partial class CardUI : Panel
         {
             glowColor = new Color(0.8f, 0.3f, 0.3f, intensity);
         }
-        else if (cardData.ShieldGain > 0)
+        else if (cardData.IsDefenseCard())
         {
             glowColor = new Color(0.3f, 0.5f, 0.8f, intensity);
         }
@@ -606,10 +606,10 @@ public partial class CardUI : Panel
 
         StyleBoxFlat style = new StyleBoxFlat();
         style.BgColor = cardData.IsAttack ? new Color(0.2f, 0.1f, 0.1f) :
-                        cardData.ShieldGain > 0 ? new Color(0.1f, 0.15f, 0.2f) :
+                        cardData.IsDefenseCard() ? new Color(0.1f, 0.15f, 0.2f) :
                         new Color(0.15f, 0.15f, 0.2f);
         style.BorderColor = cardData.IsAttack ? new Color(0.8f, 0.3f, 0.3f) :
-                           cardData.ShieldGain > 0 ? new Color(0.3f, 0.5f, 0.8f) :
+                           cardData.IsDefenseCard() ? new Color(0.3f, 0.5f, 0.8f) :
                            new Color(0.6f, 0.3f, 0.8f);
         style.SetBorderWidthAll(2);
         style.SetCornerRadiusAll(8);

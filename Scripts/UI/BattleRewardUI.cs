@@ -249,14 +249,14 @@ public partial class BattleRewardUI : Control
         {
             if (character == null) continue;
 
-            AddCardIfEngravable(cards, character.AttackCardId, engravingManager);
-            AddCardIfEngravable(cards, character.DefenseCardId, engravingManager);
+            AddCardIfEngravable(cards, character.AttackCardId, character, engravingManager);
+            AddCardIfEngravable(cards, character.DefenseCardId, character, engravingManager);
 
             if (character.SpecialCardIds != null)
             {
                 foreach (string specialId in character.SpecialCardIds)
                 {
-                    AddCardIfEngravable(cards, specialId, engravingManager);
+                    AddCardIfEngravable(cards, specialId, character, engravingManager);
                 }
             }
         }
@@ -267,12 +267,17 @@ public partial class BattleRewardUI : Control
     private void AddCardIfEngravable(
         List<Card> cards,
         string cardId,
+        FishEatFish.Battle.CharacterSystem.CharacterDefinition character,
         FishEatFish.Battle.EngravingSystem.EngravingManager engravingManager)
     {
         if (string.IsNullOrEmpty(cardId)) return;
         if (engravingManager != null && engravingManager.IsCardEngraved(cardId)) return;
 
-        Card card = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(cardId);
+        // ⚠️ 用 CreateInstance（独立副本 + 挂上该角色属性）：
+        // 共享模板既算不出百分比数值，也会和别的界面共享同一个实例。
+        Card card = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.CreateInstance(
+            cardId,
+            character != null ? character.GetAttributes() : null);
         if (card == null) return;
 
         cards.Add(card);

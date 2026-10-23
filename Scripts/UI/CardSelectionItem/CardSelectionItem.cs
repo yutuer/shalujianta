@@ -101,9 +101,13 @@ namespace FishEatFish.UI.CardSelectionItem
         {
             if (card == null) return "";
 
+            // ⚠️ 必须走 GetFinalDamage/GetFinalShield（百分比口径），
+            // 直接读 card.Damage / card.ShieldGain 在百分比化之后恒为 0 → 列表里数值全空。
             var parts = new List<string>();
-            if (card.Damage > 0) parts.Add($"伤害: {card.Damage}");
-            if (card.ShieldGain > 0) parts.Add($"护盾: {card.ShieldGain}");
+            int damage = card.GetFinalDamage(card.LinkedAttributes);
+            int shield = card.GetFinalShield(card.LinkedAttributes);
+            if (damage > 0) parts.Add($"伤害: {damage}");
+            if (shield > 0) parts.Add($"护盾: {shield}");
             if (card.HealAmount > 0) parts.Add($"治疗: {card.HealAmount}");
             if (card.EnergyGain > 0) parts.Add($"能量: +{card.EnergyGain}");
 

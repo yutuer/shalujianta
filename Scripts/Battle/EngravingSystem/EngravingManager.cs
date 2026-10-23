@@ -252,22 +252,13 @@ public partial class EngravingManager : Node
     {
         if (originalCard == null || player == null) return "";
 
-        FishEatFish.Battle.Card.Card copy = new FishEatFish.Battle.Card.Card
-        {
-            CardId = originalCard.CardId + "_copy",
-            Name = originalCard.Name + "(复制)",
-            Cost = originalCard.Cost,
-            Description = originalCard.Description,
-            IsAttack = originalCard.IsAttack,
-            IsDefense = originalCard.IsDefense,
-            Damage = originalCard.Damage,
-            ShieldGain = originalCard.ShieldGain,
-            EnergyGain = originalCard.EnergyGain,
-            HealAmount = originalCard.HealAmount,
-            DrawCount = originalCard.DrawCount,
-            IsRetain = originalCard.IsRetain,
-            IsEngraved = false
-        };
+        // ⚠️ 用 Clone() 而不是手抄字段：
+        // 手抄会漏掉百分比字段（DamagePercent / ShieldPercent）与角色属性（LinkedAttributes），
+        // 复制出来的卡就会算不出伤害 / 护盾（= 0）。
+        FishEatFish.Battle.Card.Card copy = originalCard.Clone();
+        copy.CardId = originalCard.CardId + "_copy";
+        copy.Name = originalCard.Name + "(复制)";
+        copy.IsEngraved = false;
 
         player.Deck.Add(copy);
         return "复制刻印触发：获得一张此卡牌的复制";

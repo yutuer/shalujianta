@@ -86,15 +86,19 @@ namespace FishEatFish.UI.HexMap
                 {
                     if (character != null)
                     {
+                        // ⚠️ 用 CreateInstance（独立副本 + 挂上该角色属性），
+                        // 不要用 GetCharacterCard 拿共享模板：百分比卡牌算不出数值，实例也会被多处共享。
+                        var attributes = character.GetAttributes();
+
                         if (!string.IsNullOrEmpty(character.AttackCardId))
                         {
-                            var attackCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(character.AttackCardId);
+                            var attackCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.CreateInstance(character.AttackCardId, attributes);
                             if (attackCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(attackCard.CardId)) cardList.Add(attackCard);
                         }
 
                         if (!string.IsNullOrEmpty(character.DefenseCardId))
                         {
-                            var defenseCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(character.DefenseCardId);
+                            var defenseCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.CreateInstance(character.DefenseCardId, attributes);
                             if (defenseCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(defenseCard.CardId)) cardList.Add(defenseCard);
                         }
 
@@ -104,7 +108,7 @@ namespace FishEatFish.UI.HexMap
                             {
                                 if (!string.IsNullOrEmpty(specialCardId))
                                 {
-                                    var specialCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(specialCardId);
+                                    var specialCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.CreateInstance(specialCardId, attributes);
                                     if (specialCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(specialCard.CardId))
                                     {
                                         cardList.Add(specialCard);
@@ -112,7 +116,7 @@ namespace FishEatFish.UI.HexMap
                                     else if (specialCard == null)
                                     {
                                         var baseSpecialCardId = specialCardId.Replace("1", "").Replace("2", "").Replace("3", "");
-                                        specialCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.GetCharacterCard(baseSpecialCardId);
+                                        specialCard = FishEatFish.Battle.CharacterSystem.CharacterCardLoader.CreateInstance(baseSpecialCardId, attributes);
                                         if (specialCard != null && !BlackMarkShopManager.Instance.IsCardEngraved(specialCard.CardId)) cardList.Add(specialCard);
                                     }
                                 }

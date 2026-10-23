@@ -670,7 +670,9 @@ namespace FishEatFish.Scenes
 
 		foreach (var card in player.Deck)
 		{
-			GD.Print($"  [Card] {card.Name}, Cost: {card.Cost}, Damage: {card.Damage}");
+			// ⚠️ 打印**最终数值**（百分比口径），不要打印 card.Damage ——
+			// 百分比化之后 card.Damage 恒为 0，日志会误导成「所有卡都没伤害」。
+			GD.Print($"  [Card] {card.Name} ({card.CardId}), Cost: {card.Cost}, 伤害: {card.GetFinalDamage(card.LinkedAttributes)}, 护盾: {card.GetFinalShield(card.LinkedAttributes)}");
 		}
 
 		player.ShuffleDeck();

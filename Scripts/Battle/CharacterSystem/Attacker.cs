@@ -40,6 +40,11 @@ public partial class Attacker : Node
         _teamDeck.Clear();
         _cardToCharacter.Clear();
 
+        // 「每个角色各自的两张基本卡」是硬要求（主人 2026-10-24 明确）：
+        // 数值模板可以一样，但**条目 / 词条 / 运行时实例必须各角色一份**。
+        // 这里放两道守卫，任何一道触发都会打错误日志，不静默。
+        var basicCardOwners = new Dictionary<string, string>();
+
         foreach (var character in Characters)
         {
             if (character == null) continue;
@@ -53,6 +58,9 @@ public partial class Attacker : Node
             _cardToCharacter[attackCard] = character;
             _cardToCharacter[defenseCard] = character;
 
+            CheckBasicCardOwnership(basicCardOwners, character.AttackCardId, character, "打击");
+            CheckBasicCardOwnership(basicCardOwners, character.DefenseCardId, character, "防御");
+
             foreach (var specialId in character.SpecialCardIds)
             {
                 if (string.IsNullOrEmpty(specialId)) continue;
@@ -61,6 +69,44 @@ public partial class Attacker : Node
                 _cardToCharacter[specialCard] = character;
             }
         }
+
+        // 守卫二：卡组里不得出现**同一个 Card 实例**两次
+        // （共享实例会让「这张牌升级了 / 改费用了」污染到别的卡）。
+        var seenInstances = new HashSet<Card>();
+        foreach (var card in _teamDeck)
+        {
+            if (card == null) continue;
+            if (!seenInstances.Add(card))
+            {
+                GD.PrintErr($"[Attacker] 卡组里出现重复的卡牌实例（{card.CardId}）—— 每张卡必须是独立实例");
+            }
+        }
+
+        // 卡组快照（一行）：卡牌 id + 实例 id + 实际伤害 / 护盾
+        // —— 数值出问题时先看这行，再去查数据表；实例 id 能直接看出「两张卡是不是同一个对象」。
+        if (_teamDeck.Count > 0)
+        {
+            string snapshot = string.Join(" | ", _teamDeck.Select(c =>
+                $"{c.CardId}#{c.GetInstanceId()} 伤{c.GetFinalDamage(c.LinkedAttributes)}盾{c.GetFinalShield(c.LinkedAttributes)}"));
+            GD.Print($"[Attacker] 卡组({_teamDeck.Count} 张): {snapshot}");
+        }
+    }
+
+    /// <summary>
+    /// 守卫一：**同一张基本卡 id 不得被两个角色共用**。
+    /// 共用了就等于退回「所有角色共用两张牌」，直接违背主人的要求。
+    /// </summary>
+    private void CheckBasicCardOwnership(Dictionary<string, string> owners, string cardId, CharacterDefinition character, string slot)
+    {
+        if (string.IsNullOrEmpty(cardId)) return;
+
+        if (owners.TryGetValue(cardId, out string ownerId))
+        {
+            GD.PrintErr($"[Attacker] 基本卡「{cardId}」被角色「{ownerId}」和「{character.CharacterId}」共用 —— 每个角色的「{slot}」必须是各自独立的卡");
+            return;
+        }
+
+        owners[cardId] = character.CharacterId;
     }
 
     /// <summary>
@@ -78,7 +124,11 @@ public partial class Attacker : Node
     {
         Card card = null;
 
-        if (CharacterCardLoader.TryGetCharacterCard(cardId, out Card template))
+        if (string.IsNullOrEmpty(cardId))
+        {
+            GD.PrintErr($"[Attacker] 角色「{character.CharacterId}」的基本卡 id 为空（数据表 characters.json 缺 attackCardId / defenseCardId）");
+        }
+        else if (CharacterCardLoader.TryGetCharacterCard(cardId, out Card template))
         {
             // 复制一份：模板是共享实例，战斗里会改费用 / 刻印 / 等级
             card = template.Clone();

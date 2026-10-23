@@ -206,24 +206,28 @@ public static class DescriptionGenerator
         var preview = new StringBuilder();
         preview.AppendLine("升级后效果:");
 
-        if (card.IsAttack && card.Damage > 0)
+        // 伤害：走百分比口径（角色攻击 × 百分比 × 等级系数）。
+        // ⚠️ 不能只看 card.Damage > 0 —— 百分比化之后绝对值恒为 0，预览会整段空白。
+        int currentDamage = card.GetFinalDamage(attributes, card.Level);
+        int nextDamage = card.GetFinalDamage(attributes, card.Level + 1);
+        if (currentDamage > 0 || nextDamage > 0)
         {
-            int current = attributes != null ? card.CalculatedDamage : card.Damage;
-            int next = CardLevelSystem.CalculateAttributeLinkedValue(
-                card.Level + 1,
-                card.Damage,
-                card.DamageBaseCoefficient);
-            preview.AppendLine($"  伤害: {current} → {next}");
+            preview.AppendLine($"  伤害: {currentDamage} → {nextDamage}");
+        }
+        else if (card.DamagePercent > 0)
+        {
+            preview.AppendLine($"  伤害: 角色攻击 × {card.DamagePercent}%");
         }
 
-        if (card.ShieldGain > 0)
+        int currentShield = card.GetFinalShield(attributes, card.Level);
+        int nextShield = card.GetFinalShield(attributes, card.Level + 1);
+        if (currentShield > 0 || nextShield > 0)
         {
-            int current = attributes != null ? card.CalculatedShield : card.ShieldGain;
-            int next = CardLevelSystem.CalculateAttributeLinkedValue(
-                card.Level + 1,
-                card.ShieldGain,
-                card.ShieldBaseCoefficient);
-            preview.AppendLine($"  护盾: {current} → {next}");
+            preview.AppendLine($"  护盾: {currentShield} → {nextShield}");
+        }
+        else if (card.ShieldPercent > 0)
+        {
+            preview.AppendLine($"  护盾: 角色防御 × {card.ShieldPercent}%");
         }
 
         if (card.HealAmount > 0)

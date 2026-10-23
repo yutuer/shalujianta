@@ -125,26 +125,42 @@ public partial class Card : Resource, ICardLevelable
 	/// 卡面文案与战斗结算**必须都调这个函数**（否则两边数值会漂）。
 	/// </summary>
 	/// <param name="attributes">角色属性（为空时按绝对值算）</param>
-	public int GetFinalDamage(CharacterAttributes attributes)
+	/// <param name="level">按哪一级算（0 = 卡牌当前等级；**升级预览传 等级+1**）</param>
+	public int GetFinalDamage(CharacterAttributes attributes, int level = 0)
 	{
+		int lv = level > 0 ? level : Level;
 		if (DamagePercent > 0 && attributes != null)
 		{
-			return CardLevelSystem.CalculateAttributeLinkedValue(Level, attributes.Attack, DamagePercent / 100f);
+			return CardLevelSystem.CalculateAttributeLinkedValue(lv, attributes.Attack, DamagePercent / 100f);
 		}
-		return CalculatedDamage;
+		return CardLevelSystem.CalculateAttributeLinkedValue(lv, Damage, DamageBaseCoefficient);
 	}
 
 	/// <summary>
 	/// **最终护盾**：优先走百分比口径（角色防御 × 百分比 × 等级系数）；没有则回退绝对值。
 	/// </summary>
 	/// <param name="attributes">角色属性（为空时按绝对值算）</param>
-	public int GetFinalShield(CharacterAttributes attributes)
+	/// <param name="level">按哪一级算（0 = 卡牌当前等级；**升级预览传 等级+1**）</param>
+	public int GetFinalShield(CharacterAttributes attributes, int level = 0)
 	{
+		int lv = level > 0 ? level : Level;
 		if (ShieldPercent > 0 && attributes != null)
 		{
-			return CardLevelSystem.CalculateAttributeLinkedValue(Level, attributes.Defense, ShieldPercent / 100f);
+			return CardLevelSystem.CalculateAttributeLinkedValue(lv, attributes.Defense, ShieldPercent / 100f);
 		}
-		return CalculatedShield;
+		return CardLevelSystem.CalculateAttributeLinkedValue(lv, ShieldGain, ShieldBaseCoefficient);
+	}
+
+	/// <summary>
+	/// 这张卡是不是**防御卡**（配色 / 图标 / 列表判定统一走这里）。
+	///
+	/// ⚠️ 不能再直接判 <c>ShieldGain > 0</c>：百分比化之后绝对值字段恒为 0，
+	/// 防御卡会被当成普通卡画成紫边。三个信号任意一个成立即是防御卡：
+	/// 卡位标记 <see cref="IsDefense"/> / 绝对值护盾 / 护盾百分比。
+	/// </summary>
+	public bool IsDefenseCard()
+	{
+		return IsDefense || ShieldGain > 0 || ShieldPercent > 0;
 	}
 
 	public void LevelUp()

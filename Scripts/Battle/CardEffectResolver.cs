@@ -7,6 +7,14 @@ using FishEatFish.Battle.Card;
 
 namespace FishEatFish.Battle;
 
+/// <summary>
+/// 卡牌效果的**旧结算路径**（当前战斗主循环走的是
+/// <c>BattleManager.ApplyCardEffects / ApplyCardDamage</c>，本类**没有调用点**）。
+///
+/// 保留它是为了让「数值口径」在这条路径上也跟主循环一致：
+/// 百分比化之后 <c>card.Damage / card.ShieldGain</c> 恒为 0，
+/// 哪天有人把它接回去也不会静默算成 0 伤害。
+/// </summary>
 public static class CardEffectResolver
 {
     public static void ResolveCardEffects(FishEatFish.Battle.Card.Card card, Player player, List<Enemy> enemies, System.Action<string, LogType> logCallback)
@@ -43,12 +51,20 @@ public static class CardEffectResolver
 
     private static int GetEffectValueOverride(FishEatFish.Battle.Card.Card card, Effect effect)
     {
+        // ⚠️ 伤害/护盾走 GetFinalDamage/GetFinalShield（百分比口径）：
+        // 百分比化之后 card.Damage / card.ShieldGain 恒为 0，直接读会永远拿 0 覆盖效果值。
         switch (effect.Type)
         {
             case EffectType.Damage:
-                return card.Damage > 0 ? card.Damage : effect.Value;
+            {
+                int damage = card.GetFinalDamage(card.LinkedAttributes);
+                return damage > 0 ? damage : effect.Value;
+            }
             case EffectType.Shield:
-                return card.ShieldGain > 0 ? card.ShieldGain : effect.Value;
+            {
+                int shield = card.GetFinalShield(card.LinkedAttributes);
+                return shield > 0 ? shield : effect.Value;
+            }
             case EffectType.Heal:
                 return card.HealAmount > 0 ? card.HealAmount : effect.Value;
             case EffectType.Energy:
@@ -62,10 +78,11 @@ public static class CardEffectResolver
 
     private static void ApplyStatEffects(FishEatFish.Battle.Card.Card card, Player player, System.Action<string, LogType> logCallback)
     {
-        if (card.ShieldGain > 0)
+        int finalShield = card.GetFinalShield(card.LinkedAttributes);
+        if (finalShield > 0)
         {
-            player.AddShield(card.ShieldGain);
-            logCallback($"获得{card.ShieldGain}点护盾", LogType.Shield);
+            player.AddShield(finalShield);
+            logCallback($"获得{finalShield}点护盾", LogType.Shield);
         }
 
         if (card.EnergyGain > 0)
@@ -191,12 +208,14 @@ public static class CardEffectResolver
         enemies.RemoveAll(e => e.IsDead);
         if (!card.IsAttack || enemies.Count == 0) return;
 
+        int finalDamage = card.GetFinalDamage(card.LinkedAttributes);
+
         if (card.IsAreaAttack)
         {
             foreach (Enemy enemy in enemies)
             {
-                enemy.TakeDamage(card.Damage);
-                logCallback($"对{enemy.EnemyName}造成{card.Damage}点伤害", LogType.Damage);
+                enemy.TakeDamage(finalDamage);
+                logCallback($"对{enemy.EnemyName}造成{finalDamage}点伤害", LogType.Damage);
             }
             return;
         }
@@ -211,7 +230,7 @@ public static class CardEffectResolver
             return;
         }
 
-        target.TakeDamage(card.Damage);
+        target.TakeDamage(finalDamage);
         string targetDescription = card.Target switch
         {
             Card.TargetType.Front => $"最前的敌人{target.EnemyName}",
@@ -219,6 +238,6 @@ public static class CardEffectResolver
             _ => target.EnemyName
         };
 
-        logCallback($"对{targetDescription}造成{card.Damage}点伤害", LogType.Damage);
+        logCallback($"对{targetDescription}造成{finalDamage}点伤害", LogType.Damage);
     }
 }
