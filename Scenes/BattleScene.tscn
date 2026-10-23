@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cg7pfcricr231"]
+[gd_scene load_steps=15 format=3 uid="uid://cg7pfcricr231"]
 
 [ext_resource type="Script" uid="uid://g0n4d8440ta4" path="res://Scripts/Scenes/BattleManager.cs" id="1_battle"]
 [ext_resource type="Script" uid="uid://dofgf2yjjym2n" path="res://Scripts/UI/HandCardPreview.cs" id="2_preview"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/UI/PlayerZone.tscn" id="9_player_zone"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/DeckStatusPanel.tscn" id="10_deck_panel"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/DrawPileViewer.tscn" id="11_draw_viewer"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/CardDetailUI.tscn" id="12_card_detail"]
 
 [sub_resource type="Gradient" id="Gradient_battle_bg"]
 offsets = PackedFloat32Array(0, 0.55, 1)
@@ -207,3 +208,5 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="ArtifactDetailUI" parent="UI" instance=ExtResource("4_artifact_detail")]
+
+[node name="CardDetailUI" parent="UI" instance=ExtResource("12_card_detail")]

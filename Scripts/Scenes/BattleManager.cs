@@ -38,6 +38,7 @@ namespace FishEatFish.Scenes
 	private Button endTurnButton;
 	private DeckStatusPanel deckStatusPanel;
 	private DrawPileViewer drawPileViewer;
+	private FishEatFish.UI.CardDetailPanel.CardDetailUI cardDetailUI;
 	private Button mapButton;
 	private Button keyOrderButton;
 	private Button logButton;
@@ -213,6 +214,11 @@ namespace FishEatFish.Scenes
 		endTurnButton = GetNodeOrNull<Button>("UI/BottomBar/EndTurnButton");
 		deckStatusPanel = GetNodeOrNull<DeckStatusPanel>("UI/BottomBar/DeckStatusPanel");
 		drawPileViewer = GetNodeOrNull<DrawPileViewer>("UI/DrawPileViewer");
+	cardDetailUI = GetNodeOrNull<FishEatFish.UI.CardDetailPanel.CardDetailUI>("UI/CardDetailUI");
+	if (cardDetailUI == null)
+	{
+			GD.PrintErr("[BattleManager] 未找到 CardDetailUI 节点，点手牌看不到详情");
+	}
 
 		// 抽牌堆图标可点击 → 打开抽牌池查看器（看还剩哪些牌）
 		if (deckStatusPanel != null)
@@ -1098,24 +1104,7 @@ namespace FishEatFish.Scenes
 		bool canPlay = isPlayerTurn && player.CurrentEnergy >= card.Cost;
 		cardUI.Setup(card, cardIndex, canPlay);
 
-		// 插画优先用卡牌数据里的 spritePath（42 张卡都有），没有再退回旧的按名字硬编码映射
-		Texture2D cardTexture = null;
-		// 1) 通用卡：cards.json 里的 spritePath
-		CardData cardData = CardConfigLoader.TryGetCardData(card.CardId);
-		if (cardData != null && !string.IsNullOrEmpty(cardData.SpritePath) && ResourceLoader.Exists(cardData.SpritePath))
-		{
-				cardTexture = ResourceLoader.Load<Texture2D>(cardData.SpritePath);
-		}
-		// 2) 角色专属卡：按 cardId 推导（专属卡不在 cards.json 里）
-		if (cardTexture == null && !string.IsNullOrEmpty(card.CardId))
-		{
-				string derived = $"res://Assets/Cards/card_{card.CardId}.svg";
-				if (ResourceLoader.Exists(derived)) cardTexture = ResourceLoader.Load<Texture2D>(derived);
-		}
-		if (cardTexture == null && resourceManager.CardTextures.TryGetValue(card.Name, out Texture2D legacyTexture))
-		{
-				cardTexture = legacyTexture;
-		}
+		Texture2D cardTexture = ResolveCardTexture(card);
 		if (cardTexture != null)
 		{
 				cardUI.SetTexture(cardTexture);
@@ -1124,11 +1113,64 @@ namespace FishEatFish.Scenes
 		int capturedIndex = cardIndex;
 		cardUI.SetPlayCallback(() => OnCardPlayed(card, capturedIndex));
 
+		// 点一下卡牌 → 打开卡牌详情界面（长按则是就地放大详情）
+		cardUI.OnCardClicked = OnHandCardClicked;
+
 		handContainer.AddChild(cardUI);
 		cardUIs.Add(cardUI);
 		cardUI.ZIndex = cardIndex;
 
 		PlayCardDrawAnimation(cardUI, cardIndex);
+	}
+
+	/// <summary>
+	/// 取卡牌插画。
+	/// ① 通用卡：cards.json 里的 spritePath
+	/// ② 角色专属卡：按 cardId 推导（专属卡不在 cards.json 里）
+	/// ③ 兜底：旧的按名字硬编码映射
+	/// </summary>
+	private Texture2D ResolveCardTexture(Card card)
+	{
+		if (card == null) return null;
+
+		Texture2D cardTexture = null;
+
+		CardData cardData = CardConfigLoader.TryGetCardData(card.CardId);
+		if (cardData != null && !string.IsNullOrEmpty(cardData.SpritePath) && ResourceLoader.Exists(cardData.SpritePath))
+		{
+				cardTexture = ResourceLoader.Load<Texture2D>(cardData.SpritePath);
+		}
+
+		if (cardTexture == null && !string.IsNullOrEmpty(card.CardId))
+		{
+				string derived = $"res://Assets/Cards/card_{card.CardId}.svg";
+				if (ResourceLoader.Exists(derived)) cardTexture = ResourceLoader.Load<Texture2D>(derived);
+		}
+
+		if (cardTexture == null && resourceManager.CardTextures.TryGetValue(card.Name, out Texture2D legacyTexture))
+		{
+				cardTexture = legacyTexture;
+		}
+
+		return cardTexture;
+	}
+
+	/// <summary>
+	/// 点手牌 → 打开卡牌详情界面（属性系数 / 当前值 / 下一级预览）。
+	/// </summary>
+	private void OnHandCardClicked(Card card)
+	{
+		GD.Print("[BattleManager] OnHandCardClicked called");
+
+		if (cardDetailUI == null)
+		{
+				GD.PrintErr("[BattleManager] 未找到 CardDetailUI 节点，无法显示卡牌详情");
+				return;
+		}
+
+		cardDetailUI.ShowCard(card, ResolveCardTexture(card));
+
+		GD.Print("[BattleManager] OnHandCardClicked completed");
 	}
 
 	private void PlayCardDrawAnimation(CardUI cardUI, int cardIndex)

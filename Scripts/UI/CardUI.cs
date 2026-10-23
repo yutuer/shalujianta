@@ -59,6 +59,28 @@ public partial class CardUI : Panel
     /// </summary>
     private const float DragBlendSpeed = 14f;
 
+    // ==================== 长按放大详情 ====================
+
+    /// <summary>按住多久算「长按」（秒）</summary>
+    private const float LongPressDelay = 0.35f;
+
+    /// <summary>长按期间允许的鼠标抖动（像素）—— 超过就当成「要拖拽」</summary>
+    private const float LongPressMoveTolerance = 8f;
+
+    /// <summary>长按时卡牌放大到多少倍（比拖拽的 1.5 倍更大，文字才读得清）</summary>
+    private const float LongPressScale = 2.2f;
+
+    /// <summary>长按放大时卡牌往上抬多少（像素）—— 不然放大后下半截会掉出屏幕</summary>
+    private const float LongPressLift = 150f;
+
+    /// <summary>短按（没拖动、没长按）时触发 —— 打开卡牌详情界面</summary>
+    public System.Action<Card> OnCardClicked;
+
+    private float _pressElapsed;
+    private bool _longPressTriggered;
+    private bool _pressMoved;
+    private float _longPressBlend;
+
     private DragPhase _dragPhase = DragPhase.None;
     private Vector2 _pressMouseGlobal;
     private Vector2 _dragDelta = Vector2.Zero;
@@ -149,15 +171,31 @@ public partial class CardUI : Panel
             // 之前只在"收到鼠标移动事件"时推进 → 鼠标按住不动就永远推不到 1，
             // 卡牌就一直是半大不大的样子，看起来"放大非常缓慢"（其实是卡住了）。
             _dragBlend = Mathf.MoveToward(_dragBlend, 1f, (float)delta * DragBlendSpeed);
+
+            // 长按检测：**按住不动**超过阈值 → 就地放大，把卡面详情放大出来（松手复原）。
+            // 一旦鼠标开始移动（超过容差）就当作「要拖拽」，长按作废 —— 拖拽出牌不能被长按吃掉。
+            if (_dragPhase == DragPhase.Pressed && !_longPressTriggered)
+            {
+                _pressElapsed += (float)delta;
+                if (_pressElapsed >= LongPressDelay &&
+                    GetGlobalMousePosition().DistanceTo(_pressMouseGlobal) <= LongPressMoveTolerance)
+                {
+                    _longPressTriggered = true;
+                    GD.Print($"[CardUI] 长按触发，放大详情：{cardData?.CardId}（{cardData?.Name}）");
+                }
+            }
+
+            _longPressBlend = Mathf.MoveToward(_longPressBlend, _longPressTriggered ? 1f : 0f, (float)delta * DragBlendSpeed);
             ApplyTransform();
             return;
         }
 
         // 取消出牌后：卡牌平滑滑回牌堆（_dragBlend 与 _dragDelta 一起归零）
-        if (_dragBlend > 0.001f)
+        if (_dragBlend > 0.001f || _longPressBlend > 0.001f)
         {
             _dragBlend = Mathf.Max(0f, _dragBlend - (float)delta * DragBlendSpeed);
             _dragDelta = _dragDelta.Lerp(Vector2.Zero, Mathf.Min(1f, (float)delta * 12f));
+            _longPressBlend = Mathf.Max(0f, _longPressBlend - (float)delta * DragBlendSpeed);
             ApplyTransform();
         }
     }
@@ -204,6 +242,9 @@ public partial class CardUI : Panel
         _dragPhase = DragPhase.Pressed;
         _pressMouseGlobal = globalMouse;
         _dragDelta = Vector2.Zero;
+        _pressElapsed = 0f;
+        _longPressTriggered = false;
+        _pressMoved = false;
         ZIndex = 1000;
 
         UpdateHint();
@@ -216,6 +257,13 @@ public partial class CardUI : Panel
     public void UpdateDrag(double delta, Vector2 globalMouse)
     {
         _dragDelta = globalMouse - _pressMouseGlobal;
+
+        // 动过了 → 不算长按（长按只在「按住不动」时成立），拖拽出牌优先
+        if (_dragDelta.Length() > LongPressMoveTolerance)
+        {
+            _pressMoved = true;
+            _longPressTriggered = false;
+        }
 
         // 只允许往上拖（横向限制在小范围内）
         if (_dragDelta.Y > 0f) _dragDelta.Y = 0f;
@@ -252,6 +300,9 @@ public partial class CardUI : Panel
     {
         if (_dragPhase == DragPhase.None) return;
 
+        bool wasLongPress = _longPressTriggered;
+        bool moved = _pressMoved || GetGlobalMousePosition().DistanceTo(_pressMouseGlobal) > LongPressMoveTolerance;
+
         _dragPhase = DragPhase.None;
 
         if (commit)
@@ -263,6 +314,13 @@ public partial class CardUI : Panel
             UpdateGlowIntensity(0f);
             Play();
             return;
+        }
+
+        // 短按松手（没拖动、也没长按）= 「点击这张卡」→ 打开卡牌详情界面
+        if (!wasLongPress && !moved && cardData != null)
+        {
+            GD.Print($"[CardUI] 点击卡牌：{cardData.CardId}（{cardData.Name}）");
+            OnCardClicked?.Invoke(cardData);
         }
 
         // 取消：_dragBlend / _dragDelta 在 _Process 里平滑归零 → 卡牌滑回牌堆
@@ -293,9 +351,13 @@ public partial class CardUI : Panel
     /// </summary>
     public void ApplyTransform()
     {
-        float s = Mathf.Lerp(_homeScale, DragScale, _dragBlend);
+        float baseScale = Mathf.Lerp(_homeScale, DragScale, _dragBlend);
+        // 长按放大：比拖拽的 1.5 倍更大，卡面文字才读得清（这就是「把详情放大出来」）
+        float s = Mathf.Lerp(baseScale, LongPressScale, _longPressBlend);
         Vector2 homeCenter = _homeTopLeft + _baseSize * 0.5f;
         Vector2 center = homeCenter + _dragDelta * _dragBlend;
+        // 长按放大时整张牌往上抬 —— 不抬的话放大的下半截会掉出屏幕
+        center -= new Vector2(0f, LongPressLift * _longPressBlend);
         Vector2 topLeft = center - _baseSize * 0.5f * s;
 
         OffsetLeft = topLeft.X;
@@ -557,6 +619,18 @@ public partial class CardUI : Panel
 
         string text;
         float alpha;
+
+        // 长按放大详情中：提示改成「松手还原」（这时拖拽提示会误导）
+        if (_longPressTriggered)
+        {
+            text = "松手还原";
+            alpha = 1f;
+
+            hoverHint.Text = text;
+            hoverHint.Visible = alpha > 0.01f;
+            hoverHint.Modulate = new Color(1f, 1f, 1f, alpha);
+            return;
+        }
 
         switch (_dragPhase)
         {
