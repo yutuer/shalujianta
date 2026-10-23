@@ -6,23 +6,23 @@
 [ext_resource type="Texture2D" path="res://Assets/Icons/discard_pile.svg" id="4_discard"]
 
 [node name="DeckStatusPanel" type="HBoxContainer"]
-theme_override_constants/separation = 24
+theme_override_constants/separation = 28
 script = ExtResource("1")
 
 [node name="HandGroup" type="HBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 
 [node name="HandCount" type="Label" parent="HandGroup"]
 layout_mode = 2
 size_flags_vertical = 4
 text = "0/0"
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 26
 theme_override_colors/font_color = Color(0.96, 0.93, 0.84, 1)
 
 [node name="HandIcon" type="TextureRect" parent="HandGroup"]
-custom_minimum_size = Vector2(34, 34)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -32,18 +32,18 @@ stretch_mode = 5
 
 [node name="DrawGroup" type="HBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 
 [node name="DrawCount" type="Label" parent="DrawGroup"]
 layout_mode = 2
 size_flags_vertical = 4
 text = "0"
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 26
 theme_override_colors/font_color = Color(0.96, 0.93, 0.84, 1)
 
 [node name="DrawButton" type="Button" parent="DrawGroup"]
-custom_minimum_size = Vector2(34, 34)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 size_flags_vertical = 4
 tooltip_text = "查看抽牌池里还剩哪些牌"
@@ -53,18 +53,18 @@ expand_icon = true
 
 [node name="DiscardGroup" type="HBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 
 [node name="DiscardCount" type="Label" parent="DiscardGroup"]
 layout_mode = 2
 size_flags_vertical = 4
 text = "0"
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 26
 theme_override_colors/font_color = Color(0.72, 0.75, 0.82, 1)
 
 [node name="DiscardIcon" type="TextureRect" parent="DiscardGroup"]
-custom_minimum_size = Vector2(34, 34)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
