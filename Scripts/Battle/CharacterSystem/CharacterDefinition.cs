@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 
 namespace FishEatFish.Battle.CharacterSystem;
 
@@ -445,6 +446,29 @@ public partial class CharacterDefinition : Resource
         };
         charDef.ApplyRaceDefaults();
         return charDef;
+    }
+
+    /// <summary>
+    /// **可玩角色**清单（卡组齐全的那些）。
+    ///
+    /// 为什么单独列一份：<see cref="GetAllCharacters"/> 里还有 12 个星座 BOSS ——
+    /// 它们**不使用卡牌**（BOSS 卡已删），卡组是空的，进「角色一览」只会显示成空壳。
+    /// 判定口径：该角色的打击卡 / 防御卡在 <c>character_cards.json</c> 里都能查到。
+    /// </summary>
+    public static List<CharacterDefinition> GetPlayableCharacters()
+    {
+        List<CharacterDefinition> playable = new List<CharacterDefinition>();
+
+        foreach (CharacterDefinition character in GetAllCharacters())
+        {
+            if (character == null) continue;
+            if (string.IsNullOrEmpty(character.AttackCardId) || string.IsNullOrEmpty(character.DefenseCardId)) continue;
+            if (!CharacterCardLoader.TryGetCharacterCard(character.AttackCardId, out _)) continue;
+            if (!CharacterCardLoader.TryGetCharacterCard(character.DefenseCardId, out _)) continue;
+            playable.Add(character);
+        }
+
+        return playable;
     }
 
     public static CharacterDefinition[] GetAllCharacters()

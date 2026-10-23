@@ -11,6 +11,7 @@ namespace FishEatFish.Scenes
         private Button _startButton;
         private Button _hexMapButton;
         private Button _levelSelectButton;
+        private Button _galleryButton;
         private Button _testButton;
         private Button _holeTestButton;
         private Button _devQuickStartButton;
@@ -23,6 +24,7 @@ namespace FishEatFish.Scenes
             _startButton = GetNode<Button>("Panel/VBoxContainer/StartButton");
             _hexMapButton = GetNode<Button>("Panel/VBoxContainer/HexMapButton");
             _levelSelectButton = GetNode<Button>("Panel/VBoxContainer/LevelSelectButton");
+            _galleryButton = GetNode<Button>("Panel/VBoxContainer/GalleryButton");
             _testButton = GetNode<Button>("Panel/VBoxContainer/TestButton");
             _holeTestButton = GetNode<Button>("Panel/VBoxContainer/HoleTestButton");
             _devQuickStartButton = GetNode<Button>("Panel/VBoxContainer/DevQuickStartButton");
@@ -32,6 +34,7 @@ namespace FishEatFish.Scenes
             _startButton.Pressed += OnStartPressed;
             _hexMapButton.Pressed += OnHexMapPressed;
             _levelSelectButton.Pressed += OnLevelSelectPressed;
+            _galleryButton.Pressed += OnGalleryPressed;
             _testButton.Pressed += OnTestPressed;
             _holeTestButton.Pressed += OnHoleTestPressed;
             _devQuickStartButton.Pressed += OnDevQuickStartPressed;
@@ -55,6 +58,15 @@ namespace FishEatFish.Scenes
         private void OnLevelSelectPressed()
         {
             GetTree().ChangeSceneToFile("res://Scenes/LevelMap.tscn");
+        }
+
+        /// <summary>
+        /// 角色一览：看所有可玩角色的属性 / 卡组 / 大招（进去后可点单个角色看详情）
+        /// </summary>
+        private void OnGalleryPressed()
+        {
+            GD.Print("[MainMenu] 进入角色一览");
+            GetTree().ChangeSceneToFile("res://Scenes/CharacterGallery.tscn");
         }
 
         private void OnTestPressed()

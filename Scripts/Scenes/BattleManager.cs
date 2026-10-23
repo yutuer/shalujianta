@@ -1124,35 +1124,11 @@ namespace FishEatFish.Scenes
 	}
 
 	/// <summary>
-	/// 取卡牌插画。
-	/// ① 通用卡：cards.json 里的 spritePath
-	/// ② 角色专属卡：按 cardId 推导（专属卡不在 cards.json 里）
-	/// ③ 兜底：旧的按名字硬编码映射
+	/// 取卡牌插画（统一走 <see cref="CardArtResolver"/>，别再各处手抄一份）。
 	/// </summary>
 	private Texture2D ResolveCardTexture(Card card)
 	{
-		if (card == null) return null;
-
-		Texture2D cardTexture = null;
-
-		CardData cardData = CardConfigLoader.TryGetCardData(card.CardId);
-		if (cardData != null && !string.IsNullOrEmpty(cardData.SpritePath) && ResourceLoader.Exists(cardData.SpritePath))
-		{
-				cardTexture = ResourceLoader.Load<Texture2D>(cardData.SpritePath);
-		}
-
-		if (cardTexture == null && !string.IsNullOrEmpty(card.CardId))
-		{
-				string derived = $"res://Assets/Cards/card_{card.CardId}.svg";
-				if (ResourceLoader.Exists(derived)) cardTexture = ResourceLoader.Load<Texture2D>(derived);
-		}
-
-		if (cardTexture == null && resourceManager.CardTextures.TryGetValue(card.Name, out Texture2D legacyTexture))
-		{
-				cardTexture = legacyTexture;
-		}
-
-		return cardTexture;
+		return CardArtResolver.Resolve(card, resourceManager.CardTextures);
 	}
 
 	/// <summary>
