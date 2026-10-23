@@ -387,6 +387,7 @@ namespace FishEatFish.Dev
 				case "rooster": return CharacterDefinition.CreateRooster();
 				case "dog": return CharacterDefinition.CreateDog();
 				case "pig": return CharacterDefinition.CreatePig();
+				case "pollux": return CharacterDefinition.CreatePollux();
 				default: return null;
 			}
 		}

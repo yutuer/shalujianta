@@ -52,7 +52,14 @@
       "map": "map01",
       "target": "battle",
       "enemyWave": "boss_wave"
-    },    "elite_battle": {
+    },    "pollux_team": {
+        "desc": "波吕克斯入队（验证新角色：属性 / 卡组 / 大招）",
+        "team": ["pollux", "ox", "tiger", "rabbit"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
+    },
+    "elite_battle": {
       "desc": "选人完成 + 直接进战斗，敌人按 elite_wave",
       "team": ["rat", "ox", "tiger", "rabbit"],
       "keyOrder": "silver_slash",

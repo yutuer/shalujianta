@@ -418,6 +418,35 @@ public partial class CharacterDefinition : Resource
         return charDef;
     }
 
+    /// <summary>
+    /// 波吕克斯（双子座）—— **可玩角色**。
+    /// 属性照参考游戏「详细属性」面板：攻击 182 / 防御 156 / 体质 162 / 暴击率 14.6% / 暴击伤害 50%。
+    /// 卡组：打击 + 防御 + 3 张专属（净世之路 / 明灯灼魂 / 离垢的审判）；
+    /// 大招「无罪的圣裁」：全体敌人受 60 伤害。
+    /// </summary>
+    public static CharacterDefinition CreatePollux()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "pollux",
+            Name = "波吕克斯",
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 182,
+            BaseDefense = 156,
+            BaseConstitution = 162,
+            BaseCritRate = 15,
+            BaseCritDamage = 150,
+            AttackCardId = "pollux_attack",
+            DefenseCardId = "pollux_defense",
+            SpecialCardIds = new string[] { "pollux_special", "pollux_special2", "pollux_special3" },
+            UltimateSkillId = "pollux_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
     public static CharacterDefinition[] GetAllCharacters()
     {
         return new CharacterDefinition[]
@@ -434,6 +463,7 @@ public partial class CharacterDefinition : Resource
             CreateRooster(),
             CreateDog(),
             CreatePig(),
+            CreatePollux(),
             CreateMu(),
             CreateAldebaran(),
             CreateSaga(),

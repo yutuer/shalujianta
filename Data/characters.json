@@ -323,6 +323,23 @@
                 "buffValue": 0,
                 "buffDuration": 0
             }
+        },
+        {
+            "characterId": "pollux",
+            "name": "波吕克斯",
+            "race": "chaos",
+            "baseHealth": 30,
+            "baseEnergy": 2,
+            "baseDrawCount": 2,
+            "baseAttack": 182,
+            "baseDefense": 156,
+            "baseConstitution": 162,
+            "baseCritRate": 15,
+            "baseCritDamage": 150,
+            "attackCardId": "pollux_attack",
+            "defenseCardId": "pollux_defense",
+            "specialCardIds": ["pollux_special", "pollux_special2", "pollux_special3"],
+            "ultimateSkillId": "pollux_ultimate"
         }
     ]
 }

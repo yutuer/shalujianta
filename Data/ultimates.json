@@ -299,6 +299,17 @@
             "buffDuration": 3,
             "applyDebuffName": "poison",
             "isAreaAttack": true
+        },
+        {
+            "skillId": "pollux_ultimate",
+            "characterId": "pollux",
+            "name": "无罪的圣裁",
+            "nameEn": "Innocent Verdict",
+            "description": "全体敌人受60伤害",
+            "rageCost": 100,
+            "damage": 60,
+            "damageBaseCoefficient": 1.0,
+            "isAreaAttack": true
         }
     ]
 }

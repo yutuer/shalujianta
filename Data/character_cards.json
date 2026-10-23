@@ -685,6 +685,63 @@
             "shieldPercent": 8,
             "counterBaseCoefficient": 0.3,
             "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "pollux_attack",
+            "characterId": "pollux",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "pollux_defense",
+            "characterId": "pollux",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "rageGainPerLevel": 1
+        },
+        {
+            "cardId": "pollux_special",
+            "characterId": "pollux",
+            "name": "净世之路",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "energyGainBase": 3,
+            "energyGainPerLevel": 0,
+            "isRetain": true,
+            "rageGainPerLevel": 2
+        },
+        {
+            "cardId": "pollux_special2",
+            "characterId": "pollux",
+            "name": "明灯灼魂",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "damagePercent": 80,
+            "isAreaAttack": true,
+            "drawCountBase": 2,
+            "drawCountPerLevel": 0,
+            "isRetain": true,
+            "rageGainPerLevel": 2
+        },
+        {
+            "cardId": "pollux_special3",
+            "characterId": "pollux",
+            "name": "离垢的审判",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": true,
+            "damagePercent": 140,
+            "isRetain": true,
+            "rageGainPerLevel": 2
         }
     ]
 }

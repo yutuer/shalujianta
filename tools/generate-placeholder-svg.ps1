@@ -379,6 +379,21 @@ $Characters['rat'] = @{
     Emblem = 'diamond'
 }
 
+$Characters['pollux'] = @{
+    Main = '#5A63A8'; Accent = '#B4BCF0'
+    Sh = 66; Wa = 48; Hp = 56
+    Behind = @(
+        '<path d="M64 86 L128 40 L192 86 L128 132 Z" fill="none" stroke="{ACC}" stroke-width="5" stroke-linejoin="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />'
+    )
+    Emblem = 'diamond'
+}
+
 $Characters['ox'] = @{
     Main = '#9C7048'; Accent = '#E8C89A'
     Sh = 74; Wa = 56; Hp = 64

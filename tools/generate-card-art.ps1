@@ -129,6 +129,7 @@ function New-SvgDocument {
 
 $PlayablePalette = [ordered]@{
     'rat'     = @{ Main = '#7C6E96'; Accent = '#D8C8E8'; Feature = 'rat' }
+    'pollux'  = @{ Main = '#5A63A8'; Accent = '#B4BCF0'; Feature = 'aiolos' }
     'ox'      = @{ Main = '#9C7048'; Accent = '#E8C89A'; Feature = 'ox' }
     'tiger'   = @{ Main = '#D8912F'; Accent = '#FFE0A0'; Feature = 'tiger' }
     'rabbit'  = @{ Main = '#D9A8BE'; Accent = '#FFF0F6'; Feature = 'rabbit' }
