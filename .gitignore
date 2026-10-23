@@ -21,3 +21,5 @@
 # docs/screenshots/*.jpg 是入库版本（1920 宽，约 3.2MB）
 # 原 PNG 保留在本地 _原始PNG/ 备查，约 30MB，不进版本库
 /docs/screenshots/_原始PNG/
+# 角色卡牌截图目录里的原始 PNG 同样不入库
+/docs/screenshots/*/_原始PNG/

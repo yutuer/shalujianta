@@ -14,7 +14,7 @@
         {
             "cardId": "rat_defense",
             "characterId": "rat",
-            "name": "狡兔三窟",
+            "name": "鼠洞藏",
             "style": "striker",
             "cost": 1,
             "isAttack": false,
@@ -62,7 +62,7 @@
         {
             "cardId": "ox_attack",
             "characterId": "ox",
-            "name": "野蛮冲撞",
+            "name": "牛牙咬",
             "style": "tank",
             "cost": 2,
             "isAttack": true,
@@ -119,7 +119,7 @@
         {
             "cardId": "tiger_attack",
             "characterId": "tiger",
-            "name": "猛虎下山",
+            "name": "虎牙咬",
             "style": "striker",
             "cost": 2,
             "isAttack": true,
