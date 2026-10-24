@@ -32,10 +32,25 @@ namespace FishEatFish.UI.CharacterGallery
 		private Label _costLabel;
 		private Label _nameLabel;
 		private TextureRect _artRect;
-		private Label _descLabel;
+		private RichTextLabel _descText;
 		private Label _typeLabel;
 		private Control _affixBox;
 		private VBoxContainer _affixList;
+
+		/// <summary>文字超量时的**自动滚动**速度（像素/秒）</summary>
+		private const float AutoScrollSpeed = 8f;
+
+		/// <summary>自动滚动的亚像素累计（ScrollVertical 是整数，小步会被抹平）</summary>
+		private float _scrollRemainder;
+
+		/// <summary>本次显示是否已经进入「自动滚动」状态（用于只打一次日志）</summary>
+		private bool _autoScrollStarted;
+
+		/// <summary>
+		/// 打开后**先等几帧再开始滚** —— RichTextLabel 的换行在头几帧还没算完，
+		/// 早滚会按错的尺寸算（实测首次打开时报「可滚 100px」，稳定后其实只有 20px）。
+		/// </summary>
+		private int _scrollWarmupFrames;
 
 		public override void _Ready()
 		{
@@ -45,12 +60,13 @@ namespace FishEatFish.UI.CharacterGallery
 			_costLabel = GetNodeOrNull<Label>("CardBox/Margin/VBox/TopRow/CostLabel");
 			_nameLabel = GetNodeOrNull<Label>("CardBox/Margin/VBox/TopRow/NameLabel");
 			_artRect = GetNodeOrNull<TextureRect>("CardBox/Margin/VBox/ArtRect");
-			_descLabel = GetNodeOrNull<Label>("CardBox/Margin/VBox/DescLabel");
+			_descText = GetNodeOrNull<RichTextLabel>("CardBox/Margin/VBox/DescText");
 			_typeLabel = GetNodeOrNull<Label>("CardBox/Margin/VBox/TypeLabel");
 			_affixBox = GetNodeOrNull<Control>("AffixBox");
 			_affixList = GetNodeOrNull<VBoxContainer>("AffixBox/AffixPanel/Margin/VBox/AffixList");
 
 			if (_cardBox == null) GD.PrintErr("[CardPreviewOverlay] 未找到 CardBox");
+			if (_descText == null) GD.PrintErr("[CardPreviewOverlay] 未找到 DescText");
 			if (_affixList == null) GD.PrintErr("[CardPreviewOverlay] 未找到 AffixList");
 
 			Visible = false;
@@ -74,9 +90,11 @@ namespace FishEatFish.UI.CharacterGallery
 			if (_costLabel != null) _costLabel.Text = card.Cost.ToString();
 			if (_nameLabel != null) _nameLabel.Text = card.Name;
 			if (_artRect != null) _artRect.Texture = art;
-			if (_descLabel != null)
+			if (_descText != null)
 			{
-				_descLabel.Text = DescriptionGenerator.GenerateCardFlavorText(card, card.LinkedAttributes);
+				_descText.Text = DescriptionGenerator.GenerateCardFlavorText(card, card.LinkedAttributes);
+				// 每次打开都从**第一行**开始（超量时的自动滚动会带着往下走）
+				ResetDescScroll();
 			}
 			if (_typeLabel != null)
 			{
@@ -101,6 +119,66 @@ namespace FishEatFish.UI.CharacterGallery
 		public void HideCard()
 		{
 			Visible = false;
+			// 收起后复位 —— 下次长按重新从**第一行**开始
+			ResetDescScroll();
+		}
+
+		/// <summary>把描述文字的滚动位置复位到**第一行**</summary>
+		private void ResetDescScroll()
+		{
+			_scrollRemainder = 0f;
+			_autoScrollStarted = false;
+			_scrollWarmupFrames = 3;
+			if (_descText == null) return;
+			VScrollBar bar = _descText.GetVScrollBar();
+			if (bar != null) bar.Value = 0;
+		}
+
+		/// <summary>
+		/// **文字超量时自动向下滚动**（主人 2026-10-25）：
+		/// 长按放大预览时，卡面文字超出显示区就自动往下滚，方便看完整段说明。
+		/// 文字没超量 → 停在**第一行**；收起预览 → 同样复位。
+		///
+		/// ⚠️ Godot 4 的 `RichTextLabel` **没有** `ScrollVertical` 属性（那是 Godot 3 的 API），
+		///    滚动要通过 `GetVScrollBar()` 操作；
+		///    而且它的 `MaxValue` 是**内容高度**、不是差值 → 真正能滚的距离 = `MaxValue - Page`。
+		/// </summary>
+		public override void _Process(double delta)
+		{
+			if (!Visible || _descText == null) return;
+
+			VScrollBar bar = _descText.GetVScrollBar();
+			if (bar == null) return;
+
+			// 等布局稳定（换行算完）再开始滚
+			if (_scrollWarmupFrames > 0)
+			{
+				_scrollWarmupFrames--;
+				return;
+			}
+
+			// 没超量（内容装得下）→ 回到第一行
+			int maxScroll = (int)(bar.MaxValue - bar.Page);
+			if (maxScroll <= 0)
+			{
+				_scrollRemainder = 0f;
+				if (bar.Value != 0) bar.Value = 0;
+				return;
+			}
+
+			// 超量 → 自动往下滚（滚到底停住）
+			// ⚠️ 滚动条位置是整数，每帧的小步长会被取整抹平 → 亚像素先累计
+			if (!_autoScrollStarted)
+			{
+				_autoScrollStarted = true;
+				GD.Print($"[CardPreviewOverlay] 文字超量（可滚 {maxScroll}px），从第一行开始自动向下滚动");
+			}
+			_scrollRemainder += AutoScrollSpeed * (float)delta;
+			int step = (int)_scrollRemainder;
+			if (step <= 0) return;
+			_scrollRemainder -= step;
+
+			bar.Value = Mathf.Min(bar.Value + step, maxScroll);
 		}
 
 		public override void _GuiInput(InputEvent @event)
