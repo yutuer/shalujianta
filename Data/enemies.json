@@ -3,22 +3,22 @@
     "normal_wave": {
       "displayName": "普通遭遇",
       "enemies": [
-        { "name": "守卫", "maxHealth": 34, "attack": 6, "defense": 2, "position": 0, "behavior": "balanced" },
-        { "name": "游兵", "maxHealth": 28, "attack": 5, "defense": 1, "position": 1, "behavior": "aggressive" },
-        { "name": "斥候", "maxHealth": 24, "attack": 4, "defense": 0, "position": 2, "behavior": "defensive" }
+        { "name": "守卫", "maxHealth": 500, "attack": 6, "defense": 2, "position": 0, "behavior": "balanced" },
+        { "name": "游兵", "maxHealth": 500, "attack": 5, "defense": 1, "position": 1, "behavior": "aggressive" },
+        { "name": "斥候", "maxHealth": 500, "attack": 4, "defense": 0, "position": 2, "behavior": "defensive" }
       ]
     },
     "elite_wave": {
       "displayName": "精英遭遇",
       "enemies": [
-        { "name": "精锐·虎", "maxHealth": 72, "attack": 11, "defense": 4, "position": 0, "behavior": "aggressive", "isElite": true },
-        { "name": "精锐·蛇", "maxHealth": 58, "attack": 9, "defense": 3, "position": 1, "behavior": "defensive", "isElite": true }
+        { "name": "精锐·虎", "maxHealth": 800, "attack": 11, "defense": 4, "position": 0, "behavior": "aggressive", "isElite": true },
+        { "name": "精锐·蛇", "maxHealth": 700, "attack": 9, "defense": 3, "position": 1, "behavior": "defensive", "isElite": true }
       ]
     },
     "boss_wave": {
       "displayName": "BOSS 遭遇",
       "enemies": [
-        { "name": "千夜之主", "maxHealth": 180, "attack": 14, "defense": 6, "position": 0, "behavior": "balanced", "isBoss": true }
+        { "name": "千夜之主", "maxHealth": 20000, "attack": 14, "defense": 6, "position": 0, "behavior": "balanced", "isBoss": true }
       ]
     }
   }
