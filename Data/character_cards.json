@@ -716,7 +716,13 @@
             "energyGainBase": 3,
             "energyGainPerLevel": 0,
             "isRetain": true,
-            "rageGainPerLevel": 2
+            "rageGainPerLevel": 2,
+            "affixes": [
+                "retain"
+            ],
+            "cardType": "awakening",
+            "rageGain": 50,
+            "description": "灵知觉醒：打出时和弃牌阶段后获得 3 层 ×罪印，每有 1 张手牌额外获得 1 层 ×罪印。「圣心」造成 100% 伤害的出血。"
         },
         {
             "cardId": "pollux_special2",
@@ -730,7 +736,10 @@
             "drawCountBase": 2,
             "drawCountPerLevel": 0,
             "isRetain": true,
-            "rageGainPerLevel": 2
+            "rageGainPerLevel": 2,
+            "affixes": [
+                "retain"
+            ]
         },
         {
             "cardId": "pollux_special3",
@@ -741,7 +750,10 @@
             "isAttack": true,
             "damagePercent": 140,
             "isRetain": true,
-            "rageGainPerLevel": 2
+            "rageGainPerLevel": 2,
+            "affixes": [
+                "retain"
+            ]
         }
     ]
 }

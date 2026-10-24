@@ -191,6 +191,59 @@ public static class DescriptionGenerator
         return $"等级: {card.Level}/{card.MaxLevel}";
     }
 
+    /// <summary>
+    /// **卡牌正文文案**（对照参考游戏《终末前夜 Morimens》卡牌总览里的卡面文字）。
+    ///
+    /// 格式按卡牌**类型**分三种（主人 2026-10-24 给的规格）：
+    /// 指令（伤害型）：「造成 18 点伤害。波吕克斯获得 15 点怒气。」
+    /// 指令（防御型）：「获得 16 点护盾。波吕克斯获得 10 点怒气。」
+    /// 灵知觉醒：「波吕克斯获得 50 点怒气。{策划写的专属说明}」
+    ///
+    /// ⚠️ 这里的数值与**战斗结算同源**（都走 <c>GetFinalDamage</c> / <c>RageManager.GetRageForCard</c>），
+    /// 不会出现「卡面写一套、实际给另一套」。
+    /// </summary>
+    /// <param name="card">卡牌</param>
+    /// <param name="attributes">角色属性（为空时取卡上挂的）</param>
+    public static string GenerateCardFlavorText(Card card, CharacterAttributes attributes = null)
+    {
+        if (card == null) return "";
+        if (attributes == null) attributes = card.LinkedAttributes;
+
+        string owner = string.IsNullOrEmpty(card.OwnerName) ? "" : card.OwnerName + "获得";
+        int rage = RageManager.GetRageForCard(card);
+        var parts = new System.Collections.Generic.List<string>();
+
+        if (card.CardType == CardType.Awakening)
+        {
+            // 灵知觉醒：先说怒气，再说策划写的专属说明
+            if (rage > 0) parts.Add($"{owner} {rage} 点怒气。");
+            if (!string.IsNullOrEmpty(card.TemplateDescription)) parts.Add(card.TemplateDescription);
+        }
+        else
+        {
+            int damage = card.GetFinalDamage(attributes);
+            int shield = card.GetFinalShield(attributes);
+            int draw = attributes != null ? card.CalculatedDrawCount : card.DrawCount;
+
+            if (damage > 0)
+            {
+                parts.Add(card.IsAreaAttack
+                    ? $"对所有敌人造成 {damage} 点伤害。"
+                    : $"造成 {damage} 点伤害。");
+            }
+            if (shield > 0) parts.Add($"获得 {shield} 点护盾。");
+            if (draw > 0) parts.Add($"抽 {draw} 张。");
+            if (rage > 0) parts.Add($"{owner} {rage} 点怒气。");
+        }
+
+        // 词缀（保留 / 消耗 / 回合唯一）—— isRetain 也算保留（老数据没配 affixes）
+        if (card.IsRetain || card.Affixes.Contains(CardAffix.Retain)) parts.Add("⚠保留。");
+        if (card.Affixes.Contains(CardAffix.Consume)) parts.Add("⚠消耗。");
+        if (card.Affixes.Contains(CardAffix.UniquePerTurn)) parts.Add("回合唯一。");
+
+        return string.Join("", parts);
+    }
+
     public static string GenerateUpgradePreview(Card card, CharacterAttributes attributes = null)
     {
         if (card.Level >= card.MaxLevel)

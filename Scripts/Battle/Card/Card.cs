@@ -16,6 +16,31 @@ public enum TargetType
     Position = 3
 }
 
+/// <summary>
+/// **卡牌类型**（对照参考游戏《终末前夜 Morimens》）：
+/// 指令 = 普通指令卡；衍生 = 由大招 / 卡牌派生出来的卡；灵知觉醒 = 打出后给角色加怒气并产生新能力。
+/// </summary>
+public enum CardType
+{
+    /// <summary>指令（普通卡牌）</summary>
+    Instruction = 0,
+    /// <summary>衍生卡（不属于角色原生卡组，由别处生成）</summary>
+    Derived = 1,
+    /// <summary>灵知觉醒（打出后加怒气 + 产生新能力）</summary>
+    Awakening = 2
+}
+
+/// <summary>卡牌词缀（数组，可被 buff 增减）</summary>
+public static class CardAffix
+{
+    /// <summary>保留：回合结束留在手牌，不进弃牌堆</summary>
+    public const string Retain = "retain";
+    /// <summary>消耗：打出后从牌库移除</summary>
+    public const string Consume = "consume";
+    /// <summary>回合唯一：每回合只能打出一次</summary>
+    public const string UniquePerTurn = "uniquePerTurn";
+}
+
 public partial class Card : Resource, ICardLevelable
 {
 	[Export]
@@ -269,6 +294,43 @@ public partial class Card : Resource, ICardLevelable
     [Export]
     public bool IsDefense { get; set; } = false;
 
+    /// <summary>
+    /// **卡牌类型**（指令 / 衍生 / 灵知觉醒）—— 决定卡面文案与效果的呈现方式。
+    /// 数据表字段：<c>cardType</c>
+    /// </summary>
+    [Export]
+    public CardType CardType { get; set; } = CardType.Instruction;
+
+    /// <summary>
+    /// **词缀数组**（保留 / 消耗 / 回合唯一…）—— 后续 buff 可以给卡牌**增减**词缀。
+    /// 数据表字段：<c>affixes</c>
+    /// ⚠️ 不用 [Export]：Godot 的 C# 绑定不支持导出 <c>List&lt;string&gt;</c>（同 <c>EffectIds</c>）。
+    /// </summary>
+    public List<string> Affixes { get; set; } = new List<string>();
+
+    /// <summary>
+    /// **卡牌自带怒气值**（绝对值，0 = 不指定）。
+    ///
+    /// 为什么需要：灵知觉醒这类卡的怒气是**它自己的**（参考图：净世之路 50 点），
+    /// 不属于「攻击牌 15 / 防御牌 10」那套按卡位给的默认。
+    /// 数据表字段：<c>rageGain</c>
+    /// </summary>
+    [Export]
+    public int RageGain { get; set; } = 0;
+
+    /// <summary>
+    /// **所属角色名**（显示用）—— 文案里要写「波吕克斯获得 10 点怒气」这种带角色名的话。
+    /// 战斗里由 <c>Attacker</c> 建卡时挂上，界面里由角色一览挂上。
+    /// </summary>
+    public string OwnerName { get; set; } = "";
+
+    /// <summary>
+    /// **策划写的专属说明**（灵知觉醒卡那一大段）。
+    /// 数据表字段：<c>description</c>。普通指令卡留空，文案由数值自动生成。
+    /// </summary>
+    [Export]
+    public string TemplateDescription { get; set; } = "";
+
     [Export]
     public string Style { get; set; } = "striker";
 
@@ -346,6 +408,10 @@ public partial class Card : Resource, ICardLevelable
 			IsAttack = IsAttack,
 			IsAreaAttack = IsAreaAttack,
 			IsDefense = IsDefense,
+			CardType = CardType,
+			Affixes = new List<string>(Affixes),
+			TemplateDescription = TemplateDescription,
+			RageGain = RageGain,
 			Target = Target,
 			TargetPosition = TargetPosition,
 			Damage = Damage,

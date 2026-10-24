@@ -432,7 +432,8 @@ namespace FishEatFish.UI.CharacterGallery
 
 				CharacterCardEntry entry = entryScene.Instantiate<CharacterCardEntry>();
 				_cardsRow.AddChild(entry);
-				entry.Setup(card);
+				// 传角色名 —— 卡面文案要写「波吕克斯获得 10 点怒气」
+				entry.Setup(card, character.Name);
 			}
 		}
 

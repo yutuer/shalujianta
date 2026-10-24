@@ -81,6 +81,24 @@ public class CharacterCardLoader
         card.HealAmount = dict.ContainsKey("healAmount") ? (int)(long)dict["healAmount"] : 0;
         card.DrawCount = dict.ContainsKey("drawCountBase") ? (int)(long)dict["drawCountBase"] : 0;
         card.IsRetain = dict.ContainsKey("isRetain") ? (bool)dict["isRetain"] : false;
+
+        // 卡牌类型（指令 / 衍生 / 灵知觉醒）与词缀数组 —— 卡牌总览的文案与显示要用
+        card.CardType = ParseCardType(dict.ContainsKey("cardType") ? dict["cardType"].ToString() : "");
+        card.Affixes.Clear();
+        if (dict.ContainsKey("affixes") && dict["affixes"].Obj != null)
+        {
+            foreach (var affix in dict["affixes"].AsGodotArray())
+            {
+                string value = affix.ToString();
+                if (!string.IsNullOrEmpty(value)) card.Affixes.Add(value);
+            }
+        }
+        // 策划写的专属说明（灵知觉醒卡那一大段）
+        card.TemplateDescription = dict.ContainsKey("description") ? dict["description"].ToString() : "";
+
+        // 卡牌自带怒气（灵知觉醒这类：参考图净世之路 50 点）
+        card.RageGain = dict.ContainsKey("rageGain") ? (int)(long)dict["rageGain"] : 0;
+
         card.Level = 1;
         card.MaxLevel = 6;
 
@@ -142,6 +160,27 @@ public class CharacterCardLoader
 
         GD.PrintErr($"[CharacterCardLoader] Character card not found: {cardId}");
         return null;
+    }
+
+    /// <summary>
+    /// 解析卡牌类型：<c>instruction</c>（默认）/ <c>derived</c> / <c>awakening</c>。
+    /// 认不出来的一律当「指令」并打错误日志（数据表写错要能看见）。
+    /// </summary>
+    private static CardType ParseCardType(string value)
+    {
+        switch (value.ToLower())
+        {
+            case "instruction":
+            case "":
+                return CardType.Instruction;
+            case "derived":
+                return CardType.Derived;
+            case "awakening":
+                return CardType.Awakening;
+            default:
+                GD.PrintErr($"[CharacterCardLoader] 未知卡牌类型: {value}（按指令卡处理）");
+                return CardType.Instruction;
+        }
     }
 
     /// <summary>
