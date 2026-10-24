@@ -121,17 +121,17 @@ $godot = 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe'
 FishEatFish/
 ├─ Data/            15 张 JSON 数据表（卡牌/角色/刻印/造物/buff/效果/大招/敌人波次…）
 │                   + dev_scenarios.json —— 调试场景预设表
-├─ Scenes/          47 个 .tscn
-│  ├─ MainMenu / LevelMap / CharacterSelection / BattleScene / HexMapScene
+├─ Scenes/          55 个 .tscn
+│  ├─ MainMenu / LevelMap / CharacterSelection / CharacterGallery / BattleScene / HexMapScene
 │  ├─ Dev/           DevScenario.tscn —— 调试场景准备器入口
-│  └─ UI/           40 个 UI 组件场景
-├─ Scripts/         156 个 .cs，按职责分层
+│  └─ UI/           47 个 UI 组件场景
+├─ Scripts/         164 个 .cs，按职责分层
 │  ├─ Scenes/       场景驱动（BattleManager 是战斗主循环核心）
 │  ├─ Dev/          DevScenario.cs —— 调试场景准备器逻辑
 │  ├─ Battle/       战斗核心
 │  │  ├─ Core/          Player / Enemy / IUnit / 敌人波次加载
 │  │  ├─ Card/          卡牌数据、等级、描述生成
-│  │  ├─ CharacterSystem/ 12 生肖定义、Attacker、终极技能
+│  │  ├─ CharacterSystem/ 12 生肖 + 波吕克斯定义、Attacker、终极技能
 │  │  ├─ Effects/       效果注册表、效果实现、Buff/Debuff
 │  │  ├─ HexMap/        坐标、格子、地图、生成器、事件
 │  │  ├─ MapSystem/     MapManager / 地图定义 / 奖励
@@ -139,8 +139,8 @@ FishEatFish/
 │  │  └─ CardLayoutManager / RageManager / BattleTransitionManager …
 │  ├─ AI/           敌人 AI（激进/均衡/防守）
 │  ├─ Shop/         黑印商店
-│  ├─ MapValidation/ 地图可达性与死锁校验（**7 个文件不依赖 Godot，整目录可拷走**）
-│  └─ UI/           40+ UI 组件脚本
+│  ├─ MapValidation/ 地图可达性与死锁校验（**8 个文件不依赖 Godot，整目录可拷走**）
+│  └─ UI/           58 个 UI 组件脚本
 ├─ docs/            专题文档（见 §9 文档索引）+ 原始策划案 + 参考图
 ├─ tools/           check-task-stats.ps1 校验任务统计表是否漂移
 │                   check-doc-consistency.ps1 文档一致性回读测试（链接/换行符/编码/术语/统计/**数字回读**）
@@ -159,10 +159,11 @@ FishEatFish/
 
 ```
 MainMenu
-  └→ LevelMap（选关卡）
-       └→ CharacterSelection（选 4 角色 + 1 钥令）
-            ├→ HexMapScene（六边形地图探索）⇄ BattleScene（战斗）
-            └→ BattleScene（直接进战斗，测试用）
+  ├→ CharacterGallery（角色一览：查看角色属性 / 卡组 / 大招）
+  ├→ LevelMap（选关卡）
+  │    └→ CharacterSelection（选 4 角色 + 1 钥令）
+  │         ├→ HexMapScene（六边形地图探索）⇄ BattleScene（战斗）
+  │         └→ BattleScene（直接进战斗，测试用）
 
 战斗胜利后的两段收尾（D18）：
   BattleScene → BattleRewardUI（三选一：造物 or 刻印）
@@ -217,7 +218,7 @@ MainMenu
 ### 3.5 地图生成与「能不能通关」的保证
 
 地图是**参数化生成**的（`Data/level_specs.json`：每关一份配额 + 种子 → 同一规格逐格相同），
-生成后由 `Scripts/MapValidation/` 的**通用校验器**兜底（7 个文件不依赖 Godot，整目录可拷到别的项目）：
+生成后由 `Scripts/MapValidation/` 的**通用校验器**兜底（8 个文件不依赖 Godot，整目录可拷到别的项目）：
 
 ```
 配额 + 种子 → 生成（挖空洞 / 铺事件 / 放传送门）→ 校验 → 不过就重生成（最多 20 次）
@@ -357,7 +358,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 - **D19 Buff/Debuff UI** ✅ —— 敌人侧补上状态图标行；玩家侧改**差集刷新**（消失的只淡出那一个）；状态变化实时刷新。
 
 **地图这条线（🔺 核心资产）**
-- **D13「地图可达性与死锁校验」** ✅ —— 通用算法模块 `Scripts/MapValidation/`（7 个文件**不依赖 Godot**，整目录可拷走）。9 类结构化诊断：通不了关 / 软锁 / 不可达区域 / 关键格不可达 / 死路 / 孤岛 / 状态死锁 / 旁支必需格不可达 / 多簇。可移植性有可重复脚本 `tools/verify-mapvalidation-portability.ps1` 守着。
+- **D13「地图可达性与死锁校验」** ✅ —— 通用算法模块 `Scripts/MapValidation/`（8 个文件**不依赖 Godot**，整目录可拷走）。9 类结构化诊断：通不了关 / 软锁 / 不可达区域 / 关键格不可达 / 死路 / 孤岛 / 状态死锁 / 旁支必需格不可达 / 多簇。可移植性有可重复脚本 `tools/verify-mapvalidation-portability.ps1` 守着。
 - **D14「按配额生成关卡地图」** ✅ —— `Data/level_specs.json` 声明每关的配额 + 种子；**同规格同种子 → 逐格相同**；`MapManager` 按 mapId 缓存，同关卡重复进入拿同一张图。
 - **D12「地图簇结构」** ✅ —— 初始多簇（靠传送门连）+ 洞消耗再分裂。每簇 = 两块子区域 + 一个「窄口」（窄口是割点，洞放这里）；洞的时序：**进入禁回退、离开即从地图删除**，已消耗的洞进存档。
 
@@ -392,6 +393,8 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 | 日期 | 内容 |
 |---|---|
+| 2026-10-24 | **回读测试 + 全文扫描同步 md** —— ① **commit SHA 级**：`git ls-remote` 的远端 commit SHA 与本地 HEAD **完全相同**（`69548d0…`，commit SHA 覆盖整棵文件树）。② **文件树级**：GitHub API 的远端文件树（每个文件的 blob SHA）跟本地 `git -c core.quotepath=false ls-files -s` 逐个对齐，**909 个文件全部一致**（0 遗漏 / 0 多余 / 0 内容不符）。③ **字节级**：对本轮改动的 29 个文件用 contents API 取回 base64 → 解码算 SHA256 → **25/25 逐字节一致**（4 个是二进制/非文本跳过）。④ **全文扫描同步 md**：修掉 4 处过期表述 —— README 目录地图的 `Scenes/ 47 个 .tscn` → **55**、`Scenes/UI/ 40 个` → **47**、`Scripts/ 156 个 .cs` → **164**、`Scripts/UI/ 40+` → **58**、`MapValidation/ 7 个文件不依赖 Godot` → **8**（README 2 处 + 开发计划 2 处）；场景流转图补上 `MainMenu → CharacterGallery`；`CharacterSystem` 说明改成「12 生肖 + 波吕克斯定义」；`docs/会话交接.md` 的踩坑条数 58 → **67**、最后更新日期与「最近 N 轮」字数同步；类型文案统一成「伤害型 / 辅助型 / 防御型」。⑤ 本轮回顾（D33~D35）新增踩坑 §59~§67 共 9 条。 |
+| 2026-10-24 | **D35 角色一览** —— 主人问「有没有查看每个角色详情的入口」，查下来**全项目没有**（选人界面点角色是「选中」，战斗/地图只看得到头像 + 怒气环）。做：① 主菜单加「角色一览」按钮；② 新增 `Scenes/CharacterGallery.tscn`（列表 + 详情两视图）；③ 两个独立组件场景（列表项 / 详情里的卡牌小项）；④ `CharacterDefinition.GetPlayableCharacters()`：只列卡组齐全的可玩角色（12 星座 BOSS 不用卡牌，不进列表）；⑤ 新增 `CardArtResolver` 把卡面插画查找抽成**一份实现**（`BattleManager` 原来手抄了一份）。后按参考图重排：**左角色网格 + 中大立绘 + 右侧信息栏**（名称 / 类型 / 等级 / 6 个卡等级 / 1-1-1 天赋 / 三属性 + 详细信息 + 详情）→「详细信息」弹 12 项属性详情（6 项我们的真值 + 6 项套参考图的占位数字）→「详情」进**卡牌总览**（左边一竖列头像可滚动切换 + 右侧大招 + 5 张卡）。类型暂按 `Archetype` 映射成伤害型/辅助型/防御型，等主人给正式定位后改 `GetRoleType()` 一个函数即可 |
 | 2026-10-23 | **D32 卡牌特色化启动（P0 清理 + 计划定稿）** —— 主人说「卡牌玩起来不够丰富，每个角色要一组自己特有的卡牌」，并答复了 6 条设计问题（截图按**一个角色一个目录** / 满级值是锚点、1~5 级按公式反推 / 角色特色 = **机制 + 天赋 + 数值**三层、数值只影响伤害公式 / 满级 = 6 级 / 先做鼠牛虎兔再铺开 / **BOSS 和小怪不用卡牌**）。本轮完成：① **删掉 36 张 BOSS 卡**（`character_cards.json` 只剩 12 可玩角色 × 5 = 60 张）+ 连带 36 张孤儿插画及其 `.import`（共 72 个文件；这些图不在主人手改过的 73 个 SVG 里），战斗与地图场景 0 错误；② 新增 `docs/卡牌设计.md`：现状盘点 + 机制/天赋/数值三层数据模型 + **伤害公式**（卡面与战斗共用一个函数）+ 截图规格 + 60 张卡待填总表 + 分阶段计划；③ 建好 `docs/卡牌截图/{鼠,牛,虎,兔}/` 四个目录（每个带卡名 ↔ cardId 对照），主人可以直接按卡面名字存图；④ 量出三个会随卡牌改造一并修的真 bug：**升级不涨伤害**（战斗走 `card.Damage` 绝对值）、**卡面与战斗的数值来源不是同一个函数**、**卡牌经验零调用点**（满级永远到不了）。 |
 | 2026-10-23 | **D31 右下角牌堆面板（手牌 x/x + 抽牌堆可点开看剩余卡牌）** —— 主人指着参考图 R-08 右下角提的：结束按钮（已有）+ **图标 + 手牌上限/当前张数的 x/x** + **可点击的图标，点开能看到抽牌池里还剩哪些牌，图标旁边是抽牌池张数**。实现：① 新增独立组件 `Scenes/UI/DeckStatusPanel.tscn`（三组「数字 + 图标」：手牌 x/x、抽牌堆、弃牌堆）；② 新增 3 个图标素材（手牌=扇开三张牌 / 抽牌堆=牌堆 / 弃牌堆=牌+下箭头，沿用现有图标「深底 + 浅色图形」风格）；③ 抽牌堆图标是 `flat` 的 Button（带 tooltip「查看抽牌池里还剩哪些牌」）；④ 新增 `Scenes/UI/DrawPileViewer.tscn`：标题「抽牌池（剩余 N 张）」+ 卡牌清单（同名聚合成「名字 ×N」）+ 关闭按钮，**居中**摆放（不遮敌人、不遮手牌）；⑤ `BattleManager` 每次 `UpdateUI()` 推三个数字，点图标 → `ShowCards(player.Deck)`；⑥ 旧的纯文字 Label（`UI/BottomBar/HandInfo`）移除。实测：面板 (1668,1076) 252×34，数字 手牌 **8/10** · 抽牌堆 **12** · 弃牌堆 **0**；点击链路日志 `OnDrawPilePressed → OnDrawPileIconClicked → ShowCards completed: 12 张 / 11 种`；清单内容「狡兔三窟 ×2 / 兔起凔举 / 鼠牙乱咬 / …」；面板 (810~1110) 与敌人区 (1268~1900) 不重叠。顺带记两个坑：`.tscn` 子节点的 `parent` 路径**不含根节点名字**（§57）、新增 SVG 必须先 headless `--import` 生成 `.import`（§58）。 |
 | 2026-10-23 | **D30 战斗界面排版对齐（主人提的 4 条）** —— ① **血量数字放进血条**：根因是 Godot 的 `offset_bottom` 是**加**在锚点上的（`anchor_bottom=1.0` + `offset_bottom=22` → 底边 44+22=**66**，而血条只有 22 高）→ 数字 Label 溢出容器 22px、**压在状态图标行上**；改成 `anchor_bottom=0.0` 后与血条完全重合。② **盾量 0 不显示盾牌徽标**（徽标整块隐藏，不留孤零零的「0」）。③ **玩家「血条 + 盾」作为一组居中压在 4 个立绘下面 + 立绘铺满**：立绘改为均分整行宽度（`ExpandFill`，24/184/344/504 各 180 宽 → 铺满 24~684）；血条 172~472、盾徽标 482~536，**一组中心 354 = 立绘组中心**；盾徽标高度改成 22（= 血条高）并顶对齐，**与血条同高**（之前差 11px，主人说「一个高一个低」）；盾为 0 时用 `alpha=0` 隐去内容但**保留占位**，这样加盾/掉盾时血条不会横跳；状态图标行同样居中。④ **顶栏右上角的血量去掉**（血量数字已在左下角血条上，重复显示是冗余），顶栏只留「回合」，顺带隐藏 3 个只用来分隔各项的空格 Label。④ **3 个敌人等比例**：根因是立绘用 `EXPAND` 撑满剩余高度 → 一旦某个敌人有状态图标，它的立绘就变矮、名字上移；改为**状态图标行固定 42 高**（空着也占位）+ **血量数字也写进血条**（对照参考图 R-08 的 38698），现在三个敌人的立绘/名称/血条/图标**完全同高同位**。实测三个敌人均为 立绘(404,272) / 名字 678 / 血条 704×20 / 数字 704 / 图标行 726×42。顺带记一条坑：**.tscn 里给 C# 导出属性赋值要用 PascalCase**（`IconAlignment = 2`），写成 snake_case **不报错也不生效**（踩坑记录 §56）。 |
