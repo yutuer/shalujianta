@@ -18,7 +18,9 @@ public static class DescriptionGenerator
         if (card.IsAttack && card.GetFinalDamage(attributes) > 0)
         {
             int damage = card.GetFinalDamage(attributes);
-            parts.Add($"造成 {damage} 点伤害");
+            // 命中次数：「造成 x 点伤害 2 次」（参考游戏：离垢的审判）
+            string hitText = card.HitCount > 1 ? $" {card.HitCount} 次" : "";
+            parts.Add($"造成 {damage} 点伤害{hitText}");
         }
 
         if (card.GetFinalShield(attributes) > 0)
@@ -48,7 +50,10 @@ public static class DescriptionGenerator
             int draw = attributes != null
                 ? card.CalculatedDrawCount
                 : (card.DrawCount > 0 ? card.DrawCount : card.DrawCountBase);
-            parts.Add($"抽 {draw} 张牌");
+            // 抽牌方式：普通随机抽 / 抽「算力消耗最低的指令卡」（参考游戏：明灯灼魂）
+            parts.Add(card.DrawFilter == CardDrawFilter.LowestCostInstruction
+                ? $"抽 {draw} 张算力消耗最低的指令卡"
+                : $"抽 {draw} 张牌");
         }
 
         if (!string.IsNullOrEmpty(card.ApplyBuffName) && card.ApplyBuffDuration > 0)
@@ -227,12 +232,18 @@ public static class DescriptionGenerator
 
             if (damage > 0)
             {
+                string hitText = card.HitCount > 1 ? $" {card.HitCount} 次" : "";
                 parts.Add(card.IsAreaAttack
-                    ? $"对所有敌人造成 {damage} 点伤害。"
-                    : $"造成 {damage} 点伤害。");
+                    ? $"对所有敌人造成 {damage} 点伤害{hitText}。"
+                    : $"造成 {damage} 点伤害{hitText}。");
             }
             if (shield > 0) parts.Add($"获得 {shield} 点护盾。");
-            if (draw > 0) parts.Add($"抽 {draw} 张。");
+            if (draw > 0)
+            {
+                parts.Add(card.DrawFilter == CardDrawFilter.LowestCostInstruction
+                    ? $"抽 {draw} 张算力消耗最低的指令卡。"
+                    : $"抽 {draw} 张。");
+            }
             if (rage > 0) parts.Add($"{owner} {rage} 点怒气。");
         }
 

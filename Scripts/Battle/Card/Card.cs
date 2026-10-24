@@ -41,6 +41,15 @@ public static class CardAffix
     public const string UniquePerTurn = "uniquePerTurn";
 }
 
+/// <summary>抽牌筛选方式（数据表 <c>drawFilter</c> 字段的取值）</summary>
+public static class CardDrawFilter
+{
+    /// <summary>普通随机抽牌（默认，空值）</summary>
+    public const string None = "";
+    /// <summary>抽「算力消耗最低的指令卡」（参考游戏：明灯灼魂）</summary>
+    public const string LowestCostInstruction = "lowestCostInstruction";
+}
+
 public partial class Card : Resource, ICardLevelable
 {
 	[Export]
@@ -319,6 +328,21 @@ public partial class Card : Resource, ICardLevelable
     public int RageGain { get; set; } = 0;
 
     /// <summary>
+    /// **命中次数**（1 = 打一次；2 = 「造成 x 点伤害 2 次」）。
+    /// 数据表字段：<c>hitCount</c>
+    /// </summary>
+    [Export]
+    public int HitCount { get; set; } = 1;
+
+    /// <summary>
+    /// **抽牌筛选方式**（空 = 普通随机抽牌）。
+    /// 目前支持：<c>lowestCostInstruction</c> = 抽「算力消耗最低的指令卡」。
+    /// 数据表字段：<c>drawFilter</c>
+    /// </summary>
+    [Export]
+    public string DrawFilter { get; set; } = "";
+
+    /// <summary>
     /// **所属角色名**（显示用）—— 文案里要写「波吕克斯获得 10 点怒气」这种带角色名的话。
     /// 战斗里由 <c>Attacker</c> 建卡时挂上，界面里由角色一览挂上。
     /// </summary>
@@ -412,6 +436,8 @@ public partial class Card : Resource, ICardLevelable
 			Affixes = new List<string>(Affixes),
 			TemplateDescription = TemplateDescription,
 			RageGain = RageGain,
+			HitCount = HitCount,
+			DrawFilter = DrawFilter,
 			Target = Target,
 			TargetPosition = TargetPosition,
 			Damage = Damage,

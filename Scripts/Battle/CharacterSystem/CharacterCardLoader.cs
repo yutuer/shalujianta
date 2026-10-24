@@ -99,6 +99,13 @@ public class CharacterCardLoader
         // 卡牌自带怒气（灵知觉醒这类：参考图净世之路 50 点）
         card.RageGain = dict.ContainsKey("rageGain") ? (int)(long)dict["rageGain"] : 0;
 
+        // 命中次数（1 = 一次；2 = 「造成 x 点伤害 2 次」）
+        card.HitCount = dict.ContainsKey("hitCount") ? (int)(long)dict["hitCount"] : 1;
+        if (card.HitCount < 1) card.HitCount = 1;
+
+        // 抽牌筛选方式（空 = 普通随机抽牌；lowestCostInstruction = 抽算力消耗最低的指令卡）
+        card.DrawFilter = dict.ContainsKey("drawFilter") ? dict["drawFilter"].ToString() : "";
+
         card.Level = 1;
         card.MaxLevel = 6;
 

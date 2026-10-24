@@ -739,7 +739,8 @@
             "rageGainPerLevel": 2,
             "affixes": [
                 "retain"
-            ]
+            ],
+            "drawFilter": "lowestCostInstruction"
         },
         {
             "cardId": "pollux_special3",
@@ -753,7 +754,8 @@
             "rageGainPerLevel": 2,
             "affixes": [
                 "retain"
-            ]
+            ],
+            "hitCount": 2
         }
     ]
 }

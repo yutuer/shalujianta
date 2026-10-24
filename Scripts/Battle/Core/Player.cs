@@ -115,6 +115,56 @@ public partial class Player : Node, IUnit
 		ShuffleDeck();
 	}
 
+	/// <summary>
+	/// 抽「**算力消耗最低的指令卡**」（参考游戏：明灯灼魂「抽 2 张算力消耗最低的指令卡」）。
+	///
+	/// 与 <see cref="DrawCards"/> 的区别：**不是随机抽** ——
+	/// 把牌堆里的指令卡按费用升序排序，取最便宜的那几张。
+	/// 牌堆里没有指令卡就抽不到（返回实际抽到的张数）。
+	/// </summary>
+	/// <param name="count">想抽几张</param>
+	/// <returns>实际抽到的张数</returns>
+	public int DrawLowestCostInstructionCards(int count)
+	{
+		int drawn = 0;
+
+		for (int i = 0; i < count; i++)
+		{
+			if (Deck.Count == 0)
+			{
+				ShuffleDiscardIntoDeck();
+			}
+
+			if (Deck.Count == 0) break;
+			if (Hand.Count >= MaxHandSize) break;
+
+			// 找牌堆里费用最低的指令卡
+			int bestIndex = -1;
+			int bestCost = int.MaxValue;
+
+			for (int j = 0; j < Deck.Count; j++)
+			{
+				Card.Card candidate = Deck[j];
+				if (candidate == null) continue;
+				if (candidate.CardType != Card.CardType.Instruction) continue;
+				if (candidate.Cost < bestCost)
+				{
+					bestCost = candidate.Cost;
+					bestIndex = j;
+				}
+			}
+
+			if (bestIndex < 0) break;   // 牌堆里没有指令卡了
+
+			Card.Card picked = Deck[bestIndex];
+			Deck.RemoveAt(bestIndex);
+			Hand.Add(picked);
+			drawn++;
+		}
+
+		return drawn;
+	}
+
 	public void ShuffleDeck()
 	{
 		RandomNumberGenerator rng = new RandomNumberGenerator();

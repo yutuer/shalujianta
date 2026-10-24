@@ -861,8 +861,17 @@ namespace FishEatFish.Scenes
 
 		if (card.DrawCount > 0)
 		{
-			player.DrawCards(card.DrawCount);
-			AddMessage($"你使用了{card.Name}，抽了{card.DrawCount}张牌", LogType.System);
+			// 抽牌方式由卡牌配置决定：普通随机抽 / 抽「算力消耗最低的指令卡」
+			if (card.DrawFilter == CardDrawFilter.LowestCostInstruction)
+			{
+				int drawn = player.DrawLowestCostInstructionCards(card.DrawCount);
+				AddMessage($"你使用了{card.Name}，抽了{drawn}张算力消耗最低的指令卡", LogType.System);
+			}
+			else
+			{
+				player.DrawCards(card.DrawCount);
+				AddMessage($"你使用了{card.Name}，抽了{card.DrawCount}张牌", LogType.System);
+			}
 		}
 
 		if (!string.IsNullOrEmpty(card.ApplyBuffName) && enemyManager.HasLivingEnemies())
@@ -925,7 +934,13 @@ namespace FishEatFish.Scenes
 		}
 
 		int finalDamage = card.GetFinalDamage(card.LinkedAttributes);
-		target.TakeDamage(finalDamage);
+		// 命中次数：「造成 x 点伤害 2 次」（参考游戏：离垢的审判）
+		int hits = Mathf.Max(1, card.HitCount);
+		for (int i = 0; i < hits; i++)
+		{
+			target.TakeDamage(finalDamage);
+		}
+
 		string targetDescription = card.Target switch
 		{
 			TargetType.Front => $"最前的敌人{target.EnemyName}",
@@ -933,7 +948,8 @@ namespace FishEatFish.Scenes
 			_ => target.EnemyName
 		};
 
-		AddMessage($"你使用了{card.Name}，对{targetDescription}造成{finalDamage}点伤害", LogType.Damage);
+		string hitText = hits > 1 ? $"（{hits}次）" : "";
+		AddMessage($"你使用了{card.Name}，对{targetDescription}造成{finalDamage}点伤害{hitText}", LogType.Damage);
 	}
 
 	private void UpdateUI()
