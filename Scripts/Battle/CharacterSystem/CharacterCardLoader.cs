@@ -106,6 +106,42 @@ public class CharacterCardLoader
         // 抽牌筛选方式（空 = 普通随机抽牌；lowestCostInstruction = 抽算力消耗最低的指令卡）
         card.DrawFilter = dict.ContainsKey("drawFilter") ? dict["drawFilter"].ToString() : "";
 
+        // **效果列表**（唯一真相源）—— 战斗结算与卡面数值都从这里取
+        card.Effects.Clear();
+        if (dict.ContainsKey("effects") && dict["effects"].Obj != null)
+        {
+            foreach (var effectObj in dict["effects"].AsGodotArray())
+            {
+                if (effectObj.Obj == null) continue;
+                Godot.Collections.Dictionary effectDict = effectObj.AsGodotDictionary();
+
+                CardEffect effect = new CardEffect
+                {
+                    Type = effectDict.ContainsKey("type") ? effectDict["type"].ToString() : "",
+                    Percent = effectDict.ContainsKey("percent") ? (int)(long)effectDict["percent"] : 0,
+                    Value = effectDict.ContainsKey("value") ? (int)(long)effectDict["value"] : 0,
+                    Count = effectDict.ContainsKey("count") ? (int)(long)effectDict["count"] : 0,
+                    Duration = effectDict.ContainsKey("duration") ? (int)(long)effectDict["duration"] : 0,
+                    HitCount = effectDict.ContainsKey("hitCount") ? (int)(long)effectDict["hitCount"] : 1,
+                    Buff = effectDict.ContainsKey("buff") ? effectDict["buff"].ToString() : "",
+                    Debuff = effectDict.ContainsKey("debuff") ? effectDict["debuff"].ToString() : "",
+                    Target = effectDict.ContainsKey("target") ? effectDict["target"].ToString() : "",
+                    Filter = effectDict.ContainsKey("filter") ? effectDict["filter"].ToString() : ""
+                };
+
+                if (effectDict.ContainsKey("timing") && effectDict["timing"].Obj != null)
+                {
+                    foreach (var timing in effectDict["timing"].AsGodotArray())
+                    {
+                        string timingValue = timing.ToString();
+                        if (!string.IsNullOrEmpty(timingValue)) effect.Timing.Add(timingValue);
+                    }
+                }
+
+                card.Effects.Add(effect);
+            }
+        }
+
         card.Level = 1;
         card.MaxLevel = 6;
 

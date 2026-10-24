@@ -154,8 +154,9 @@ public partial class Card : Resource, ICardLevelable
 	public int CalculatedDrawCount => CardLevelSystem.CalculateFixedValue(Level, DrawCountBase, DrawCountPerLevel);
 
 	/// <summary>
-	/// **最终伤害**：优先走百分比口径（角色攻击 × 百分比 × 等级系数）；
-	/// 没有百分比时回退到卡牌写死的绝对值（兼容旧数据）。
+	/// **最终伤害**：优先走**效果列表**（唯一真相源）——
+	/// 攻击力 × 伤害效果的百分比 × 等级系数；没配百分比就用效果的固定值。
+	/// 效果列表为空时回退旧字段（<c>DamagePercent</c> / <c>Damage</c>）—— 兼容还没迁移的卡。
 	/// 卡面文案与战斗结算**必须都调这个函数**（否则两边数值会漂）。
 	/// </summary>
 	/// <param name="attributes">角色属性（为空时按绝对值算）</param>
@@ -163,6 +164,13 @@ public partial class Card : Resource, ICardLevelable
 	public int GetFinalDamage(CharacterAttributes attributes, int level = 0)
 	{
 		int lv = level > 0 ? level : Level;
+
+		CardEffect effect = FindEffect(CardEffectType.Damage);
+		if (effect != null)
+		{
+			return CardEffectCalculator.CalculateDamage(this, effect, attributes);
+		}
+
 		if (DamagePercent > 0 && attributes != null)
 		{
 			return CardLevelSystem.CalculateAttributeLinkedValue(lv, attributes.Attack, DamagePercent / 100f);
@@ -171,18 +179,38 @@ public partial class Card : Resource, ICardLevelable
 	}
 
 	/// <summary>
-	/// **最终护盾**：优先走百分比口径（角色防御 × 百分比 × 等级系数）；没有则回退绝对值。
+	/// **最终护盾**：优先走**效果列表**（唯一真相源）——
+	/// 防御力 × 护盾效果的百分比 × 等级系数；没配百分比就用效果的固定值。
+	/// 效果列表为空时回退旧字段。
 	/// </summary>
 	/// <param name="attributes">角色属性（为空时按绝对值算）</param>
 	/// <param name="level">按哪一级算（0 = 卡牌当前等级；**升级预览传 等级+1**）</param>
 	public int GetFinalShield(CharacterAttributes attributes, int level = 0)
 	{
 		int lv = level > 0 ? level : Level;
+
+		CardEffect effect = FindEffect(CardEffectType.Shield);
+		if (effect != null)
+		{
+			return CardEffectCalculator.CalculateShield(this, effect, attributes);
+		}
+
 		if (ShieldPercent > 0 && attributes != null)
 		{
 			return CardLevelSystem.CalculateAttributeLinkedValue(lv, attributes.Defense, ShieldPercent / 100f);
 		}
 		return CardLevelSystem.CalculateAttributeLinkedValue(lv, ShieldGain, ShieldBaseCoefficient);
+	}
+
+	/// <summary>在效果列表里找第一个指定类型的效果（找不到返回 null）</summary>
+	public CardEffect FindEffect(string type)
+	{
+		if (Effects == null) return null;
+		foreach (CardEffect effect in Effects)
+		{
+			if (effect != null && effect.Type == type) return effect;
+		}
+		return null;
 	}
 
 	/// <summary>
@@ -318,6 +346,15 @@ public partial class Card : Resource, ICardLevelable
     public List<string> Affixes { get; set; } = new List<string>();
 
     /// <summary>
+    /// **效果列表**（唯一真相源）—— 战斗结算与卡面数值都从这里取。
+    ///
+    /// 以前是「一个字段一个分支」（<c>DamagePercent</c> / <c>ApplyBuffName</c> / …），
+    /// 现在统一成效果列表：新增一种效果 = 加一个执行器 + 数据表加一行。
+    /// 数据表字段：<c>effects</c>
+    /// </summary>
+    public List<CardEffect> Effects { get; set; } = new List<CardEffect>();
+
+    /// <summary>
     /// **卡牌自带怒气值**（绝对值，0 = 不指定）。
     ///
     /// 为什么需要：灵知觉醒这类卡的怒气是**它自己的**（参考图：净世之路 50 点），
@@ -438,6 +475,7 @@ public partial class Card : Resource, ICardLevelable
 			RageGain = RageGain,
 			HitCount = HitCount,
 			DrawFilter = DrawFilter,
+			Effects = new List<CardEffect>(Effects),
 			Target = Target,
 			TargetPosition = TargetPosition,
 			Damage = Damage,
@@ -471,6 +509,9 @@ public partial class Card : Resource, ICardLevelable
 
 	/// <summary>
 	/// 按卡牌数据造出要挂到目标身上的**增益**。
+	///
+	/// ⚠️ **旧路径**（2026-10-24 起由 <see cref="CardEffectEngine"/> 接管）：
+	/// 战斗结算走效果列表（<c>effects[]</c>），这条只剩 <c>CardEffectResolver</c>（未接线的遗留类）在用。
 	///
 	/// ⚠️ 这里曾经是 <c>switch</c> 直接 <c>new StrengthBuff()</c> 之类**裸 new**：
 	///   - 裸 buff 没有 <c>IconPath</c> → 状态生效了但**状态图标画不出来**
@@ -506,6 +547,8 @@ public partial class Card : Resource, ICardLevelable
 
 	/// <summary>
 	/// 按卡牌数据造出要挂到目标身上的**减益**（与 <see cref="CreateBuffFromCard"/> 同构）。
+	///
+	/// ⚠️ **旧路径**（2026-10-24 起由 <see cref="CardEffectEngine"/> 接管）。
 	/// </summary>
 	public StatusEffect CreateDebuffFromCard()
 	{
@@ -534,7 +577,7 @@ public partial class Card : Resource, ICardLevelable
 	/// 不同增益的数值字段名字不一样（AttackBonus / DefenseBonus / HealPerTurn…），
 	/// 只能按类型分派 —— 没有对应字段的增益会打警告而不是静默丢掉数值。
 	/// </summary>
-	private static void ApplyBuffValue(StatusEffect buff, int value)
+	public static void ApplyBuffValue(StatusEffect buff, int value)
 	{
 		if (buff == null || value <= 0) return;
 
@@ -556,7 +599,7 @@ public partial class Card : Resource, ICardLevelable
 	/// ⚠️ 易伤 / 破甲是**百分比**口径（受到伤害 +N%），其余是固定值 ——
 	/// 数据表里的 debuffValue 目前没有任何卡在用，口径等主人定。
 	/// </summary>
-	private static void ApplyDebuffValue(StatusEffect debuff, int value)
+	public static void ApplyDebuffValue(StatusEffect debuff, int value)
 	{
 		if (debuff == null || value <= 0) return;
 

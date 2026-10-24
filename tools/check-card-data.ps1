@@ -130,9 +130,120 @@ foreach ($c in $cards) {
     }
 }
 
+# 6) 效果列表与旧字段**必须一致**（唯一真相源是 effects[]，旧字段是派生值）
+#    两处一旦漂移，就会出现「卡面写一套、战斗打另一套」。
+$RAGE_ATTACK = 15    # 攻击牌怒气（RageManager.RageOnAttack）
+$RAGE_DEFENSE = 10   # 防御牌怒气（RageManager.RageOnDefense）
+
+function Get-IntField($obj, [string]$name, [int]$fallback = 0) {
+    if ($null -ne $obj -and $obj.PSObject.Properties.Name -contains $name -and $null -ne $obj.$name) {
+        return [int]$obj.$name
+    }
+    return $fallback
+}
+
+foreach ($c in $cards) {
+    $cid = $c.cardId
+    $effects = @()
+    if ($null -ne $c.PSObject.Properties.Name -contains 'effects' -and $null -ne $c.effects) {
+        $effects = @($c.effects)
+    }
+    if ($effects.Count -eq 0) {
+        $problems += "[character_cards.json] 卡「$cid」没有 effects[] —— 结算走效果列表引擎，没效果就不会触发任何东西"
+        continue
+    }
+
+    $byType = @{}
+    foreach ($e in $effects) {
+        $t = $e.type
+        if (-not $byType.ContainsKey($t)) { $byType[$t] = @() }
+        $byType[$t] += $e
+    }
+
+    # 伤害
+    $dmgPct = Get-IntField $c 'damagePercent' 0
+    if ($dmgPct -gt 0) {
+        if (-not $byType.ContainsKey('damage')) {
+            $problems += "[character_cards.json] 卡「$cid」有 damagePercent=$dmgPct 但 effects 里没有 damage"
+        } else {
+            $e = $byType['damage'][0]
+            if ([int]$e.percent -ne $dmgPct) {
+                $problems += "[character_cards.json] 卡「$cid」伤害百分比不一致：旧字段 $dmgPct% vs effects $($e.percent)%"
+            }
+            $wantTarget = if ($c.isAreaAttack) { 'allEnemies' } else { 'target' }
+            if ($e.target -ne $wantTarget) {
+                $problems += "[character_cards.json] 卡「$cid」伤害目标不一致：期望 $wantTarget vs effects $($e.target)"
+            }
+        }
+    }
+
+    # 护盾
+    $shieldPct = Get-IntField $c 'shieldPercent' 0
+    if ($shieldPct -gt 0) {
+        if (-not $byType.ContainsKey('shield')) {
+            $problems += "[character_cards.json] 卡「$cid」有 shieldPercent=$shieldPct 但 effects 里没有 shield"
+        } elseif ([int]$byType['shield'][0].percent -ne $shieldPct) {
+            $problems += "[character_cards.json] 卡「$cid」护盾百分比不一致：旧字段 $shieldPct% vs effects $($byType['shield'][0].percent)%"
+        }
+    }
+
+    # 怒气：现实现口径（卡自带 rageGain > 0 优先，否则攻击 15 / 防御 10）
+    $rageExpect = 0
+    $ownRage = Get-IntField $c 'rageGain' 0
+    if ($ownRage -gt 0) { $rageExpect = $ownRage }
+    elseif ($c.isAttack) { $rageExpect = $RAGE_ATTACK }
+    elseif ($shieldPct -gt 0) { $rageExpect = $RAGE_DEFENSE }
+    $rageActual = 0
+    if ($byType.ContainsKey('rage')) { $rageActual = [int]$byType['rage'][0].value }
+    if ($rageExpect -ne $rageActual) {
+        $problems += "[character_cards.json] 卡「$cid」怒气不一致：期望 $rageExpect vs effects $rageActual"
+    }
+
+    # 抽牌
+    $drawCount = Get-IntField $c 'drawCountBase' 0
+    if ($drawCount -gt 0) {
+        if (-not $byType.ContainsKey('draw')) {
+            $problems += "[character_cards.json] 卡「$cid」有 drawCountBase=$drawCount 但 effects 里没有 draw"
+        } else {
+            $e = $byType['draw'][0]
+            if ([int]$e.count -ne $drawCount) {
+                $problems += "[character_cards.json] 卡「$cid」抽牌数不一致：旧字段 $drawCount vs effects $($e.count)"
+            }
+            $wantFilter = if ($null -ne $c.PSObject.Properties.Name -contains 'drawFilter') { [string]$c.drawFilter } else { '' }
+            if ([string]$e.filter -ne $wantFilter) {
+                $problems += "[character_cards.json] 卡「$cid」抽牌筛选不一致：旧字段 '$wantFilter' vs effects '$($e.filter)'"
+            }
+        }
+    }
+
+    # 增益 / 减益
+    if ($null -ne $c.PSObject.Properties.Name -contains 'applyBuffName' -and -not [string]::IsNullOrWhiteSpace($c.applyBuffName)) {
+        if (-not $byType.ContainsKey('buff')) {
+            $problems += "[character_cards.json] 卡「$cid」有 applyBuffName=$($c.applyBuffName) 但 effects 里没有 buff"
+        } elseif ([string]$byType['buff'][0].buff -ne [string]$c.applyBuffName) {
+            $problems += "[character_cards.json] 卡「$cid」增益 id 不一致：旧字段 $($c.applyBuffName) vs effects $($byType['buff'][0].buff)"
+        }
+    }
+    if ($null -ne $c.PSObject.Properties.Name -contains 'applyDebuffName' -and -not [string]::IsNullOrWhiteSpace($c.applyDebuffName)) {
+        if (-not $byType.ContainsKey('debuff')) {
+            $problems += "[character_cards.json] 卡「$cid」有 applyDebuffName=$($c.applyDebuffName) 但 effects 里没有 debuff"
+        } elseif ([string]$byType['debuff'][0].debuff -ne [string]$c.applyDebuffName) {
+            $problems += "[character_cards.json] 卡「$cid」减益 id 不一致：旧字段 $($c.applyDebuffName) vs effects $($byType['debuff'][0].debuff)"
+        }
+    }
+
+    # 保留词缀
+    $hasRetain = $byType.ContainsKey('retain')
+    $isRetain = ($null -ne $c.PSObject.Properties.Name -contains 'isRetain' -and [bool]$c.isRetain)
+    if ($hasRetain -ne $isRetain) {
+        $problems += "[character_cards.json] 卡「$cid」保留词缀不一致：isRetain=$isRetain vs effects 有 retain=$hasRetain"
+    }
+}
+
 if ($problems.Count -eq 0) {
     Write-Host ''
     Write-Host ("OK  卡牌数据一致（" + $characters.Count + " 个角色各 2 张独立基本卡 / 共 " + $basicOwners.Count + " 张基本卡 / " + $cards.Count + " 张卡）") -ForegroundColor Green
+    Write-Host ("    效果列表与旧字段逐项一致（唯一真相源 = effects[]）") -ForegroundColor Green
     exit 0
 }
 

@@ -22,8 +22,14 @@ public partial class RageManager : Node
     public static int GetRageForCard(Card card)
     {
         if (card == null) return 0;
+
+        // 优先走**效果列表**（唯一真相源）——卡面文案与战斗结算读的是同一个值
+        CardEffect effect = card.FindEffect(CardEffectType.Rage);
+        if (effect != null) return effect.Value;
+
+        // 回退：效果列表还没迁移的卡
         // 卡牌**自带**的怒气优先（灵知觉醒这类：参考图「净世之路」50 点）——
-        // 它不属于「攻击牌 15 / 防御牌 10」那套按卡位给的默认值。
+        // 它不属于「攻击牌 15 / 防御牌 10」那套按卡位给的默认。
         if (card.RageGain > 0) return card.RageGain;
         if (card.IsAttack) return RageOnAttack;
         // 护盾判定用「实际护盾值」而不是卡牌上的绝对字段（现在是百分比口径）

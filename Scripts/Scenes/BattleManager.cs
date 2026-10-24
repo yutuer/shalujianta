@@ -838,120 +838,53 @@ namespace FishEatFish.Scenes
 		return enemyManager.ResolveTarget(card.Target, card.TargetPosition);
 	}
 
-	private void ApplyCardEffects(Card card)
+	/// <summary>
+	/// 组装**效果执行上下文** —— 引擎要用的玩家 / 敌人 / 属性 / 怒气目标 / 目标解析 / 日志。
+	/// </summary>
+	private CardEffectContext BuildEffectContext(Card card)
 	{
-		int finalShield = card.GetFinalShield(card.LinkedAttributes);
-		if (finalShield > 0)
+		return new CardEffectContext
 		{
-			player.AddShield(finalShield);
-			AddMessage($"你使用了{card.Name}，获得{finalShield}点护盾", LogType.Shield);
-		}
-
-		if (card.EnergyGain > 0)
-		{
-			player.CurrentEnergy += card.EnergyGain;
-			AddMessage($"你使用了{card.Name}，获得{card.EnergyGain}点能量", LogType.Energy);
-		}
-
-		if (card.HealAmount > 0)
-		{
-			player.Heal(card.HealAmount);
-			AddMessage($"你使用了{card.Name}，回复{card.HealAmount}点生命", LogType.Heal);
-		}
-
-		if (card.DrawCount > 0)
-		{
-			// 抽牌方式由卡牌配置决定：普通随机抽 / 抽「算力消耗最低的指令卡」
-			if (card.DrawFilter == CardDrawFilter.LowestCostInstruction)
-			{
-				int drawn = player.DrawLowestCostInstructionCards(card.DrawCount);
-				AddMessage($"你使用了{card.Name}，抽了{drawn}张算力消耗最低的指令卡", LogType.System);
-			}
-			else
-			{
-				player.DrawCards(card.DrawCount);
-				AddMessage($"你使用了{card.Name}，抽了{card.DrawCount}张牌", LogType.System);
-			}
-		}
-
-		if (!string.IsNullOrEmpty(card.ApplyBuffName) && enemyManager.HasLivingEnemies())
-		{
-			StatusEffect buff = card.CreateBuffFromCard();
-			if (buff != null)
-			{
-				Enemy target = ResolveCardTarget(card);
-				if (target != null)
-				{
-					target.AddStatusEffect(buff);
-					AddMessage($"你使用了{card.Name}，给{target.EnemyName}附加了增益效果", LogType.System);
-				}
-			}
-		}
-
-		if (!string.IsNullOrEmpty(card.ApplyDebuffName) && enemyManager.HasLivingEnemies())
-		{
-			StatusEffect debuff = card.CreateDebuffFromCard();
-			if (debuff != null)
-			{
-				Enemy target = ResolveCardTarget(card);
-				if (target != null)
-				{
-					target.AddStatusEffect(debuff);
-					AddMessage($"你使用了{card.Name}，给{target.EnemyName}附加了减益效果", LogType.System);
-				}
-			}
-		}
-	}
-
-	private void ApplyCardDamage(Card card)
-	{
-		if (!card.IsAttack || !enemyManager.HasLivingEnemies())
-		{
-			return;
-		}
-
-		if (card.IsAreaAttack)
-		{
-			int areaDamage = card.GetFinalDamage(card.LinkedAttributes);
-			foreach (Enemy enemy in enemyManager.GetLivingEnemies())
-			{
-				enemy.TakeDamage(areaDamage);
-				AddMessage($"你使用了{card.Name}，对{enemy.EnemyName}造成{areaDamage}点伤害", LogType.Damage);
-			}
-
-			return;
-		}
-
-		Enemy target = ResolveCardTarget(card);
-		if (target == null)
-		{
-			if (card.Target == TargetType.Position)
-			{
-				AddMessage($"你使用了{card.Name}，但{card.TargetPosition}号位置没有存活的敌人", LogType.System);
-			}
-
-			return;
-		}
-
-		int finalDamage = card.GetFinalDamage(card.LinkedAttributes);
-		// 命中次数：「造成 x 点伤害 2 次」（参考游戏：离垢的审判）
-		int hits = Mathf.Max(1, card.HitCount);
-		for (int i = 0; i < hits; i++)
-		{
-			target.TakeDamage(finalDamage);
-		}
-
-		string targetDescription = card.Target switch
-		{
-			TargetType.Front => $"最前的敌人{target.EnemyName}",
-			TargetType.Rear => $"最后的敌人{target.EnemyName}",
-			_ => target.EnemyName
+			Player = player,
+			Enemies = enemyManager != null ? enemyManager.GetLivingEnemies() : new List<Enemy>(),
+			Card = card,
+			Attributes = card.LinkedAttributes,
+			RageTarget = ResolveRageTarget(card),
+			ResolveEnemyTarget = ResolveCardTarget,
+			Log = AddMessage
 		};
-
-		string hitText = hits > 1 ? $"（{hits}次）" : "";
-		AddMessage($"你使用了{card.Name}，对{targetDescription}造成{finalDamage}点伤害{hitText}", LogType.Damage);
 	}
 
+	/// <summary>
+	/// 找出这张卡属于哪个角色（**怒气发给谁**）。
+	/// 找不到就回退到第一个角色位置。
+	/// </summary>
+	private CharacterPosition ResolveRageTarget(Card card)
+	{
+		if (rageManager == null || characterPositions.Count == 0) return null;
+
+		CharacterPosition targetPosition = null;
+
+		if (attacker != null && attacker.GetCharacterByCard(card) != null)
+		{
+			var character = attacker.GetCharacterByCard(card);
+			for (int i = 0; i < attacker.Characters.Length; i++)
+			{
+				if (attacker.Characters[i] == character && i < characterPositions.Count)
+				{
+					targetPosition = characterPositions[i];
+					break;
+				}
+			}
+		}
+
+		if (targetPosition == null && characterPositions.Count > 0)
+		{
+			targetPosition = characterPositions[0];
+		}
+
+		return targetPosition;
+	}
 	private void UpdateUI()
 	{
 		if (playerStatsUI == null)
@@ -1200,16 +1133,23 @@ namespace FishEatFish.Scenes
 		player.CurrentEnergy -= card.Cost;
 		AddSilverKey(card.Cost);
 
-		TrackRageFromCard(card);
+		// 结算：**效果列表引擎**（唯一真相源）——
+		// 怒气 / 护盾 / 能量 / 治疗 / 抽牌 / 增益 / 减益 / 伤害 全由数据表的 effects[] 驱动，
+		// 词缀（保留 / 消耗）也在这一刻生效。
+		CardEffectContext effectContext = BuildEffectContext(card);
+		CardEffectEngine.Execute(card, card.Effects, effectContext, CardEffectTiming.OnPlay);
+		UpdateRageDisplay();
 
-		ApplyCardEffects(card);
-		ApplyCardDamage(card);
 		TriggerEngraving(card);
 
 		if (player.Hand.Contains(card))
 		{
 			player.Hand.Remove(card);
-			player.DiscardPile.Add(card);
+			// 消耗：打出后从牌库移除（不进弃牌堆）
+			if (!effectContext.CardConsumed)
+			{
+				player.DiscardPile.Add(card);
+			}
 		}
 
 		UpdateUI();
@@ -1293,49 +1233,6 @@ namespace FishEatFish.Scenes
 	/// 规则：攻击卡+15怒气，防御卡+10怒气
 	/// </summary>
 	/// <param name="card">使用的卡牌</param>
-	private void TrackRageFromCard(Card card)
-	{
-		if (rageManager == null || characterPositions.Count == 0) return;
-
-		CharacterPosition targetPosition = null;
-
-		if (attacker != null && attacker.GetCharacterByCard(card) != null)
-		{
-			var character = attacker.GetCharacterByCard(card);
-			for (int i = 0; i < attacker.Characters.Length; i++)
-			{
-				if (attacker.Characters[i] == character && i < characterPositions.Count)
-				{
-					targetPosition = characterPositions[i];
-					break;
-				}
-			}
-		}
-
-		if (targetPosition == null && characterPositions.Count > 0)
-		{
-			targetPosition = characterPositions[0];
-		}
-
-		// 怒气：数值口径统一走 RageManager.GetRageForCard（与卡面文案同源）
-		int rageGained = RageManager.GetRageForCard(card);
-		if (rageGained > 0)
-		{
-			if (card.IsAttack)
-			{
-				rageManager.OnAttackCardPlayed(targetPosition);
-			}
-			else
-			{
-				rageManager.OnDefenseCardPlayed(targetPosition);
-			}
-
-			AddMessage($"获得{rageGained}点怒气", LogType.System);
-		}
-
-		UpdateRageDisplay();
-	}
-
 	/// <summary>
 	/// 钥令按钮点击处理
 	/// 逻辑分支（每回合上限 2 次）：
