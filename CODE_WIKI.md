@@ -36,7 +36,7 @@
 ### 1.3 项目目标
 
 - 实现四人组队战斗系统
-- 支持怒气系统和大招释放
+- 支持怒气系统和必杀技释放
 - 实现银钥/钥令系统
 - 支持刻印系统
 - 实现造物（Artifact）系统
@@ -515,7 +515,7 @@ public string AttackCardId { get; set; }    // 攻击卡ID
 public string DefenseCardId { get; set; }   // 防御卡ID
 public string[] SpecialCardIds { get; set; } // 特殊卡ID数组
 
-// 大招
+// 必杀技
 public UltimateSkill Ultimate { get; set; } // 终极技能
 ```
 
@@ -552,7 +552,7 @@ public int CurrentRage { get; set; }       // 当前怒气
 
 ##### UltimateSkill (`Scripts/Battle/CharacterSystem/UltimateSkill.cs`)
 
-**功能说明**: 终极技能（大招）定义。
+**功能说明**: 终极技能（必杀技）定义。
 
 **怒气释放条件**: 怒气值达到100
 
@@ -564,7 +564,7 @@ public int CurrentRage { get; set; }       // 当前怒气
 
 ##### RageManager (`Scripts/Battle/RageManager.cs`)
 
-**功能说明**: 怒气管理器，管理角色的怒气值和大招释放。
+**功能说明**: 怒气管理器，管理角色的怒气值和必杀技释放。
 
 **怒气获取规则**:
 | 触发条件 | 怒气增加 |
@@ -581,8 +581,8 @@ public void OnDefenseCardPlayed(CharacterPosition position)  // 防御卡触发
 public void OnPlayerDamaged(int damage)                      // 受伤触发
 public void OnTurnEnd()                                      // 回合结束触发
 public void AddRage(CharacterPosition position, int amount)  // 增加怒气
-public void UseUltimate(CharacterPosition position)          // 使用大招
-public bool CanUseUltimate(CharacterPosition position)        // 是否可使用大招
+public void UseUltimate(CharacterPosition position)          // 使用必杀技
+public bool CanUseUltimate(CharacterPosition position)        // 是否可使用必杀技
 ```
 
 ##### BattleEndRageHandler (`Scripts/Battle/BattleEndRageHandler.cs`)
