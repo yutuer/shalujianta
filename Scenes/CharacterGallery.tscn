@@ -384,4 +384,4 @@ text = "卡组"
 [node name="CardsRow" type="HBoxContainer" parent="CardsView/HBox/CardsSide"]
 layout_mode = 2
 size_flags_vertical = 0
-theme_override_constants/separation = 12
+theme_override_constants/separation = 22
