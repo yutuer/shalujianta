@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI/CharacterGallery/CharacterGallery.cs" id="1_gallery"]
 [ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CardPreviewOverlay.tscn" id="3_preview"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/CircleBackButton.tscn" id="4_circle"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.09, 0.1, 0.16, 0.98)
@@ -273,10 +274,7 @@ theme_override_constants/separation = 14
 
 [node name="Header" type="HBoxContainer" parent="CardsView/HBox/CardsSide"]
 layout_mode = 2
-
-[node name="BackToListButton" type="Button" parent="CardsView/HBox/CardsSide/Header"]
-layout_mode = 2
-text = "返回角色列表"
+theme_override_constants/separation = 16
 
 [node name="CardPreviewOverlay" parent="." instance=ExtResource("3_preview")]
 layout_mode = 1
@@ -292,6 +290,11 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 22
 text = "Lv.6/6"
+
+[node name="CircleBackButton" parent="CardsView/HBox/CardsSide/Header" instance=ExtResource("4_circle")]
+layout_mode = 2
+size_flags_vertical = 4
+tooltip_text = "返回角色列表"
 
 [node name="UltimatePanel" type="PanelContainer" parent="CardsView/HBox/CardsSide"]
 layout_mode = 2

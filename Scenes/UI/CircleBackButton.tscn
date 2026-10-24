@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/CircleBackButton.cs" id="1_circle"]
+
+[node name="CircleBackButton" type="Button"]
+custom_minimum_size = Vector2(76, 76)
+offset_right = 76.0
+offset_bottom = 76.0
+tooltip_text = "返回角色列表"
+script = ExtResource("1_circle")

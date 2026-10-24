@@ -126,7 +126,7 @@ namespace FishEatFish.UI.CharacterGallery
 			_ultimateNameLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/UltimateNameLabel");
 			_ultimateDescLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/UltimateDescLabel");
 			_cardsRow = GetNodeOrNull<HBoxContainer>("CardsView/HBox/CardsSide/CardsRow");
-			_backToListButton = GetNodeOrNull<Button>("CardsView/HBox/CardsSide/Header/BackToListButton");
+			_backToListButton = GetNodeOrNull<Button>("CardsView/HBox/CardsSide/Header/CircleBackButton");
 
 			if (_grid == null) GD.PrintErr("[CharacterGallery] 未找到 Grid");
 			if (_statsGrid == null) GD.PrintErr("[CharacterGallery] 未找到 StatsGrid");
