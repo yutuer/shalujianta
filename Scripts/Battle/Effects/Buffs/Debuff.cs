@@ -58,7 +58,7 @@ public partial class VulnerableDebuff : StatusEffect
     ///
     /// ⚠️ 原来这里靠 <c>_owner</c> 判断「被打的是不是被施加的那个敌人」，
     /// 但 <c>Enemy.AddStatusEffect</c> **从不调用 SetOwner** → _owner 恒为 null →
-    /// 判定恒不成立 → **易伤从来没生效过**（大招「龙王咆哮」的毒+易伤都打不出来）。
+    /// 判定恒不成立 → **易伤从来没生效过**（必杀技「龙王咆哮」的毒+易伤都打不出来）。
     /// 现在改成不依赖 owner：易伤总是施加给承受伤害的那个敌人自己。
     /// </summary>
     public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)

@@ -40,6 +40,13 @@ namespace FishEatFish.Battle.Card
 				if (ResourceLoader.Exists(derived)) texture = ResourceLoader.Load<Texture2D>(derived);
 			}
 
+			// ②-b 插画借用（衍生卡没有专属插画 → 借别的卡的立绘，如圣心借净世之路）
+			if (texture == null && !string.IsNullOrEmpty(card.ArtCardId))
+			{
+				string borrowed = $"res://Assets/Cards/card_{card.ArtCardId}.svg";
+				if (ResourceLoader.Exists(borrowed)) texture = ResourceLoader.Load<Texture2D>(borrowed);
+			}
+
 			if (texture == null && legacyTextures != null && legacyTextures.TryGetValue(card.Name, out Texture2D legacy))
 			{
 				texture = legacy;

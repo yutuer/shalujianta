@@ -314,7 +314,7 @@ namespace FishEatFish.Scenes
 				{
 					attackerDisplayUI.SetAttacker(attacker);
 				}
-				// 点击角色槽位释放大招（怒气满时才可点）
+				// 点击角色槽位释放必杀技（怒气满时才可点）
 				attackerDisplayUI.SetUltimateClickCallback(OnUltimateSlotClicked);
 			}
 			GD.Print("[BattleManager] 攻击体角色显示UI初始化成功");
@@ -343,7 +343,7 @@ namespace FishEatFish.Scenes
 	}
 
 	/// <summary>
-	/// 点击角色槽位 → 尝试释放该角色的大招（tasks.md 1.4.2 / 1.4.3）。
+	/// 点击角色槽位 → 尝试释放该角色的必杀技（tasks.md 1.4.2 / 1.4.3）。
 	/// </summary>
 	/// <param name="slotIndex">槽位索引 0~3</param>
 	private void OnUltimateSlotClicked(int slotIndex)
@@ -356,20 +356,20 @@ namespace FishEatFish.Scenes
 		CharacterPosition position = characterPositions[slotIndex];
 		if (position == null || !position.CanUseUltimate())
 		{
-			AddMessage("怒气不足，无法释放大招!", LogType.System);
+			AddMessage("怒气不足，无法释放必杀技!", LogType.System);
 			return;
 		}
 
 		bool released = rageManager.UseUltimate(slotIndex, player, enemies.ToArray());
 		if (!released)
 		{
-			AddMessage("大招释放失败!", LogType.System);
+			AddMessage("必杀技释放失败!", LogType.System);
 			return;
 		}
 
 		// 释放动画 + 表现刷新
 		position.PlayUltimateAnimation(player, enemies.ToArray());
-		AddMessage($"{position.Character?.Name ?? "角色"} 释放了大招！", LogType.System);
+		AddMessage($"{position.Character?.Name ?? "角色"} 释放了必杀技！", LogType.System);
 
 		UpdateRageDisplay();
 		UpdateUI();

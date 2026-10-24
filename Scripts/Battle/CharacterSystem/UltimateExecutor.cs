@@ -6,16 +6,16 @@ using FishEatFish.Battle.Effects.Buffs;
 namespace FishEatFish.Battle.CharacterSystem;
 
 /// <summary>
-/// 大招效果执行器
+/// 必杀技效果执行器
 /// 负责按 ultimates.json 的字段结算：伤害 / 治疗 / 护盾 / 抽牌 / 能量 / 附加减益
 /// 并输出中文执行摘要，便于日志与测试断言
 /// </summary>
 public static class UltimateExecutor
 {
     /// <summary>
-    /// 执行大招的所有字段效果
+    /// 执行必杀技的所有字段效果
     /// </summary>
-    /// <param name="skill">大招数据</param>
+    /// <param name="skill">必杀技数据</param>
     /// <param name="player">玩家（可为空，空时跳过治疗/护盾/抽牌/能量）</param>
     /// <param name="enemies">敌人数组（可为空，空时跳过伤害与减益）</param>
     /// <returns>中文执行摘要，例如「全体敌人受20伤害，抽3张」</returns>
@@ -23,8 +23,8 @@ public static class UltimateExecutor
     {
         if (skill == null)
         {
-            GD.PrintErr("[UltimateExecutor] Execute called: 大招数据为空，无法结算");
-            return "大招数据缺失";
+            GD.PrintErr("[UltimateExecutor] Execute called: 必杀技数据为空，无法结算");
+            return "必杀技数据缺失";
         }
 
         GD.Print($"[UltimateExecutor] Execute called: {skill.SkillId}（{skill.Name}）");

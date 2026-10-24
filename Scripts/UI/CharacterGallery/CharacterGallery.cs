@@ -14,7 +14,7 @@ namespace FishEatFish.UI.CharacterGallery
 	/// ② 属性详情弹窗：点「详细信息」→ 体质 / 攻击 / 防御 + 暴击率 / 暴击伤害 / 界域精通 /
 	///    伤害强效 / 基础狂气 / 狂气回充等级 / 银钥充能等级 / 黑印掉落 / 死亡抵抗。
 	/// ③ 卡牌总览：点「详情」→ **左边一竖列角色头像**（点头像快速切角色）
-	///    + 右边该角色的大招 + 5 张卡 —— 版式照参考图的「卡牌总览」。
+	///    + 右边该角色的必杀技 + 5 张卡 —— 版式照参考图的「卡牌总览」。
 	///
 	/// 主人 2026-10-24 明确**暂时不管**的：种族天赋图标（4 种，最后做）、
 	/// 名座三颗星、同调率（好感度）。
@@ -70,11 +70,13 @@ namespace FishEatFish.UI.CharacterGallery
 		// ---- 卡牌总览 ----
 		private Control _cardsView;
 		private CardPreviewOverlay cardPreviewOverlay;
+		private DerivedCardInfoPanel derivedCardInfoPanel;
 		private ScrollContainer _avatarScroll;
 		private VBoxContainer _avatarColumn;
-		private Label _cardsLevelLabel;
+		private Label _ultimateLevelLabel;
+		private TextureRect _ultimateAvatarRect;
 		private Label _ultimateNameLabel;
-		private Label _ultimateDescLabel;
+		private RichTextLabel _ultimateDescText;
 		private HBoxContainer _cardsRow;
 		private Button _backToListButton;
 
@@ -120,11 +122,13 @@ namespace FishEatFish.UI.CharacterGallery
 
 			_cardsView = GetNodeOrNull<Control>("CardsView");
 			cardPreviewOverlay = GetNodeOrNull<CardPreviewOverlay>("CardPreviewOverlay");
+			derivedCardInfoPanel = GetNodeOrNull<DerivedCardInfoPanel>("DerivedCardInfoPanel");
 			_avatarScroll = GetNodeOrNull<ScrollContainer>("CardsView/HBox/AvatarScroll");
 			_avatarColumn = GetNodeOrNull<VBoxContainer>("CardsView/HBox/AvatarScroll/AvatarColumn");
-			_cardsLevelLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/Header/LevelLabel");
+			_ultimateLevelLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/UltimateHeroBox/UltimateLevelLabel");
+			_ultimateAvatarRect = GetNodeOrNull<TextureRect>("CardsView/HBox/CardsSide/UltimateHeroBox/AvatarFrame/AvatarRect");
 			_ultimateNameLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/UltimateNameLabel");
-			_ultimateDescLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/UltimateDescLabel");
+			_ultimateDescText = GetNodeOrNull<RichTextLabel>("CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/UltimateDescText");
 			_cardsRow = GetNodeOrNull<HBoxContainer>("CardsView/HBox/CardsSide/CardsRow");
 			_backToListButton = GetNodeOrNull<Button>("CardsView/HBox/CardsSide/Header/CircleBackButton");
 
@@ -138,6 +142,8 @@ namespace FishEatFish.UI.CharacterGallery
 			if (_detailButton != null) _detailButton.Pressed += OnDetailButtonPressed;
 			if (_attributeCloseButton != null) _attributeCloseButton.Pressed += OnAttributeClosePressed;
 			if (_backToListButton != null) _backToListButton.Pressed += OnBackToListPressed;
+			// 必杀技说明里的「圣心」是可点的 → 弹出衍生卡说明面板
+			if (_ultimateDescText != null) _ultimateDescText.MetaClicked += OnUltimateDescMetaClicked;
 
 			BuildList();
 			ShowListView();
@@ -152,6 +158,7 @@ namespace FishEatFish.UI.CharacterGallery
 			if (_listView != null) _listView.Visible = true;
 			if (_cardsView != null) _cardsView.Visible = false;
 			if (cardPreviewOverlay != null) cardPreviewOverlay.HideCard();
+			if (derivedCardInfoPanel != null) derivedCardInfoPanel.HidePanel();
 			HideAttributePanel();
 		}
 
@@ -160,6 +167,7 @@ namespace FishEatFish.UI.CharacterGallery
 			if (_listView != null) _listView.Visible = false;
 			if (_cardsView != null) _cardsView.Visible = true;
 			if (cardPreviewOverlay != null) cardPreviewOverlay.HideCard();
+			if (derivedCardInfoPanel != null) derivedCardInfoPanel.HidePanel();
 			HideAttributePanel();
 
 			BuildAvatarColumn();
@@ -396,18 +404,41 @@ namespace FishEatFish.UI.CharacterGallery
 		{
 			if (character == null) return;
 
-			if (_cardsLevelLabel != null) _cardsLevelLabel.Text = $"Lv.{CardMaxLevel}/{CardMaxLevel}";
+			CharacterAttributes attributes = character.GetAttributes();
 
 			UltimateSkill ultimate = UltimateSkill.GetUltimateById(character.UltimateSkillId);
+			// 把角色属性挂上去 —— 百分比口径的必杀技（攻击力 × 百分比）要靠它算数值
+			if (ultimate != null) ultimate.LinkedAttributes = attributes;
+
 			if (_ultimateNameLabel != null)
 			{
-				_ultimateNameLabel.Text = ultimate != null ? $"大招：{ultimate.Name}" : "大招：未配置";
+				_ultimateNameLabel.Text = ultimate != null ? $"必杀技：{ultimate.Name}" : "必杀技：未配置";
 			}
-			if (_ultimateDescLabel != null)
+			if (_ultimateDescText != null)
 			{
-				_ultimateDescLabel.Text = ultimate != null
-					? ultimate.Description
-					: "";
+				_ultimateDescText.Text = BuildUltimateDescription(ultimate, attributes);
+			}
+
+			// 必杀技等级（头像上方）—— 卡牌等级系统还没做，先统一按满级显示（同卡牌的做法）
+			if (_ultimateLevelLabel != null)
+			{
+				int maxLevel = ultimate != null ? ultimate.MaxLevel : CardMaxLevel;
+				_ultimateLevelLabel.Text = $"Lv.{maxLevel}/{maxLevel}";
+			}
+
+			// 头像（必杀技说明的正上方居中）
+			if (_ultimateAvatarRect != null)
+			{
+				string avatarPath = $"res://Assets/Portraits/avatar_{character.CharacterId}.svg";
+				if (ResourceLoader.Exists(avatarPath))
+				{
+					_ultimateAvatarRect.Texture = ResourceLoader.Load<Texture2D>(avatarPath);
+				}
+				else
+				{
+					GD.PrintErr($"[CharacterGallery] 头像不存在: {avatarPath}");
+					_ultimateAvatarRect.Texture = null;
+				}
 			}
 
 			if (_cardsRow == null) return;
@@ -424,7 +455,6 @@ namespace FishEatFish.UI.CharacterGallery
 				return;
 			}
 
-			CharacterAttributes attributes = character.GetAttributes();
 			foreach (string cardId in GetDeckCardIds(character))
 			{
 				Card card = CharacterCardLoader.CreateInstance(cardId, attributes);
@@ -441,6 +471,65 @@ namespace FishEatFish.UI.CharacterGallery
 				// 传角色名 —— 卡面文案要写「波吕克斯获得 10 点怒气」
 				entry.Setup(card, character.Name);
 			}
+		}
+
+		/// <summary>
+		/// **必杀技说明文本** = 算出来的数值（造成 546 点伤害）+ 数据表里的补充说明，
+		/// 其中「圣心」那个词做成**可点击链接**（点了弹出衍生卡说明）。
+		/// </summary>
+		/// <param name="ultimate">必杀技</param>
+		/// <param name="attributes">角色属性（算数值要用）</param>
+		/// <returns>BBCode 文本</returns>
+		private static string BuildUltimateDescription(UltimateSkill ultimate, CharacterAttributes attributes)
+		{
+			if (ultimate == null) return "";
+
+			// ① 数值部分（与战斗同一个函数算出来的，不会漂）
+			string generated = DescriptionGenerator.GenerateUltimateDescription(ultimate, attributes);
+
+			// ② 补充说明（数据表里的原文）
+			string extra = ultimate.Description ?? "";
+
+			// ③ 「圣心」→ 可点击
+			// ⚠️ url 的值必须是**卡牌 id**（点击时传回来的 meta 就是 url 的值），
+			//    显示文字才是给人看的名字。
+			if (!string.IsNullOrEmpty(ultimate.DerivedCardId) &&
+				!string.IsNullOrEmpty(ultimate.DerivedCardName) &&
+				!string.IsNullOrEmpty(extra))
+			{
+				extra = extra.Replace(ultimate.DerivedCardName,
+					$"[url={ultimate.DerivedCardId}]{ultimate.DerivedCardName}[/url]");
+			}
+
+			if (string.IsNullOrEmpty(generated)) return extra;
+			if (string.IsNullOrEmpty(extra)) return generated;
+			return generated + "，" + extra;
+		}
+
+		/// <summary>
+		/// 点了必杀技说明里的链接 → 弹出对应的**衍生卡说明**面板。
+		/// </summary>
+		/// <param name="meta">链接目标（= 衍生卡 id）</param>
+		private void OnUltimateDescMetaClicked(Variant meta)
+		{
+			string cardId = meta.AsString();
+			GD.Print($"[CharacterGallery] 点了必杀技说明里的链接：{cardId}");
+
+			if (derivedCardInfoPanel == null)
+			{
+				GD.PrintErr("[CharacterGallery] 未找到 DerivedCardInfoPanel 节点");
+				return;
+			}
+			if (_current == null) return;
+
+			Card derived = CharacterCardLoader.CreateInstance(cardId, _current.GetAttributes());
+			if (derived == null)
+			{
+				GD.PrintErr($"[CharacterGallery] 衍生卡取不到: {cardId}");
+				return;
+			}
+
+			derivedCardInfoPanel.ShowCard(derived, _current.Name);
 		}
 
 		/// <summary>卡组顺序：打击 / 防御 / 3 张专属</summary>

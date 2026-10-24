@@ -1590,6 +1590,53 @@
                     "type": "retain"
                 }
             ]
+        },
+        {
+            "cardId": "pollux_derived",
+            "characterId": "pollux",
+            "name": "圣心",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damage": 128,
+            "damageBaseCoefficient": 1.0,
+            "isRetain": true,
+            "rageGain": 15,
+            "cardType": "derived",
+            "artCardId": "pollux_special",
+            "affixes": [
+                "sin_mark",
+                "consume",
+                "retain",
+                "prep1"
+            ],
+            "description": "造成 128 点伤害，获得 3 层 ×罪印。打出后将此卡牌洗入抽牌堆顶部。第 3 次打出时 ⚠消耗并使自身下张指令卡享受「苦痛救赎」效果。⚠保留。预备1。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 15
+                },
+                {
+                    "type": "damage",
+                    "value": 128,
+                    "target": "target"
+                },
+                {
+                    "type": "retain"
+                }
+            ],
+            "affixNotes": [
+                {
+                    "id": "sin_mark",
+                    "name": "罪印",
+                    "description": "每层使该角色造成的伤害附加 1% 出血。"
+                },
+                {
+                    "id": "prep1",
+                    "name": "预备1",
+                    "description": "这张卡进入手牌时预先准备 1 层效果，触发时一次性结算。"
+                }
+            ]
         }
     ]
 }

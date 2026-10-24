@@ -114,12 +114,12 @@ public partial class RageManager : Node
     }
 
     /// <summary>
-    /// 使用指定位置角色的大招
+    /// 使用指定位置角色的必杀技
     /// </summary>
     /// <param name="positionIndex">角色位置索引 (0-3)</param>
     /// <param name="player">玩家</param>
     /// <param name="enemies">敌人数组</param>
-    /// <returns>是否成功释放大招</returns>
+    /// <returns>是否成功释放必杀技</returns>
     public bool UseUltimate(int positionIndex, Player player, Enemy[] enemies)
     {
         GD.Print("[RageManager] UseUltimate called");

@@ -305,10 +305,12 @@
             "characterId": "pollux",
             "name": "无罪的圣裁",
             "nameEn": "Innocent Verdict",
-            "description": "全体敌人受60伤害",
+            "description": "使自身本回合下张指令卡享受「苦痛救赎」效果。将 1 张「圣心」置入手中。",
             "rageCost": 100,
-            "damage": 60,
+            "damagePercent": 300,
             "damageBaseCoefficient": 1.0,
+            "derivedCardId": "pollux_derived",
+            "derivedCardName": "圣心",
             "isAreaAttack": true
         }
     ]

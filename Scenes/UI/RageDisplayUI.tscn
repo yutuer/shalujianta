@@ -60,7 +60,7 @@ custom_minimum_size = Vector2(50, 10)
 
 [node name="UltReadyLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot0/VBoxContainer"]
 layout_mode = 2
-text = "大招"
+text = "必杀技"
 
 [node name="RageSlot1" type="Panel" parent="VBoxContainer/RageSlotsContainer"]
 custom_minimum_size = Vector2(60, 80)
@@ -85,7 +85,7 @@ custom_minimum_size = Vector2(50, 10)
 
 [node name="UltReadyLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot1/VBoxContainer"]
 layout_mode = 2
-text = "大招"
+text = "必杀技"
 
 [node name="RageSlot2" type="Panel" parent="VBoxContainer/RageSlotsContainer"]
 custom_minimum_size = Vector2(60, 80)
@@ -110,7 +110,7 @@ custom_minimum_size = Vector2(50, 10)
 
 [node name="UltReadyLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot2/VBoxContainer"]
 layout_mode = 2
-text = "大招"
+text = "必杀技"
 
 [node name="RageSlot3" type="Panel" parent="VBoxContainer/RageSlotsContainer"]
 custom_minimum_size = Vector2(60, 80)
@@ -135,7 +135,7 @@ custom_minimum_size = Vector2(50, 10)
 
 [node name="UltReadyLabel" type="Label" parent="VBoxContainer/RageSlotsContainer/RageSlot3/VBoxContainer"]
 layout_mode = 2
-text = "大招"
+text = "必杀技"
 
 [node name="TotalRageLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2

@@ -423,7 +423,7 @@ public partial class CharacterDefinition : Resource
     /// 波吕克斯（双子座）—— **可玩角色**。
     /// 属性照参考游戏「详细属性」面板：攻击 182 / 防御 156 / 体质 162 / 暴击率 14.6% / 暴击伤害 50%。
     /// 卡组：打击 + 防御 + 3 张专属（净世之路 / 明灯灼魂 / 离垢的审判）；
-    /// 大招「无罪的圣裁」：全体敌人受 60 伤害。
+    /// 必杀技「无罪的圣裁」：全体敌人受 60 伤害。
     /// </summary>
     public static CharacterDefinition CreatePollux()
     {

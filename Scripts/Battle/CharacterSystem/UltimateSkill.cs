@@ -23,6 +23,14 @@ public partial class UltimateSkill : Resource, ICardLevelable
     [Export]
     public int Damage;
 
+    /// <summary>
+    /// **伤害百分比口径**：> 0 时按「角色攻击力 × 百分比」算
+    /// （如波吕克斯「无罪的圣裁」= 攻击力×300%，满级 182×3 = 546）。
+    /// 0 = 走旧的绝对值口径（<see cref="Damage"/> × 系数 × 等级系数）。
+    /// </summary>
+    [Export]
+    public int DamagePercent;
+
     [Export]
     public int Heal;
 
@@ -57,6 +65,21 @@ public partial class UltimateSkill : Resource, ICardLevelable
     /// <summary>英文名（缺省由 skillId 推导）</summary>
     [Export]
     public string NameEn = "";
+
+    /// <summary>
+    /// **说明里提到的衍生卡 id**（如「无罪的圣裁」里的「圣心」= pollux_derived）——
+    /// 点那个词会弹出这张衍生卡的说明面板。
+    /// 数据表字段：<c>derivedCardId</c>
+    /// </summary>
+    [Export]
+    public string DerivedCardId = "";
+
+    /// <summary>
+    /// **说明里那个衍生卡的名字**（如「圣心」）—— 用来把说明文本里的这个词做成可点击链接。
+    /// 数据表字段：<c>derivedCardName</c>
+    /// </summary>
+    [Export]
+    public string DerivedCardName = "";
 
     /// <summary>最近一次 Execute 的中文执行摘要</summary>
     public string LastExecuteSummary { get; private set; } = "";
@@ -103,7 +126,19 @@ public partial class UltimateSkill : Resource, ICardLevelable
         }
     }
 
-    public int CalculatedDamage => CardLevelSystem.CalculateAttributeLinkedValue(Level, Damage, DamageBaseCoefficient);
+    public int CalculatedDamage
+    {
+        get
+        {
+            // 百分比口径：攻击力 × 百分比（**不额外乘等级系数** ——
+            // 角色攻击力本身已随等级成长，且卡牌等级系统还没做）。
+            if (DamagePercent > 0 && _linkedAttributes != null)
+            {
+                return Mathf.RoundToInt(_linkedAttributes.Attack * DamagePercent / 100f);
+            }
+            return CardLevelSystem.CalculateAttributeLinkedValue(Level, Damage, DamageBaseCoefficient);
+        }
+    }
 
     public int CalculatedHeal => CardLevelSystem.CalculateAttributeLinkedValue(Level, Heal, HealBaseCoefficient);
 
@@ -163,7 +198,7 @@ public partial class UltimateSkill : Resource, ICardLevelable
     public SkillExecuteHandler OnExecute;
 
     /// <summary>
-    /// 执行大招
+    /// 执行必杀技
     /// 1) 旧路径：EffectIds → EffectResolver（保留兼容，若配置了 EffectIds 仍会执行）
     /// 2) 新路径：按 Damage/Heal/Shield/DrawCount/EnergyGain/IsAreaAttack/Target/ApplyDebuffName 结算真实效果
     /// </summary>
@@ -411,7 +446,7 @@ public partial class UltimateSkill : Resource, ICardLevelable
     }
 
     /// <summary>
-    /// 按 id 获取大招
+    /// 按 id 获取必杀技
     /// 顺序：ultimates.json（字段最全，唯一权威源）→ characters.json 内嵌 ultimateSkill → 硬编码兜底
     /// </summary>
     public static UltimateSkill GetUltimateById(string skillId)
@@ -457,7 +492,7 @@ public partial class UltimateSkill : Resource, ICardLevelable
 
         if (fallback == null)
         {
-            GD.PrintErr($"[UltimateSkill] 未找到大招：{skillId}");
+            GD.PrintErr($"[UltimateSkill] 未找到必杀技：{skillId}");
         }
 
         return fallback;

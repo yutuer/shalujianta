@@ -108,6 +108,11 @@ public static class DescriptionGenerator
                 : ultimate.Damage;
             parts.Add($"造成 {damage} 点伤害");
         }
+        else if (ultimate.DamagePercent > 0 && attributes != null)
+        {
+            // 百分比口径（攻击力 × 百分比）—— 没有角色属性就不显示，别写「造成 0 点伤害」
+            parts.Add($"造成 {ultimate.CalculatedDamage} 点伤害");
+        }
 
         if (ultimate.Heal > 0)
         {

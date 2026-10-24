@@ -5,7 +5,7 @@ using FishEatFish.Battle.Card;
 namespace FishEatFish.Battle.CharacterSystem;
 
 /// <summary>
-/// 大招数据加载器：Data/ultimates.json 是大招的唯一权威数据源
+/// 必杀技数据加载器：Data/ultimates.json 是必杀技的唯一权威数据源
 /// </summary>
 public class UltimateLoader
 {
@@ -100,6 +100,13 @@ public class UltimateLoader
 
         ultimate.DrawCountPerLevel = GetIntValue(dict, "drawCountPerLevel", 0);
         ultimate.BuffValuePerLevel = GetIntValue(dict, "buffValuePerLevel", 0);
+
+        // 伤害百分比口径（> 0 时按「角色攻击力 × 百分比」算）
+        ultimate.DamagePercent = GetIntValue(dict, "damagePercent", 0);
+
+        // 说明里提到的衍生卡（点它弹衍生卡说明面板）
+        ultimate.DerivedCardId = GetStringValue(dict, "derivedCardId");
+        ultimate.DerivedCardName = GetStringValue(dict, "derivedCardName");
 
         // nameEn 缺省时用 skillId 去掉 "_ultimate" 后首字母大写
         if (string.IsNullOrEmpty(ultimate.NameEn))

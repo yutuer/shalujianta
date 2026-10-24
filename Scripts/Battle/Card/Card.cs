@@ -18,7 +18,7 @@ public enum TargetType
 
 /// <summary>
 /// **卡牌类型**（对照参考游戏《终末前夜 Morimens》）：
-/// 指令 = 普通指令卡；衍生 = 由大招 / 卡牌派生出来的卡；灵知觉醒 = 打出后给角色加怒气并产生新能力。
+/// 指令 = 普通指令卡；衍生 = 由必杀技 / 卡牌派生出来的卡；灵知觉醒 = 打出后给角色加怒气并产生新能力。
 /// </summary>
 public enum CardType
 {
@@ -337,6 +337,15 @@ public partial class Card : Resource, ICardLevelable
     /// </summary>
     [Export]
     public CardType CardType { get; set; } = CardType.Instruction;
+
+    /// <summary>
+    /// **插画借用哪张卡** —— 衍生卡没有自己的专属插画时，借用别的卡的立绘。
+    /// 留空 = 按自己的 cardId 找（<c>Assets/Cards/card_&lt;cardId&gt;.svg</c>）。
+    /// 例：圣心借用净世之路的立绘（参考图里两张卡画的是同一张图）。
+    /// 数据表字段：<c>artCardId</c>
+    /// </summary>
+    [Export]
+    public string ArtCardId { get; set; } = "";
 
     /// <summary>
     /// **词缀数组**（保留 / 消耗 / 回合唯一…）—— 后续 buff 可以给卡牌**增减**词缀。

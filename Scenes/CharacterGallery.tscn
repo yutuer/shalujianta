@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI/CharacterGallery/CharacterGallery.cs" id="1_gallery"]
 [ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CardPreviewOverlay.tscn" id="3_preview"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CircleBackButton.tscn" id="4_circle"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/DerivedCardInfoPanel.tscn" id="5_derived"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.09, 0.1, 0.16, 0.98)
@@ -30,6 +31,18 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avatar"]
+bg_color = Color(0.07, 0.08, 0.12, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.95, 0.82, 0.35, 1)
+corner_radius_top_left = 48
+corner_radius_top_right = 48
+corner_radius_bottom_right = 48
+corner_radius_bottom_left = 48
 
 [node name="CharacterGallery" type="Control"]
 layout_mode = 3
@@ -233,6 +246,9 @@ layout_mode = 2
 size_flags_horizontal = 0
 text = "关闭"
 
+[node name="DerivedCardInfoPanel" parent="." instance=ExtResource("5_derived")]
+layout_mode = 1
+
 [node name="CardsView" type="Control" parent="."]
 visible = false
 layout_mode = 1
@@ -250,7 +266,7 @@ anchor_bottom = 1.0
 offset_left = 32.0
 offset_top = 22.0
 offset_right = -32.0
-offset_bottom = -22.0
+offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 22
@@ -285,16 +301,40 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 26
 text = "卡牌总览"
 
-[node name="LevelLabel" type="Label" parent="CardsView/HBox/CardsSide/Header"]
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 22
-text = "Lv.6/6"
-
 [node name="CircleBackButton" parent="CardsView/HBox/CardsSide/Header" instance=ExtResource("4_circle")]
 layout_mode = 2
 size_flags_vertical = 4
 tooltip_text = "返回角色列表"
+
+[node name="UltimateHeroBox" type="VBoxContainer" parent="CardsView/HBox/CardsSide"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 6
+
+[node name="UltimateLevelLabel" type="Label" parent="CardsView/HBox/CardsSide/UltimateHeroBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.92, 0.9, 0.82, 1)
+theme_override_font_sizes/font_size = 24
+text = "Lv.6/6"
+horizontal_alignment = 1
+
+[node name="AvatarFrame" type="Panel" parent="CardsView/HBox/CardsSide/UltimateHeroBox"]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_avatar")
+clip_contents = true
+
+[node name="AvatarRect" type="TextureRect" parent="CardsView/HBox/CardsSide/UltimateHeroBox/AvatarFrame"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
 
 [node name="UltimatePanel" type="PanelContainer" parent="CardsView/HBox/CardsSide"]
 layout_mode = 2
@@ -314,14 +354,25 @@ theme_override_constants/separation = 6
 [node name="UltimateNameLabel" type="Label" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "大招"
+text = "必杀技"
 
-[node name="UltimateDescLabel" type="Label" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox"]
+[node name="UltimateDescText" type="RichTextLabel" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.86, 0.88, 0.94, 1)
-theme_override_font_sizes/font_size = 17
-text = ""
+mouse_filter = 0
+theme_override_colors/default_color = Color(0.86, 0.88, 0.94, 1)
+theme_override_colors/normal_link = Color(0.93, 0.9, 0.78, 1)
+theme_override_colors/hover_link = Color(1, 0.95, 0.68, 1)
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
 autowrap_mode = 3
+
+[node name="BottomSpacer" type="Control" parent="CardsView/HBox/CardsSide"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
 
 [node name="CardsTitle" type="Label" parent="CardsView/HBox/CardsSide"]
 layout_mode = 2

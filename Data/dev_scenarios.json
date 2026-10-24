@@ -53,7 +53,7 @@
       "target": "battle",
       "enemyWave": "boss_wave"
     },    "pollux_team": {
-        "desc": "波吕克斯入队（验证新角色：属性 / 卡组 / 大招）",
+        "desc": "波吕克斯入队（验证新角色：属性 / 卡组 / 必杀技）",
         "team": ["pollux", "ox", "tiger", "rabbit"],
         "keyOrder": "silver_slash",
         "map": "map01",

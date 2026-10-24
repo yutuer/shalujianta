@@ -142,90 +142,10 @@ namespace FishEatFish.UI.CharacterGallery
 		{
 			if (_affixList == null) return 0;
 
-			// ⚠️ **必须先 RemoveChild 再 QueueFree**：
-			// QueueFree 是**帧末**才删，同帧又 AddChild 新条目 → 旧条目还挂着，
-			// 面板就会越叠越长（主人 2026-10-24 报的现象）。
-			// 立即摘除 = 这一帧面板就是干净的。
-			foreach (Node child in _affixList.GetChildren())
-			{
-				_affixList.RemoveChild(child);
-				child.QueueFree();
-			}
-
-			int count = 0;
-
-			// ① 卡牌特有的词缀（灵知觉醒 / 罪印…）
-			if (card.AffixNotes != null)
-			{
-				foreach (CardAffixNote note in card.AffixNotes)
-				{
-					if (note == null) continue;
-					AffixInfo info = AffixLibrary.Get(note.Id);
-					AddAffixEntry(
-						note.Name,
-						note.Description,
-						info?.Symbol ?? "⚠",
-						info?.Color ?? "#e8a34a");
-					count++;
-				}
-			}
-
-			// ② 通用词缀（保留 / 消耗…）→ 说明去 affixes.json 查
-			if (card.Affixes != null)
-			{
-				foreach (string affixId in card.Affixes)
-				{
-					AffixInfo info = AffixLibrary.Get(affixId);
-					if (info == null) continue;
-					AddAffixEntry(info.Name, info.Description, info.Symbol, info.Color);
-					count++;
-				}
-			}
-
-			return count;
-		}
-
-		private void AddAffixEntry(string name, string description, string symbol, string colorHex)
-		{
-			Color color = ParseColor(colorHex);
-
-			var entry = new VBoxContainer();
-			entry.AddThemeConstantOverride("separation", 4);
-
-			var titleRow = new HBoxContainer();
-			titleRow.AddThemeConstantOverride("separation", 6);
-
-			Label symbolLabel = new Label();
-			symbolLabel.Text = string.IsNullOrEmpty(symbol) ? "⚠" : symbol;
-			symbolLabel.AddThemeColorOverride("font_color", color);
-			symbolLabel.AddThemeFontSizeOverride("font_size", 22);
-
-			Label nameLabel = new Label();
-			nameLabel.Text = name;
-			nameLabel.AddThemeColorOverride("font_color", color);
-			nameLabel.AddThemeFontSizeOverride("font_size", 22);
-
-			titleRow.AddChild(symbolLabel);
-			titleRow.AddChild(nameLabel);
-
-			Label descLabel = new Label();
-			descLabel.Text = description;
-			descLabel.AddThemeColorOverride("font_color", new Color(0.85f, 0.88f, 0.93f));
-			descLabel.AddThemeFontSizeOverride("font_size", 17);
-			descLabel.AutowrapMode = TextServer.AutowrapMode.Word;
-			descLabel.CustomMinimumSize = new Vector2(480, 0);
-
-			entry.AddChild(titleRow);
-			entry.AddChild(descLabel);
-
-			_affixList.AddChild(entry);
-		}
-
-		private static Color ParseColor(string hex)
-		{
-			if (string.IsNullOrEmpty(hex)) return new Color(0.91f, 0.64f, 0.29f);
-			if (!hex.StartsWith("#")) hex = "#" + hex;
-			return new Color(hex);
+			// 清空 + 填词缀说明 → 走共用构建器（与「衍生卡说明」面板同一份逻辑）
+			// ⚠️ 构建器内部**先 RemoveChild 再 QueueFree** —— QueueFree 是帧末才删，
+			// 不摘除的话旧条目会和新条目叠在一起（面板越切越长）。
+			return AffixListBuilder.Fill(_affixList, card);
 		}
 	}
 }

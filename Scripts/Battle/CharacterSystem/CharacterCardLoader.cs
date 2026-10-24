@@ -84,6 +84,8 @@ public class CharacterCardLoader
 
         // 卡牌类型（指令 / 衍生 / 灵知觉醒）与词缀数组 —— 卡牌总览的文案与显示要用
         card.CardType = ParseCardType(dict.ContainsKey("cardType") ? dict["cardType"].ToString() : "");
+        // 插画借用（衍生卡没有专属插画时借别的卡的立绘）
+        card.ArtCardId = dict.ContainsKey("artCardId") ? dict["artCardId"].ToString() : "";
         card.Affixes.Clear();
         if (dict.ContainsKey("affixes") && dict["affixes"].Obj != null)
         {
