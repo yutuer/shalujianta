@@ -125,8 +125,7 @@ theme_override_font_sizes/font_size = 17
 text = "指令"
 horizontal_alignment = 1
 
-[node name="AffixPanel" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(520, 560)
+[node name="AffixBox" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.78
@@ -139,26 +138,30 @@ offset_right = 260.0
 offset_bottom = 280.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="AffixPanel" type="PanelContainer" parent="AffixBox"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_affix")
 
-[node name="Margin" type="MarginContainer" parent="AffixPanel"]
+[node name="Margin" type="MarginContainer" parent="AffixBox/AffixPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 18
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 14
 
-[node name="VBox" type="VBoxContainer" parent="AffixPanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="AffixBox/AffixPanel/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="AffixPanel/Margin/VBox"]
+[node name="TitleLabel" type="Label" parent="AffixBox/AffixPanel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.84, 0.95, 1)
 theme_override_font_sizes/font_size = 24
 text = "词缀说明"
 
-[node name="AffixList" type="VBoxContainer" parent="AffixPanel/Margin/VBox"]
+[node name="AffixList" type="VBoxContainer" parent="AffixBox/AffixPanel/Margin/VBox"]
 layout_mode = 2
-size_flags_vertical = 3
 theme_override_constants/separation = 14

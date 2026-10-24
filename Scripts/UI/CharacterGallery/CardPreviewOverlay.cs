@@ -10,18 +10,31 @@ namespace FishEatFish.UI.CharacterGallery
 	/// 整屏压暗 → **卡牌放大浮在屏幕中间偏左** → **右边一个「词缀说明」面板**
 	/// （每条词缀：符号 + 名称 + 一段说明文字）。
 	///
+	/// ⚠️ **没有词缀的卡（打击 / 防御这类）不显示右侧面板**，卡牌回到**正中** ——
+	/// 对照参考图「卡牌1_波吕克斯」（打击）长按后就没有说明面板。
+	///
 	/// 词缀说明的来源：
 	/// - 卡牌自带的 <c>affixNotes</c>（灵知觉醒 / 罪印…）
 	/// - 卡牌的 <c>affixes</c>（保留 / 消耗…）→ 去 <c>Data/affixes.json</c> 查说明
 	/// </summary>
 	public partial class CardPreviewOverlay : Control
 	{
+		/// <summary>有词缀时卡牌中心所在的横向位置（0.45 = 偏左，给右侧面板让位）</summary>
+		private const float CardCenterWithAffix = 0.45f;
+
+		/// <summary>没有词缀时卡牌中心所在的横向位置（正中）</summary>
+		private const float CardCenterWithoutAffix = 0.5f;
+
+		/// <summary>卡牌半宽（改锚点时要保持左右对称）</summary>
+		private const float CardHalfWidth = 200f;
+
 		private PanelContainer _cardBox;
 		private Label _costLabel;
 		private Label _nameLabel;
 		private TextureRect _artRect;
 		private Label _descLabel;
 		private Label _typeLabel;
+		private Control _affixBox;
 		private VBoxContainer _affixList;
 
 		public override void _Ready()
@@ -34,7 +47,8 @@ namespace FishEatFish.UI.CharacterGallery
 			_artRect = GetNodeOrNull<TextureRect>("CardBox/Margin/VBox/ArtRect");
 			_descLabel = GetNodeOrNull<Label>("CardBox/Margin/VBox/DescLabel");
 			_typeLabel = GetNodeOrNull<Label>("CardBox/Margin/VBox/TypeLabel");
-			_affixList = GetNodeOrNull<VBoxContainer>("AffixPanel/Margin/VBox/AffixList");
+			_affixBox = GetNodeOrNull<Control>("AffixBox");
+			_affixList = GetNodeOrNull<VBoxContainer>("AffixBox/AffixPanel/Margin/VBox/AffixList");
 
 			if (_cardBox == null) GD.PrintErr("[CardPreviewOverlay] 未找到 CardBox");
 			if (_affixList == null) GD.PrintErr("[CardPreviewOverlay] 未找到 AffixList");
@@ -74,7 +88,12 @@ namespace FishEatFish.UI.CharacterGallery
 				};
 			}
 
-			FillAffixList(card);
+			int affixCount = FillAffixList(card);
+
+			// 没有词缀 → 不显示右侧面板，卡牌回到正中（对照参考图的打击卡）
+			bool hasAffix = affixCount > 0;
+			if (_affixBox != null) _affixBox.Visible = hasAffix;
+			SetCardCenter(hasAffix ? CardCenterWithAffix : CardCenterWithoutAffix);
 
 			Visible = true;
 		}
@@ -91,7 +110,7 @@ namespace FishEatFish.UI.CharacterGallery
 				mouseEvent.Pressed &&
 				mouseEvent.ButtonIndex == MouseButton.Left)
 			{
-				if (IsPointInsideCard(mouseEvent.Position))
+				if (IsPointInsideCard())
 				{
 					return;
 				}
@@ -100,19 +119,36 @@ namespace FishEatFish.UI.CharacterGallery
 			}
 		}
 
-		private bool IsPointInsideCard(Vector2 localPosition)
+		private bool IsPointInsideCard()
 		{
 			if (_cardBox == null) return false;
 			return _cardBox.GetGlobalRect().HasPoint(GetGlobalMousePosition());
 		}
 
-		/// <summary>填「词缀说明」面板：卡牌特有词缀 + 通用词缀</summary>
-		private void FillAffixList(Card card)
+		/// <summary>移动卡牌：改锚点让它的中心落在指定的横向位置</summary>
+		private void SetCardCenter(float centerX)
 		{
-			if (_affixList == null) return;
+			if (_cardBox == null) return;
 
+			_cardBox.AnchorLeft = centerX;
+			_cardBox.AnchorRight = centerX;
+			_cardBox.OffsetLeft = -CardHalfWidth;
+			_cardBox.OffsetRight = CardHalfWidth;
+		}
+
+		/// <summary>填「词缀说明」面板：卡牌特有词缀 + 通用词缀</summary>
+		/// <returns>词缀条目数量（0 = 这张卡没有词缀，右侧面板不显示）</returns>
+		private int FillAffixList(Card card)
+		{
+			if (_affixList == null) return 0;
+
+			// ⚠️ **必须先 RemoveChild 再 QueueFree**：
+			// QueueFree 是**帧末**才删，同帧又 AddChild 新条目 → 旧条目还挂着，
+			// 面板就会越叠越长（主人 2026-10-24 报的现象）。
+			// 立即摘除 = 这一帧面板就是干净的。
 			foreach (Node child in _affixList.GetChildren())
 			{
+				_affixList.RemoveChild(child);
 				child.QueueFree();
 			}
 
@@ -146,14 +182,7 @@ namespace FishEatFish.UI.CharacterGallery
 				}
 			}
 
-			if (count == 0)
-			{
-				var empty = new Label();
-				empty.Text = "（这张卡没有词缀）";
-				empty.AddThemeColorOverride("font_color", new Color(0.65f, 0.68f, 0.75f));
-				empty.AddThemeFontSizeOverride("font_size", 18);
-				_affixList.AddChild(empty);
-			}
+			return count;
 		}
 
 		private void AddAffixEntry(string name, string description, string symbol, string colorHex)
@@ -184,7 +213,7 @@ namespace FishEatFish.UI.CharacterGallery
 			descLabel.AddThemeColorOverride("font_color", new Color(0.85f, 0.88f, 0.93f));
 			descLabel.AddThemeFontSizeOverride("font_size", 17);
 			descLabel.AutowrapMode = TextServer.AutowrapMode.Word;
-			descLabel.CustomMinimumSize = new Vector2(0, 0);
+			descLabel.CustomMinimumSize = new Vector2(480, 0);
 
 			entry.AddChild(titleRow);
 			entry.AddChild(descLabel);
