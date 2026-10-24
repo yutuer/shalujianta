@@ -9,6 +9,7 @@ namespace FishEatFish.UI.CharacterGallery
 	public partial class CharacterCardEntry : Panel
 	{
 		private TextureRect _artRect;
+		private Label _levelLabel;
 		private Label _nameLabel;
 		private Label _costLabel;
 		private Label _valueLabel;
@@ -16,11 +17,13 @@ namespace FishEatFish.UI.CharacterGallery
 		public override void _Ready()
 		{
 			_artRect = GetNodeOrNull<TextureRect>("VBox/ArtRect");
+			_levelLabel = GetNodeOrNull<Label>("VBox/LevelLabel");
 			_nameLabel = GetNodeOrNull<Label>("VBox/NameLabel");
 			_costLabel = GetNodeOrNull<Label>("VBox/CostLabel");
 			_valueLabel = GetNodeOrNull<Label>("VBox/ValueLabel");
 
 			if (_artRect == null) GD.PrintErr("[CharacterCardEntry] 未找到 VBox/ArtRect");
+			if (_levelLabel == null) GD.PrintErr("[CharacterCardEntry] 未找到 VBox/LevelLabel");
 			if (_nameLabel == null) GD.PrintErr("[CharacterCardEntry] 未找到 VBox/NameLabel");
 			if (_costLabel == null) GD.PrintErr("[CharacterCardEntry] 未找到 VBox/CostLabel");
 			if (_valueLabel == null) GD.PrintErr("[CharacterCardEntry] 未找到 VBox/ValueLabel");
@@ -33,6 +36,10 @@ namespace FishEatFish.UI.CharacterGallery
 
 			if (_nameLabel != null) _nameLabel.Text = card.Name;
 			if (_costLabel != null) _costLabel.Text = $"费用 {card.Cost}";
+
+			// 等级：目前统一按**满级**显示（对照参考图卡牌总览里的 6/6、5/6…）。
+			// ⚠️ 卡牌升级系统还没做（主人 2026-10-24：「卡牌升级先不用管」）→ 先显示假值。
+			if (_levelLabel != null) _levelLabel.Text = $"{card.MaxLevel}/{card.MaxLevel}";
 
 			if (_valueLabel != null)
 			{

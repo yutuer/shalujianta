@@ -1,9 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI/CharacterGallery/CharacterGallery.cs" id="1_gallery"]
 [ext_resource type="Theme" path="res://Assets/Themes/MainTheme.tres" id="2_theme"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_detail"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.09, 0.1, 0.16, 0.98)
 border_width_left = 2
 border_width_top = 2
@@ -14,8 +14,20 @@ corner_radius_top_left = 14
 corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
-shadow_color = Color(0, 0, 0, 0.5)
-shadow_size = 16
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_row"]
+bg_color = Color(0.14, 0.16, 0.23, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.32, 0.38, 0.5, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="CharacterGallery" type="Control"]
 layout_mode = 3
@@ -44,52 +56,182 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="ListView"]
+[node name="HBox" type="HBoxContainer" parent="ListView"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 48.0
-offset_top = 26.0
-offset_right = -48.0
-offset_bottom = -26.0
+offset_left = 32.0
+offset_top = 22.0
+offset_right = -32.0
+offset_bottom = -22.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 22
 
-[node name="Header" type="HBoxContainer" parent="ListView/VBox"]
+[node name="LeftColumn" type="VBoxContainer" parent="ListView/HBox"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="ListView/HBox/LeftColumn"]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="ListView/VBox/Header"]
+[node name="TitleLabel" type="Label" parent="ListView/HBox/LeftColumn/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 30
 text = "角色一览"
 
-[node name="CountLabel" type="Label" parent="ListView/VBox/Header"]
+[node name="CountLabel" type="Label" parent="ListView/HBox/LeftColumn/Header"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.68, 0.72, 0.8, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 text = "共 13 名"
 
-[node name="BackButton" type="Button" parent="ListView/VBox/Header"]
-custom_minimum_size = Vector2(130, 0)
+[node name="BackButton" type="Button" parent="ListView/HBox/LeftColumn/Header"]
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 text = "返回主菜单"
 
-[node name="Scroll" type="ScrollContainer" parent="ListView/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="ListView/HBox/LeftColumn"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Grid" type="GridContainer" parent="ListView/VBox/Scroll"]
+[node name="Grid" type="GridContainer" parent="ListView/HBox/LeftColumn/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 16
-columns = 5
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3
 
-[node name="DetailView" type="Control" parent="."]
+[node name="PortraitRect" type="TextureRect" parent="ListView/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+expand_mode = 1
+stretch_mode = 5
+
+[node name="InfoColumn" type="VBoxContainer" parent="ListView/HBox"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+
+[node name="NameLabel" type="Label" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "角色"
+
+[node name="TypeLabel" type="Label" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 21
+text = "伤害"
+
+[node name="LevelLabel" type="Label" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "Lv.60"
+
+[node name="CardLevelsLabel" type="Label" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.88, 0.55, 1)
+theme_override_font_sizes/font_size = 20
+text = "6/6/6/6/6/6"
+
+[node name="TalentLabel" type="Label" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "1/1/1"
+
+[node name="Separator" type="HSeparator" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+
+[node name="StatsTitle" type="Label" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.78, 0.5, 1)
+theme_override_font_sizes/font_size = 20
+text = "属性"
+
+[node name="StatsLabel" type="Label" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "体质　162
+攻击　182
+防御　156"
+autowrap_mode = 3
+
+[node name="AttributeButton" type="Button" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "详细信息"
+
+[node name="DetailButton" type="Button" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 20
+text = "详情"
+
+[node name="AttributeDim" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="AttributePanel" type="PanelContainer" parent="."]
+visible = false
+custom_minimum_size = Vector2(620, 420)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -310.0
+offset_top = -210.0
+offset_right = 310.0
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Margin" type="MarginContainer" parent="AttributePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
+
+[node name="VBox" type="VBoxContainer" parent="AttributePanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="TitleLabel" type="Label" parent="AttributePanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "属性详情"
+
+[node name="StatsGrid" type="GridContainer" parent="AttributePanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 28
+theme_override_constants/v_separation = 6
+columns = 2
+
+[node name="CloseButton" type="Button" parent="AttributePanel/Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "关闭"
+
+[node name="CardsView" type="Control" parent="."]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -98,86 +240,88 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="DetailView"]
-custom_minimum_size = Vector2(940, 580)
+[node name="HBox" type="HBoxContainer" parent="CardsView"]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -470.0
-offset_top = -290.0
-offset_right = 470.0
-offset_bottom = 290.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 22.0
+offset_right = -32.0
+offset_bottom = -22.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_detail")
+theme_override_constants/separation = 22
 
-[node name="Margin" type="MarginContainer" parent="DetailView/Panel"]
+[node name="AvatarScroll" type="ScrollContainer" parent="CardsView/HBox"]
+custom_minimum_size = Vector2(124, 0)
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 18
+size_flags_horizontal = 0
+size_flags_vertical = 3
+vertical_scroll_mode = 1
 
-[node name="VBox" type="VBoxContainer" parent="DetailView/Panel/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Header" type="HBoxContainer" parent="DetailView/Panel/Margin/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 18
-
-[node name="PortraitRect" type="TextureRect" parent="DetailView/Panel/Margin/VBox/Header"]
-custom_minimum_size = Vector2(190, 266)
-layout_mode = 2
-size_flags_vertical = 0
-expand_mode = 1
-stretch_mode = 5
-
-[node name="InfoBox" type="VBoxContainer" parent="DetailView/Panel/Margin/VBox/Header"]
+[node name="AvatarColumn" type="VBoxContainer" parent="CardsView/HBox/AvatarScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="CardsSide" type="VBoxContainer" parent="CardsView/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+
+[node name="Header" type="HBoxContainer" parent="CardsView/HBox/CardsSide"]
+layout_mode = 2
+
+[node name="BackToListButton" type="Button" parent="CardsView/HBox/CardsSide/Header"]
+layout_mode = 2
+text = "返回角色列表"
+
+[node name="TitleLabel" type="Label" parent="CardsView/HBox/CardsSide/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+text = "卡牌总览"
+
+[node name="LevelLabel" type="Label" parent="CardsView/HBox/CardsSide/Header"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 22
+text = "Lv.6/6"
+
+[node name="UltimatePanel" type="PanelContainer" parent="CardsView/HBox/CardsSide"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_row")
+
+[node name="Margin" type="MarginContainer" parent="CardsView/HBox/CardsSide/UltimatePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin"]
+layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="NameLabel" type="Label" parent="DetailView/Panel/Margin/VBox/Header/InfoBox"]
+[node name="UltimateNameLabel" type="Label" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "角色"
-
-[node name="TypeLabel" type="Label" parent="DetailView/Panel/Margin/VBox/Header/InfoBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.8, 1, 1)
-theme_override_font_sizes/font_size = 19
-text = "追击者"
-
-[node name="StatsLabel" type="Label" parent="DetailView/Panel/Margin/VBox/Header/InfoBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 19
-text = "攻击 80"
-autowrap_mode = 3
-
-[node name="UltimateLabel" type="Label" parent="DetailView/Panel/Margin/VBox/Header/InfoBox"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.95, 0.85, 0.6, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 24
 text = "大招"
+
+[node name="UltimateDescLabel" type="Label" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.88, 0.94, 1)
+theme_override_font_sizes/font_size = 17
+text = ""
 autowrap_mode = 3
 
-[node name="CardsTitle" type="Label" parent="DetailView/Panel/Margin/VBox"]
+[node name="CardsTitle" type="Label" parent="CardsView/HBox/CardsSide"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "卡组"
 
-[node name="CardsRow" type="HBoxContainer" parent="DetailView/Panel/Margin/VBox"]
+[node name="CardsRow" type="HBoxContainer" parent="CardsView/HBox/CardsSide"]
 layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="Footer" type="HBoxContainer" parent="DetailView/Panel/Margin/VBox"]
-layout_mode = 2
-
-[node name="BackToListButton" type="Button" parent="DetailView/Panel/Margin/VBox/Footer"]
-layout_mode = 2
-text = "返回列表"
+size_flags_vertical = 0
+theme_override_constants/separation = 12

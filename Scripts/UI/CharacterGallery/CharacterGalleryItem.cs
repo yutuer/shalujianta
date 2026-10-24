@@ -13,6 +13,7 @@ namespace FishEatFish.UI.CharacterGallery
 		private TextureRect _avatarRect;
 		private Label _nameLabel;
 		private Label _typeLabel;
+		private Label _levelLabel;
 
 		private CharacterDefinition _character;
 		private bool _hovered;
@@ -27,10 +28,12 @@ namespace FishEatFish.UI.CharacterGallery
 			_avatarRect = GetNodeOrNull<TextureRect>("VBox/AvatarRect");
 			_nameLabel = GetNodeOrNull<Label>("VBox/NameLabel");
 			_typeLabel = GetNodeOrNull<Label>("VBox/TypeLabel");
+			_levelLabel = GetNodeOrNull<Label>("VBox/LevelLabel");
 
 			if (_avatarRect == null) GD.PrintErr("[CharacterGalleryItem] 未找到 VBox/AvatarRect");
 			if (_nameLabel == null) GD.PrintErr("[CharacterGalleryItem] 未找到 VBox/NameLabel");
 			if (_typeLabel == null) GD.PrintErr("[CharacterGalleryItem] 未找到 VBox/TypeLabel");
+			if (_levelLabel == null) GD.PrintErr("[CharacterGalleryItem] 未找到 VBox/LevelLabel");
 
 			MouseEntered += OnMouseEntered;
 			MouseExited += OnMouseExited;
@@ -41,17 +44,19 @@ namespace FishEatFish.UI.CharacterGallery
 		}
 
 		/// <summary>填入角色数据</summary>
-		public void Setup(CharacterDefinition character)
+		/// <param name="character">角色定义</param>
+		/// <param name="level">角色等级（目前所有角色固定 60 级）</param>
+		public void Setup(CharacterDefinition character, int level)
 		{
 			_character = character;
 			if (character == null) return;
 
 			if (_nameLabel != null) _nameLabel.Text = character.Name;
 
-			// 类型：先显示代码里的 Archetype 中文名。
-			// ⚠️ 主人 2026-10-24 说「定位以后给正式名称，参考图截图上有类型」——
-			//    这里先按现有 Archetype 显示，截图到手后换成正式定位。
-			if (_typeLabel != null) _typeLabel.Text = character.Archetype.GetShortName();
+			// 类型：伤害 / 辅助 / 防御（暂按 Archetype 映射，等主人给正式定位）
+			if (_typeLabel != null) _typeLabel.Text = character.Archetype.GetRoleType();
+
+			if (_levelLabel != null) _levelLabel.Text = $"Lv.{level}";
 
 			if (_avatarRect != null)
 			{
