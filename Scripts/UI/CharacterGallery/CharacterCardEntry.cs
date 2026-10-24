@@ -12,6 +12,12 @@ namespace FishEatFish.UI.CharacterGallery
 	/// </summary>
 	public partial class CharacterCardEntry : VBoxContainer
 	{
+		/// <summary>按住多久算「长按」（秒）</summary>
+		private const double LongPressDelay = 0.4;
+
+		/// <summary>长按期间允许的抖动（像素）—— 超过就当普通点击</summary>
+		private const float LongPressMoveTolerance = 8f;
+
 		private Label _levelLabel;
 		private PanelContainer _cardPanel;
 		private Label _costLabel;
@@ -19,6 +25,16 @@ namespace FishEatFish.UI.CharacterGallery
 		private TextureRect _artRect;
 		private Label _descLabel;
 		private Label _typeLabel;
+		private Card _card;
+
+		// ---- 长按检测（长按 → 弹出放大预览 + 词缀说明）----
+		private bool _pressed;
+		private bool _longPressFired;
+		private double _pressElapsed;
+		private Vector2 _pressPosition;
+
+		/// <summary>长按这张卡（按住不动超过 0.4 秒）时触发</summary>
+		public System.Action<Card> OnLongPress;
 
 		public override void _Ready()
 		{
@@ -45,6 +61,8 @@ namespace FishEatFish.UI.CharacterGallery
 		public void Setup(Card card, string ownerName = "")
 		{
 			if (card == null) return;
+
+			_card = card;
 
 			if (ownerName != null && !string.IsNullOrEmpty(ownerName))
 			{
@@ -102,5 +120,46 @@ namespace FishEatFish.UI.CharacterGallery
 			style.SetCornerRadiusAll(6);
 			_cardPanel.AddThemeStyleboxOverride("panel", style);
 		}
+
+	/// <summary>
+	/// 鼠标输入：记录按下 / 抖动（超过容差就取消长按）
+	/// </summary>
+	public override void _GuiInput(InputEvent @event)
+	{
+		if (@event is InputEventMouseButton mouseEvent && mouseEvent.ButtonIndex == MouseButton.Left)
+		{
+			if (mouseEvent.Pressed)
+			{
+				_pressed = true;
+				_longPressFired = false;
+				_pressElapsed = 0;
+				_pressPosition = mouseEvent.Position;
+			}
+			else
+			{
+				_pressed = false;
+			}
+		}
+		else if (@event is InputEventMouseMotion motion && _pressed)
+		{
+			if (motion.Position.DistanceTo(_pressPosition) > LongPressMoveTolerance)
+			{
+				_pressed = false;
+			}
+		}
+	}
+
+	/// <summary>每帧检查长按时长</summary>
+	public override void _Process(double delta)
+	{
+		if (!_pressed || _longPressFired) return;
+
+		_pressElapsed += delta;
+		if (_pressElapsed < LongPressDelay) return;
+
+		_longPressFired = true;
+		GD.Print($"[CharacterCardEntry] 长按触发：{_card?.Name}（{_card?.CardId}）");
+		OnLongPress?.Invoke(_card);
+	}
 	}
 }

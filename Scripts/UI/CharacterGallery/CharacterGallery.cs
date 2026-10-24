@@ -69,6 +69,7 @@ namespace FishEatFish.UI.CharacterGallery
 
 		// ---- 卡牌总览 ----
 		private Control _cardsView;
+		private CardPreviewOverlay cardPreviewOverlay;
 		private ScrollContainer _avatarScroll;
 		private VBoxContainer _avatarColumn;
 		private Label _cardsLevelLabel;
@@ -118,6 +119,7 @@ namespace FishEatFish.UI.CharacterGallery
 			_attributeCloseButton = GetNodeOrNull<Button>("AttributePanel/Margin/VBox/CloseButton");
 
 			_cardsView = GetNodeOrNull<Control>("CardsView");
+			cardPreviewOverlay = GetNodeOrNull<CardPreviewOverlay>("CardPreviewOverlay");
 			_avatarScroll = GetNodeOrNull<ScrollContainer>("CardsView/HBox/AvatarScroll");
 			_avatarColumn = GetNodeOrNull<VBoxContainer>("CardsView/HBox/AvatarScroll/AvatarColumn");
 			_cardsLevelLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/Header/LevelLabel");
@@ -149,6 +151,7 @@ namespace FishEatFish.UI.CharacterGallery
 		{
 			if (_listView != null) _listView.Visible = true;
 			if (_cardsView != null) _cardsView.Visible = false;
+			if (cardPreviewOverlay != null) cardPreviewOverlay.HideCard();
 			HideAttributePanel();
 		}
 
@@ -156,6 +159,7 @@ namespace FishEatFish.UI.CharacterGallery
 		{
 			if (_listView != null) _listView.Visible = false;
 			if (_cardsView != null) _cardsView.Visible = true;
+			if (cardPreviewOverlay != null) cardPreviewOverlay.HideCard();
 			HideAttributePanel();
 
 			BuildAvatarColumn();
@@ -432,6 +436,8 @@ namespace FishEatFish.UI.CharacterGallery
 
 				CharacterCardEntry entry = entryScene.Instantiate<CharacterCardEntry>();
 				_cardsRow.AddChild(entry);
+				// 长按 → 弹出放大预览 + 词缀说明（照参考游戏）
+				entry.OnLongPress = OnCardLongPress;
 				// 传角色名 —— 卡面文案要写「波吕克斯获得 10 点怒气」
 				entry.Setup(card, character.Name);
 			}
@@ -454,6 +460,22 @@ namespace FishEatFish.UI.CharacterGallery
 		}
 
 		// ==================== 返回 ====================
+
+		/// <summary>
+		/// 长按卡牌 → 弹出**放大预览层**（卡牌放大 + 右侧词缀说明）
+		/// </summary>
+		private void OnCardLongPress(Card card)
+		{
+			if (card == null) return;
+
+			if (cardPreviewOverlay == null)
+			{
+				GD.PrintErr("[CharacterGallery] 未找到 CardPreviewOverlay 节点，长按预览不可用");
+				return;
+			}
+
+			cardPreviewOverlay.ShowCard(card, CardArtResolver.Resolve(card));
+		}
 
 		private void OnBackToListPressed()
 		{

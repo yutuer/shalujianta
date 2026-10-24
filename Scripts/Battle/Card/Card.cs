@@ -355,6 +355,13 @@ public partial class Card : Resource, ICardLevelable
     public List<CardEffect> Effects { get; set; } = new List<CardEffect>();
 
     /// <summary>
+    /// **卡牌特有的词缀说明**（长按卡牌弹出的「词缀说明」面板用）。
+    /// 通用词缀（保留 / 消耗 / 回合唯一）的说明在 <c>Data/affixes.json</c> 里查。
+    /// 数据表字段：<c>affixNotes</c>
+    /// </summary>
+    public List<CardAffixNote> AffixNotes { get; set; } = new List<CardAffixNote>();
+
+    /// <summary>
     /// **卡牌自带怒气值**（绝对值，0 = 不指定）。
     ///
     /// 为什么需要：灵知觉醒这类卡的怒气是**它自己的**（参考图：净世之路 50 点），
@@ -476,6 +483,7 @@ public partial class Card : Resource, ICardLevelable
 			HitCount = HitCount,
 			DrawFilter = DrawFilter,
 			Effects = new List<CardEffect>(Effects),
+			AffixNotes = new List<CardAffixNote>(AffixNotes),
 			Target = Target,
 			TargetPosition = TargetPosition,
 			Damage = Damage,

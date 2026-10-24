@@ -1510,6 +1510,18 @@
                 {
                     "type": "retain"
                 }
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "sin_mark",
+                    "name": "罪印",
+                    "description": "每层使该角色造成的伤害附加 1% 出血。"
+                }
             ]
         },
         {

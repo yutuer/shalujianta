@@ -69,6 +69,22 @@ namespace FishEatFish.Battle.Card
 		}
 	}
 
+	/// <summary>
+	/// **卡牌特有的词缀说明**（不在通用词缀表 <c>Data/affixes.json</c> 里的那些）。
+	/// 数据表字段：<c>affixNotes</c>，例如灵知觉醒卡的「灵知觉醒」「罪印」。
+	/// </summary>
+	public class CardAffixNote
+	{
+		/// <summary>词缀 id（用于去重 / 查色）</summary>
+		public string Id { get; set; } = "";
+
+		/// <summary>显示名（如「罪印」）</summary>
+		public string Name { get; set; } = "";
+
+		/// <summary>说明文字</summary>
+		public string Description { get; set; } = "";
+	}
+
 	/// <summary>效果触发时机</summary>
 	public static class CardEffectTiming
 	{

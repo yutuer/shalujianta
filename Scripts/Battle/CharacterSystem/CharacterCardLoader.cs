@@ -106,6 +106,23 @@ public class CharacterCardLoader
         // 抽牌筛选方式（空 = 普通随机抽牌；lowestCostInstruction = 抽算力消耗最低的指令卡）
         card.DrawFilter = dict.ContainsKey("drawFilter") ? dict["drawFilter"].ToString() : "";
 
+        // 卡牌特有的词缀说明（灵知觉醒 / 罪印…）——长按卡牌弹的「词缀说明」面板用
+        card.AffixNotes.Clear();
+        if (dict.ContainsKey("affixNotes") && dict["affixNotes"].Obj != null)
+        {
+            foreach (var noteObj in dict["affixNotes"].AsGodotArray())
+            {
+                if (noteObj.Obj == null) continue;
+                Godot.Collections.Dictionary noteDict = noteObj.AsGodotDictionary();
+                card.AffixNotes.Add(new CardAffixNote
+                {
+                    Id = noteDict.ContainsKey("id") ? noteDict["id"].ToString() : "",
+                    Name = noteDict.ContainsKey("name") ? noteDict["name"].ToString() : "",
+                    Description = noteDict.ContainsKey("description") ? noteDict["description"].ToString() : ""
+                });
+            }
+        }
+
         // **效果列表**（唯一真相源）—— 战斗结算与卡面数值都从这里取
         card.Effects.Clear();
         if (dict.ContainsKey("effects") && dict["effects"].Obj != null)

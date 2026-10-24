@@ -40,12 +40,14 @@ text = "6/6"
 horizontal_alignment = 1
 
 [node name="CardPanel" type="PanelContainer" parent="."]
+mouse_filter = 2
 custom_minimum_size = Vector2(230, 396)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 
 [node name="Margin" type="MarginContainer" parent="CardPanel"]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 7
@@ -53,20 +55,24 @@ theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
 [node name="VBox" type="VBoxContainer" parent="CardPanel/Margin"]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/separation = 5
 
 [node name="TopRow" type="HBoxContainer" parent="CardPanel/Margin/VBox"]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="CostBadge" type="PanelContainer" parent="CardPanel/Margin/VBox/TopRow"]
+mouse_filter = 2
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_cost")
 
 [node name="CostLabel" type="Label" parent="CardPanel/Margin/VBox/TopRow/CostBadge"]
+mouse_filter = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 19

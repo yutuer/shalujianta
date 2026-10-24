@@ -1,0 +1,39 @@
+{
+    "affixes": [
+        {
+            "id": "retain",
+            "name": "保留",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+        },
+        {
+            "id": "consume",
+            "name": "消耗",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "打出后这张卡从牌库移除，不会回到抽牌堆。"
+        },
+        {
+            "id": "uniquePerTurn",
+            "name": "回合唯一",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "每回合只能打出一次。"
+        },
+        {
+            "id": "awakening",
+            "name": "灵知觉醒",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+        },
+        {
+            "id": "sin_mark",
+            "name": "罪印",
+            "symbol": "✕",
+            "color": "#c86bd8",
+            "description": "每层使该角色造成的伤害附加 1% 出血。"
+        }
+    ]
+}
