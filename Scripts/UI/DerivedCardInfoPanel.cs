@@ -57,9 +57,10 @@ namespace FishEatFish.UI
 			{
 				// 优先用策划写的完整说明（这张卡的部分机制还没实现，生成器写不全）；
 				// 没有就退回生成器（数值与战斗同源）。
-				_descLabel.Text = !string.IsNullOrEmpty(card.TemplateDescription)
-					? card.TemplateDescription
-					: DescriptionGenerator.GenerateCardDescription(card, card.LinkedAttributes);
+				// ⚠️ 走 BuildCardBodyText —— **正文末尾要带词缀标注**
+				//    （照参考游戏：卡面正文带「⚠保留。」「✕罪印」，同时右侧还有词缀说明区，
+				//    两处都有）。之前这里直接用 TemplateDescription → 正文一个标记都没有。
+				_descLabel.Text = DescriptionGenerator.BuildCardBodyText(card, null, card.LinkedAttributes);
 			}
 
 			// 词缀说明（通用构建器，与长按卡牌的面板同一份逻辑）

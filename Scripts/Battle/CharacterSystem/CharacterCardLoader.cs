@@ -125,6 +125,21 @@ public class CharacterCardLoader
             }
         }
 
+        // 卡面正文要自动补哪些词缀标注（bodyAffixMarks）
+        //   不写这个字段 = 默认：正文里没提过的词缀全部补上
+        //   写 []        = 一律不补（正文完全由策划文案逐字负责，例如圣心那张衍生卡）
+        card.BodyAffixMarks = null;
+        if (dict.ContainsKey("bodyAffixMarks") &&
+            dict["bodyAffixMarks"].VariantType == Variant.Type.Array)
+        {
+            card.BodyAffixMarks = new List<string>();
+            foreach (var affix in dict["bodyAffixMarks"].AsGodotArray())
+            {
+                string value = affix.ToString();
+                if (!string.IsNullOrEmpty(value)) card.BodyAffixMarks.Add(value);
+            }
+        }
+
         // **效果列表**（唯一真相源）—— 战斗结算与卡面数值都从这里取
         card.Effects.Clear();
         if (dict.ContainsKey("effects") && dict["effects"].Obj != null)

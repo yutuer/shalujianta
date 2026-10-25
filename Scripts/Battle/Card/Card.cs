@@ -371,6 +371,20 @@ public partial class Card : Resource, ICardLevelable
     public List<CardAffixNote> AffixNotes { get; set; } = new List<CardAffixNote>();
 
     /// <summary>
+    /// **卡面正文要自动补哪些词缀标注**（数据表字段：<c>bodyAffixMarks</c>）。
+    ///
+    /// 卡面正文末尾会自动补「⚠保留。」「⚠消耗。」「✕罪印。」这类**词缀标注**
+    /// （照参考游戏《终末前夜 Morimens》的卡面：**正文带标注**，同时右侧还有一块「词缀说明」—— 两处都有）。
+    ///
+    /// 这个字段是**按卡微调**的口子：
+    ///   - <c>null</c>（不写）= 默认：正文里没提过的词缀**全部**补上；
+    ///   - <c>[]</c>（写空数组）= **一律不补** —— 正文完全交给策划文案逐字写
+    ///     （例：圣心这张衍生卡的正文照参考图手写，见 <c>Data/character_cards.json</c> 的 <c>pollux_derived</c>）；
+    ///   - <c>["prep1"]</c> = 只补这一个。
+    /// </summary>
+    public List<string> BodyAffixMarks { get; set; } = null;
+
+    /// <summary>
     /// **卡牌自带怒气值**（绝对值，0 = 不指定）。
     ///
     /// 为什么需要：灵知觉醒这类卡的怒气是**它自己的**（参考图：净世之路 50 点），
@@ -493,6 +507,7 @@ public partial class Card : Resource, ICardLevelable
 			DrawFilter = DrawFilter,
 			Effects = new List<CardEffect>(Effects),
 			AffixNotes = new List<CardAffixNote>(AffixNotes),
+			BodyAffixMarks = BodyAffixMarks == null ? null : new List<string>(BodyAffixMarks),
 			Target = Target,
 			TargetPosition = TargetPosition,
 			Damage = Damage,

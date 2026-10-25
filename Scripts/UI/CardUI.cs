@@ -440,7 +440,7 @@ public partial class CardUI : Panel
     private void RefreshDescription()
     {
         if (cardData == null || descLabel == null) return;
-        descLabel.Text = DescriptionGenerator.GenerateCardDescription(cardData, _linkedAttributes);
+        descLabel.Text = DescriptionGenerator.BuildCardBodyText(cardData, null, _linkedAttributes);
     }
 
     private void UpdateLevelDisplay()
@@ -473,7 +473,7 @@ public partial class CardUI : Panel
         Name = $"Card_{index}";
         nameLabel.Text = card.Name;
         costLabel.Text = card.Cost.ToString();
-        descLabel.Text = DescriptionGenerator.GenerateCardDescription(card, _linkedAttributes);
+        descLabel.Text = DescriptionGenerator.BuildCardBodyText(card, null, _linkedAttributes);
 
         UpdateLevelDisplay();
         UpdateEngravingBadge(card);

@@ -79,10 +79,9 @@ public static class DescriptionGenerator
             parts.Add($"获得 {cardRage} 怒气");
         }
 
-        if (card.IsRetain)
-        {
-            parts.Add("保留");
-        }
+        // ⚠️ 「保留」**不在这里单独加** —— 词缀标注统一由
+        //    <see cref="BuildAffixMarkText"/> 追加（写成「⚠保留。」，与参考图一致）。
+        //    两处都写会重复（"…，保留⚠保留。"）。
 
         if (parts.Count == 0)
         {
@@ -90,6 +89,99 @@ public static class DescriptionGenerator
         }
 
         return string.Join("，", parts);
+    }
+
+    /// <summary>
+    /// **卡面词缀标注**（照参考游戏《终末前夜 Morimens》的卡面）。
+    ///
+    /// 参考图里卡面正文**带词缀标记**（「⚠保留。」「⚠消耗。」「✕罪印」「⚠灵知觉醒」），
+    /// 同时右侧还有一块「词缀说明」—— **两处都有**，不是二选一
+    /// （见 docs/screenshots/人物_波吕克斯/卡牌3(灵知觉醒)_波吕克斯.jpg）。
+    ///
+    /// 规则：**正文里已经出现过的词缀名就不再重复标**
+    /// （例如「×罪印」写在句中，末尾就不必再标一次），
+    /// 没出现过的才补在末尾。
+    /// </summary>
+    /// <param name="card">卡牌</param>
+    /// <param name="bodyText">正文（用来判断某个词缀是不是已经写过了）</param>
+    public static string BuildAffixMarkText(Card card, string bodyText = null)
+    {
+        if (card == null) return "";
+
+        string body = bodyText ?? "";
+        var marks = new List<string>();
+
+        // 按卡配置的「正文要标哪些词缀」过滤：
+        //   bodyAffixMarks == null（数据表没写这个字段）= 全部都标
+        //   bodyAffixMarks == []（写了空数组）        = 一个都不标（正文由策划文案逐字负责）
+        System.Func<string, bool> allowed = id =>
+            card.BodyAffixMarks == null || card.BodyAffixMarks.Contains(id);
+
+        // ① 通用词缀（保留 / 消耗 / 回合唯一）—— isRetain 也算保留（老数据没配 affixes）
+        if ((card.IsRetain || card.Affixes.Contains(CardAffix.Retain)) &&
+            allowed(CardAffix.Retain) && !body.Contains("保留"))
+        {
+            marks.Add("⚠保留。");
+        }
+        if (card.Affixes.Contains(CardAffix.Consume) &&
+            allowed(CardAffix.Consume) && !body.Contains("消耗"))
+        {
+            marks.Add("⚠消耗。");
+        }
+        if (card.Affixes.Contains(CardAffix.UniquePerTurn) &&
+            allowed(CardAffix.UniquePerTurn) && !body.Contains("回合唯一"))
+        {
+            marks.Add("回合唯一。");
+        }
+
+        // ② 卡牌特有的词缀（预备1 / 罪印…）—— 符号跟「词缀说明」区保持一致
+        if (card.AffixNotes != null)
+        {
+            foreach (CardAffixNote note in card.AffixNotes)
+            {
+                if (note == null) continue;
+                string name = note.Name;
+                if (string.IsNullOrEmpty(name)) continue;
+                if (body.Contains(name)) continue;   // 正文里已经写过 → 不重复标
+                if (!allowed(note.Id)) continue;      // 这张卡不自动标这个词缀
+                AffixInfo info = AffixLibrary.Get(note.Id);
+                string symbol = info?.Symbol ?? "⚠";
+                marks.Add($"{symbol}{name}。");
+            }
+        }
+
+        return string.Join("", marks);
+    }
+
+    /// <summary>
+    /// **卡面正文（含词缀标注）** —— 所有显示卡面正文的地方统一走这里，
+    /// 免得有的地方带标注、有的地方不带。
+    ///
+    /// 正文来源优先级：传入的 bodyText → 数据表的 description（策划文案）→ 按数值自动生成。
+    /// </summary>
+    /// <param name="card">卡牌</param>
+    /// <param name="bodyText">正文（可空）</param>
+    /// <param name="attributes">角色属性</param>
+    public static string BuildCardBodyText(Card card, string bodyText = null, CharacterAttributes attributes = null)
+    {
+        if (card == null) return "";
+
+        string body = bodyText;
+        if (string.IsNullOrEmpty(body))
+        {
+            body = !string.IsNullOrEmpty(card.TemplateDescription)
+                ? card.TemplateDescription
+                : GenerateCardDescription(card, attributes);
+        }
+
+        // 末尾补个句号 —— 词缀标注是「⚠xxx。」这种短句，接上去更顺
+        if (!string.IsNullOrEmpty(body) &&
+            !body.EndsWith("。") && !body.EndsWith("！") && !body.EndsWith("？"))
+        {
+            body += "。";
+        }
+
+        return body + BuildAffixMarkText(card, body);
     }
 
     public static string GenerateUltimateDescription(UltimateSkill ultimate, CharacterAttributes attributes = null)
@@ -252,12 +344,10 @@ public static class DescriptionGenerator
             if (rage > 0) parts.Add($"{owner} {rage} 点怒气。");
         }
 
-        // 词缀（保留 / 消耗 / 回合唯一）—— isRetain 也算保留（老数据没配 affixes）
-        if (card.IsRetain || card.Affixes.Contains(CardAffix.Retain)) parts.Add("⚠保留。");
-        if (card.Affixes.Contains(CardAffix.Consume)) parts.Add("⚠消耗。");
-        if (card.Affixes.Contains(CardAffix.UniquePerTurn)) parts.Add("回合唯一。");
-
-        return string.Join("", parts);
+        // 词缀标注（保留 / 消耗 / 回合唯一 + 特有词缀）——
+        // 统一走 BuildAffixMarkText，正文里已经写过的词缀不重复标
+        string body = string.Join("", parts);
+        return body + BuildAffixMarkText(card, body);
     }
 
     public static string GenerateUpgradePreview(Card card, CharacterAttributes attributes = null)

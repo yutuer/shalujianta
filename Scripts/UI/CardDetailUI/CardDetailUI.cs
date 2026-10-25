@@ -97,7 +97,7 @@ namespace FishEatFish.UI.CardDetailPanel
 
 			if (_descLabel != null)
 			{
-				_descLabel.Text = DescriptionGenerator.GenerateCardDescription(card, attributes);
+				_descLabel.Text = DescriptionGenerator.BuildCardBodyText(card, null, attributes);
 			}
 
 			if (_affixLabel != null)
