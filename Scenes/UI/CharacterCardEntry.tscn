@@ -23,7 +23,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [node name="CharacterCardEntry" type="VBoxContainer"]
-custom_minimum_size = Vector2(230, 430)
+custom_minimum_size = Vector2(230, 480)
 size_flags_horizontal = 3
 size_flags_vertical = 4
 theme = ExtResource("2_theme")
@@ -41,7 +41,7 @@ horizontal_alignment = 1
 
 [node name="CardPanel" type="PanelContainer" parent="."]
 mouse_filter = 2
-custom_minimum_size = Vector2(230, 396)
+custom_minimum_size = Vector2(230, 446)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
@@ -92,7 +92,7 @@ vertical_alignment = 1
 clip_text = true
 
 [node name="ArtRect" type="TextureRect" parent="CardPanel/Margin/VBox"]
-custom_minimum_size = Vector2(0, 150)
+custom_minimum_size = Vector2(0, 175)
 layout_mode = 2
 size_flags_vertical = 0
 mouse_filter = 2
