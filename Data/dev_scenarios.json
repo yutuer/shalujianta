@@ -73,6 +73,15 @@
         "map": "map01",
         "target": "battle"
     },
+    "pollux_sinmark": {
+        "desc": "波吕克斯入队 + 补手牌（净世之路 / 圣心）—— D55 用：测罪印 / 出血 / 纯粹伤害整条链",
+        "team": ["pollux", "ox", "tiger", "rabbit"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle",
+        "enemyWave": "boss_wave",
+        "handCards": ["pollux_special", "pollux_derived"]
+    },
     "jialun_pollux_boss": {
         "desc": "珈伦 + 波吕克斯打 BOSS（BOSS 血厚，测衍生卡「圣心 / 奇妙料理」不会被秒杀掉）",
         "team": ["jialun", "pollux", "tiger", "rabbit"],

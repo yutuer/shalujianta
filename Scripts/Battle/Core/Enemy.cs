@@ -85,6 +85,27 @@ public partial class Enemy : Node, IUnit
 		if (damage <= 0) return;
 		CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
 	}
+
+	/// <summary>
+	/// **纯粹伤害**（无归属伤害）——
+	/// 照参考游戏《终末前夜 Morimens》「纯粹伤害」词条：
+	/// 「无法暴击，**不视为对应唤醒体造成的伤害**。」
+	///
+	/// ⚠️ 主人 2026-10-25 23:27 拍板：**不吃任何加成** ——「它和源头无关了，所以不会有暴击率等的加成」。
+	/// → 扁平通道：数值就是数值，**不暴击 / 不吃力量·伤害强效·最终伤害·易伤 / 不做防御减免**。
+	///
+	/// ⚠️ **与 <see cref="TakeFixedDamage"/> 的唯一区别是「不挂来源」**：
+	/// 纯粹伤害不记在任何人头上 → 不触发任何以「X 造成的伤害」为前提的被动。
+	/// 这正是「罪印 → 出血 → 纯粹伤害」闭环不会自己滚雪球的原因
+	/// （参考游戏词条：「不视为对应唤醒体造成的伤害」存在的唯一理由就是防递归）。
+	/// </summary>
+	public void TakePureDamage(int damage)
+	{
+		if (damage <= 0) return;
+		CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
+		GD.Print($"[PureDamage] {EnemyName} 受到 {damage} 点纯粹伤害（剩余 {CurrentHealth}/{MaxHealth}）");
+	}
+
 	public void TakeDamageWithVariance(int baseDamage, float variancePercent = 0.1f)
 	{
 		int damage = CombatCalculator.CalculateDamageWithVariance(baseDamage, variancePercent);

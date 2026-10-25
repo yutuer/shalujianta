@@ -37,6 +37,33 @@ namespace FishEatFish.Battle.Card
 
 		/// <summary>这张卡打出后是否「消耗」（不进弃牌堆）—— 由引擎按词缀设置</summary>
 		public bool CardConsumed { get; set; }
+
+		/// <summary>
+		/// **本次结算累计造成的伤害** —— 出血按它算层数（出血 = 本次伤害的 N%）。
+		/// 每次结算伤害前会先 <see cref="ResetLastDamage"/>。
+		/// </summary>
+		public int LastDamageTotal { get; private set; } = 0;
+
+		/// <summary>本次结算打到的敌人（出血挂到他们身上）</summary>
+		public List<Enemy> LastDamageTargets { get; private set; } = new List<Enemy>();
+
+		/// <summary>清空「本次伤害」记录（每次结算伤害前调用）</summary>
+		public void ResetLastDamage()
+		{
+			LastDamageTotal = 0;
+			LastDamageTargets.Clear();
+		}
+
+		/// <summary>记一笔伤害（同时登记被打的敌人）</summary>
+		public void AddLastDamage(Enemy target, int damage)
+		{
+			if (damage <= 0) return;
+			LastDamageTotal += damage;
+			if (target != null && !LastDamageTargets.Contains(target))
+			{
+				LastDamageTargets.Add(target);
+			}
+		}
 	}
 
 	/// <summary>
@@ -116,6 +143,12 @@ namespace FishEatFish.Battle.Card
 					// 保留叠加：回合末结算（见 BattleManager.EndTurn）——
 					// 打出时不用做什么，上限直接从效果列表里读。
 					break;
+				case CardEffectType.Stack:
+					ExecuteStack(card, effect, ctx);
+					break;
+				case CardEffectType.Bleed:
+					ExecuteBleed(card, effect, ctx);
+					break;
 				default:
 					GD.PrintErr($"[CardEffectEngine] 未知效果类型：{effect.Type}（卡 {card.CardId}）");
 					break;
@@ -131,6 +164,15 @@ namespace FishEatFish.Battle.Card
 			int hits = Math.Max(1, effect.HitCount);
 			string hitText = hits > 1 ? $"（{hits}次）" : "";
 
+			// ⚠️ **罪印**：波吕克斯身上的罪印层数 → 这次伤害附带 S% 出血
+			//   （参考游戏「✕罪印」：「每层使波吕克斯造成的伤害附加 1% 出血。」）
+			// ⚠️ **用的是「出牌前」的层数** —— 主人 2026-10-25 23:38 拍板：
+			//   「先有罪印的 buff，才会有出血」→ 效果顺序必须是 **伤害 → 出血 → 罪印**。
+			//   罪印由后面的 `stack` 效果加，所以这里读到的必然是本发之前的层数。
+			int sinMarkPercent = ctx.RageTarget != null ? ctx.RageTarget.SinMarkStacks : 0;
+
+			ctx.ResetLastDamage();
+
 			if (effect.Target == CardEffectTarget.AllEnemies)
 			{
 				if (ctx.Enemies == null) return;
@@ -140,6 +182,8 @@ namespace FishEatFish.Battle.Card
 					for (int i = 0; i < hits; i++)
 					{
 						enemy.TakeDamage(damage);
+						ctx.AddLastDamage(enemy, damage);
+						ApplySinMarkBleed(enemy, damage, sinMarkPercent, ctx);
 					}
 					Log(ctx, $"你使用了{card.Name}，对{enemy.EnemyName}造成{damage}点伤害{hitText}", LogType.Damage);
 				}
@@ -159,6 +203,8 @@ namespace FishEatFish.Battle.Card
 			for (int i = 0; i < hits; i++)
 			{
 				target.TakeDamage(damage);
+				ctx.AddLastDamage(target, damage);
+				ApplySinMarkBleed(target, damage, sinMarkPercent, ctx);
 			}
 
 			string targetDescription = card.Target switch
@@ -169,6 +215,128 @@ namespace FishEatFish.Battle.Card
 			};
 
 			Log(ctx, $"你使用了{card.Name}，对{targetDescription}造成{damage}点伤害{hitText}", LogType.Damage);
+		}
+
+		/// <summary>
+		/// **罪印带来的出血**：这次伤害附加「罪印层数 %」的出血。
+		/// 层数 = <c>ceil(本次伤害 × 罪印层数 / 100)</c>（取整口径照 D51 全局 = ceil）。
+		/// </summary>
+		private static void ApplySinMarkBleed(Enemy target, int damage, int sinMarkPercent, CardEffectContext ctx)
+		{
+			if (target == null || sinMarkPercent <= 0 || damage <= 0) return;
+			int stacks = Mathf.CeilToInt(damage * sinMarkPercent / 100f);
+			if (stacks <= 0) return;
+			GD.Print($"[SinMarkBleed] {target.EnemyName} 本次伤害 {damage} × 罪印 {sinMarkPercent}% → {stacks} 层出血");
+			ApplyBleed(target, stacks, ctx);
+		}
+
+		/// <summary>
+		/// **层数**（罪印）—— 加到**角色身上**（不是卡上）。
+		///
+		/// 照参考游戏《终末前夜 Morimens》「✕罪印」词条：「每层使波吕克斯造成的伤害附加 1% 出血。」
+		/// ⚠️ 主人 2026-10-25 23:38 拍板：罪印是**角色身上的 buff**（「记在玩家身上了」），
+		/// 所以卡洗回抽牌堆 / 被弃掉都不影响它。
+		///
+		/// 层数 = <c>count + 手牌数 × countPerHand</c>
+		/// （净世之路：「获得 3 层罪印，每有 1 张手牌额外获得 1 层罪印」——
+		/// 主人 2026-10-25 23:58 拍板：**按当时手牌数结算，不设上限**）。
+		/// </summary>
+		private static void ExecuteStack(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (ctx.RageTarget == null)
+			{
+				GD.PrintErr($"[CardEffectEngine] 层数效果没有归属角色：{card.CardId}");
+				return;
+			}
+
+			int count = effect.Count;
+			if (effect.CountPerHand > 0 && ctx.Player != null)
+			{
+				// ⚠️ 「当时手牌数」：打出时这张卡**还在手里**（效果结算完才移出手牌）
+				count += ctx.Player.Hand.Count * effect.CountPerHand;
+			}
+			if (count <= 0) return;
+
+			ctx.RageTarget.AddStack(effect.StackId, count);
+			Log(ctx, $"获得{count}层{CardStackIds.DisplayName(effect.StackId)}（当前 {ctx.RageTarget.GetStack(effect.StackId)} 层）", LogType.System);
+		}
+
+		/// <summary>
+		/// **出血**：这张卡造成的伤害附带 N% 的出血（挂到被打的敌人身上）。
+		///
+		/// 照参考游戏《终末前夜 Morimens》「出血」词条：
+		/// 「回合结束时受到等量层数的**纯粹伤害**并移除该状态。」
+		///
+		/// ⚠️ **百分比来自灵知觉醒**（主人拍板）：
+		/// 「100% 出血」是灵知觉醒「净世之路」授予的，**不是圣心自己的词缀** →
+		/// 未觉醒的波吕克斯打出圣心**只有罪印的 1%，没有 100% 出血**。
+		/// 所以 <c>requireAwakening</c> 为真时，百分比取觉醒授予的值（取不到就不施加）。
+		/// </summary>
+		private static void ExecuteBleed(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			int percent = ResolveBleedPercent(card, effect, ctx);
+			if (percent <= 0) return;
+			if (ctx.LastDamageTotal <= 0 || ctx.LastDamageTargets.Count == 0) return;
+
+			int stacks = Mathf.CeilToInt(ctx.LastDamageTotal * percent / 100f);
+			if (stacks <= 0) return;
+
+			GD.Print($"[BleedEffect] {card.Name} 出血 {percent}%（本次伤害 {ctx.LastDamageTotal}）→ {stacks} 层");
+
+			foreach (Enemy enemy in ctx.LastDamageTargets)
+			{
+				if (enemy == null || enemy.IsDead) continue;
+				ApplyBleed(enemy, stacks, ctx);
+			}
+		}
+
+		/// <summary>
+		/// **出血百分比**：
+		/// 需要觉醒的 → 取觉醒授予的百分比（觉醒没授予这张卡就是 0 = 不施加）；
+		/// 不需要觉醒的 → 取效果自身的 <c>percentOfDamage</c>。
+		/// </summary>
+		private static int ResolveBleedPercent(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (!effect.RequireAwakening)
+			{
+				return effect.PercentOfDamage;
+			}
+
+			CharacterPosition owner = ctx.RageTarget;
+			if (owner == null || !owner.AwakeningActive) return 0;
+			if (string.IsNullOrEmpty(owner.AwakeningBleedCardId)) return 0;
+			if (owner.AwakeningBleedCardId != card.CardId) return 0;
+			return owner.AwakeningBleedPercent;
+		}
+
+		/// <summary>
+		/// **把出血挂到敌人身上**（同名出血层数累加 —— 罪印的 1% 与圣心的 100% 会**相加**）。
+		/// </summary>
+		private static void ApplyBleed(Enemy target, int stacks, CardEffectContext ctx)
+		{
+			if (target == null || stacks <= 0) return;
+
+			StatusEffect bleed = EffectRegistry.CreateDebuff("bleed");
+			if (bleed == null)
+			{
+				GD.PrintErr("[CardEffectEngine] 未知减益 id：bleed（出血）");
+				return;
+			}
+
+			// 出血：**层数即伤害**（回合末造成等量层数的纯粹伤害）
+			Card.ApplyDebuffValue(bleed, stacks);
+			bleed.Initialize();
+
+			target.AddStatusEffect(bleed);
+
+			int totalBleed = 0;
+			foreach (StatusEffect s in target.StatusEffects)
+			{
+				if (s != null && s.EffectName == bleed.EffectName) totalBleed += s.StackCount;
+			}
+			GD.Print($"[BleedApply] {target.EnemyName} 身上出血合计 {totalBleed} 层（本次 +{stacks}）");
+
+			Log(ctx, $"给{target.EnemyName}附加了{stacks}层出血", LogType.System);
 		}
 
 		/// <summary>护盾：百分比（防御力×N%）或固定值</summary>
@@ -339,15 +507,47 @@ namespace FishEatFish.Battle.Card
 				? CardLevelSystem.CalculateAttributeLinkedValue(card.Level, attributes.Attack, effect.AwakeningDebuffPercent / 100f)
 				: 0;
 
-			ctx.RageTarget.ActivateAwakening(
+			// ⚠️ **「弃牌阶段后」那一次要登记到觉醒状态里**（净世之路）：
+			// 「⚠灵知觉醒：打出时和**弃牌阶段后**获得 3 层 ✕罪印，每有 1 张手牌额外获得 1 层 ✕罪印。」
+			// → 「打出时」那一次由效果列表自己结算（这条 stack 效果的 timing 含 onPlay）；
+			//   「弃牌阶段后」每回合一次，由觉醒状态登记、回合末执行。
+			string discardStackId = "";
+			int discardStackCount = 0;
+			int discardStackPerHand = 0;
+			foreach (CardEffect e in card.Effects)
+			{
+				if (e == null || e.Type != CardEffectType.Stack) continue;
+				if (!e.MatchesTiming(CardEffectTiming.OnDiscard)) continue;
+				discardStackId = e.StackId;
+				discardStackCount = e.Count;
+				discardStackPerHand = e.CountPerHand;
+				break;
+			}
+
+			bool activated = ctx.RageTarget.ActivateAwakening(
 				heal,
 				effect.AwakeningRageGain,
 				effect.AwakeningDebuff,
 				debuffStacks,
 				effect.AwakeningTriggerCardId,
-				card.CardId);
+				card.CardId,
+				effect.AwakeningBleedCardId,
+				effect.AwakeningBleedPercent);
 
-			Log(ctx, $"灵知觉醒生效：之后每打出一张卡牌，回复{heal}点生命并获得{effect.AwakeningRageGain}点狂气", LogType.System);
+			// 登记「弃牌阶段后」的层数效果（罪印）
+			// ⚠️ 重复打出会走到「已登记过」的分支 → 只更新数值，不新增条目（不会翻倍结算）
+			ctx.RageTarget.RegisterAwakeningDiscardStack(discardStackId, discardStackCount, discardStackPerHand);
+
+			if (activated)
+			{
+				Log(ctx, heal > 0 || effect.AwakeningRageGain > 0
+					? $"灵知觉醒生效：之后每打出一张卡牌，回复{heal}点生命并获得{effect.AwakeningRageGain}点狂气"
+					: "灵知觉醒生效", LogType.System);
+			}
+			else
+			{
+				Log(ctx, "灵知觉醒已生效，重复打出不叠加（保留原效果）", LogType.System);
+			}
 		}
 
 		/// <summary>
@@ -377,6 +577,8 @@ namespace FishEatFish.Battle.Card
 
 		private static void Log(CardEffectContext ctx, string message, LogType type)
 		{
+			// ⚠️ 同时输出到 stdout —— 战斗日志在 UI 里，脚本 / 跑测取证看不到
+			GD.Print($"[BattleLog] {message}");
 			ctx.Log?.Invoke(message, type);
 		}
 	}

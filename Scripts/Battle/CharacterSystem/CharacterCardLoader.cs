@@ -178,7 +178,16 @@ public class CharacterCardLoader
                     AwakeningTriggerCardId = effectDict.ContainsKey("awakeningTriggerCardId") ? effectDict["awakeningTriggerCardId"].ToString() : "",
                     AwakeningDebuff = effectDict.ContainsKey("awakeningDebuff") ? effectDict["awakeningDebuff"].ToString() : "",
                     // 保留叠层上限（珈伦「静默守望」= 2）
-                    RetainStackMax = effectDict.ContainsKey("retainStackMax") ? (int)(long)effectDict["retainStackMax"] : 0
+                    RetainStackMax = effectDict.ContainsKey("retainStackMax") ? (int)(long)effectDict["retainStackMax"] : 0,
+                    // 层数（罪印）：加到角色身上的 buff
+                    StackId = effectDict.ContainsKey("stackId") ? effectDict["stackId"].ToString() : "",
+                    CountPerHand = effectDict.ContainsKey("countPerHand") ? (int)(long)effectDict["countPerHand"] : 0,
+                    // 出血：本次伤害附带 N% 的出血
+                    PercentOfDamage = effectDict.ContainsKey("percentOfDamage") ? (int)(long)effectDict["percentOfDamage"] : 0,
+                    RequireAwakening = effectDict.ContainsKey("requireAwakening") && (bool)effectDict["requireAwakening"],
+                    // 灵知觉醒授予的出血（「圣心」造成 100% 伤害的出血）
+                    AwakeningBleedCardId = effectDict.ContainsKey("awakeningBleedCardId") ? effectDict["awakeningBleedCardId"].ToString() : "",
+                    AwakeningBleedPercent = effectDict.ContainsKey("awakeningBleedPercent") ? (int)(long)effectDict["awakeningBleedPercent"] : 0
                 };
 
                 if (effectDict.ContainsKey("timing") && effectDict["timing"].Obj != null)

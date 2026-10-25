@@ -109,6 +109,10 @@ namespace FishEatFish.UI
                 return "";
             }
 
+            // ⚠️ **罪印 / 出血**：层数本身就是全部信息 → 不追加「×N」（否则会写成「3 ×3」）
+            if (effect is SinMarkBuff sinMark) return $"{sinMark.StackCount}";
+            if (effect is BleedDebuff bleed) return $"{bleed.StackCount}";
+
             string value = isDebuff ? GetDebuffValueText(effect) : GetBuffValueText(effect);
             if (effect.StackCount > 1)
             {

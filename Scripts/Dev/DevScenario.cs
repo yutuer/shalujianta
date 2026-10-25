@@ -26,6 +26,11 @@ namespace FishEatFish.Dev
 		public string StartOn { get; set; } = "";
 		/// <summary>直接进战斗时强制使用的敌人波次</summary>
 		public string EnemyWave { get; set; } = "";
+		/// <summary>
+		/// **战斗场景要补进手牌的卡牌 id**（逗号分隔或数组）——
+		/// 用于测「需要特定卡才能触发」的机制（例：灵知觉醒卡一场战斗只出现一次，随机抽不到）。
+		/// </summary>
+		public string HandCards { get; set; } = "";
 	}
 
 	/// <summary>
@@ -104,6 +109,25 @@ namespace FishEatFish.Dev
 					StartOn = d.ContainsKey("startOn") ? d["startOn"].ToString() : "",
 					EnemyWave = d.ContainsKey("enemyWave") ? d["enemyWave"].ToString() : ""
 				};
+
+				// 战斗场景补手牌（数组或逗号分隔字符串都收）
+				if (d.ContainsKey("handCards"))
+				{
+					if (d["handCards"].VariantType == Variant.Type.Array)
+					{
+						List<string> ids = new List<string>();
+						foreach (var id in d["handCards"].AsGodotArray())
+						{
+							string value = id.ToString();
+							if (!string.IsNullOrEmpty(value)) ids.Add(value);
+						}
+						preset.HandCards = string.Join(",", ids);
+					}
+					else
+					{
+						preset.HandCards = d["handCards"].ToString();
+					}
+				}
 
 				_presets[key] = preset;
 			}
@@ -216,6 +240,14 @@ namespace FishEatFish.Dev
 			DevScenarioPreset preset = ResolvePreset();
 			HexMapController controller = FindController();
 
+			// 战斗场景：**补手牌**（测「罪印 / 出血 / 纯粹伤害」这类需要特定卡的机制）
+			if (!string.IsNullOrEmpty(preset.HandCards))
+			{
+				await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+				await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+				ApplyBattleHandCards(preset.HandCards);
+			}
+
 			if (controller == null)
 			{
 				GD.Print("[DevScenario] 目标场景没有 HexMapController，跳过场景内状态");
@@ -278,6 +310,38 @@ namespace FishEatFish.Dev
 			foreach (Node child in scene.GetChildren())
 			{
 				if (child is HexMapController ctrl) return ctrl;
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// **战斗场景：把指定 id 的卡补进手牌**（调试用）。
+		/// 为什么需要：灵知觉醒卡（净世之路）一场战斗只出现一次，随机抽牌几乎抽不到 ——
+		/// 测「罪印 → 出血 → 纯粹伤害」这条链必须能稳定拿到这张卡。
+		/// </summary>
+		private void ApplyBattleHandCards(string cardIds)
+		{
+			BattleManager battle = FindBattleManager(GetTree().CurrentScene);
+			if (battle == null)
+			{
+				GD.PrintErr("[DevScenario] 找不到 BattleManager，无法补手牌");
+				return;
+			}
+
+			int added = battle.DebugAddCardsToHand(cardIds);
+			GD.Print($"[DevScenario] 补手牌 {added} 张（{cardIds}）");
+		}
+
+		/// <summary>在场景树里递归找 BattleManager</summary>
+		private static BattleManager FindBattleManager(Node node)
+		{
+			if (node == null) return null;
+			if (node is BattleManager manager) return manager;
+
+			foreach (Node child in node.GetChildren())
+			{
+				BattleManager found = FindBattleManager(child);
+				if (found != null) return found;
 			}
 			return null;
 		}

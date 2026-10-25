@@ -106,9 +106,49 @@ public partial class PoisonDebuff : StatusEffect
     public override void OnTurnEndEnemy(Core.Enemy target)
     {
         base.OnTurnEndEnemy(target);
-        // ⚠️ 固定伤害：不走防御、不吃易伤/破甲（参考游戏的「固定中毒」）
-        target.TakeFixedDamage(DamagePerTurn);
+        // ⚠️ **纯粹伤害**：扁平（不走防御、不吃易伤/破甲）+ **不挂来源**
+        // → 不触发任何以「X 造成的伤害」为前提的被动（罪印 → 出血）→ 天然防递归。
+        // 照参考游戏《终末前夜 Morimens》「☠中毒」词条：「回合结束时受到等量层数的**纯粹伤害**。」
+        target.TakePureDamage(DamagePerTurn);
         GD.Print($"[PoisonDebuff] {target.EnemyName} 回合结束受到 {DamagePerTurn} 点中毒伤害（{DamagePerTurn} 层）");
+    }
+}
+
+/// <summary>
+/// **出血** —— 照参考游戏《终末前夜 Morimens》「出血」词条：
+/// 「回合结束时受到等量层数的**纯粹伤害**并**移除该状态**。」
+///
+/// ⚠️ 与**中毒**的差别只有一处，但很关键：
+///   - 中毒「回合结束时受到等量层数的纯粹伤害」**不移除**（层数可累加，29 + 29 = 58）
+///   - 出血**结算完就移除**（不跨回合累加）
+///
+/// ⚠️ 伤害走**纯粹伤害通道**（不挂来源）→ 不会再次触发罪印（罪印 → 出血 → 纯粹伤害），
+/// 所以这条链是闭环的、不会自己滚雪球。
+/// </summary>
+public partial class BleedDebuff : StatusEffect
+{
+    public BleedDebuff()
+    {
+        EffectName = "Bleed";
+        Description = "回合结束时受到等量层数的纯粹伤害";
+        Duration = 1;
+        EffectType = StatusEffectType.Debuff;
+    }
+
+    public override void OnTurnEndEnemy(Core.Enemy target)
+    {
+        base.OnTurnEndEnemy(target);
+
+        int damage = StackCount;
+        if (damage > 0)
+        {
+            // 纯粹伤害：扁平 + 不挂来源
+            target.TakePureDamage(damage);
+            GD.Print($"[BleedDebuff] {target.EnemyName} 回合结束受到 {damage} 点出血伤害（{StackCount} 层）");
+        }
+
+        // ⚠️ 出血**结算后移除**（中毒不移除）
+        target.RemoveStatusEffect(this);
     }
 }
 

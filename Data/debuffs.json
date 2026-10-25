@@ -101,19 +101,10 @@
         },
         "bleed": {
             "debuffId": "bleed",
-            "name": "流血",
-            "description": "受到伤害时额外受到%d伤害",
-            "duration": 3,
-            "effects": [
-                {
-                    "effectId": "bleed_extra",
-                    "type": "damage",
-                    "trigger": "on_damage_received",
-                    "value": 2,
-                    "target": "self",
-                    "ignore_defense": true
-                }
-            ]
+            "name": "出血",
+            "description": "回合结束时受到等量层数的纯粹伤害",
+            "duration": 1,
+            "effects": []
         }
     }
 }

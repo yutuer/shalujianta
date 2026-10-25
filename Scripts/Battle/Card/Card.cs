@@ -708,6 +708,8 @@ public partial class Card : Resource, ICardLevelable
 		{
 			case WeakDebuff wd: wd.AttackReduction = value; break;
 			case PoisonDebuff pd: pd.DamagePerTurn = value; pd.StackCount = value; break;
+			// 出血：**层数即伤害**（回合末造成等量层数的纯粹伤害）
+			case BleedDebuff bd: bd.StackCount = value; break;
 			case SlowDebuff sd: sd.EnergyReduction = value; break;
 			case VulnerableDebuff vd: vd.DamageIncrease = value; break;
 			case DefenseDownDebuff dd: dd.DamageIncreasePercent = value; break;

@@ -1339,6 +1339,21 @@
                     "value": 3
                 },
                 {
+                    "type": "awakening",
+                    "awakeningBleedCardId": "pollux_derived",
+                    "awakeningBleedPercent": 100
+                },
+                {
+                    "type": "stack",
+                    "stackId": "sin_mark",
+                    "count": 3,
+                    "countPerHand": 1,
+                    "timing": [
+                        "onPlay",
+                        "onDiscard"
+                    ]
+                },
+                {
                     "type": "retain"
                 }
             ],
@@ -1439,6 +1454,15 @@
                     "percent": 70,
                     "ignoreLevelScale": true,
                     "target": "target"
+                },
+                {
+                    "type": "bleed",
+                    "requireAwakening": true
+                },
+                {
+                    "type": "stack",
+                    "stackId": "sin_mark",
+                    "count": 3
                 },
                 {
                     "type": "retain"

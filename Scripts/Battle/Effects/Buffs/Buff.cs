@@ -127,3 +127,26 @@ public partial class FuryBuff : StatusEffect
         return baseDamage;
     }
 }
+
+/// <summary>
+/// **罪印**（波吕克斯身上的 buff）—— 照参考游戏《终末前夜 Morimens》「✕罪印」词条：
+/// 「每层使波吕克斯造成的伤害附加 1% 出血。」
+///
+/// ⚠️ **纯显示用**：层数的真值在 <c>CharacterPosition</c> 上（角色身上的 buff，
+/// 主人 2026-10-25 23:38 拍板「罪印是记在玩家身上的 buff」），
+/// 这里只是把它包成一个状态，好让状态图标行能画出「✕罪印 ×N」。
+/// </summary>
+public partial class SinMarkBuff : StatusEffect
+{
+    public SinMarkBuff()
+    {
+        EffectName = "罪印";
+        Description = "每层使该角色造成的伤害附加 1% 出血。";
+        Duration = 99;
+        EffectType = StatusEffectType.Buff;
+        IconPath = EffectRegistry.GetBuffIconPath(CardStackIdsSinMark);
+    }
+
+    /// <summary>层数 id（避免在这里引用 Card 命名空间造成循环依赖）</summary>
+    private const string CardStackIdsSinMark = "sin_mark";
+}

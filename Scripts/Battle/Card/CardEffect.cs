@@ -99,6 +99,42 @@ namespace FishEatFish.Battle.Card
 		public int RetainStackMax { get; set; }
 
 		/// <summary>
+		/// **层数效果的 id**（罪印 = <see cref="CardStackIds.SinMark"/>）。
+		/// 数据表写法：<c>{ "type": "stack", "stackId": "sin_mark", "count": 3 }</c>
+		/// </summary>
+		public string StackId { get; set; } = "";
+
+		/// <summary>
+		/// **每张手牌额外 +N 层**（净世之路 = 1：「每有 1 张手牌额外获得 1 层罪印」）。
+		/// 实际层数 = <c>Count + 手牌数 × CountPerHand</c>。
+		/// </summary>
+		public int CountPerHand { get; set; }
+
+		/// <summary>
+		/// **出血 = 本次伤害的 N%**（圣心 = 100）。
+		/// 出血挂在**被打的敌人**身上，回合末造成等量层数的纯粹伤害。
+		/// </summary>
+		public int PercentOfDamage { get; set; }
+
+		/// <summary>
+		/// **出血必须由灵知觉醒授予才生效** ——
+		/// 未觉醒的波吕克斯打出圣心**只有罪印的 1%，没有 100% 出血**
+		/// （「100% 出血」是灵知觉醒「净世之路」授予的，不是圣心自己的词缀）。
+		/// </summary>
+		public bool RequireAwakening { get; set; }
+
+		/// <summary>
+		/// **灵知觉醒授予的出血：哪张卡的伤害附带出血**（波吕克斯「圣心」= <c>pollux_derived</c>）。
+		/// 数据表写法：<c>{ "type": "awakening", "awakeningBleedCardId": "pollux_derived", "awakeningBleedPercent": 100 }</c>
+		/// </summary>
+		public string AwakeningBleedCardId { get; set; } = "";
+
+		/// <summary>
+		/// **灵知觉醒授予的出血：多少百分比**（圣心 = 100）。
+		/// </summary>
+		public int AwakeningBleedPercent { get; set; }
+
+		/// <summary>
 		 /// 该效果在指定时机是否触发。
 		/// 没写 timing 的效果**只在 onPlay 触发**（一次性的效果都是打出时）。
 		/// </summary>
@@ -126,6 +162,25 @@ namespace FishEatFish.Battle.Card
 
 		/// <summary>说明文字</summary>
 		public string Description { get; set; } = "";
+	}
+
+	/// <summary>
+	/// **层数 id 常量** —— 「层数」效果（<c>type = stack</c>）加到**角色身上**的那种。
+	/// </summary>
+	public static class CardStackIds
+	{
+		/// <summary>
+		/// **罪印**（波吕克斯身上的 buff）——
+		/// 照参考游戏《终末前夜 Morimens》「✕罪印」词条：「每层使波吕克斯造成的伤害附加 1% 出血。」
+		/// </summary>
+		public const string SinMark = "sin_mark";
+
+		/// <summary>层数 id → 显示名</summary>
+		public static string DisplayName(string stackId)
+		{
+			if (string.IsNullOrEmpty(stackId)) return "层数";
+			return stackId == SinMark ? "罪印" : stackId;
+		}
 	}
 
 	/// <summary>效果触发时机</summary>
@@ -168,6 +223,17 @@ namespace FishEatFish.Battle.Card
 		/// （珈伦「静默守望」= 最多叠加 2 次）。
 		/// </summary>
 		public const string RetainStack = "retainStack";
+		/// <summary>
+		/// **层数**（罪印等）—— 加到**角色身上**（不是卡上）。
+		/// 照参考游戏《终末前夜 Morimens》「✕罪印」：「每层使波吕克斯造成的伤害附加 1% 出血。」
+		/// 数据表写法：<c>{ "type": "stack", "stackId": "sin_mark", "count": 3, "countPerHand": 1 }</c>
+		/// </summary>
+		public const string Stack = "stack";
+		/// <summary>
+		/// **出血**：这张卡造成的伤害附带 N% 的出血（回合末造成等量层数的纯粹伤害）。
+		/// 数据表写法：<c>{ "type": "bleed", "requireAwakening": true }</c>
+		/// </summary>
+		public const string Bleed = "bleed";
 	}
 
 	/// <summary>作用目标常量</summary>

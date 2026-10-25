@@ -714,7 +714,30 @@ namespace FishEatFish.Scenes
 	private void UpdateBuffDebuffDisplay()
 	{
 		if (playerZoneUI == null) return;
-		playerZoneUI.SetStatus(player?.StatusEffects);
+		playerZoneUI.SetStatus(BuildPlayerStatusList());
+	}
+
+	/// <summary>
+	/// **玩家侧状态列表** = 玩家身上的状态 + **角色身上的罪印**。
+	///
+	/// ⚠️ 罪印是**角色身上的 buff**（主人 2026-10-25 23:38 拍板：
+	/// 「罪印打出后, 就是记在玩家身上了, 以buff的形式存在。」）——
+	/// 但队伍里可能有 4 个角色，罪印只属于**打出它的那个角色**（波吕克斯），
+	/// 所以这里从角色位置取，**不是**塞进 <c>player.StatusEffects</c>（那是「玩家」的）。
+	/// </summary>
+	private List<StatusEffect> BuildPlayerStatusList()
+	{
+		List<StatusEffect> list = new List<StatusEffect>();
+		if (player?.StatusEffects != null) list.AddRange(player.StatusEffects);
+
+		foreach (CharacterPosition pos in characterPositions)
+		{
+			if (pos == null) continue;
+			StatusEffect sinMark = pos.GetSinMarkStatus();
+			if (sinMark != null) list.Add(sinMark);
+		}
+
+		return list;
 	}
 
 	/// <summary>
@@ -775,7 +798,44 @@ namespace FishEatFish.Scenes
 		player.DiscardHand();
 		isPlayerTurn = false;
 
+		// **弃牌阶段后**：灵知觉醒登记的持续层数效果（罪印）——
+		// 照参考游戏《终末前夜 Morimens》—— 波吕克斯「净世之路」：
+		// 「⚠灵知觉醒：打出时和**弃牌阶段后**获得 3 层 ✕罪印，每有 1 张手牌额外获得 1 层 ✕罪印。」
+		// （「打出时」那一次由效果列表自己结算；这里执行的是「弃牌阶段后」每回合那一次）
+		ProcessAwakeningDiscardPhaseEffects();
+
 		CallDeferred(nameof(EnemyTurn));
+	}
+
+	/// <summary>
+	/// **弃牌阶段后**结算灵知觉醒登记的层数效果（罪印）。
+	///
+	/// 照参考游戏《终末前夜 Morimens》—— 波吕克斯「净世之路」：
+	/// 「⚠灵知觉醒：打出时和**弃牌阶段后**获得 3 层 ✕罪印，每有 1 张手牌额外获得 1 层 ✕罪印。」
+	///
+	/// 层数 = 「基础层数 + **当时手牌数** × 每手牌层数」（主人 2026-10-25 23:58 拍板，**不设上限**）。
+	/// ⚠️ 「当时手牌数」= 弃牌阶段之后剩下的手牌（没被保留的已经进弃牌堆了）。
+	/// </summary>
+	private void ProcessAwakeningDiscardPhaseEffects()
+	{
+		if (player == null) return;
+
+		foreach (CharacterPosition pos in characterPositions)
+		{
+			if (pos == null || !pos.AwakeningActive) continue;
+
+			foreach (AwakeningStackSpec spec in pos.AwakeningDiscardStacks)
+			{
+				if (spec == null) continue;
+
+				int count = spec.Count + spec.CountPerHand * player.Hand.Count;
+				if (count <= 0) continue;
+
+				pos.AddStack(spec.StackId, count);
+				GD.Print($"[Awakening] 弃牌阶段后：{pos.Character?.Name ?? "角色"} 获得 {count} 层{CardStackIds.DisplayName(spec.StackId)}（当时手牌数 {player.Hand.Count}，当前 {pos.GetStack(spec.StackId)} 层）");
+				AddMessage($"弃牌阶段后：{pos.Character?.Name ?? "角色"} 获得 {count} 层{CardStackIds.DisplayName(spec.StackId)}（当前 {pos.GetStack(spec.StackId)} 层）", LogType.System);
+			}
+		}
 	}
 
 	/// <summary>
@@ -945,7 +1005,22 @@ namespace FishEatFish.Scenes
 
 		CharacterPosition targetPosition = null;
 
-		if (attacker != null && attacker.GetCharacterByCard(card) != null)
+		// ⚠️ **运行时置入的衍生卡**（「圣心」「奇妙料理」）不在卡组映射里 ——
+		//   靠卡上记的归属找角色。**必须先查这一条**：
+		//   否则它会掉到「第一个角色位置」上 → 罪印加错人（罪印必须加在**波吕克斯**身上）。
+		if (card != null && attacker != null && !string.IsNullOrEmpty(card.OwnerCharacterId))
+		{
+			for (int i = 0; i < attacker.Characters.Length && i < characterPositions.Count; i++)
+			{
+				if (attacker.Characters[i]?.CharacterId == card.OwnerCharacterId)
+				{
+					targetPosition = characterPositions[i];
+					break;
+				}
+			}
+		}
+
+		if (targetPosition == null && attacker != null && attacker.GetCharacterByCard(card) != null)
 		{
 			var character = attacker.GetCharacterByCard(card);
 			for (int i = 0; i < attacker.Characters.Length; i++)
@@ -1334,6 +1409,66 @@ namespace FishEatFish.Scenes
 		}
 
 		UpdateRageDisplay();
+	}
+
+	/// <summary>
+	/// **调试用**：把指定 id 的卡补进手牌（调试场景准备器 / 自动化测试用）。
+	///
+	/// 为什么需要：灵知觉醒卡（净世之路）**一场战斗只出现一次**，
+	/// 随机抽牌几乎抽不到 —— 测「罪印 / 出血 / 纯粹伤害」这条链必须能稳定拿到这张卡。
+	/// （主人的约定：加测试用例 = 往预设 JSON 加一条 + 加一个应用钩子。）
+	/// </summary>
+	/// <param name="cardIds">逗号分隔的卡牌 id</param>
+	/// <returns>实际补进手牌的张数</returns>
+	public int DebugAddCardsToHand(string cardIds)
+	{
+		if (player == null || string.IsNullOrEmpty(cardIds)) return 0;
+
+		int added = 0;
+		foreach (string raw in cardIds.Split(','))
+		{
+			string id = raw.Trim();
+			if (id.Length == 0) continue;
+
+			CharacterDefinition owner = FindCharacterOwningCard(id);
+			if (owner == null)
+			{
+				GD.PrintErr($"[BattleManager] 调试补牌失败：队伍里没有角色拥有卡牌 {id}");
+				continue;
+			}
+
+			// ⚠️ 百分比口径的伤害要靠**卡上挂的角色属性**（否则伤害算成 0）
+			Card card = CharacterCardLoader.CreateInstance(id, owner.GetAttributes());
+			if (card == null)
+			{
+				GD.PrintErr($"[BattleManager] 调试补牌失败：数据表里没有卡牌 {id}");
+				continue;
+			}
+
+			// 归属标记（「圣心」这种衍生卡不在卡组映射里，靠它找角色）
+			card.OwnerCharacterId = owner.CharacterId;
+
+			player.Hand.Add(card);
+			added++;
+			GD.Print($"[BattleManager] 调试补牌：{card.Name}（{card.CardId}，属主 {owner.Name}）");
+		}
+
+		if (added > 0) UpdateHandUI();
+		return added;
+	}
+
+	/// <summary>找出队伍里拥有这张卡的角色（按数据表的 characterId 归属）</summary>
+	private CharacterDefinition FindCharacterOwningCard(string cardId)
+	{
+		if (attacker == null || string.IsNullOrEmpty(cardId)) return null;
+
+		foreach (CharacterDefinition character in attacker.Characters)
+		{
+			if (character == null) continue;
+			List<string> ids = CharacterCardLoader.GetCharacterCardIds(character.CharacterId);
+			if (ids.Contains(cardId)) return character;
+		}
+		return null;
 	}
 
 	/// <summary>
