@@ -111,7 +111,7 @@ $godot = 'K:\Godot_v4.6.1-stable_mono_win64\Godot_v4.6.1-stable_mono_win64.exe'
 & $godot --path 'E:\trae_Projects\FishEatFish' 'res://Scenes/Dev/DevScenario.tscn' -- --scenario=battle
 ```
 
-内置 8 个预设：`default` `battle` `near_shop` `half_hp` `elite_battle` `near_boss` `step_on_boss` `boss_battle`。
+内置 12 个预设：`default` `battle` `near_shop` `half_hp` `elite_battle` `near_boss` `step_on_boss` `boss_battle` `jialun_team` `pollux_team` `jialun_pollux` `jialun_pollux_boss`。
 
 > ⚠️ **别直接跑 `HexMapScene.tscn`** —— 会跳过选人流程，战斗回退到默认阵容「鼠牛虎兔」而不是你选的队伍。
 
