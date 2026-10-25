@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_jialun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3E9E8F"/>
+      <stop offset="1" stop-color="#2A6B61"/>
+    </linearGradient>
+    <linearGradient id="headGrad_jialun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#65B1A5"/>
+      <stop offset="1" stop-color="#3E9E8F"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M64 86 L128 40 L192 86 L128 132 Z" fill="none" stroke="#B8F0E0" stroke-width="5" stroke-linejoin="round" />
+  <path d="M110 132 C89.3 135 70.9 144 64 158 C68 188 76 202 80 214 C82 230 78 241 72 250 L69 296 L187 296 L184 250 C178 241 174 230 176 214 C180 202 188 188 192 158 C152.9 144 171.3 135 146 132 Z" fill="url(#bodyGrad_jialun)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#84ADA1" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_jialun)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="58" r="18" fill="url(#headGrad_jialun)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="58" r="18" fill="url(#headGrad_jialun)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="58" r="9" fill="#B8F0E0" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="58" r="9" fill="#B8F0E0" stroke="#0B0E14" stroke-width="3" />
+  <path d="M128 191 L141 205 L128 219 L115 205 Z" fill="#B8F0E0" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

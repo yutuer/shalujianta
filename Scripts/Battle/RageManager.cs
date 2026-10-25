@@ -16,24 +16,28 @@ public partial class RageManager : Node
     ///
     /// 卡面文案（<see cref="DescriptionGenerator"/>）与战斗结算（<c>BattleManager</c>）
     /// 都从这里取数，避免出现「卡面写 5 点、实际给 15 点」这种自相矛盾。
+    ///
+    /// ⚠️ **口径照参考游戏《终末前夜 Morimens》**（2026-10-25 主人拍板，全局统一）：
+    ///   - **基本卡（打击 / 防御）**：<c>5 + 1 × (等级 − 1)</c> → Lv1 = 5、Lv3 = 7、Lv6 = 10
+    ///   - **灵知觉醒卡**：<c>25 + 5 × (等级 − 1)</c> → Lv4 = 40、Lv6 = 50
+    ///   - **其他专属指令卡**：**不给怒气**（参考图属性面板里没有「狂气」行）
+    ///
+    /// 公式存在**效果列表**里（<c>{"type":"rage","value":5,"perLevel":1}</c>），
+    /// 这样「没有 rage 条目」= 0 怒气，语义明确。
     /// </summary>
     /// <param name="card">打出的卡牌</param>
-    /// <returns>本次获得的怒气值（不是攻击牌 / 防御牌则为 0）</returns>
+    /// <returns>本次获得的怒气值（不给怒气的卡为 0）</returns>
     public static int GetRageForCard(Card card)
     {
         if (card == null) return 0;
 
-        // 优先走**效果列表**（唯一真相源）——卡面文案与战斗结算读的是同一个值
+        // 唯一真相源 = 效果列表里的 rage 条目 → 怒气 = value + perLevel × (等级 − 1)
         CardEffect effect = card.FindEffect(CardEffectType.Rage);
-        if (effect != null) return effect.Value;
+        if (effect != null) return CardLevelSystem.CalculateFixedValue(card.Level, effect.Value, effect.PerLevel);
 
-        // 回退：效果列表还没迁移的卡
-        // 卡牌**自带**的怒气优先（灵知觉醒这类：参考图「净世之路」50 点）——
-        // 它不属于「攻击牌 15 / 防御牌 10」那套按卡位给的默认。
-        if (card.RageGain > 0) return card.RageGain;
-        if (card.IsAttack) return RageOnAttack;
-        // 护盾判定用「实际护盾值」而不是卡牌上的绝对字段（现在是百分比口径）
-        if (card.IsDefense || card.GetFinalShield(card.LinkedAttributes) > 0) return RageOnDefense;
+        // ⚠️ **没有 rage 条目 = 这张卡不给怒气**（参考游戏口径：只有基本卡与灵知觉醒卡给）。
+        //    以前这里会「按卡位兜底」（攻击牌 15 / 防御牌 10）——
+        //    那会让「蟾蜍炖菜」这种专属指令卡白捡 10 点怒气，和参考图对不上。
         return 0;
     }
 

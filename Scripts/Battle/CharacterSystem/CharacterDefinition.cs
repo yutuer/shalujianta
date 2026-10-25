@@ -63,16 +63,28 @@ public partial class CharacterDefinition : Resource
     public int BaseCritDamage = 150;
 
     [Export]
-    public int BaseDeathResistance = 10;
+    public int BaseDeathResistance = 0;
 
     [Export]
-    public int BaseSilverKeyCharge = 2;
+    public int BaseSilverKeyCharge = 15;
 
     [Export]
     public int BaseRageReturn = 2;
 
     [Export]
-    public int BaseMaxRage = 30;
+    public int BaseMaxRage = 100;
+
+    /// <summary>界域精通（参考图「详细属性」面板）</summary>
+    [Export]
+    public int BaseDomainMastery = 0;
+
+    /// <summary>伤害强效 %（参考图「详细属性」面板）</summary>
+    [Export]
+    public float BaseDamageBonus = 0f;
+
+    /// <summary>黑印掉落 %（参考图「详细属性」面板）</summary>
+    [Export]
+    public float BaseBlackMarkDrop = 0f;
 
     [Export]
     public string AttackCardId;
@@ -438,11 +450,56 @@ public partial class CharacterDefinition : Resource
             BaseDefense = 156,
             BaseConstitution = 162,
             BaseCritRate = 15,
-            BaseCritDamage = 150,
+            BaseCritDamage = 50,
+            BaseRageReturn = 0,
+            BaseSilverKeyCharge = 15,
+            BaseDeathResistance = 0,
+            BaseDamageBonus = 4.8f,
             AttackCardId = "pollux_attack",
             DefenseCardId = "pollux_defense",
             SpecialCardIds = new string[] { "pollux_special", "pollux_special2", "pollux_special3" },
             UltimateSkillId = "pollux_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// 珈伦 —— **可玩角色**（参考游戏《终末前夜 Morimens》，2026-10-25 主人提供截图）。
+    ///
+    /// 属性照参考图「详细属性」面板：攻击 96 / 防御 108 / 体质 112 /
+    /// 暴击率 5% / 暴击伤害 50% / 基础狂气 100 / 狂气回充等级 10.4 /
+    /// 银钥充能等级 15 / 死亡抵抗 36.4%；定位**辅助型**。
+    ///
+    /// 卡组：打击 + 防御 + 凸月之舞（灵知觉醒）/ 蟾蜍炖菜 / 静默守望；
+    /// 必杀技「客官请慢用！」（狂气爆发）。
+    /// </summary>
+    public static CharacterDefinition CreateJialun()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "jialun",
+            Name = "珈伦",
+            NameEn = "Jialun",
+            Race = CharacterRace.Chaos,
+            // 辅助型（参考图「人物列表」右侧的类型标签）
+            Archetype = CharacterArchetype.Debuffer,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 96,
+            BaseDefense = 108,
+            BaseConstitution = 112,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            BaseDeathResistance = 36,
+            BaseRageReturn = 10,
+            BaseSilverKeyCharge = 15,
+            BaseMaxRage = 100,
+            AttackCardId = "jialun_attack",
+            DefenseCardId = "jialun_defense",
+            SpecialCardIds = new string[] { "jialun_special", "jialun_special2", "jialun_special3" },
+            UltimateSkillId = "jialun_ultimate"
         };
         charDef.ApplyRaceDefaults();
         return charDef;
@@ -488,6 +545,7 @@ public partial class CharacterDefinition : Resource
             CreateDog(),
             CreatePig(),
             CreatePollux(),
+            CreateJialun(),
             CreateMu(),
             CreateAldebaran(),
             CreateSaga(),

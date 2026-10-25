@@ -176,7 +176,7 @@ public static class UltimateExecutor
             return;
         }
 
-        int buffValue = skill.CalculatedBuffValue;
+        int buffValue = skill.CalculatedDebuffValue;
         int buffDuration = skill.BuffDuration;
 
         foreach (Enemy enemy in targets)

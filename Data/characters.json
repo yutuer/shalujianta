@@ -352,6 +352,28 @@
             "defenseCardId": "pollux_defense",
             "specialCardIds": ["pollux_special", "pollux_special2", "pollux_special3"],
             "ultimateSkillId": "pollux_ultimate"
+        },
+        {
+            "characterId": "jialun",
+            "name": "珈伦",
+            "nameEn": "Jialun",
+            "race": "chaos",
+            "archetype": "debuffer",
+            "baseHealth": 30,
+            "baseEnergy": 2,
+            "baseDrawCount": 2,
+            "baseAttack": 96,
+            "baseDefense": 108,
+            "baseConstitution": 112,
+            "baseCritRate": 5,
+            "baseCritDamage": 50,
+            "baseDeathResistance": 36,
+            "baseRageReturn": 10,
+            "baseSilverKeyCharge": 15,
+            "attackCardId": "jialun_attack",
+            "defenseCardId": "jialun_defense",
+            "specialCardIds": ["jialun_special", "jialun_special2", "jialun_special3"],
+            "ultimateSkillId": "jialun_ultimate"
         }
     ]
 }

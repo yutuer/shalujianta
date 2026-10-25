@@ -187,16 +187,39 @@ foreach ($c in $cards) {
         }
     }
 
-    # 怒气：现实现口径（卡自带 rageGain > 0 优先，否则攻击 15 / 防御 10）
-    $rageExpect = 0
+    # 怒气（新口径 2026-10-25，照参考游戏《终末前夜 Morimens》）：
+    #   唯一真相源 = effects 里的 rage 条目 → 怒气 = value + perLevel × (等级 − 1)
+    #   基本卡（打击/防御）= 5 + 1×(级−1)；灵知觉醒卡 = 25 + 5×(级−1)；其他专属指令卡不给怒气
     $ownRage = Get-IntField $c 'rageGain' 0
-    if ($ownRage -gt 0) { $rageExpect = $ownRage }
-    elseif ($c.isAttack) { $rageExpect = $RAGE_ATTACK }
-    elseif ($shieldPct -gt 0) { $rageExpect = $RAGE_DEFENSE }
-    $rageActual = 0
-    if ($byType.ContainsKey('rage')) { $rageActual = [int]$byType['rage'][0].value }
-    if ($rageExpect -ne $rageActual) {
-        $problems += "[character_cards.json] 卡「$cid」怒气不一致：期望 $rageExpect vs effects $rageActual"
+    if ($ownRage -gt 0) {
+        $problems += "[character_cards.json] 卡「$cid」还留着旧的 rageGain=$ownRage 字段（新口径已弃用，请删掉，怒气只认 effects 里的 rage 条目）"
+    }
+    $suffix = ($cid -split '_')[-1]
+    $isAwakening = ($c.cardType -eq 'awakening')
+    $isBasic = ($suffix -eq 'attack' -or $suffix -eq 'defense')
+    if ($byType.ContainsKey('rage')) {
+        $e = $byType['rage'][0]
+        $v = [int]$e.value
+        $pl = [int]$e.perLevel
+        if ($isAwakening) {
+            if ($v -ne 25 -or $pl -ne 5) {
+                $problems += "[character_cards.json] 卡「$cid」是灵知觉醒卡，怒气应为 25 + 5×(级−1)，实际是 $v + $pl×(级−1)"
+            }
+        }
+        elseif ($isBasic) {
+            if ($v -ne 5 -or $pl -ne 1) {
+                $problems += "[character_cards.json] 卡「$cid」是基本卡，怒气应为 5 + 1×(级−1)，实际是 $v + $pl×(级−1)"
+            }
+        }
+        else {
+            $problems += "[character_cards.json] 卡「$cid」是专属指令卡，按参考口径**不给怒气**（参考图属性面板没有「狂气」行），请删掉 effects 里的 rage 条目"
+        }
+    }
+    elseif ($isAwakening) {
+        $problems += "[character_cards.json] 卡「$cid」是灵知觉醒卡，effects 里缺 rage 条目（怒气应为 25 + 5×(级−1)）"
+    }
+    elseif ($isBasic) {
+        $problems += "[character_cards.json] 卡「$cid」是基本卡，effects 里缺 rage 条目（怒气应为 5 + 1×(级−1)）"
     }
 
     # 抽牌

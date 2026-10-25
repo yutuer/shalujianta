@@ -31,6 +31,16 @@ namespace FishEatFish.Battle.Card
 		/// <summary>固定数值：怒气 / 治疗 / 能量 / 增益减益的层数或数值</summary>
 		public int Value { get; set; }
 
+		/// <summary>
+		/// **每级增长**（只对 rage 有意义）—— 怒气 = <c>Value + PerLevel × (等级 − 1)</c>。
+		///
+		/// 照参考游戏《终末前夜 Morimens》（2026-10-25 主人拍板，全局统一）：
+		///   - **基本卡（打击 / 防御）**：<c>value 5 / perLevel 1</c> → Lv1 = 5、Lv3 = 7、Lv6 = 10
+		///   - **灵知觉醒卡**：<c>value 25 / perLevel 5</c> → Lv4 = 40、Lv6 = 50
+		///   - **其他专属指令卡**：**不给怒气**（参考图里属性面板没有「狂气」行、卡面也没有怒气）
+		/// </summary>
+		public int PerLevel { get; set; }
+
 		/// <summary>数量（抽几张）</summary>
 		public int Count { get; set; }
 

@@ -7,6 +7,13 @@
       "map": "map01",
       "target": "hexmap"
     },
+    "jialun_team": {
+        "desc": "珈伦入队（验证新角色：属性 / 卡组 / 必杀技 / 词缀着色）",
+        "team": ["jialun", "ox", "tiger", "rabbit"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
+    },
     "battle": {
       "desc": "选人完成 → 直接进战斗（无地图上下文，敌人按 normal_wave）",
       "team": ["rat", "ox", "tiger", "rabbit"],

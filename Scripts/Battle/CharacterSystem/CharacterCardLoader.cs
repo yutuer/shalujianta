@@ -154,6 +154,8 @@ public class CharacterCardLoader
                     Type = effectDict.ContainsKey("type") ? effectDict["type"].ToString() : "",
                     Percent = effectDict.ContainsKey("percent") ? (int)(long)effectDict["percent"] : 0,
                     Value = effectDict.ContainsKey("value") ? (int)(long)effectDict["value"] : 0,
+                    // 怒气的「每级增长」：value + perLevel × (等级 − 1)（照参考游戏口径）
+                    PerLevel = effectDict.ContainsKey("perLevel") ? (int)(long)effectDict["perLevel"] : 0,
                     Count = effectDict.ContainsKey("count") ? (int)(long)effectDict["count"] : 0,
                     Duration = effectDict.ContainsKey("duration") ? (int)(long)effectDict["duration"] : 0,
                     HitCount = effectDict.ContainsKey("hitCount") ? (int)(long)effectDict["hitCount"] : 1,

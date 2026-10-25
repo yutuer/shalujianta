@@ -268,9 +268,9 @@ namespace FishEatFish.UI.CharacterGallery
 
 		/// <summary>
 		/// 属性详情的内容。
-		/// ⚠️ **只有攻击 / 防御 / 体质 / 暴击率 / 暴击伤害 / 基础狂气 是我们的真值**，
-		/// 其余（界域精通 / 伤害强效 / 狂气回充等级 / 银钥充能等级 / 黑印掉落 / 死亡抵抗）
-		/// 目前**套用参考图上的数字占位**，等主人给公式后再接数据表。
+		/// ⚠️ 全部数值都**读角色数据**（<see cref="CharacterDefinition"/> 的字段）——
+		/// 以前这里是写死的常量（界域精通 0 / 伤害强效 4.8% / 狂气回充 0 …），
+		/// 换个角色显示的还是波吕克斯那套数字（珈伦的参考图是 狂气回充 10.4 / 死亡抵抗 36.4）。
 		/// </summary>
 		private void FillAttributePanel(CharacterDefinition character)
 		{
@@ -287,18 +287,18 @@ namespace FishEatFish.UI.CharacterGallery
 				$"防御　{character.BaseDefense}",
 				$"暴击率　{character.BaseCritRate}%",
 				$"暴击伤害　{character.BaseCritDamage}%",
-				"界域精通　0",
-				"伤害强效　4.8%"
+				$"界域精通　{character.BaseDomainMastery}",
+				$"伤害强效　{character.BaseDamageBonus}%"
 			};
 
 			var right = new List<string>
 			{
 				$"体质　{character.BaseConstitution}",
-				"基础狂气　100",
-				"狂气回充等级　0",
-				"银钥充能等级　15",
-				"黑印掉落　0%",
-				"死亡抵抗　0%"
+				$"基础狂气　{character.BaseMaxRage}",
+				$"狂气回充等级　{character.BaseRageReturn}",
+				$"银钥充能等级　{character.BaseSilverKeyCharge}",
+				$"黑印掉落　{character.BaseBlackMarkDrop}%",
+				$"死亡抵抗　{character.BaseDeathResistance}%"
 			};
 
 			for (int i = 0; i < left.Count; i++)
@@ -411,6 +411,13 @@ namespace FishEatFish.UI.CharacterGallery
 			UltimateSkill ultimate = UltimateSkill.GetUltimateById(character.UltimateSkillId);
 			// 把角色属性挂上去 —— 百分比口径的必杀技（攻击力 × 百分比）要靠它算数值
 			if (ultimate != null) ultimate.LinkedAttributes = attributes;
+			// ⚠️ 必杀技的**数值要按显示的等级算** —— 标签写的是 Lv.6/6（满级），
+			// 但 UltimateSkill.Level 默认是 1 → 百分比口径的回复/减益会算成 1 级的值（珈伦实测 28 而不是 56）。
+			if (ultimate != null)
+			{
+				int ultMaxLevel = ultimate.MaxLevel > 0 ? ultimate.MaxLevel : CardMaxLevel;
+				ultimate.Level = ultMaxLevel;
+			}
 
 			if (_ultimateNameLabel != null)
 			{
@@ -473,6 +480,10 @@ namespace FishEatFish.UI.CharacterGallery
 					GD.PrintErr($"[CharacterGallery] 卡牌取不到: {cardId}");
 					continue;
 				}
+				// ⚠️ 卡牌总览的等级标签固定显示满级（6/6）→ **数值也要按满级算**，
+				//    否则「6/6」配「1 级的数值」（主人看到的是自相矛盾）。
+				//    参考图里波吕克斯那张也是满级（6/6 → 打击 37 点）。
+				card.Level = card.MaxLevel;
 
 				CharacterCardEntry entry = entryScene.Instantiate<CharacterCardEntry>();
 				_cardsRow.AddChild(entry);

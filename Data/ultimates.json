@@ -312,6 +312,21 @@
             "derivedCardId": "pollux_derived",
             "derivedCardName": "圣心",
             "isAreaAttack": true
+        },
+        {
+            "skillId": "jialun_ultimate",
+            "characterId": "jialun",
+            "name": "客官请慢用！",
+            "nameEn": "Slow Down, Please!",
+            "description": "移除所有手牌的迟缓状态。将 1 张「奇妙料理」置入手中。",
+            "rageCost": 100,
+            "healPercent": 25,
+            "applyDebuffName": "poison",
+            "debuffValuePercent": 30,
+            "buffDuration": 99,
+            "derivedCardId": "jialun_derived",
+            "derivedCardName": "奇妙料理",
+            "isAreaAttack": true
         }
     ]
 }

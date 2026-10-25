@@ -8,11 +8,11 @@
             "cost": 1,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -29,11 +29,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -51,12 +51,7 @@
             "damagePercent": 12,
             "drawCountBase": 1,
             "drawCountPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "draw",
                     "count": 1
@@ -76,12 +71,7 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 18,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "percent": 18,
@@ -99,12 +89,7 @@
             "shieldPercent": 7,
             "drawCountBase": 2,
             "drawCountPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 7
@@ -123,11 +108,11 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -144,11 +129,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -166,12 +151,7 @@
             "shieldPercent": 8,
             "energyGainBase": 3,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 8
@@ -190,12 +170,7 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 12,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "percent": 12,
@@ -211,12 +186,7 @@
             "cost": 2,
             "isAttack": false,
             "shieldPercent": 15,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 15
@@ -231,11 +201,11 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -252,11 +222,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -272,13 +242,8 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 7,
-            "rageGainPerLevel": 1,
             "isAreaAttack": true,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "percent": 7,
@@ -294,12 +259,7 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 11,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "percent": 11,
@@ -317,12 +277,7 @@
             "damagePercent": 5,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "energy",
                     "value": 1
@@ -342,11 +297,11 @@
             "cost": 1,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -364,8 +319,12 @@
             "isAttack": false,
             "drawCountBase": 2,
             "drawCountPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
                 {
                     "type": "draw",
                     "count": 2
@@ -384,7 +343,6 @@
             "buffDuration": 1,
             "applyBuffName": "strength",
             "applyBuffDuration": 1,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "buff",
@@ -405,12 +363,7 @@
             "shieldPercent": 10,
             "drawCountBase": 1,
             "drawCountPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 10
@@ -429,12 +382,7 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 15,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "percent": 15,
@@ -454,11 +402,11 @@
             "applyDebuffDuration": 3,
             "debuffValueBase": 2,
             "debuffValuePerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "debuff",
@@ -482,11 +430,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -507,12 +455,7 @@
             "applyDebuffDuration": 2,
             "debuffValueBase": 1,
             "debuffValuePerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "debuff",
                     "debuff": "poison",
@@ -535,12 +478,7 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 12,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "percent": 12,
@@ -561,12 +499,7 @@
             "applyDebuffDuration": 3,
             "debuffValueBase": 2,
             "debuffValuePerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "debuff",
                     "debuff": "poison",
@@ -593,11 +526,11 @@
             "applyDebuffDuration": 3,
             "debuffValueBase": 2,
             "debuffValuePerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "debuff",
@@ -623,11 +556,11 @@
             "shieldPercent": 10,
             "healAmount": 3,
             "healBaseCoefficient": 0.4,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -652,12 +585,7 @@
             "applyDebuffDuration": 3,
             "debuffValueBase": 3,
             "debuffValuePerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "debuff",
                     "debuff": "poison",
@@ -679,12 +607,7 @@
             "applyDebuffDuration": 2,
             "debuffValueBase": 2,
             "debuffValuePerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "debuff",
                     "debuff": "poison",
@@ -711,12 +634,7 @@
             "applyDebuffDuration": 3,
             "debuffValueBase": 3,
             "debuffValuePerLevel": 1,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "debuff",
                     "debuff": "poison",
@@ -739,11 +657,11 @@
             "cost": 1,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -762,11 +680,11 @@
             "shieldPercent": 10,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -788,12 +706,7 @@
             "damagePercent": 8,
             "energyGainBase": 2,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "energy",
                     "value": 2
@@ -813,12 +726,7 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 15,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "percent": 15,
@@ -836,12 +744,7 @@
             "damagePercent": 10,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "energy",
                     "value": 1
@@ -861,11 +764,11 @@
             "cost": 1,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -882,11 +785,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -904,12 +807,7 @@
             "healAmount": 10,
             "healBaseCoefficient": 0.6,
             "shieldPercent": 8,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 8
@@ -928,12 +826,7 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 17,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 17
@@ -950,12 +843,7 @@
             "healAmount": 15,
             "healBaseCoefficient": 0.6,
             "shieldPercent": 13,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 13
@@ -974,11 +862,11 @@
             "cost": 1,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -995,11 +883,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -1020,12 +908,7 @@
             "applyDebuffDuration": 2,
             "debuffValueBase": 2,
             "debuffValuePerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "debuff",
                     "debuff": "weak",
@@ -1047,7 +930,6 @@
             "applyDebuffDuration": 2,
             "debuffValueBase": 2,
             "debuffValuePerLevel": 1,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "debuff",
@@ -1075,12 +957,7 @@
             "applyDebuffDuration": 3,
             "debuffValueBase": 3,
             "debuffValuePerLevel": 1,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "debuff",
                     "debuff": "poison",
@@ -1103,11 +980,11 @@
             "cost": 1,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -1124,11 +1001,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -1146,12 +1023,7 @@
             "damagePercent": 7,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "energy",
                     "value": 1
@@ -1173,12 +1045,7 @@
             "damagePercent": 10,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "energy",
                     "value": 1
@@ -1200,12 +1067,7 @@
             "damagePercent": 17,
             "energyGainBase": 2,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "energy",
                     "value": 2
@@ -1225,11 +1087,11 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -1246,11 +1108,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -1268,12 +1130,7 @@
             "shieldPercent": 7,
             "energyGainBase": 2,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 7
@@ -1292,12 +1149,7 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 8,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 8
@@ -1314,12 +1166,7 @@
             "shieldPercent": 12,
             "energyGainBase": 1,
             "energyGainPerLevel": 0,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 12
@@ -1338,11 +1185,11 @@
             "cost": 2,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -1359,11 +1206,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -1381,12 +1228,7 @@
             "shieldPercent": 6,
             "healAmount": 5,
             "healBaseCoefficient": 0.4,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 6
@@ -1406,12 +1248,7 @@
             "isAttack": true,
             "damagePercent": 10,
             "counterBaseCoefficient": 0.5,
-            "rageGainPerLevel": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "percent": 10,
@@ -1428,12 +1265,7 @@
             "isAttack": false,
             "shieldPercent": 8,
             "counterBaseCoefficient": 0.3,
-            "rageGainPerLevel": 1,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 10
-                },
                 {
                     "type": "shield",
                     "percent": 8
@@ -1448,11 +1280,11 @@
             "cost": 1,
             "isAttack": true,
             "damagePercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 15
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "damage",
@@ -1469,11 +1301,11 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "rageGainPerLevel": 1,
             "effects": [
                 {
                     "type": "rage",
-                    "value": 10
+                    "value": 5,
+                    "perLevel": 1
                 },
                 {
                     "type": "shield",
@@ -1491,17 +1323,16 @@
             "energyGainBase": 3,
             "energyGainPerLevel": 0,
             "isRetain": true,
-            "rageGainPerLevel": 2,
             "affixes": [
                 "retain"
             ],
             "cardType": "awakening",
-            "rageGain": 50,
             "description": "⚠灵知觉醒：打出时和弃牌阶段后获得 3 层 ✕罪印，每有 1 张手牌额外获得 1 层 ✕罪印。「圣心」造成 100% 伤害的出血。",
             "effects": [
                 {
                     "type": "rage",
-                    "value": 50
+                    "value": 25,
+                    "perLevel": 5
                 },
                 {
                     "type": "energy",
@@ -1536,16 +1367,11 @@
             "drawCountBase": 2,
             "drawCountPerLevel": 0,
             "isRetain": true,
-            "rageGainPerLevel": 2,
             "affixes": [
                 "retain"
             ],
             "drawFilter": "lowestCostInstruction",
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "draw",
                     "count": 2,
@@ -1570,16 +1396,11 @@
             "isAttack": true,
             "damagePercent": 140,
             "isRetain": true,
-            "rageGainPerLevel": 2,
             "affixes": [
                 "retain"
             ],
             "hitCount": 2,
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "percent": 140,
@@ -1601,7 +1422,6 @@
             "damage": 128,
             "damageBaseCoefficient": 1.0,
             "isRetain": true,
-            "rageGain": 15,
             "cardType": "derived",
             "artCardId": "pollux_special",
             "affixes": [
@@ -1613,10 +1433,6 @@
             "bodyAffixMarks": ["retain"],
             "description": "造成 128 点伤害，获得 3 层 ✕罪印。打出后将此卡牌洗入抽牌堆顶部。第 3 次打出时 ⚠消耗 并使自身下张指令卡享受「苦痛救赎」效果。预备1。",
             "effects": [
-                {
-                    "type": "rage",
-                    "value": 15
-                },
                 {
                     "type": "damage",
                     "value": 128,
@@ -1636,6 +1452,222 @@
                     "id": "prep1",
                     "name": "预备1",
                     "description": "回合结束后，算力消耗-1，被弃掉后也会触发该效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "jialun_attack",
+            "characterId": "jialun",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ]
+        },
+        {
+            "cardId": "jialun_defense",
+            "characterId": "jialun",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "jialun_special",
+            "characterId": "jialun",
+            "name": "凸月之舞",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "consume",
+                "poison",
+                "retain"
+            ],
+            "bodyAffixMarks": ["retain"],
+            "description": "⚠灵知觉醒：珈伦打出卡牌后，回复 {heal} 点生命，获得 5 点狂气。打出「奇妙料理」后，对所有敌人施加 24 层中毒。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "heal",
+                    "percent": 9
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "poison",
+                    "target": "allEnemies",
+                    "value": 24,
+                    "duration": 99
+                },
+                {
+                    "type": "retain"
+                }
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "poison",
+                    "name": "中毒",
+                    "description": "回合结束时受到等量层数的纯粹伤害。"
+                }
+            ]
+        },
+        {
+            "cardId": "jialun_special2",
+            "characterId": "jialun",
+            "name": "蟾蜍炖菜",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "isRetain": true,
+            "affixes": [
+                "prep1",
+                "poison",
+                "weak",
+                "retain"
+            ],
+            "bodyAffixMarks": ["retain"],
+            "description": "对所有敌人施加 {poison} 层中毒和 1 回合的虚弱，回复 {heal} 点生命。⚠保留。预备1。",
+            "effects": [
+                {
+                    "type": "debuff",
+                    "debuff": "poison",
+                    "target": "allEnemies",
+                    "percent": 30,
+                    "duration": 99
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "weak",
+                    "target": "allEnemies",
+                    "value": 1,
+                    "duration": 1
+                },
+                {
+                    "type": "heal",
+                    "percent": 15
+                },
+                {
+                    "type": "retain"
+                }
+            ],
+            "affixNotes": [
+                {
+                    "id": "poison",
+                    "name": "中毒",
+                    "description": "回合结束时受到等量层数的纯粹伤害。"
+                },
+                {
+                    "id": "weak",
+                    "name": "虚弱",
+                    "description": "造成的主动和触碰伤害降低 25%，回合结束时移除 1 层。"
+                },
+                {
+                    "id": "prep1",
+                    "name": "预备1",
+                    "description": "回合结束后，算力消耗-1，被弃掉后也会触发该效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "jialun_special3",
+            "characterId": "jialun",
+            "name": "静默守望",
+            "style": "striker",
+            "cost": 0,
+            "isAttack": false,
+            "isRetain": true,
+            "affixes": [
+                "retain"
+            ],
+            "bodyAffixMarks": ["retain"],
+            "description": "回复 {heal} 点生命并获得 {shield} 点护盾。回合结束时若在手中，算力消耗提高 1，回复生命和护盾翻倍。最多叠加 3 次。⚠保留。",
+            "effects": [
+                {
+                    "type": "heal",
+                    "percent": 5
+                },
+                {
+                    "type": "shield",
+                    "percent": 5
+                },
+                {
+                    "type": "retain"
+                }
+            ]
+        },
+        {
+            "cardId": "jialun_derived",
+            "characterId": "jialun",
+            "name": "奇妙料理",
+            "style": "striker",
+            "cost": 0,
+            "isAttack": false,
+            "cardType": "derived",
+            "isRetain": true,
+            "affixes": [
+                "retain",
+                "consume"
+            ],
+            "bodyAffixMarks": ["retain"],
+            "description": "获得 1 点算力，可以使用 3 次。有 50% 概率触发一个奇妙正面效果。⚠保留。⚠消耗。",
+            "effects": [
+                {
+                    "type": "energy",
+                    "value": 1
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "affixNotes": [
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                },
+                {
+                    "id": "consume",
+                    "name": "消耗",
+                    "description": "打出后不会进入弃牌堆，而是从牌库中移除。"
                 }
             ]
         }

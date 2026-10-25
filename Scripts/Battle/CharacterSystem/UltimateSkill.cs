@@ -34,6 +34,19 @@ public partial class UltimateSkill : Resource, ICardLevelable
     [Export]
     public int Heal;
 
+    /// <summary>
+    /// **治疗按体质百分比**（照参考游戏《终末前夜 Morimens》：「回复 体质×N%」）。
+    /// 珈伦「客官请慢用！」= 体质×25%（Lv4 → 112×25%×1.6 = 44.8 → 45）。
+    /// </summary>
+    [Export]
+    public int HealPercent;
+
+    /// <summary>
+    /// **减益层数按攻击力百分比**（参考游戏：「施加 47 层中毒」= 中毒 攻击力×30%）。
+    /// </summary>
+    [Export]
+    public int DebuffValuePercent;
+
     [Export]
     public int Shield;
 
@@ -134,13 +147,21 @@ public partial class UltimateSkill : Resource, ICardLevelable
             // 角色攻击力本身已随等级成长，且卡牌等级系统还没做）。
             if (DamagePercent > 0 && _linkedAttributes != null)
             {
-                return Mathf.RoundToInt(_linkedAttributes.Attack * DamagePercent / 100f);
+                // ⚠️ 向上取整（照参考游戏《终末前夜 Morimens》口径，2026-10-25 主人拍板）
+                return Mathf.CeilToInt(_linkedAttributes.Attack * DamagePercent / 100f);
             }
             return CardLevelSystem.CalculateAttributeLinkedValue(Level, Damage, DamageBaseCoefficient);
         }
     }
 
-    public int CalculatedHeal => CardLevelSystem.CalculateAttributeLinkedValue(Level, Heal, HealBaseCoefficient);
+    public int CalculatedHeal => HealPercent > 0
+        ? CardLevelSystem.CalculateAttributeLinkedValue(Level, _linkedAttributes != null ? _linkedAttributes.Constitution : 0, HealPercent / 100f)
+        : CardLevelSystem.CalculateAttributeLinkedValue(Level, Heal, HealBaseCoefficient);
+
+    /// <summary>减益层数（按攻击力百分比算，或固定值）</summary>
+    public int CalculatedDebuffValue => DebuffValuePercent > 0
+        ? CardLevelSystem.CalculateAttributeLinkedValue(Level, _linkedAttributes != null ? _linkedAttributes.Attack : 0, DebuffValuePercent / 100f)
+        : CalculatedBuffValue;
 
     public int CalculatedShield => CardLevelSystem.CalculateAttributeLinkedValue(Level, Shield, ShieldBaseCoefficient);
 

@@ -72,6 +72,8 @@ public class UltimateLoader
         ultimate.RageCost = GetIntValue(dict, "rageCost", 100);
         ultimate.Damage = GetIntValue(dict, "damage", 0);
         ultimate.Heal = GetIntValue(dict, "heal", 0);
+        ultimate.HealPercent = GetIntValue(dict, "healPercent", 0);
+        ultimate.DebuffValuePercent = GetIntValue(dict, "debuffValuePercent", 0);
         ultimate.Shield = GetIntValue(dict, "shield", 0);
         ultimate.DrawCount = GetIntValue(dict, "drawCount", 0);
         ultimate.BuffValue = GetIntValue(dict, "buffValue", 0);

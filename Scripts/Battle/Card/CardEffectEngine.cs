@@ -174,10 +174,10 @@ namespace FishEatFish.Battle.Card
 			Log(ctx, $"你使用了{card.Name}，获得{shield}点护盾", LogType.Shield);
 		}
 
-		/// <summary>怒气：给这张卡所属的角色</summary>
+		/// <summary>怒气：给这张卡所属的角色（<c>value + perLevel × (等级 − 1)</c>，照参考游戏口径）</summary>
 		private static void ExecuteRage(Card card, CardEffect effect, CardEffectContext ctx)
 		{
-			int rage = effect.Value;
+			int rage = CardLevelSystem.CalculateFixedValue(card.Level, effect.Value, effect.PerLevel);
 			if (rage <= 0) return;
 
 			if (ctx.RageTarget != null)
@@ -192,13 +192,14 @@ namespace FishEatFish.Battle.Card
 			Log(ctx, $"获得{rage}点怒气", LogType.System);
 		}
 
-		/// <summary>治疗</summary>
+		/// <summary>治疗：体质 × 百分比 × 等级系数（没配百分比就用固定值）</summary>
 		private static void ExecuteHeal(Card card, CardEffect effect, CardEffectContext ctx)
 		{
-			if (effect.Value <= 0 || ctx.Player == null) return;
+			int heal = CardEffectCalculator.CalculateHeal(card, effect, ctx.Attributes);
+			if (heal <= 0 || ctx.Player == null) return;
 
-			ctx.Player.Heal(effect.Value);
-			Log(ctx, $"你使用了{card.Name}，回复{effect.Value}点生命", LogType.Heal);
+			ctx.Player.Heal(heal);
+			Log(ctx, $"你使用了{card.Name}，回复{heal}点生命", LogType.Heal);
 		}
 
 		/// <summary>算力（能量）</summary>
@@ -251,11 +252,34 @@ namespace FishEatFish.Battle.Card
 			Log(ctx, $"你使用了{card.Name}，给{target.EnemyName}附加了增益效果", LogType.System);
 		}
 
-		/// <summary>减益（落在目标身上）</summary>
+		/// <summary>减益（落在目标身上）：层数 = 攻击力×百分比 或 固定值；可打全体</summary>
 		private static void ExecuteDebuff(Card card, CardEffect effect, CardEffectContext ctx)
 		{
 			if (string.IsNullOrEmpty(effect.Debuff)) return;
 
+			int stacks = CardEffectCalculator.CalculateDebuffValue(card, effect, ctx.Attributes);
+			if (stacks <= 0) return;
+
+			// 全体敌人（参考游戏：「对所有敌人施加 41 层中毒」）
+			if (effect.Target == CardEffectTarget.AllEnemies)
+			{
+				if (ctx.Enemies == null) return;
+				foreach (Enemy enemy in ctx.Enemies)
+				{
+					if (enemy == null || enemy.IsDead) continue;
+					ApplyDebuffTo(enemy, card, effect, stacks, ctx);
+				}
+				return;
+			}
+
+			Enemy target = ctx.ResolveEnemyTarget?.Invoke(card);
+			if (target == null) return;
+			ApplyDebuffTo(target, card, effect, stacks, ctx);
+		}
+
+		/// <summary>把减益挂到指定敌人身上</summary>
+		private static void ApplyDebuffTo(Enemy target, Card card, CardEffect effect, int stacks, CardEffectContext ctx)
+		{
 			StatusEffect debuff = EffectRegistry.CreateDebuff(effect.Debuff);
 			if (debuff == null)
 			{
@@ -264,14 +288,11 @@ namespace FishEatFish.Battle.Card
 			}
 
 			if (effect.Duration > 0) debuff.Duration = effect.Duration;
-			Card.ApplyDebuffValue(debuff, effect.Value);
+			Card.ApplyDebuffValue(debuff, stacks);
 			debuff.Initialize();
 
-			Enemy target = ctx.ResolveEnemyTarget?.Invoke(card);
-			if (target == null) return;
-
 			target.AddStatusEffect(debuff);
-			Log(ctx, $"你使用了{card.Name}，给{target.EnemyName}附加了减益效果", LogType.System);
+			Log(ctx, $"你使用了{card.Name}，给{target.EnemyName}附加了减益效果{stacks}层", LogType.System);
 		}
 
 		private static void Log(CardEffectContext ctx, string message, LogType type)
@@ -312,6 +333,49 @@ namespace FishEatFish.Battle.Card
 			if (effect.Percent > 0 && attributes != null)
 			{
 				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Defense, effect.Percent / 100f);
+			}
+			if (effect.Value > 0)
+			{
+				return CardLevelSystem.CalculateAttributeLinkedValue(level, effect.Value, 1f);
+			}
+			return 0;
+		}
+
+		/// <summary>
+		/// **治疗 = 体质 × 百分比 × 等级系数**（没配百分比就用固定值）。
+		///
+		/// 照参考游戏《终末前夜 Morimens》：「回复 体质×N%」（珈伦「凸月之舞」回复 体质×9%）。
+		/// </summary>
+		public static int CalculateHeal(Card card, CardEffect effect, CharacterAttributes attributes)
+		{
+			if (card == null || effect == null) return 0;
+
+			int level = card.Level;
+			if (effect.Percent > 0 && attributes != null)
+			{
+				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Constitution, effect.Percent / 100f);
+			}
+			if (effect.Value > 0)
+			{
+				return CardLevelSystem.CalculateAttributeLinkedValue(level, effect.Value, 1f);
+			}
+			return 0;
+		}
+
+		/// <summary>
+		/// **减益层数 = 攻击力 × 百分比 × 等级系数**（没配百分比就用固定值）。
+		///
+		/// 照参考游戏：「施加 41 层中毒」= 中毒 攻击力×30%（珈伦「蟾蜍炖菜」）——
+		/// 中毒的**层数**是按攻击力算的，不是写死的数字。
+		/// </summary>
+		public static int CalculateDebuffValue(Card card, CardEffect effect, CharacterAttributes attributes)
+		{
+			if (card == null || effect == null) return 0;
+
+			int level = card.Level;
+			if (effect.Percent > 0 && attributes != null)
+			{
+				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Attack, effect.Percent / 100f);
 			}
 			if (effect.Value > 0)
 			{

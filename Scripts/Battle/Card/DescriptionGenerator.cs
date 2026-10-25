@@ -182,7 +182,61 @@ public static class DescriptionGenerator
             body += "。";
         }
 
+        // 文案里的数值占位符（{heal} / {damage} / {shield}）→ 换成**按当前等级算出的真值**。
+        // 为什么需要：策划写的正文里带数字（「回复 17 点生命」）会**跟等级脱钩** ——
+        // 卡牌总览显示满级、战斗里是 1 级，写死的数字两边对不上。
+        // 用占位符后，卡面与战斗永远同源（同一条规则算出来的）。
+        body = ReplaceValuePlaceholders(body, card, attributes);
+
         return body + BuildAffixMarkText(card, body);
+    }
+
+    /// <summary>把正文里的 <c>{heal}</c> / <c>{damage}</c> / <c>{shield}</c> 占位符换成实际数值</summary>
+    private static string ReplaceValuePlaceholders(string body, Card card, CharacterAttributes attributes)
+    {
+        if (string.IsNullOrEmpty(body) || !body.Contains("{")) return body;
+
+        // ⚠️ 和 GenerateCardDescription 一样：**没传 attributes 就回落到卡上挂的角色属性**。
+        //    漏了这一步 → 卡面把「回复 X 点生命」算成 0（战斗里却是对的，两边不一致）。
+        if (attributes == null && card != null)
+        {
+            attributes = card.LinkedAttributes;
+        }
+
+        if (body.Contains("{heal}"))
+        {
+            CardEffect heal = card.FindEffect(CardEffectType.Heal);
+            int value = heal != null ? CardEffectCalculator.CalculateHeal(card, heal, attributes) : 0;
+            body = body.Replace("{heal}", value.ToString());
+        }
+        if (body.Contains("{damage}"))
+        {
+            CardEffect dmg = card.FindEffect(CardEffectType.Damage);
+            int value = dmg != null ? CardEffectCalculator.CalculateDamage(card, dmg, attributes) : 0;
+            body = body.Replace("{damage}", value.ToString());
+        }
+        if (body.Contains("{shield}"))
+        {
+            CardEffect sh = card.FindEffect(CardEffectType.Shield);
+            int value = sh != null ? CardEffectCalculator.CalculateShield(card, sh, attributes) : 0;
+            body = body.Replace("{shield}", value.ToString());
+        }
+        if (body.Contains("{poison}"))
+        {
+            // 中毒层数 = 这张卡**第一个** poison 减益效果的计算值
+            // （凸月之舞 = 固定 24 层；蟾蜍炖菜 = 攻击力×30%）
+            int value = 0;
+            foreach (CardEffect e in card.Effects)
+            {
+                if (e.Type == CardEffectType.Debuff && e.Debuff == "poison")
+                {
+                    value = CardEffectCalculator.CalculateDebuffValue(card, e, attributes);
+                    break;
+                }
+            }
+            body = body.Replace("{poison}", value.ToString());
+        }
+        return body;
     }
 
     /// <summary>
@@ -286,7 +340,7 @@ public static class DescriptionGenerator
             parts.Add($"造成 {ultimate.CalculatedDamage} 点伤害");
         }
 
-        if (ultimate.Heal > 0)
+        if (ultimate.Heal > 0 || ultimate.HealPercent > 0)
         {
             int heal = attributes != null
                 ? ultimate.CalculatedHeal
@@ -328,6 +382,13 @@ public static class DescriptionGenerator
         if (ultimate.BuffDuration == 1 && ultimate.Damage == 0 && ultimate.Heal == 0 && ultimate.Shield == 0)
         {
             parts.Add("目标下回合无法行动");
+        }
+
+        // 减益（中毒 / 虚弱…）：参考游戏「对所有敌人施加 47 层中毒」
+        if (!string.IsNullOrEmpty(ultimate.ApplyDebuffName) && ultimate.DebuffValuePercent > 0 && attributes != null)
+        {
+            int layers = ultimate.CalculatedDebuffValue;
+            parts.Add($"对所有敌人施加 {layers} 层{GetDebuffDisplayName(ultimate.ApplyDebuffName)}");
         }
 
         if (parts.Count == 0)
@@ -401,6 +462,13 @@ public static class DescriptionGenerator
             if (rage > 0) parts.Add($"{owner} {rage} 点怒气。");
             if (!string.IsNullOrEmpty(card.TemplateDescription)) parts.Add(card.TemplateDescription);
         }
+        else if (!string.IsNullOrEmpty(card.TemplateDescription))
+        {
+            // ⚠️ **策划写了正文就直接用**（2026-10-25 珈伦的卡牌）——
+            //    「蟾蜍炖菜」这类「施加中毒 + 回复 + 虚弱」的复合效果没法用数值模板拼出来，
+            //    自动生成的结果只剩「获得 X 点护盾」这种半截话。
+            parts.Add(card.TemplateDescription);
+        }
         else
         {
             int damage = card.GetFinalDamage(attributes);
@@ -427,6 +495,8 @@ public static class DescriptionGenerator
         // 词缀标注（保留 / 消耗 / 回合唯一 + 特有词缀）——
         // 统一走 BuildAffixMarkText，正文里已经写过的词缀不重复标
         string body = string.Join("", parts);
+        // 文案里的数值占位符（{heal} / {damage} / {shield} / {poison}）→ 换成实际数值
+        body = ReplaceValuePlaceholders(body, card, attributes);
         return body + BuildAffixMarkText(card, body);
     }
 
@@ -479,10 +549,12 @@ public static class DescriptionGenerator
             preview.AppendLine($"  治疗: {current} → {next}");
         }
 
-        if (card.RageGainPerLevel > 0)
+        // 怒气：新口径 —— 唯一真相源 = effects 里的 rage 条目（value + perLevel × (等级 − 1)）
+        CardEffect rageEffect = card.FindEffect(CardEffectType.Rage);
+        if (rageEffect != null)
         {
-            int current = card.CalculatedRageGain;
-            int next = CardLevelSystem.CalculateRageGain(card.Level + 1, card.RageGainPerLevel);
+            int current = CardLevelSystem.CalculateFixedValue(card.Level, rageEffect.Value, rageEffect.PerLevel);
+            int next = CardLevelSystem.CalculateFixedValue(card.Level + 1, rageEffect.Value, rageEffect.PerLevel);
             preview.AppendLine($"  怒气: {current} → {next}");
         }
 

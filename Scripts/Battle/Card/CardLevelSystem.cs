@@ -52,7 +52,10 @@ public static class CardLevelSystem
         int maxValue = int.MaxValue)
     {
         float coefficient = CalculateCoefficient(level, baseCoefficient);
-        int value = Mathf.RoundToInt(attributeValue * coefficient);
+        // ⚠️ **向上取整（ceil）** —— 照参考游戏《终末前夜 Morimens》（2026-10-25 主人拍板）：
+        //    参考游戏的卡面数值是 ceil（182×20% = 36.4 → 37、96×10%×1.4 = 13.44 → 14），
+        //    我们原来用 RoundToInt 会普遍少 1 点。
+        int value = Mathf.CeilToInt(attributeValue * coefficient);
         return Mathf.Clamp(value, minValue, maxValue);
     }
 

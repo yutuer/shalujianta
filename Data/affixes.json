@@ -41,6 +41,27 @@
             "symbol": "⚠",
             "color": "#e8a34a",
             "description": "回合结束后，算力消耗-1，被弃掉后也会触发该效果。"
+        },
+        {
+            "id": "poison",
+            "name": "中毒",
+            "symbol": "❋",
+            "color": "#c86bd8",
+            "description": "回合结束时受到等量层数的纯粹伤害。"
+        },
+        {
+            "id": "weak",
+            "name": "虚弱",
+            "symbol": "⚡",
+            "color": "#c86bd8",
+            "description": "造成的主动和触碰伤害降低 25%，回合结束时移除 1 层。"
+        },
+        {
+            "id": "slow",
+            "name": "迟缓",
+            "symbol": "🐌",
+            "color": "#c86bd8",
+            "description": "使卡牌的算力消耗提高。"
         }
     ]
 }
