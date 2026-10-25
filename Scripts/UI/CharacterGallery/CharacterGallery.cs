@@ -76,6 +76,7 @@ namespace FishEatFish.UI.CharacterGallery
 		private Label _ultimateLevelLabel;
 		private TextureRect _ultimateAvatarRect;
 		private Label _ultimateNameLabel;
+		private Label _ultimateBurstLabel;
 		private RichTextLabel _ultimateDescText;
 		private HBoxContainer _cardsRow;
 		private Button _backToListButton;
@@ -127,7 +128,8 @@ namespace FishEatFish.UI.CharacterGallery
 			_avatarColumn = GetNodeOrNull<VBoxContainer>("CardsView/HBox/AvatarScroll/AvatarColumn");
 			_ultimateLevelLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/UltimateHeroBox/UltimateLevelLabel");
 			_ultimateAvatarRect = GetNodeOrNull<TextureRect>("CardsView/HBox/CardsSide/UltimateHeroBox/AvatarFrame/AvatarRect");
-			_ultimateNameLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/UltimateNameLabel");
+			_ultimateNameLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/TitleRow/UltimateNameLabel");
+			_ultimateBurstLabel = GetNodeOrNull<Label>("CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/TitleRow/UltimateBurstLabel");
 			_ultimateDescText = GetNodeOrNull<RichTextLabel>("CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/UltimateDescText");
 			_cardsRow = GetNodeOrNull<HBoxContainer>("CardsView/HBox/CardsSide/CardsRow");
 			_backToListButton = GetNodeOrNull<Button>("CardsView/HBox/CardsSide/Header/CircleBackButton");
@@ -412,7 +414,15 @@ namespace FishEatFish.UI.CharacterGallery
 
 			if (_ultimateNameLabel != null)
 			{
-				_ultimateNameLabel.Text = ultimate != null ? $"必杀技：{ultimate.Name}" : "必杀技：未配置";
+				// ⚠️ **不再带「必杀技：」前缀**（主人 2026-10-25）——
+				//    照参考图《终末前夜 Morimens》：标题行左边只有**技能名**，
+				//    右边是黄色的「狂气爆发」（= 怒气满了能释放的技能，与「必杀技 / 大招」同义）。
+				_ultimateNameLabel.Text = ultimate != null ? ultimate.Name : "未配置";
+			}
+			if (_ultimateBurstLabel != null)
+			{
+				// 「狂气爆发」—— 标题行右上角的黄色标签（参考图同位置同色）
+				_ultimateBurstLabel.Text = "狂气爆发";
 			}
 			if (_ultimateDescText != null)
 			{

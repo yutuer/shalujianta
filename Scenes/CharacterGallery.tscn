@@ -353,10 +353,23 @@ theme_override_constants/margin_bottom = 12
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="UltimateNameLabel" type="Label" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox"]
+[node name="TitleRow" type="HBoxContainer" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="UltimateNameLabel" type="Label" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/TitleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 text = "必杀技"
+
+[node name="UltimateBurstLabel" type="Label" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox/TitleRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.93, 0.94, 0.48, 1)
+theme_override_font_sizes/font_size = 22
+text = "狂气爆发"
+horizontal_alignment = 2
 
 [node name="UltimateDescText" type="RichTextLabel" parent="CardsView/HBox/CardsSide/UltimatePanel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 56)
