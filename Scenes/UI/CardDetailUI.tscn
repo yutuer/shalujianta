@@ -134,12 +134,16 @@ theme_override_font_sizes/font_size = 16
 text = "词缀：保留"
 autowrap_mode = 3
 
-[node name="DescLabel" type="Label" parent="Panel/Margin/VBox"]
+[node name="DescLabel" type="RichTextLabel" parent="Panel/Margin/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.86, 0.88, 0.92, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_colors/default_color = Color(0.86, 0.88, 0.92, 1)
+theme_override_font_sizes/normal_font_size = 17
 text = "造成 18 点伤害，获得 15 怒气"
+bbcode_enabled = true
+fit_content = false
+scroll_active = false
+selection_enabled = false
 autowrap_mode = 3
 
 [node name="Footer" type="HBoxContainer" parent="Panel/Margin/VBox"]

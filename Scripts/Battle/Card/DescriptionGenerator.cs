@@ -1,5 +1,6 @@
 using System.Text;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using FishEatFish.Battle.CharacterSystem;
 
 namespace FishEatFish.Battle.Card;
@@ -182,6 +183,85 @@ public static class DescriptionGenerator
         }
 
         return body + BuildAffixMarkText(card, body);
+    }
+
+    /// <summary>
+    /// **把卡面正文里出现的词缀按「词缀说明」区的颜色着色**（输出 BBCode）。
+    ///
+    /// 照参考游戏《终末前夜 Morimens》：卡面正文里的词缀**带颜色**——
+    /// 「⚠保留」「⚠消耗」「⚠预备1」是橙色（#e8a34a），「✕罪印」是紫色（#c86bd8），
+    /// 和右侧「词缀说明」区用的是**同一套颜色**（都取自 <c>Data/affixes.json</c>）。
+    ///
+    /// ⚠️ **只加颜色、不补符号** —— 参考图里「预备1」在正文里就是**没有符号**的
+    /// （符号只在词缀说明区有），补符号会改掉文案。
+    /// </summary>
+    /// <param name="text">纯文本正文</param>
+    /// <param name="card">卡牌（决定哪些词缀要着色）</param>
+    /// <returns>带 <c>[color=…]</c> 标记的 BBCode 文本</returns>
+    public static string ColorizeAffixesInBody(string text, Card card)
+    {
+        if (string.IsNullOrEmpty(text) || card == null) return text;
+
+        // ① 这张卡带的词缀（通用词缀 + 卡牌特有词缀）—— 只给「这张卡真的有」的词缀上色
+        var ids = new List<string>();
+        foreach (string id in card.Affixes)
+        {
+            if (!string.IsNullOrEmpty(id) && !ids.Contains(id)) ids.Add(id);
+        }
+        if (card.AffixNotes != null)
+        {
+            foreach (CardAffixNote note in card.AffixNotes)
+            {
+                if (note != null && !string.IsNullOrEmpty(note.Id) && !ids.Contains(note.Id)) ids.Add(note.Id);
+            }
+        }
+
+        // ② 查词缀表拿「名称 / 符号 / 颜色」
+        var byName = new Dictionary<string, AffixInfo>();
+        foreach (string id in ids)
+        {
+            AffixInfo info = AffixLibrary.Get(id);
+            if (info == null || string.IsNullOrEmpty(info.Name)) continue;
+            if (byName.ContainsKey(info.Name)) continue;
+            byName[info.Name] = info;
+        }
+        if (byName.Count == 0) return text;
+
+        // ③ 一次扫描：把「符号? + 词缀名」整段包上颜色（名字长的先匹配，避免短的抢先）
+        var names = new List<string>(byName.Keys);
+        names.Sort((a, b) => b.Length.CompareTo(a.Length));
+        string pattern = "(?:\u26A0|\u2715)?(?:" + string.Join("|", names.ConvertAll(Regex.Escape)) + ")";
+
+        return Regex.Replace(text, pattern, match =>
+        {
+            string matched = match.Value;
+            string name = matched;
+            if (name.Length > 0 && (name[0] == '\u26A0' || name[0] == '\u2715')) name = name.Substring(1);
+            if (!byName.TryGetValue(name, out AffixInfo info)) return matched;
+            return $"[color={info.Color}]{matched}[/color]";
+        });
+    }
+
+    /// <summary>
+    /// **卡面正文（含词缀着色）** —— 给 <c>RichTextLabel</c> 用（BBCode）。
+    /// 正文来源与 <see cref="BuildCardBodyText"/> 完全一致，只是多了一步词缀上色。
+    /// </summary>
+    /// <param name="card">卡牌</param>
+    /// <param name="bodyText">正文（可空）</param>
+    /// <param name="attributes">角色属性</param>
+    public static string BuildCardBodyBBCode(Card card, string bodyText = null, CharacterAttributes attributes = null)
+    {
+        return ColorizeAffixesInBody(BuildCardBodyText(card, bodyText, attributes), card);
+    }
+
+    /// <summary>
+    /// **卡面正文（含词缀着色）· 按卡牌类型出文案那套** —— 卡牌总览 / 长按预览用。
+    /// </summary>
+    /// <param name="card">卡牌</param>
+    /// <param name="attributes">角色属性</param>
+    public static string BuildCardFlavorBBCode(Card card, CharacterAttributes attributes = null)
+    {
+        return ColorizeAffixesInBody(GenerateCardFlavorText(card, attributes), card);
     }
 
     public static string GenerateUltimateDescription(UltimateSkill ultimate, CharacterAttributes attributes = null)

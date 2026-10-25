@@ -16,7 +16,7 @@ namespace FishEatFish.UI
 		private PanelContainer _panel;
 		private Label _nameLabel;
 		private Label _costLabel;
-		private Label _descLabel;
+		private RichTextLabel _descLabel;
 		private VBoxContainer _affixList;
 
 		public override void _Ready()
@@ -26,7 +26,7 @@ namespace FishEatFish.UI
 			_panel = GetNodeOrNull<PanelContainer>("Panel");
 			_nameLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/NameRow/NameLabel");
 			_costLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/NameRow/CostLabel");
-			_descLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/DescLabel");
+			_descLabel = GetNodeOrNull<RichTextLabel>("Panel/Margin/VBox/DescLabel");
 			_affixList = GetNodeOrNull<VBoxContainer>("Panel/Margin/VBox/AffixList");
 
 			if (_nameLabel == null) GD.PrintErr("[DerivedCardInfoPanel] 未找到 NameLabel");
@@ -57,10 +57,11 @@ namespace FishEatFish.UI
 			{
 				// 优先用策划写的完整说明（这张卡的部分机制还没实现，生成器写不全）；
 				// 没有就退回生成器（数值与战斗同源）。
-				// ⚠️ 走 BuildCardBodyText —— **正文末尾要带词缀标注**
+				// ⚠️ 走 BuildCardBodyBBCode —— **正文末尾要带词缀标注**，
+				//    而且正文里出现的词缀**按词缀说明区的颜色着色**
 				//    （照参考游戏：卡面正文带「⚠保留。」「✕罪印」，同时右侧还有词缀说明区，
 				//    两处都有）。之前这里直接用 TemplateDescription → 正文一个标记都没有。
-				_descLabel.Text = DescriptionGenerator.BuildCardBodyText(card, null, card.LinkedAttributes);
+				_descLabel.Text = DescriptionGenerator.BuildCardBodyBBCode(card, null, card.LinkedAttributes);
 			}
 
 			// 词缀说明（通用构建器，与长按卡牌的面板同一份逻辑）

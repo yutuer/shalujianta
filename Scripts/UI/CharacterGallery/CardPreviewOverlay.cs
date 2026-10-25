@@ -92,7 +92,7 @@ namespace FishEatFish.UI.CharacterGallery
 			if (_artRect != null) _artRect.Texture = art;
 			if (_descText != null)
 			{
-				_descText.Text = DescriptionGenerator.GenerateCardFlavorText(card, card.LinkedAttributes);
+				_descText.Text = DescriptionGenerator.BuildCardFlavorBBCode(card, card.LinkedAttributes);
 				// 每次打开都从**第一行**开始（超量时的自动滚动会带着往下走）
 				ResetDescScroll();
 			}

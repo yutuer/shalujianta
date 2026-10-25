@@ -23,7 +23,7 @@ namespace FishEatFish.UI.CharacterGallery
 		private Label _costLabel;
 		private Label _nameLabel;
 		private TextureRect _artRect;
-		private Label _descLabel;
+		private RichTextLabel _descLabel;
 		private Label _typeLabel;
 		private Card _card;
 
@@ -43,7 +43,7 @@ namespace FishEatFish.UI.CharacterGallery
 			_costLabel = GetNodeOrNull<Label>("CardPanel/Margin/VBox/TopRow/CostBadge/CostLabel");
 			_nameLabel = GetNodeOrNull<Label>("CardPanel/Margin/VBox/TopRow/NameLabel");
 			_artRect = GetNodeOrNull<TextureRect>("CardPanel/Margin/VBox/ArtRect");
-			_descLabel = GetNodeOrNull<Label>("CardPanel/Margin/VBox/DescLabel");
+			_descLabel = GetNodeOrNull<RichTextLabel>("CardPanel/Margin/VBox/DescLabel");
 			_typeLabel = GetNodeOrNull<Label>("CardPanel/Margin/VBox/TypeLabel");
 
 			if (_levelLabel == null) GD.PrintErr("[CharacterCardEntry] 未找到 LevelLabel");
@@ -78,7 +78,7 @@ namespace FishEatFish.UI.CharacterGallery
 
 			if (_descLabel != null)
 			{
-				_descLabel.Text = DescriptionGenerator.GenerateCardFlavorText(card, card.LinkedAttributes);
+				_descLabel.Text = DescriptionGenerator.BuildCardFlavorBBCode(card, card.LinkedAttributes);
 			}
 
 			if (_typeLabel != null)

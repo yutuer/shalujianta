@@ -99,14 +99,18 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="DescLabel" type="Label" parent="CardPanel/Margin/VBox"]
+[node name="DescLabel" type="RichTextLabel" parent="CardPanel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 86)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_colors/default_color = Color(0.88, 0.9, 0.95, 1)
+theme_override_font_sizes/normal_font_size = 19
 text = "造成 18 点伤害。"
+bbcode_enabled = true
+fit_content = false
+scroll_active = false
+selection_enabled = false
 autowrap_mode = 3
 vertical_alignment = 2
 

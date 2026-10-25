@@ -7,7 +7,7 @@ public partial class CardUI : Panel
     private Label nameLabel;
     private TextureRect cardImage;
     private Label costLabel;
-    private Label descLabel;
+    private RichTextLabel descLabel;
     private TextureRect typeIcon;
     private Label hoverHint;
     private Label levelLabel;
@@ -105,7 +105,7 @@ public partial class CardUI : Panel
         nameLabel = GetNode<Label>("VBoxContainer/HeaderRow/NameLabel");
         cardImage = GetNode<TextureRect>("VBoxContainer/ImageContainer/CardImage");
         costLabel = GetNode<Label>("CostBadge/CostLabel");
-        descLabel = GetNode<Label>("VBoxContainer/DescLabel");
+        descLabel = GetNode<RichTextLabel>("VBoxContainer/DescLabel");
         typeIcon = GetNode<TextureRect>("VBoxContainer/HeaderRow/TypeIcon");
         hoverHint = GetNode<Label>("VBoxContainer/HoverHint");
 
@@ -123,7 +123,7 @@ public partial class CardUI : Panel
 
         nameLabel.AddThemeColorOverride("font_color", new Color(1f, 1f, 1f));
         costLabel.AddThemeColorOverride("font_color", new Color(0.72f, 0.9f, 1f));
-        descLabel.AddThemeColorOverride("font_color", new Color(0.82f, 0.82f, 0.84f));
+        descLabel.AddThemeColorOverride("default_color", new Color(0.82f, 0.82f, 0.84f));
 
         // 费用角标：深色圆底 + 亮色数字（对照参考图 R-08 的左上角圆标）
         var badge = GetNodeOrNull<PanelContainer>("CostBadge");
@@ -440,7 +440,7 @@ public partial class CardUI : Panel
     private void RefreshDescription()
     {
         if (cardData == null || descLabel == null) return;
-        descLabel.Text = DescriptionGenerator.BuildCardBodyText(cardData, null, _linkedAttributes);
+        descLabel.Text = DescriptionGenerator.BuildCardBodyBBCode(cardData, null, _linkedAttributes);
     }
 
     private void UpdateLevelDisplay()
@@ -473,7 +473,7 @@ public partial class CardUI : Panel
         Name = $"Card_{index}";
         nameLabel.Text = card.Name;
         costLabel.Text = card.Cost.ToString();
-        descLabel.Text = DescriptionGenerator.BuildCardBodyText(card, null, _linkedAttributes);
+        descLabel.Text = DescriptionGenerator.BuildCardBodyBBCode(card, null, _linkedAttributes);
 
         UpdateLevelDisplay();
         UpdateEngravingBadge(card);

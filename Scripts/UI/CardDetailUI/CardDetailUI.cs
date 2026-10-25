@@ -26,7 +26,7 @@ namespace FishEatFish.UI.CardDetailPanel
 		private Label _levelLabel;
 		private Label _statsLabel;
 		private Label _affixLabel;
-		private Label _descLabel;
+		private RichTextLabel _descLabel;
 		private Button _closeButton;
 
 		private Card _currentCard;
@@ -42,7 +42,7 @@ namespace FishEatFish.UI.CardDetailPanel
 			_levelLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/Header/TitleBox/LevelLabel");
 			_statsLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/StatsPanel/StatsLabel");
 			_affixLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/AffixLabel");
-			_descLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/DescLabel");
+			_descLabel = GetNodeOrNull<RichTextLabel>("Panel/Margin/VBox/DescLabel");
 			_closeButton = GetNodeOrNull<Button>("Panel/Margin/VBox/Footer/CloseButton");
 
 			if (_panel == null) GD.PrintErr("[CardDetailUI] 未找到 Panel 节点");
@@ -90,7 +90,7 @@ namespace FishEatFish.UI.CardDetailPanel
 
 			if (_descLabel != null)
 			{
-				_descLabel.Text = DescriptionGenerator.BuildCardBodyText(card, null, attributes);
+				_descLabel.Text = DescriptionGenerator.BuildCardBodyBBCode(card, null, attributes);
 			}
 
 			if (_affixLabel != null)

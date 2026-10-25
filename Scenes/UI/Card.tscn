@@ -96,14 +96,18 @@ layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="DescLabel" type="Label" parent="VBoxContainer"]
+[node name="DescLabel" type="RichTextLabel" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 text = "卡牌描述"
+bbcode_enabled = true
+fit_content = false
+scroll_active = false
+selection_enabled = false
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/normal_font_size = 12
 
 [node name="LevelLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
