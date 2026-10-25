@@ -145,19 +145,7 @@ autowrap_mode = 3
 [node name="Footer" type="HBoxContainer" parent="Panel/Margin/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 10
-
-[node name="HintLabel" type="Label" parent="Panel/Margin/VBox/Footer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_colors/font_color = Color(0.62, 0.65, 0.72, 1)
-theme_override_font_sizes/font_size = 14
-text = "卡牌升级暂未开放（界面已就位，升级逻辑等主人排期）"
-
-[node name="UpgradeButton" type="Button" parent="Panel/Margin/VBox/Footer"]
-custom_minimum_size = Vector2(96, 0)
-layout_mode = 2
-text = "升级"
+alignment = 2
 
 [node name="CloseButton" type="Button" parent="Panel/Margin/VBox/Footer"]
 custom_minimum_size = Vector2(96, 0)

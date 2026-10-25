@@ -12,7 +12,9 @@ namespace FishEatFish.UI.CardDetailPanel
 	/// —— 关键是显示**系数口径**（「伤害 攻击力×20%」），再给当前值与下一级预览。
 	///
 	/// ⚠️ **卡牌升级本身不做**（主人 2026-10-24：「卡牌升级先不用管」）——
-	/// 这里只把升级入口摆出来，点了给一句提示，不改任何数值。
+	/// 2026-10-25 主人又要求：**界面上不要挂「卡牌升级暂未开放」的提示和空按钮**
+	/// （「为什么要加这个？去掉」），所以升级入口整体撤掉了，
+	/// **升级功能的计划写在 `docs/开发计划.md` 与 `docs/卡牌设计.md` 里**，等排期再做。
 	/// </summary>
 	public partial class CardDetailUI : Control
 	{
@@ -25,8 +27,6 @@ namespace FishEatFish.UI.CardDetailPanel
 		private Label _statsLabel;
 		private Label _affixLabel;
 		private Label _descLabel;
-		private Label _hintLabel;
-		private Button _upgradeButton;
 		private Button _closeButton;
 
 		private Card _currentCard;
@@ -43,18 +43,11 @@ namespace FishEatFish.UI.CardDetailPanel
 			_statsLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/StatsPanel/StatsLabel");
 			_affixLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/AffixLabel");
 			_descLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/DescLabel");
-			_hintLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/Footer/HintLabel");
-			_upgradeButton = GetNodeOrNull<Button>("Panel/Margin/VBox/Footer/UpgradeButton");
 			_closeButton = GetNodeOrNull<Button>("Panel/Margin/VBox/Footer/CloseButton");
 
 			if (_panel == null) GD.PrintErr("[CardDetailUI] 未找到 Panel 节点");
-			if (_upgradeButton == null) GD.PrintErr("[CardDetailUI] 未找到 UpgradeButton 节点");
 			if (_closeButton == null) GD.PrintErr("[CardDetailUI] 未找到 CloseButton 节点");
 
-			if (_upgradeButton != null)
-			{
-				_upgradeButton.Pressed += OnUpgradePressed;
-			}
 			if (_closeButton != null)
 			{
 				_closeButton.Pressed += OnClosePressed;
@@ -102,19 +95,12 @@ namespace FishEatFish.UI.CardDetailPanel
 
 			if (_affixLabel != null)
 			{
-				string affix = BuildAffixText(card);
+				// ⚠️ 词缀行只显示**正文里没有的**词缀 ——
+				//    正文末尾已经带「⚠保留。」了（卡面词缀标注），
+				//    词缀行再写一遍「词缀：保留」就是同一个词出现两次（主人 D42 报过这类重复）。
+				string affix = BuildAffixText(card, _descLabel != null ? _descLabel.Text : "");
 				_affixLabel.Text = affix;
 				_affixLabel.Visible = !string.IsNullOrEmpty(affix);
-			}
-
-			if (_hintLabel != null)
-			{
-				_hintLabel.Text = "卡牌升级暂未开放（界面已就位，升级逻辑等主人排期）";
-			}
-			if (_upgradeButton != null)
-			{
-				_upgradeButton.Disabled = card.Level >= card.MaxLevel;
-				_upgradeButton.Text = card.Level >= card.MaxLevel ? "已达等级上限" : "升级";
 			}
 
 			_showTimeMsec = Time.GetTicksMsec();
@@ -145,16 +131,6 @@ namespace FishEatFish.UI.CardDetailPanel
 
 			HideCard();
 			AcceptEvent();
-		}
-
-		private void OnUpgradePressed()
-		{
-			GD.Print("[CardDetailUI] OnUpgradePressed called");
-			if (_currentCard != null)
-			{
-				GD.Print($"[CardDetailUI] 卡牌升级暂未开放：{_currentCard.CardId} Lv.{_currentCard.Level}/{_currentCard.MaxLevel}");
-			}
-			GD.Print("[CardDetailUI] OnUpgradePressed completed");
 		}
 
 		private void OnClosePressed()
@@ -213,12 +189,24 @@ namespace FishEatFish.UI.CardDetailPanel
 			return string.Join("\n", lines);
 		}
 
-		/// <summary>词缀行：保留 / 刻印 等不在卡面描述里的标记</summary>
-		private static string BuildAffixText(Card card)
+		/// <summary>
+		/// 词缀行：只显示**正文里没有的**词缀标记。
+		///
+		/// 「保留」现在由**卡面词缀标注**带在正文末尾（「⚠保留。」），
+		/// 所以正文里已经有的时候，这一行不再重复写（同一个词出现两次 = 主人 D42 报过的那类重复）。
+		/// 「刻印」是战斗里临时挂上去的、不在正文里，仍然要显示。
+		/// </summary>
+		/// <param name="card">卡牌</param>
+		/// <param name="bodyText">卡面正文（用来判断某个词缀是不是已经写过了）</param>
+		private static string BuildAffixText(Card card, string bodyText)
 		{
 			var parts = new System.Collections.Generic.List<string>();
+			string body = bodyText ?? "";
 
-			if (card.IsRetain) parts.Add("保留");
+			if (card.IsRetain && !body.Contains("保留"))
+			{
+				parts.Add("保留");
+			}
 			if (card.IsEngraved && !string.IsNullOrEmpty(card.EngravingEffect?.Name))
 			{
 				parts.Add($"刻印：{card.EngravingEffect.Name}");

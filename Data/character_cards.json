@@ -1610,7 +1610,7 @@
                 "retain",
                 "prep1"
             ],
-            "bodyAffixMarks": [],
+            "bodyAffixMarks": ["retain"],
             "description": "造成 128 点伤害，获得 3 层 ✕罪印。打出后将此卡牌洗入抽牌堆顶部。第 3 次打出时 ⚠消耗 并使自身下张指令卡享受「苦痛救赎」效果。预备1。",
             "effects": [
                 {
