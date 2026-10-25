@@ -181,26 +181,34 @@ namespace FishEatFish.UI.CharacterGallery
 			bar.Value = Mathf.Min(bar.Value + step, maxScroll);
 		}
 
-		public override void _GuiInput(InputEvent @event)
+		/// <summary>
+		/// **点面板外关闭**。
+		///
+		/// ⚠️ 用 `_Input` 而不是 `_GuiInput`：
+		/// `_GuiInput` 只在「本控件是**命中控件的祖先**」时才被调用，
+		/// 而本预览层是 `CharacterGallery` 的**兄弟节点** —— 点外面时命中的是
+		/// 卡牌总览页里的控件，事件沿祖先链冒泡到不了这里 → 「点空白关不掉」。
+		/// `_Input` 在所有 GUI 处理之前执行，能稳定收到点击。
+		/// </summary>
+		public override void _Input(InputEvent @event)
 		{
-			// 点空白处关闭
-			if (@event is InputEventMouseButton mouseEvent &&
-				mouseEvent.Pressed &&
-				mouseEvent.ButtonIndex == MouseButton.Left)
-			{
-				if (IsPointInsideCard())
-				{
-					return;
-				}
-				HideCard();
-				AcceptEvent();
-			}
+			if (!Visible) return;
+			if (@event is not InputEventMouseButton mouseEvent) return;
+			if (!mouseEvent.Pressed || mouseEvent.ButtonIndex != MouseButton.Left) return;
+
+			// 点在卡牌上 → 不关
+			if (IsPointInsideCard(mouseEvent.Position)) return;
+
+			HideCard();
+			// 吃掉这次点击，免得落到下层控件上
+			GetViewport().SetInputAsHandled();
 		}
 
-		private bool IsPointInsideCard()
+		/// <summary>该点是否落在卡牌内（视口坐标）</summary>
+		private bool IsPointInsideCard(Vector2 viewportPoint)
 		{
 			if (_cardBox == null) return false;
-			return _cardBox.GetGlobalRect().HasPoint(GetGlobalMousePosition());
+			return _cardBox.GetGlobalRect().HasPoint(viewportPoint);
 		}
 
 		/// <summary>移动卡牌：改锚点让它的中心落在指定的横向位置</summary>

@@ -73,20 +73,28 @@ namespace FishEatFish.UI
 			Visible = false;
 		}
 
-		public override void _GuiInput(InputEvent @event)
+		/// <summary>
+		/// **点面板外关闭**。
+		///
+		/// ⚠️ 这里用 `_Input` 而**不是** `_GuiInput`：
+		/// `_GuiInput` 只在「本控件是**命中控件的祖先**」时才会被调用。
+		/// 而这个面板是 `CharacterGallery` 的**兄弟节点** —— 点面板外时命中的是
+		/// 卡牌总览页里的 `CardsSide` / 卡牌，事件沿**祖先链**向上冒泡，
+		/// 永远到不了本面板 → 表现为「点了外面面板不消失」（2026-10-25 主人报的 bug）。
+		/// `_Input` 在所有 GUI 处理**之前**执行，能稳定收到点击。
+		/// </summary>
+		public override void _Input(InputEvent @event)
 		{
-			// 点空白处关闭
-			if (@event is InputEventMouseButton mouseEvent &&
-				mouseEvent.Pressed &&
-				mouseEvent.ButtonIndex == MouseButton.Left)
-			{
-				if (_panel != null && _panel.GetGlobalRect().HasPoint(GetGlobalMousePosition()))
-				{
-					return;
-				}
-				HidePanel();
-				AcceptEvent();
-			}
+			if (!Visible) return;
+			if (@event is not InputEventMouseButton mouseEvent) return;
+			if (!mouseEvent.Pressed || mouseEvent.ButtonIndex != MouseButton.Left) return;
+
+			// 点在面板内部 → 不关
+			if (_panel != null && _panel.GetGlobalRect().HasPoint(mouseEvent.Position)) return;
+
+			HidePanel();
+			// 吃掉这次点击 —— 否则它还会落到下层的卡牌上，误触发卡牌的长按/点击
+			GetViewport().SetInputAsHandled();
 		}
 	}
 }
