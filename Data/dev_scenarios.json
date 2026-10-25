@@ -8,7 +8,7 @@
       "target": "hexmap"
     },
     "jialun_team": {
-        "desc": "珈伦入队（验证新角色：属性 / 卡组 / 必杀技 / 词缀着色）",
+        "desc": "珈伦入队（验证新角色：属性 / 卡组 / 狂气爆发 / 词缀着色）",
         "team": ["jialun", "ox", "tiger", "rabbit"],
         "keyOrder": "silver_slash",
         "map": "map01",
@@ -60,11 +60,26 @@
       "target": "battle",
       "enemyWave": "boss_wave"
     },    "pollux_team": {
-        "desc": "波吕克斯入队（验证新角色：属性 / 卡组 / 必杀技）",
+        "desc": "波吕克斯入队（验证新角色：属性 / 卡组 / 狂气爆发）",
         "team": ["pollux", "ox", "tiger", "rabbit"],
         "keyOrder": "silver_slash",
         "map": "map01",
         "target": "battle"
+    },
+    "jialun_pollux": {
+        "desc": "珈伦 + 波吕克斯同队（D54 用：验证圣心 128 / 灵知觉醒持续触发 / 静默守望叠层 / 客官请慢用！）",
+        "team": ["jialun", "pollux", "tiger", "rabbit"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
+    },
+    "jialun_pollux_boss": {
+        "desc": "珈伦 + 波吕克斯打 BOSS（BOSS 血厚，测衍生卡「圣心 / 奇妙料理」不会被秒杀掉）",
+        "team": ["jialun", "pollux", "tiger", "rabbit"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle",
+        "enemyWave": "boss_wave"
     },
     "elite_battle": {
       "desc": "选人完成 + 直接进战斗，敌人按 elite_wave",

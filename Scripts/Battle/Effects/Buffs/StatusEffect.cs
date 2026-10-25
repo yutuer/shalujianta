@@ -129,6 +129,19 @@ public abstract partial class StatusEffect : Resource
         _remainingDuration--;
     }
 
+    /// <summary>
+    /// **同名减益再次施加时的合并**（层数累加）。
+    ///
+    /// 默认行为：层数 +1（与以前的 <c>StackCount++</c> 完全一样）。
+    /// 需要「层数即数值」的减益（如中毒：41 层 → 掉 41 点）要覆写它，
+    /// 把**数值**也一起累加 —— 否则中毒叠了两次还是按第一次的量掉血。
+    /// </summary>
+    public virtual void MergeStacks(StatusEffect incoming)
+    {
+        if (incoming == null) return;
+        StackCount += incoming.StackCount;
+    }
+
     public bool IsExpired()
     {
         return _remainingDuration <= 0;

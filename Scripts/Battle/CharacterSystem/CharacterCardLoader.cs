@@ -82,6 +82,13 @@ public class CharacterCardLoader
         card.DrawCount = dict.ContainsKey("drawCountBase") ? (int)(long)dict["drawCountBase"] : 0;
         card.IsRetain = dict.ContainsKey("isRetain") ? (bool)dict["isRetain"] : false;
 
+        // 「可以使用 N 次」（珈伦衍生卡「奇妙料理」= 可以使用 3 次）
+        card.MaxUsageCount = dict.ContainsKey("maxUsageCount") ? (int)(long)dict["maxUsageCount"] : 0;
+
+        // 打出后回到抽牌堆顶部 / 第 N 次打出时消耗（波吕克斯「圣心」）
+        card.ReturnToDeckTop = dict.ContainsKey("returnToDeckTop") && (bool)dict["returnToDeckTop"];
+        card.ConsumeOnPlayCount = dict.ContainsKey("consumeOnPlayCount") ? (int)(long)dict["consumeOnPlayCount"] : 0;
+
         // 卡牌类型（指令 / 衍生 / 灵知觉醒）与词缀数组 —— 卡牌总览的文案与显示要用
         card.CardType = ParseCardType(dict.ContainsKey("cardType") ? dict["cardType"].ToString() : "");
         // 插画借用（衍生卡没有专属插画时借别的卡的立绘）
@@ -162,7 +169,16 @@ public class CharacterCardLoader
                     Buff = effectDict.ContainsKey("buff") ? effectDict["buff"].ToString() : "",
                     Debuff = effectDict.ContainsKey("debuff") ? effectDict["debuff"].ToString() : "",
                     Target = effectDict.ContainsKey("target") ? effectDict["target"].ToString() : "",
-                    Filter = effectDict.ContainsKey("filter") ? effectDict["filter"].ToString() : ""
+                    Filter = effectDict.ContainsKey("filter") ? effectDict["filter"].ToString() : "",
+                    // 「攻击力×N%」恒定不乘等级系数（波吕克斯「圣心」= 攻击力×70%，六级都一样）
+                    IgnoreLevelScale = effectDict.ContainsKey("ignoreLevelScale") && (bool)effectDict["ignoreLevelScale"],
+                    // 灵知觉醒（珈伦「凸月之舞」：每次打出卡牌后回复 / 加怒 / 打出衍生卡时上毒）
+                    AwakeningRageGain = effectDict.ContainsKey("awakeningRageGain") ? (int)(long)effectDict["awakeningRageGain"] : 0,
+                    AwakeningDebuffPercent = effectDict.ContainsKey("awakeningDebuffPercent") ? (int)(long)effectDict["awakeningDebuffPercent"] : 0,
+                    AwakeningTriggerCardId = effectDict.ContainsKey("awakeningTriggerCardId") ? effectDict["awakeningTriggerCardId"].ToString() : "",
+                    AwakeningDebuff = effectDict.ContainsKey("awakeningDebuff") ? effectDict["awakeningDebuff"].ToString() : "",
+                    // 保留叠层上限（珈伦「静默守望」= 2）
+                    RetainStackMax = effectDict.ContainsKey("retainStackMax") ? (int)(long)effectDict["retainStackMax"] : 0
                 };
 
                 if (effectDict.ContainsKey("timing") && effectDict["timing"].Obj != null)

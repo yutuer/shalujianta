@@ -84,7 +84,7 @@ public partial class AttackerDisplayUI : Control
     /// </summary>
     /// <param name="slotIndex">角色槽位索引 (0-3)</param>
     /// <param name="rageValue">当前怒气值 (0-100)</param>
-    /// <param name="canUseUltimate">是否可以使用必杀技</param>
+    /// <param name="canUseUltimate">是否可以使用狂气爆发</param>
     public void UpdateCharacterStatus(int slotIndex, int rageValue, bool canUseUltimate)
     {
         if (slotIndex >= 0 && slotIndex < _characterSlots.Count)
@@ -102,7 +102,7 @@ public partial class AttackerDisplayUI : Control
     }
 
     /// <summary>
-    /// 设置角色槽位点击回调（点击可释放必杀技的槽位时触发）
+    /// 设置角色槽位点击回调（点击可释放狂气爆发的槽位时触发）
     /// </summary>
     /// <param name="onSlotClicked">回调参数为槽位索引 (0-3)，传 null 表示清除回调</param>
     public void SetUltimateClickCallback(System.Action<int> onSlotClicked)
@@ -142,7 +142,7 @@ public partial class AttackerDisplayUI : Control
     }
 
     /// <summary>
-    /// 高亮显示怒气已满的角色（可用于必杀技释放）
+    /// 高亮显示怒气已满的角色（可用于狂气爆发释放）
     /// </summary>
     public void HighlightCharacterWithFullRage()
     {

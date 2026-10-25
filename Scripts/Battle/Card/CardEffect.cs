@@ -66,6 +66,39 @@ namespace FishEatFish.Battle.Card
 		public List<string> Timing { get; set; } = new List<string>();
 
 		/// <summary>
+		/// **不乘等级系数** —— 「攻击力×N%」恒定，六个等级都一样。
+		///
+		/// 照参考游戏《终末前夜 Morimens》：波吕克斯「圣心」= 攻击力×70%，
+		/// wiki 六个等级写的都是 70%（**不是** 70% → 140% 的成长曲线）。
+		/// 我们的通用公式是「基础% × (1+0.2×(级−1))」→ Lv6 会翻倍，
+		/// 所以这类卡要显式打开这个开关。
+		/// </summary>
+		public bool IgnoreLevelScale { get; set; }
+
+		/// <summary>
+		/// **灵知觉醒：打出卡牌后获得的怒气**（珈伦「凸月之舞」= 5 点）。
+		/// </summary>
+		public int AwakeningRageGain { get; set; }
+
+		/// <summary>
+		/// **灵知觉醒：打出指定那张卡后，对全体敌人施加的减益层数**（按攻击力百分比）。
+		/// 珈伦「凸月之舞」= 打出「奇妙料理」后，全体敌人中毒 攻击力×15% 层。
+		/// </summary>
+		public int AwakeningDebuffPercent { get; set; }
+
+		/// <summary>灵知觉醒：打出**哪张卡**时触发那个减益（衍生卡 id，如 jialun_derived）</summary>
+		public string AwakeningTriggerCardId { get; set; } = "";
+
+		/// <summary>灵知觉醒：减益 id（poison 等）</summary>
+		public string AwakeningDebuff { get; set; } = "";
+
+		/// <summary>
+		/// **保留叠加的最大层数**（珈伦「静默守望」= 2，启灵1 后为 3）。
+		/// 回合结束时这张卡还在手里 → 算力消耗 +1、回复与护盾翻倍，叠到上限为止。
+		/// </summary>
+		public int RetainStackMax { get; set; }
+
+		/// <summary>
 		 /// 该效果在指定时机是否触发。
 		/// 没写 timing 的效果**只在 onPlay 触发**（一次性的效果都是打出时）。
 		/// </summary>
@@ -102,6 +135,12 @@ namespace FishEatFish.Battle.Card
 		public const string OnPlay = "onPlay";
 		/// <summary>弃牌阶段后</summary>
 		public const string OnDiscard = "onDiscard";
+		/// <summary>
+		/// **灵知觉醒触发时**（每次打出卡牌后）。
+		/// 珈伦「凸月之舞」的「回复 体质×9% 生命」就是这个时机 ——
+		/// 它**不是**打出觉醒卡时回的血，而是之后每打出一张卡牌都回。
+		/// </summary>
+		public const string OnAwakening = "onAwakening";
 	}
 
 	/// <summary>效果类型常量</summary>
@@ -119,6 +158,16 @@ namespace FishEatFish.Battle.Card
 		public const string Retain = "retain";
 		/// <summary>消耗：打出后从牌库移除（不进弃牌堆）</summary>
 		public const string Consume = "consume";
+		/// <summary>
+		/// **灵知觉醒**：打出后使角色在本场战斗中获得特殊能力
+		/// （珈伦「凸月之舞」= 之后每打出一张卡牌都回复体质×9% 生命并获得 5 点狂气）。
+		/// </summary>
+		public const string Awakening = "awakening";
+		/// <summary>
+		/// **保留叠加**：回合结束时若这张卡还在手里，算力消耗 +1、回复与护盾翻倍
+		/// （珈伦「静默守望」= 最多叠加 2 次）。
+		/// </summary>
+		public const string RetainStack = "retainStack";
 	}
 
 	/// <summary>作用目标常量</summary>

@@ -58,7 +58,7 @@ public partial class VulnerableDebuff : StatusEffect
     ///
     /// ⚠️ 原来这里靠 <c>_owner</c> 判断「被打的是不是被施加的那个敌人」，
     /// 但 <c>Enemy.AddStatusEffect</c> **从不调用 SetOwner** → _owner 恒为 null →
-    /// 判定恒不成立 → **易伤从来没生效过**（必杀技「龙王咆哮」的毒+易伤都打不出来）。
+    /// 判定恒不成立 → **易伤从来没生效过**（狂气爆发「龙王咆哮」的毒+易伤都打不出来）。
     /// 现在改成不依赖 owner：易伤总是施加给承受伤害的那个敌人自己。
     /// </summary>
     public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
@@ -69,6 +69,16 @@ public partial class VulnerableDebuff : StatusEffect
 
 public partial class PoisonDebuff : StatusEffect
 {
+    /// <summary>
+    /// **中毒层数** = 回合结束时受到的纯粹伤害。
+    ///
+    /// 照参考游戏《终末前夜 Morimens》「☠中毒」词条：「**回合结束时受到等量层数的伤害。**」
+    /// 「固定伤害」词条：「不被力量、虚弱、易伤等状态影响，直接造成伤害。」
+    /// → 所以这里的伤害**不走防御、不吃易伤/破甲**（见 <see cref="Core.Enemy.TakeFixedDamage"/>）。
+    ///
+    /// ⚠️ 语义变了：以前这个字段是「每回合固定掉多少血」（12 生肖那几个狂气爆发按这个口径配），
+    /// 现在它就是**层数**——施加 41 层 → 回合结束掉 41 点；再叠加 30 层 → 掉 71 点。
+    /// </summary>
     [Export]
     public int DamagePerTurn { get; set; } = 3;
 
@@ -80,10 +90,25 @@ public partial class PoisonDebuff : StatusEffect
         EffectType = StatusEffectType.Debuff;
     }
 
+    /// <summary>
+    /// 再次施加中毒时**层数累加**（不是覆盖）——
+    /// 「等量层数」的伤害要求层数能累起来：41 + 30 = 71 层 → 回合结束掉 71 点。
+    /// </summary>
+    public override void MergeStacks(StatusEffect incoming)
+    {
+        base.MergeStacks(incoming);
+        if (incoming is PoisonDebuff p)
+        {
+            DamagePerTurn += p.DamagePerTurn;
+        }
+    }
+
     public override void OnTurnEndEnemy(Core.Enemy target)
     {
         base.OnTurnEndEnemy(target);
-        target.TakeDamage(DamagePerTurn);
+        // ⚠️ 固定伤害：不走防御、不吃易伤/破甲（参考游戏的「固定中毒」）
+        target.TakeFixedDamage(DamagePerTurn);
+        GD.Print($"[PoisonDebuff] {target.EnemyName} 回合结束受到 {DamagePerTurn} 点中毒伤害（{DamagePerTurn} 层）");
     }
 }
 

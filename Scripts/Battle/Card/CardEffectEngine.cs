@@ -109,6 +109,13 @@ namespace FishEatFish.Battle.Card
 					// 消耗：打出后从牌库移除（不进弃牌堆）——由 BattleManager 收尾时判断
 					ctx.CardConsumed = true;
 					break;
+				case CardEffectType.Awakening:
+					ExecuteAwakening(card, effect, ctx);
+					break;
+				case CardEffectType.RetainStack:
+					// 保留叠加：回合末结算（见 BattleManager.EndTurn）——
+					// 打出时不用做什么，上限直接从效果列表里读。
+					break;
 				default:
 					GD.PrintErr($"[CardEffectEngine] 未知效果类型：{effect.Type}（卡 {card.CardId}）");
 					break;
@@ -295,6 +302,79 @@ namespace FishEatFish.Battle.Card
 			Log(ctx, $"你使用了{card.Name}，给{target.EnemyName}附加了减益效果{stacks}层", LogType.System);
 		}
 
+		/// <summary>
+		/// **灵知觉醒**：打出后使角色在本场战斗中获得特殊能力。
+		///
+		/// 照参考游戏《终末前夜 Morimens》—— 珈伦「凸月之舞」：
+		/// 「珈伦获得 25 点狂气。⚠灵知觉醒：**珈伦打出卡牌后**，回复 体质×9% 点生命，获得 5 点狂气。
+		/// 打出「奇妙料理」后，对所有敌人施加 攻击力×15% 层中毒。」
+		///
+		/// ⚠️ 关键：**是「每次打出卡牌后」触发，不是「打出这张卡时」**。
+		/// 所以这里只把**数值算好存起来**（按这张觉醒卡的等级），
+		/// 真正的触发挂在 BattleManager.OnCardPlayed 上。
+		/// </summary>
+		private static void ExecuteAwakening(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (ctx.RageTarget == null)
+			{
+				GD.PrintErr($"[CardEffectEngine] 灵知觉醒没有归属角色：{card.CardId}");
+				return;
+			}
+
+			CharacterAttributes attributes = ctx.Attributes;
+
+			// 回复量取「时机 = onAwakening」的那个治疗效果
+			// （珈伦「凸月之舞」：回复 体质×9% 点生命 —— **每次打出卡牌后**才回，不是打出这张卡时）
+			int heal = 0;
+			foreach (CardEffect e in card.Effects)
+			{
+				if (e.Type == CardEffectType.Heal && e.MatchesTiming(CardEffectTiming.OnAwakening))
+				{
+					heal = CardEffectCalculator.CalculateHeal(card, e, attributes);
+					break;
+				}
+			}
+
+			int debuffStacks = effect.AwakeningDebuffPercent > 0 && attributes != null
+				? CardLevelSystem.CalculateAttributeLinkedValue(card.Level, attributes.Attack, effect.AwakeningDebuffPercent / 100f)
+				: 0;
+
+			ctx.RageTarget.ActivateAwakening(
+				heal,
+				effect.AwakeningRageGain,
+				effect.AwakeningDebuff,
+				debuffStacks,
+				effect.AwakeningTriggerCardId,
+				card.CardId);
+
+			Log(ctx, $"灵知觉醒生效：之后每打出一张卡牌，回复{heal}点生命并获得{effect.AwakeningRageGain}点狂气", LogType.System);
+		}
+
+		/// <summary>
+		/// **对全体敌人施加减益**（供灵知觉醒这类「角色级」触发复用）。
+		///
+	/// 珈伦「凸月之舞」：「打出「奇妙料理」后，对所有敌人施加 攻击力×15% 层中毒。」
+		/// 减益层数在激活觉醒时就按攻击力算好了，这里只负责挂上去。
+		/// </summary>
+		public static void ApplyDebuffToAllEnemies(Card sourceCard, string debuffId, int stacks, CardEffectContext ctx)
+		{
+			if (string.IsNullOrEmpty(debuffId) || stacks <= 0 || ctx == null) return;
+			if (ctx.Enemies == null) return;
+
+			CardEffect effect = new CardEffect
+			{
+				Type = CardEffectType.Debuff,
+				Debuff = debuffId,
+				Target = CardEffectTarget.AllEnemies
+			};
+
+			foreach (Enemy enemy in ctx.Enemies)
+			{
+				if (enemy == null || enemy.IsDead) continue;
+				ApplyDebuffTo(enemy, sourceCard, effect, stacks, ctx);
+			}
+		}
+
 		private static void Log(CardEffectContext ctx, string message, LogType type)
 		{
 			ctx.Log?.Invoke(message, type);
@@ -307,7 +387,12 @@ namespace FishEatFish.Battle.Card
 	/// </summary>
 	public static class CardEffectCalculator
 	{
-		/// <summary>伤害 = 攻击力 × 百分比 × 等级系数（没配百分比就用固定值）</summary>
+		/// <summary>
+		/// 伤害 = 攻击力 × 百分比 × 等级系数（没配百分比就用固定值）。
+		///
+		/// ⚠️ 效果上打开 <c>ignoreLevelScale</c> 时**不乘等级系数**——
+		/// 波吕克斯「圣心」= 攻击力×70%，参考游戏六个等级写的都是 70%（恒定）。
+		/// </summary>
 		public static int CalculateDamage(Card card, CardEffect effect, CharacterAttributes attributes)
 		{
 			if (card == null || effect == null) return 0;
@@ -315,6 +400,11 @@ namespace FishEatFish.Battle.Card
 			int level = card.Level;
 			if (effect.Percent > 0 && attributes != null)
 			{
+				if (effect.IgnoreLevelScale)
+				{
+					// 恒定系数：攻击力 × N%（向上取整，照参考游戏口径）
+					return Mathf.CeilToInt(attributes.Attack * effect.Percent / 100f);
+				}
 				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Attack, effect.Percent / 100f);
 			}
 			if (effect.Value > 0)
@@ -324,42 +414,73 @@ namespace FishEatFish.Battle.Card
 			return 0;
 		}
 
-		/// <summary>护盾 = 防御力 × 百分比 × 等级系数（没配百分比就用固定值）</summary>
+		/// <summary>
+		/// 护盾 = 防御力 × 百分比 × 等级系数（没配百分比就用固定值）。
+		///
+		/// ⚠️ 卡上有**保留叠加**时（珈伦「静默守望」）再乘 2^层数 ——
+		/// 参考游戏：「回合结束时若在手中，算力消耗提高 1，回复生命和护盾翻倍。最多叠加 2 次。」
+		/// </summary>
 		public static int CalculateShield(Card card, CardEffect effect, CharacterAttributes attributes)
 		{
 			if (card == null || effect == null) return 0;
 
 			int level = card.Level;
+			int value;
 			if (effect.Percent > 0 && attributes != null)
 			{
-				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Defense, effect.Percent / 100f);
+				value = CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Defense, effect.Percent / 100f);
 			}
-			if (effect.Value > 0)
+			else if (effect.Value > 0)
 			{
-				return CardLevelSystem.CalculateAttributeLinkedValue(level, effect.Value, 1f);
+				value = CardLevelSystem.CalculateAttributeLinkedValue(level, effect.Value, 1f);
 			}
-			return 0;
+			else
+			{
+				return 0;
+			}
+
+			return value * GetRetainStackMultiplier(card);
+		}
+
+		/// <summary>
+		/// **保留叠加的翻倍倍率** = 2^层数。
+		/// 叠 1 层 → ×2、叠 2 层 → ×4（参考游戏「回复生命和护盾翻倍。最多叠加 2 次」）。
+		/// </summary>
+		public static int GetRetainStackMultiplier(Card card)
+		{
+			if (card == null || card.RetainStackCount <= 0) return 1;
+			int multiplier = 1;
+			for (int i = 0; i < card.RetainStackCount; i++) multiplier *= 2;
+			return multiplier;
 		}
 
 		/// <summary>
 		/// **治疗 = 体质 × 百分比 × 等级系数**（没配百分比就用固定值）。
 		///
 		/// 照参考游戏《终末前夜 Morimens》：「回复 体质×N%」（珈伦「凸月之舞」回复 体质×9%）。
+		///
+		/// ⚠️ 卡上有**保留叠加**时（珈伦「静默守望」）再乘 2^层数。
 		/// </summary>
 		public static int CalculateHeal(Card card, CardEffect effect, CharacterAttributes attributes)
 		{
 			if (card == null || effect == null) return 0;
 
 			int level = card.Level;
+			int value;
 			if (effect.Percent > 0 && attributes != null)
 			{
-				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Constitution, effect.Percent / 100f);
+				value = CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Constitution, effect.Percent / 100f);
 			}
-			if (effect.Value > 0)
+			else if (effect.Value > 0)
 			{
-				return CardLevelSystem.CalculateAttributeLinkedValue(level, effect.Value, 1f);
+				value = CardLevelSystem.CalculateAttributeLinkedValue(level, effect.Value, 1f);
 			}
-			return 0;
+			else
+			{
+				return 0;
+			}
+
+			return value * GetRetainStackMultiplier(card);
 		}
 
 		/// <summary>

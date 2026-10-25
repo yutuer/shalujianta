@@ -1,30 +1,32 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Card;
 using FishEatFish.Battle.Core;
 using FishEatFish.Battle.Effects.Buffs;
 
 namespace FishEatFish.Battle.CharacterSystem;
 
 /// <summary>
-/// 必杀技效果执行器
+/// 狂气爆发效果执行器
 /// 负责按 ultimates.json 的字段结算：伤害 / 治疗 / 护盾 / 抽牌 / 能量 / 附加减益
 /// 并输出中文执行摘要，便于日志与测试断言
 /// </summary>
 public static class UltimateExecutor
 {
     /// <summary>
-    /// 执行必杀技的所有字段效果
+    /// 执行狂气爆发的所有字段效果
     /// </summary>
-    /// <param name="skill">必杀技数据</param>
+    /// <param name="skill">狂气爆发数据</param>
     /// <param name="player">玩家（可为空，空时跳过治疗/护盾/抽牌/能量）</param>
     /// <param name="enemies">敌人数组（可为空，空时跳过伤害与减益）</param>
+    /// <param name="owner">释放者（置入手中的衍生卡靠它归属，可为空）</param>
     /// <returns>中文执行摘要，例如「全体敌人受20伤害，抽3张」</returns>
-    public static string Execute(UltimateSkill skill, Player player, Enemy[] enemies)
+    public static string Execute(UltimateSkill skill, Player player, Enemy[] enemies, CharacterPosition owner = null)
     {
         if (skill == null)
         {
-            GD.PrintErr("[UltimateExecutor] Execute called: 必杀技数据为空，无法结算");
-            return "必杀技数据缺失";
+            GD.PrintErr("[UltimateExecutor] Execute called: 狂气爆发数据为空，无法结算");
+            return "狂气爆发数据缺失";
         }
 
         GD.Print($"[UltimateExecutor] Execute called: {skill.SkillId}（{skill.Name}）");
@@ -40,10 +42,77 @@ public static class UltimateExecutor
         ApplyShield(skill, player, summary);
         ApplyDrawCards(skill, player, summary);
         ApplyEnergy(skill, player, summary);
+        ApplyRemoveSlowFromHand(skill, player, summary);
+        ApplyAddCardToHand(skill, player, owner, summary);
 
         string result = summary.Count > 0 ? string.Join("，", summary) : "无实际效果";
         GD.Print($"[UltimateExecutor] Execute completed: {skill.Name} -> {result}");
         return result;
+    }
+
+    /// <summary>
+    /// **移除所有手牌的「迟缓」状态**（珈伦「客官请慢用！」）。
+    ///
+    /// 照参考游戏《终末前夜 Morimens》：「移除所有手牌的 ⏱迟缓状态。」
+    /// 「迟缓」是**卡牌身上的状态**（使这张卡的算力消耗提高），
+    /// 不是敌人身上的减益 —— 所以这里改的是手牌，不是 <c>player.StatusEffects</c>。
+    /// </summary>
+    private static void ApplyRemoveSlowFromHand(UltimateSkill skill, Player player, List<string> summary)
+    {
+        if (!skill.RemoveSlowFromHand || player == null) return;
+
+        int removed = 0;
+        foreach (Card.Card card in player.Hand)
+        {
+            if (card == null || card.SlowStacks <= 0) continue;
+            card.SlowStacks = 0;
+            card.RecalcCost();
+            removed++;
+        }
+
+        GD.Print($"[UltimateExecutor] 【{skill.Name}】移除手牌迟缓状态 {removed} 张");
+        summary.Add(removed > 0 ? $"移除{removed}张手牌的迟缓状态" : "手牌没有迟缓状态");
+    }
+
+    /// <summary>
+    /// **把衍生卡置入手中**（珈伦「客官请慢用！」→ 1 张「奇妙料理」）。
+    ///
+    /// 衍生卡不在卡组映射里（卡组只有打击 / 防御 / 专属卡），
+    /// 所以这里从 <c>character_cards.json</c> 取模板 → 克隆一份独立实例 →
+    /// 挂上释放者的属性与归属 → 放进手牌。
+    /// </summary>
+    private static void ApplyAddCardToHand(UltimateSkill skill, Player player, CharacterPosition owner, List<string> summary)
+    {
+        if (string.IsNullOrEmpty(skill.AddCardToHandId) || skill.AddCardToHandCount <= 0 || player == null) return;
+
+        if (!CharacterCardLoader.TryGetCharacterCard(skill.AddCardToHandId, out Card.Card template))
+        {
+            GD.PrintErr($"[UltimateExecutor] 【{skill.Name}】衍生卡 {skill.AddCardToHandId} 不在 character_cards.json 里，无法置入手中");
+            return;
+        }
+
+        string ownerCharacterId = !string.IsNullOrEmpty(skill.AddCardOwnerCharacterId)
+            ? skill.AddCardOwnerCharacterId
+            : (owner?.Character?.CharacterId ?? "");
+
+        int added = 0;
+        for (int i = 0; i < skill.AddCardToHandCount; i++)
+        {
+            Card.Card card = template.Clone();
+            card.OwnerCharacterId = ownerCharacterId;
+
+            // 挂上释放者的属性 —— 卡面与战斗结算都按这个角色的属性算
+            if (owner?.Character != null)
+            {
+                card.LinkedAttributes = owner.Character.GetAttributes();
+            }
+
+            player.Hand.Add(card);
+            added++;
+        }
+
+        GD.Print($"[UltimateExecutor] 【{skill.Name}】将 {added} 张「{template.Name}」置入手中（归属 {ownerCharacterId}）");
+        summary.Add($"将{added}张「{template.Name}」置入手中");
     }
 
     /// <summary>

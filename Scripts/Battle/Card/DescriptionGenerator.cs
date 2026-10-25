@@ -249,14 +249,22 @@ public static class DescriptionGenerator
         }
         if (body.Contains("{poison}"))
         {
-            // 中毒层数 = 这张卡**第一个** poison 减益效果的计算值
-            // （凸月之舞 = 固定 24 层；蟾蜍炖菜 = 攻击力×30%）
+            // 中毒层数来源有二选一：
+            //   ① 这张卡**第一个** poison 减益效果（蟾蜍炖菜 = 攻击力×30%）
+            //   ② 灵知觉醒里的中毒（凸月之舞 = 打出「奇妙料理」后 攻击力×15%）
             int value = 0;
             foreach (CardEffect e in card.Effects)
             {
                 if (e.Type == CardEffectType.Debuff && e.Debuff == "poison")
                 {
                     value = CardEffectCalculator.CalculateDebuffValue(card, e, attributes);
+                    break;
+                }
+                if (e.Type == CardEffectType.Awakening && e.AwakeningDebuff == "poison" && e.AwakeningDebuffPercent > 0)
+                {
+                    value = attributes != null
+                        ? CardLevelSystem.CalculateAttributeLinkedValue(card.Level, attributes.Attack, e.AwakeningDebuffPercent / 100f)
+                        : 0;
                     break;
                 }
             }
@@ -353,6 +361,12 @@ public static class DescriptionGenerator
 
         var parts = new List<string>();
 
+        // 移除手牌迟缓（珈伦「客官请慢用！」）—— 放在最前面，照参考图的语序
+        if (ultimate.RemoveSlowFromHand)
+        {
+            parts.Add("移除所有手牌的迟缓状态");
+        }
+
         if (ultimate.Damage > 0)
         {
             int damage = attributes != null
@@ -408,6 +422,17 @@ public static class DescriptionGenerator
         if (ultimate.BuffDuration == 1 && ultimate.Damage == 0 && ultimate.Heal == 0 && ultimate.Shield == 0)
         {
             parts.Add("目标下回合无法行动");
+        }
+
+        // 置入衍生卡（珈伦「客官请慢用！」→ 1 张「奇妙料理」；波吕克斯 → 1 张「圣心」）
+        if (!string.IsNullOrEmpty(ultimate.AddCardToHandId) && ultimate.AddCardToHandCount > 0)
+        {
+            string cardName = ultimate.AddCardToHandId;
+            if (CharacterCardLoader.TryGetCharacterCard(ultimate.AddCardToHandId, out Card derivedCard) && derivedCard != null)
+            {
+                cardName = derivedCard.Name;
+            }
+            parts.Add($"将 {ultimate.AddCardToHandCount} 张「{cardName}」置入手中");
         }
 
         // 减益（中毒 / 虚弱…）：参考游戏「对所有敌人施加 47 层中毒」

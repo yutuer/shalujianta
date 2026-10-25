@@ -38,7 +38,7 @@ namespace FishEatFish.Battle.Card
 		/// <summary>debuff 词缀（紫）—— 与 Data/affixes.json 一致</summary>
 		public const string DebuffAffix = "#c86bd8";
 
-		/// <summary>技能 / 必杀技（紫）</summary>
+		/// <summary>技能 / 狂气爆发（紫）</summary>
 		public const string Skill = "#dd6bff";
 	}
 }

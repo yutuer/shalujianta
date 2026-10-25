@@ -71,6 +71,20 @@ public partial class Enemy : Node, IUnit
 		actualDamage = CalculateModifiedDamage(actualDamage, this);
 		CurrentHealth = Mathf.Max(0, CurrentHealth - actualDamage);
 	}
+
+	/// <summary>
+	/// **固定伤害**（不防守、不吃易伤/破甲）——
+	/// 照参考游戏《终末前夜 Morimens》「固定伤害」词条：
+	/// 「不被力量、虚弱、易伤等状态影响，直接造成伤害。」
+	///
+	/// 中毒用它：「回合结束时受到等量层数的伤害」—— 41 层就是掉 41 点，
+	/// 不会因为敌人防御高而变少，也不吃易伤放大。
+	/// </summary>
+	public void TakeFixedDamage(int damage)
+	{
+		if (damage <= 0) return;
+		CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
+	}
 	public void TakeDamageWithVariance(int baseDamage, float variancePercent = 0.1f)
 	{
 		int damage = CombatCalculator.CalculateDamageWithVariance(baseDamage, variancePercent);
@@ -135,7 +149,7 @@ public partial class Enemy : Node, IUnit
 		if (existing != null)
 		{
 			existing.RefreshDuration();
-			existing.StackCount++;   // 同名效果叠加层数，UI 显示 ×N
+			existing.MergeStacks(effect);   // 同名效果叠加层数（中毒还会把数值也累加）
 			return;
 		}
 

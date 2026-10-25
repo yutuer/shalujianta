@@ -18,7 +18,7 @@ public enum TargetType
 
 /// <summary>
 /// **卡牌类型**（对照参考游戏《终末前夜 Morimens》）：
-/// 指令 = 普通指令卡；衍生 = 由必杀技 / 卡牌派生出来的卡；灵知觉醒 = 打出后给角色加怒气并产生新能力。
+/// 指令 = 普通指令卡；衍生 = 由狂气爆发 / 卡牌派生出来的卡；灵知觉醒 = 打出后给角色加怒气并产生新能力。
 /// </summary>
 public enum CardType
 {
@@ -331,6 +331,51 @@ public partial class Card : Resource, ICardLevelable
     [Export]
     public bool IsDefense { get; set; } = false;
 
+	/// <summary>
+	/// **可使用次数**（0 = 不限；珈伦衍生卡「奇妙料理」= 可以使用 3 次）。
+	///
+	/// 参考游戏《终末前夜 Morimens》：「获得 1 点算力，**可以使用 3 次**」——
+	/// 这张卡带「保留」词缀，打出后留在手里，下次还能再打，用满次数才「消耗」。
+	/// </summary>
+	[Export]
+	public int MaxUsageCount { get; set; } = 0;
+
+	/// <summary>已使用次数（运行时状态，克隆时不带过去）</summary>
+	public int UsedCount { get; set; } = 0;
+
+	/// <summary>
+	/// **打出后回到抽牌堆顶部**（波吕克斯「圣心」：「打出后将此卡牌洗入抽牌堆顶部」）。
+	/// 与「可以使用 N 次」不同：这张牌不是留在手里，而是回到牌堆等下次抽到。
+	/// </summary>
+	[Export]
+	public bool ReturnToDeckTop { get; set; } = false;
+
+	/// <summary>
+	/// **第 N 次打出时消耗**（0 = 不限；波吕克斯「圣心」= 第 3 次打出时 ⚠消耗）。
+	/// </summary>
+	[Export]
+	public int ConsumeOnPlayCount { get; set; } = 0;
+
+	/// <summary>
+	/// **保留叠加次数**（运行时状态）—— 珈伦「静默守望」：
+	/// 回合结束时若它还在手里，就 +1 层（算力消耗 +1、回复与护盾翻倍），叠到上限为止。
+	/// </summary>
+	public int RetainStackCount { get; set; } = 0;
+
+	/// <summary>
+	/// **卡牌身上的「迟缓」层数**（运行时状态）——
+	/// 参考游戏「⏱迟缓」词条：「使卡牌的算力消耗提高」。
+	/// 珈伦「客官请慢用！」的狂气爆发会「移除所有手牌的迟缓状态」。
+	/// </summary>
+	public int SlowStacks { get; set; } = 0;
+
+	/// <summary>
+	/// **这张卡属于哪个角色**（运行时状态）——
+	/// 狂气爆发放进手里的衍生卡（「圣心」「奇妙料理」）不在卡组映射里，靠这个字段归属，
+	/// 否则「灵知觉醒：珈伦打出卡牌后……」这类以角色为主语的触发会找不到人。
+	/// </summary>
+	public string OwnerCharacterId { get; set; } = "";
+
     /// <summary>
     /// **卡牌类型**（指令 / 衍生 / 灵知觉醒）—— 决定卡面文案与效果的呈现方式。
     /// 数据表字段：<c>cardType</c>
@@ -471,6 +516,18 @@ public partial class Card : Resource, ICardLevelable
 		Cost = BaseCost;
 	}
 
+	/// <summary>
+	/// **按当前状态重算算力消耗** = 基础消耗 + 迟缓层数 + 保留叠层数。
+	///
+	/// 两个加费来源（参考游戏）：
+	///   - 「⏱迟缓」：使卡牌的算力消耗提高（珈伦的狂气爆发会移除它）
+	///   - 保留叠层：回合结束还在手里就 +1（珈伦「静默守望」）
+	/// </summary>
+	public void RecalcCost()
+	{
+		Cost = Mathf.Max(0, BaseCost + SlowStacks + RetainStackCount);
+	}
+
 	public void ReduceCost(int amount)
 	{
 		Cost = Mathf.Max(0, Cost - amount);
@@ -495,6 +552,14 @@ public partial class Card : Resource, ICardLevelable
 			MaxLevel = MaxLevel,
 			Cost = Cost,
 			BaseCost = BaseCost,
+			// 「可以使用 N 次」是**配置**（要带过去）；已用次数是**运行时状态**（不带）
+			MaxUsageCount = MaxUsageCount,
+			UsedCount = 0,
+			ReturnToDeckTop = ReturnToDeckTop,
+			ConsumeOnPlayCount = ConsumeOnPlayCount,
+			RetainStackCount = 0,
+			SlowStacks = 0,
+			OwnerCharacterId = "",
 			IsRetain = IsRetain,
 			IsAttack = IsAttack,
 			IsAreaAttack = IsAreaAttack,
@@ -630,6 +695,10 @@ public partial class Card : Resource, ICardLevelable
 	/// 把卡牌的减益数值写进效果对象。
 	/// ⚠️ 易伤 / 破甲是**百分比**口径（受到伤害 +N%），其余是固定值 ——
 	/// 数据表里的 debuffValue 目前没有任何卡在用，口径等主人定。
+	///
+	/// ⚠️ 中毒是「**层数即伤害**」（参考游戏「回合结束时受到等量层数的伤害」）：
+	/// 所以中毒的层数要**同时**写进 <c>StackCount</c>，
+	/// 否则再次施加时层数不累加（41 + 30 层却只掉 41 点）。
 	/// </summary>
 	public static void ApplyDebuffValue(StatusEffect debuff, int value)
 	{
@@ -638,7 +707,7 @@ public partial class Card : Resource, ICardLevelable
 		switch (debuff)
 		{
 			case WeakDebuff wd: wd.AttackReduction = value; break;
-			case PoisonDebuff pd: pd.DamagePerTurn = value; break;
+			case PoisonDebuff pd: pd.DamagePerTurn = value; pd.StackCount = value; break;
 			case SlowDebuff sd: sd.EnergyReduction = value; break;
 			case VulnerableDebuff vd: vd.DamageIncrease = value; break;
 			case DefenseDownDebuff dd: dd.DamageIncreasePercent = value; break;

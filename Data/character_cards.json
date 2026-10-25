@@ -1419,11 +1419,12 @@
             "style": "striker",
             "cost": 1,
             "isAttack": true,
-            "damage": 128,
-            "damageBaseCoefficient": 1.0,
+            "damagePercent": 70,
             "isRetain": true,
             "cardType": "derived",
             "artCardId": "pollux_special",
+            "returnToDeckTop": true,
+            "consumeOnPlayCount": 3,
             "affixes": [
                 "sin_mark",
                 "consume",
@@ -1431,11 +1432,12 @@
                 "prep1"
             ],
             "bodyAffixMarks": ["retain"],
-            "description": "造成 128 点伤害，获得 3 层 ✕罪印。打出后将此卡牌洗入抽牌堆顶部。第 3 次打出时 ⚠消耗 并使自身下张指令卡享受「苦痛救赎」效果。预备1。",
+            "description": "造成 {damage} 点伤害，获得 3 层 ✕罪印。打出后将此卡牌洗入抽牌堆顶部。第 3 次打出时 ⚠消耗 并使自身下张指令卡享受「苦痛救赎」效果。预备1。",
             "effects": [
                 {
                     "type": "damage",
-                    "value": 128,
+                    "percent": 70,
+                    "ignoreLevelScale": true,
                     "target": "target"
                 },
                 {
@@ -1512,7 +1514,7 @@
                 "retain"
             ],
             "bodyAffixMarks": ["retain"],
-            "description": "⚠灵知觉醒：珈伦打出卡牌后，回复 {heal} 点生命，获得 5 点狂气。打出「奇妙料理」后，对所有敌人施加 24 层中毒。⚠保留。",
+            "description": "⚠灵知觉醒：珈伦打出卡牌后，回复 {heal} 点生命，获得 5 点狂气。打出「奇妙料理」后，对所有敌人施加 {poison} 层中毒。⚠保留。",
             "effects": [
                 {
                     "type": "rage",
@@ -1521,14 +1523,15 @@
                 },
                 {
                     "type": "heal",
-                    "percent": 9
+                    "percent": 9,
+                    "timing": ["onAwakening"]
                 },
                 {
-                    "type": "debuff",
-                    "debuff": "poison",
-                    "target": "allEnemies",
-                    "value": 24,
-                    "duration": 99
+                    "type": "awakening",
+                    "awakeningRageGain": 5,
+                    "awakeningDebuff": "poison",
+                    "awakeningDebuffPercent": 15,
+                    "awakeningTriggerCardId": "jialun_derived"
                 },
                 {
                     "type": "retain"
@@ -1616,7 +1619,7 @@
                 "retain"
             ],
             "bodyAffixMarks": ["retain"],
-            "description": "回复 {heal} 点生命并获得 {shield} 点护盾。回合结束时若在手中，算力消耗提高 1，回复生命和护盾翻倍。最多叠加 3 次。⚠保留。",
+            "description": "回复 {heal} 点生命并获得 {shield} 点护盾。回合结束时若在手中，算力消耗提高 1，回复生命和护盾翻倍。最多叠加 2 次。⚠保留。",
             "effects": [
                 {
                     "type": "heal",
@@ -1625,6 +1628,10 @@
                 {
                     "type": "shield",
                     "percent": 5
+                },
+                {
+                    "type": "retainStack",
+                    "retainStackMax": 2
                 },
                 {
                     "type": "retain"
@@ -1640,6 +1647,7 @@
             "isAttack": false,
             "cardType": "derived",
             "isRetain": true,
+            "maxUsageCount": 3,
             "affixes": [
                 "retain",
                 "consume"

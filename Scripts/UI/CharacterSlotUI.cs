@@ -41,7 +41,7 @@ public partial class CharacterSlotUI : Panel
     private const int MaxRage = 100;
 
     /// <summary>
-    /// 检查当前怒气是否已达到必杀技释放条件
+    /// 检查当前怒气是否已达到狂气爆发释放条件
     /// </summary>
     public bool CanUseUltimate() => _currentRage >= MaxRage;
 
@@ -87,7 +87,7 @@ public partial class CharacterSlotUI : Panel
 
         if (_ultReadyLabel == null)
         {
-            GD.PrintErr("[CharacterSlotUI] 未找到「可释放」徽标节点（建议命名 UltReadyLabel），无法显示必杀技就绪提示");
+            GD.PrintErr("[CharacterSlotUI] 未找到「可释放」徽标节点（建议命名 UltReadyLabel），无法显示狂气爆发就绪提示");
             _ultReadyLabelMissingReported = true;
         }
     }
@@ -204,7 +204,7 @@ public partial class CharacterSlotUI : Panel
     /// 怒气条颜色渐变：灰(0-30%) → 蓝(30-70%) → 黄(70-100%) → 橙(满)
     /// </summary>
     /// <param name="rageValue">怒气值 (0-MaxRage)</param>
-    /// <param name="canUseUltimate">是否可释放必杀技</param>
+    /// <param name="canUseUltimate">是否可释放狂气爆发</param>
     public void UpdateRageStatus(int rageValue, bool canUseUltimate)
     {
         _currentRage = Mathf.Clamp(rageValue, 0, MaxRage);
@@ -271,7 +271,7 @@ public partial class CharacterSlotUI : Panel
             if (!_ultReadyLabelMissingReported)
             {
                 _ultReadyLabelMissingReported = true;
-                GD.PrintErr("[CharacterSlotUI] 未找到「可释放」徽标节点（建议命名 UltReadyLabel），无法显示必杀技就绪提示");
+                GD.PrintErr("[CharacterSlotUI] 未找到「可释放」徽标节点（建议命名 UltReadyLabel），无法显示狂气爆发就绪提示");
             }
             return;
         }
@@ -285,7 +285,7 @@ public partial class CharacterSlotUI : Panel
     }
 
     /// <summary>
-    /// 必杀技就绪时的脉冲高亮动画
+    /// 狂气爆发就绪时的脉冲高亮动画
     /// </summary>
     private void PlayUltReadyAnimation()
     {
@@ -309,7 +309,7 @@ public partial class CharacterSlotUI : Panel
     }
 
     /// <summary>
-    /// 停止必杀技就绪脉冲动画
+    /// 停止狂气爆发就绪脉冲动画
     /// </summary>
     private void StopUltReadyAnimation()
     {
@@ -323,7 +323,7 @@ public partial class CharacterSlotUI : Panel
     }
 
     /// <summary>
-    /// 设置槽位是否可点击（只有怒气满可释放必杀技时才可点）
+    /// 设置槽位是否可点击（只有怒气满可释放狂气爆发时才可点）
     /// </summary>
     public void SetClickable(bool clickable)
     {

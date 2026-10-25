@@ -62,6 +62,19 @@ $Blacklist = @(
     '桥树结构'
 )
 
+# ⚠️ 「必杀技」是**旧称**（D54 起本项目统一叫「狂气爆发」）。
+# 它**只允许出现在历史记录段**里 —— 那些段落记的是「当时发生的事」，改了就不准了。
+# 下面的表给出「从哪一行开始算历史」；键是相对路径（用反斜杠）。
+$TermCutMarkers = @{
+    'README.md'          = '## 8. 变更记录'
+    'docs\开发计划.md'    = '## 4. 逐项展开'
+}
+
+# 整份都是历史记录的（逐条踩坑档案），不参与术语检查
+$TermSkipFiles = @(
+    'docs\踩坑记录.md'
+)
+
 $problems = @()
 $mdFiles = Get-ChildItem -Path $RepoRoot -Filter *.md -Recurse -File |
     Where-Object { $_.FullName -notmatch $skipDirs }
@@ -118,15 +131,29 @@ foreach ($f in $mdFiles) {
         }
     }
 
-    # 4. 术语残留（README 的「变更记录」段落豁免，那里是历史叙述）
+    # 4. 术语残留（历史记录段豁免 —— 那里记的是「当时发生的事」）
     $scan = $raw
-    if ($rel -eq 'README.md') {
-        $cut = $scan.IndexOf('## 8. 变更记录')
+    if ($rel -in $TermSkipFiles) {
+        $scan = ''
+    } elseif ($TermCutMarkers.ContainsKey($rel)) {
+        $cut = $scan.IndexOf($TermCutMarkers[$rel])
         if ($cut -gt 0) { $scan = $scan.Substring(0, $cut) }
     }
     foreach ($w in $Blacklist) {
         if ($scan.Contains($w)) {
             $problems += "[$rel] 术语残留「$w」—— 当前模型应统一用「簇图 / 割点」"
+        }
+    }
+    # 「必杀技」是旧称（D54 起统一叫「狂气爆发」）—— 只允许出现在历史记录段
+    # ⚠️ 逐行扫：写「术语口径 / 旧称」的那几行是**合法引用**（要告诉读者旧称是什么）→ 放行。
+    if ($scan.Contains('必杀技')) {
+        $lines = $scan -split "`n"
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            $line = $lines[$i]
+            if (-not $line.Contains('必杀技')) { continue }
+            if ($line -match '旧称|术语对照|术语口径|叫法') { continue }   # 合法引用旧称
+            $problems += "[${rel}:$($i + 1)] 术语残留「必杀技」—— 本项目统一叫「狂气爆发」（旧称只允许出现在变更记录 / 逐项展开 / 踩坑记录等历史段）"
+            break
         }
     }
 

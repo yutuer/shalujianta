@@ -4,7 +4,7 @@ using FishEatFish.Battle.Card;
 namespace FishEatFish.UI
 {
 	/// <summary>
-	/// **衍生卡说明面板** —— 点必杀技说明里的「圣心」弹出来。
+	/// **衍生卡说明面板** —— 点狂气爆发说明里的「圣心」弹出来。
 	///
 	/// 版式照参考游戏《终末前夜 Morimens》卡牌总览页右侧那块「衍生卡说明」：
 	/// 整屏压暗 → 右侧面板 → 面板里分两段：

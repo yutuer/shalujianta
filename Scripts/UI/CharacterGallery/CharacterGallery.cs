@@ -9,12 +9,12 @@ namespace FishEatFish.UI.CharacterGallery
 	/// **角色一览**（三个视图）：
 	///
 	/// ① 列表视图（默认）：左边角色网格 + 中间大立绘 + **右边选中角色的简易信息**
-	///    （名称 / 类型 / 等级 / 5 卡 + 必杀技的等级 / 天赋等级占位 / 三个简单属性
+	///    （名称 / 类型 / 等级 / 5 卡 + 狂气爆发的等级 / 天赋等级占位 / 三个简单属性
 	///    + 「详细信息」按钮 + 「详情」按钮）—— 版式照参考图《终末前夜 Morimens》的「人物列表」。
 	/// ② 属性详情弹窗：点「详细信息」→ 体质 / 攻击 / 防御 + 暴击率 / 暴击伤害 / 界域精通 /
 	///    伤害强效 / 基础狂气 / 狂气回充等级 / 银钥充能等级 / 黑印掉落 / 死亡抵抗。
 	/// ③ 卡牌总览：点「详情」→ **左边一竖列角色头像**（点头像快速切角色）
-	///    + 右边该角色的必杀技 + 5 张卡 —— 版式照参考图的「卡牌总览」。
+	///    + 右边该角色的狂气爆发 + 5 张卡 —— 版式照参考图的「卡牌总览」。
 	///
 	/// 主人 2026-10-24 明确**暂时不管**的：种族天赋图标（4 种，最后做）、
 	/// 名座三颗星、同调率（好感度）。
@@ -40,7 +40,7 @@ namespace FishEatFish.UI.CharacterGallery
 		/// <summary>竖列头像项之间的间距（同上）</summary>
 		private const float PortraitItemSeparation = 8f;
 
-		/// <summary>卡牌 + 必杀技的等级：目前统一满级（主人 2026-10-24）</summary>
+		/// <summary>卡牌 + 狂气爆发的等级：目前统一满级（主人 2026-10-24）</summary>
 		private const string CardLevelText = "6/6/6/6/6/6";
 
 		/// <summary>天赋等级：占位（主人 2026-10-24：「你先写成 1/1/1」）</summary>
@@ -144,7 +144,7 @@ namespace FishEatFish.UI.CharacterGallery
 			if (_detailButton != null) _detailButton.Pressed += OnDetailButtonPressed;
 			if (_attributeCloseButton != null) _attributeCloseButton.Pressed += OnAttributeClosePressed;
 			if (_backToListButton != null) _backToListButton.Pressed += OnBackToListPressed;
-			// 必杀技说明里的「圣心」是可点的 → 弹出衍生卡说明面板
+			// 狂气爆发说明里的「圣心」是可点的 → 弹出衍生卡说明面板
 			if (_ultimateDescText != null) _ultimateDescText.MetaClicked += OnUltimateDescMetaClicked;
 
 			BuildList();
@@ -409,9 +409,9 @@ namespace FishEatFish.UI.CharacterGallery
 			CharacterAttributes attributes = character.GetAttributes();
 
 			UltimateSkill ultimate = UltimateSkill.GetUltimateById(character.UltimateSkillId);
-			// 把角色属性挂上去 —— 百分比口径的必杀技（攻击力 × 百分比）要靠它算数值
+			// 把角色属性挂上去 —— 百分比口径的狂气爆发（攻击力 × 百分比）要靠它算数值
 			if (ultimate != null) ultimate.LinkedAttributes = attributes;
-			// ⚠️ 必杀技的**数值要按显示的等级算** —— 标签写的是 Lv.6/6（满级），
+			// ⚠️ 狂气爆发的**数值要按显示的等级算** —— 标签写的是 Lv.6/6（满级），
 			// 但 UltimateSkill.Level 默认是 1 → 百分比口径的回复/减益会算成 1 级的值（珈伦实测 28 而不是 56）。
 			if (ultimate != null)
 			{
@@ -421,9 +421,9 @@ namespace FishEatFish.UI.CharacterGallery
 
 			if (_ultimateNameLabel != null)
 			{
-				// ⚠️ **不再带「必杀技：」前缀**（主人 2026-10-25）——
+				// ⚠️ **不再带「狂气爆发：」前缀**（主人 2026-10-25）——
 				//    照参考图《终末前夜 Morimens》：标题行左边只有**技能名**，
-				//    右边是黄色的「狂气爆发」（= 怒气满了能释放的技能，与「必杀技 / 大招」同义）。
+				//    右边是黄色的「狂气爆发」（= 怒气满了能释放的技能，与「狂气爆发 / 大招」同义）。
 				_ultimateNameLabel.Text = ultimate != null ? ultimate.Name : "未配置";
 			}
 			if (_ultimateBurstLabel != null)
@@ -436,14 +436,14 @@ namespace FishEatFish.UI.CharacterGallery
 				_ultimateDescText.Text = BuildUltimateDescription(ultimate, attributes);
 			}
 
-			// 必杀技等级（头像上方）—— 卡牌等级系统还没做，先统一按满级显示（同卡牌的做法）
+			// 狂气爆发等级（头像上方）—— 卡牌等级系统还没做，先统一按满级显示（同卡牌的做法）
 			if (_ultimateLevelLabel != null)
 			{
 				int maxLevel = ultimate != null ? ultimate.MaxLevel : CardMaxLevel;
 				_ultimateLevelLabel.Text = $"Lv.{maxLevel}/{maxLevel}";
 			}
 
-			// 头像（必杀技说明的正上方居中）
+			// 头像（狂气爆发说明的正上方居中）
 			if (_ultimateAvatarRect != null)
 			{
 				string avatarPath = $"res://Assets/Portraits/avatar_{character.CharacterId}.svg";
@@ -495,10 +495,10 @@ namespace FishEatFish.UI.CharacterGallery
 		}
 
 		/// <summary>
-		/// **必杀技说明文本** = 算出来的数值（造成 546 点伤害）+ 数据表里的补充说明，
+		/// **狂气爆发说明文本** = 算出来的数值（造成 546 点伤害）+ 数据表里的补充说明，
 		/// 其中「圣心」那个词做成**可点击链接**（点了弹出衍生卡说明）。
 		/// </summary>
-		/// <param name="ultimate">必杀技</param>
+		/// <param name="ultimate">狂气爆发</param>
 		/// <param name="attributes">角色属性（算数值要用）</param>
 		/// <returns>BBCode 文本</returns>
 		private static string BuildUltimateDescription(UltimateSkill ultimate, CharacterAttributes attributes)
@@ -528,13 +528,13 @@ namespace FishEatFish.UI.CharacterGallery
 		}
 
 		/// <summary>
-		/// 点了必杀技说明里的链接 → 弹出对应的**衍生卡说明**面板。
+		/// 点了狂气爆发说明里的链接 → 弹出对应的**衍生卡说明**面板。
 		/// </summary>
 		/// <param name="meta">链接目标（= 衍生卡 id）</param>
 		private void OnUltimateDescMetaClicked(Variant meta)
 		{
 			string cardId = meta.AsString();
-			GD.Print($"[CharacterGallery] 点了必杀技说明里的链接：{cardId}");
+			GD.Print($"[CharacterGallery] 点了狂气爆发说明里的链接：{cardId}");
 
 			if (derivedCardInfoPanel == null)
 			{

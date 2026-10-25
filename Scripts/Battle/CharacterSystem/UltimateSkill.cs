@@ -75,6 +75,32 @@ public partial class UltimateSkill : Resource, ICardLevelable
     [Export]
     public int EnergyGain;
 
+    /// <summary>
+    /// **移除所有手牌的「迟缓」状态**（珈伦「客官请慢用！」）。
+    ///
+    /// 照参考游戏《终末前夜 Morimens》：「移除所有手牌的 ⏱迟缓状态。」
+    /// 「迟缓」词条：「使卡牌的算力消耗提高」—— 是**卡牌身上的状态**，不是敌人身上的减益。
+    /// </summary>
+    [Export]
+    public bool RemoveSlowFromHand;
+
+    /// <summary>
+    /// **释放后置入手中的衍生卡 id**（珈伦「客官请慢用！」→ 1 张「奇妙料理」= jialun_derived）。
+    /// </summary>
+    [Export]
+    public string AddCardToHandId = "";
+
+    /// <summary>置入手中的张数</summary>
+    [Export]
+    public int AddCardToHandCount = 0;
+
+    /// <summary>
+    /// **置入手中的那张卡属于哪个角色**（卡牌不在卡组映射里，靠它归属）。
+    /// 留空则由执行器按「释放狂气爆发的那个角色」推断。
+    /// </summary>
+    [Export]
+    public string AddCardOwnerCharacterId = "";
+
     /// <summary>英文名（缺省由 skillId 推导）</summary>
     [Export]
     public string NameEn = "";
@@ -219,11 +245,14 @@ public partial class UltimateSkill : Resource, ICardLevelable
     public SkillExecuteHandler OnExecute;
 
     /// <summary>
-    /// 执行必杀技
+    /// 执行狂气爆发
     /// 1) 旧路径：EffectIds → EffectResolver（保留兼容，若配置了 EffectIds 仍会执行）
     /// 2) 新路径：按 Damage/Heal/Shield/DrawCount/EnergyGain/IsAreaAttack/Target/ApplyDebuffName 结算真实效果
     /// </summary>
-    public void Execute(Player player, Enemy[] enemies)
+    /// <param name="player">玩家</param>
+    /// <param name="enemies">敌人数组</param>
+    /// <param name="owner">释放这个狂气爆发的角色（置入手中的衍生卡要靠它归属）</param>
+    public void Execute(Player player, Enemy[] enemies, CharacterPosition owner = null)
     {
         GD.Print($"[UltimateSkill] Execute called: {SkillId}（{Name}）");
 
@@ -248,7 +277,7 @@ public partial class UltimateSkill : Resource, ICardLevelable
         }
 
         // 新路径：按字段结算真实效果
-        LastExecuteSummary = UltimateExecutor.Execute(this, player, enemies);
+        LastExecuteSummary = UltimateExecutor.Execute(this, player, enemies, owner);
 
         OnExecute?.Invoke(player, enemies);
         GD.Print($"[UltimateSkill] Execute completed: {SkillId} -> {LastExecuteSummary}");
@@ -467,7 +496,7 @@ public partial class UltimateSkill : Resource, ICardLevelable
     }
 
     /// <summary>
-    /// 按 id 获取必杀技
+    /// 按 id 获取狂气爆发
     /// 顺序：ultimates.json（字段最全，唯一权威源）→ characters.json 内嵌 ultimateSkill → 硬编码兜底
     /// </summary>
     public static UltimateSkill GetUltimateById(string skillId)
@@ -513,7 +542,7 @@ public partial class UltimateSkill : Resource, ICardLevelable
 
         if (fallback == null)
         {
-            GD.PrintErr($"[UltimateSkill] 未找到必杀技：{skillId}");
+            GD.PrintErr($"[UltimateSkill] 未找到狂气爆发：{skillId}");
         }
 
         return fallback;

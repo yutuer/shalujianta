@@ -61,7 +61,7 @@ namespace FishEatFish.Scenes
         }
 
         /// <summary>
-        /// 角色一览：看所有可玩角色的属性 / 卡组 / 必杀技（进去后可点单个角色看详情）
+        /// 角色一览：看所有可玩角色的属性 / 卡组 / 狂气爆发（进去后可点单个角色看详情）
         /// </summary>
         private void OnGalleryPressed()
         {

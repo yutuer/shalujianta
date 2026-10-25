@@ -98,7 +98,7 @@ public partial class RageDisplayUI : Control
     }
 
     /// <summary>
-    /// 高亮显示可释放必杀技的角色
+    /// 高亮显示可释放狂气爆发的角色
     /// </summary>
     /// <param name="readyIndices">怒气已满的角色索引列表</param>
     public void HighlightReadyCharacters(List<int> readyIndices)

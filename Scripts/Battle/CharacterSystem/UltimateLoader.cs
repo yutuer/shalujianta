@@ -5,7 +5,7 @@ using FishEatFish.Battle.Card;
 namespace FishEatFish.Battle.CharacterSystem;
 
 /// <summary>
-/// 必杀技数据加载器：Data/ultimates.json 是必杀技的唯一权威数据源
+/// 狂气爆发数据加载器：Data/ultimates.json 是狂气爆发的唯一权威数据源
 /// </summary>
 public class UltimateLoader
 {
@@ -83,6 +83,12 @@ public class UltimateLoader
         ultimate.IsAreaAttack = GetBoolValue(dict, "isAreaAttack");
         ultimate.Target = GetStringValue(dict, "target").ToLower();
         ultimate.ApplyDebuffName = GetStringValue(dict, "applyDebuffName").ToLower();
+
+        // 移除手牌迟缓 / 置入衍生卡（珈伦「客官请慢用！」）
+        ultimate.RemoveSlowFromHand = GetBoolValue(dict, "removeSlowFromHand");
+        ultimate.AddCardToHandId = GetStringValue(dict, "addCardToHandId");
+        ultimate.AddCardToHandCount = GetIntValue(dict, "addCardToHandCount", 0);
+        ultimate.AddCardOwnerCharacterId = GetStringValue(dict, "addCardOwnerCharacterId");
 
         ultimate.Level = 1;
         ultimate.MaxLevel = 6;

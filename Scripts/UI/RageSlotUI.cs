@@ -2,11 +2,11 @@ using Godot;
 
 /// <summary>
 /// 单个怒气槽位UI组件
-/// 显示内容：角色名称、怒气进度条、怒气数值、必杀技就绪提示
+/// 显示内容：角色名称、怒气进度条、怒气数值、狂气爆发就绪提示
 /// </summary>
 /// <summary>
 /// 单个怒气槽位UI组件
-/// 显示内容：角色名称、怒气进度条、怒气数值、必杀技就绪提示
+/// 显示内容：角色名称、怒气进度条、怒气数值、狂气爆发就绪提示
 /// </summary>
 public partial class RageSlotUI : Panel
 {
@@ -145,7 +145,7 @@ public partial class RageSlotUI : Panel
     }
 
     /// <summary>
-    /// 必杀技就绪时的脉冲动画
+    /// 狂气爆发就绪时的脉冲动画
     /// </summary>
     private void PlayHighlightAnimation()
     {

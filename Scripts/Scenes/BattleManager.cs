@@ -31,6 +31,13 @@ namespace FishEatFish.Scenes
 		public int TurnCount => turnCount;
 	private bool isPlayerTurn = true;
 
+	/// <summary>
+	/// **战斗是否已经分出胜负**（幂等守卫）。
+	/// `CheckGameOver` 会被多处调用（出牌 / 狂气爆发 / 回合末），同一帧可能连进两次 ——
+	/// 不加守卫会导致结束按钮上挂两个处理函数（点一下触发两遍）。
+	/// </summary>
+	private bool _battleOver = false;
+
 	// ========== UI节点引用 ==========
 	private HBoxContainer handContainer;
 	private HBoxContainer enemyContainer;
@@ -314,7 +321,7 @@ namespace FishEatFish.Scenes
 				{
 					attackerDisplayUI.SetAttacker(attacker);
 				}
-				// 点击角色槽位释放必杀技（怒气满时才可点）
+				// 点击角色槽位释放狂气爆发（怒气满时才可点）
 				attackerDisplayUI.SetUltimateClickCallback(OnUltimateSlotClicked);
 			}
 			GD.Print("[BattleManager] 攻击体角色显示UI初始化成功");
@@ -343,7 +350,7 @@ namespace FishEatFish.Scenes
 	}
 
 	/// <summary>
-	/// 点击角色槽位 → 尝试释放该角色的必杀技（tasks.md 1.4.2 / 1.4.3）。
+	/// 点击角色槽位 → 尝试释放该角色的狂气爆发（tasks.md 1.4.2 / 1.4.3）。
 	/// </summary>
 	/// <param name="slotIndex">槽位索引 0~3</param>
 	private void OnUltimateSlotClicked(int slotIndex)
@@ -356,26 +363,32 @@ namespace FishEatFish.Scenes
 		CharacterPosition position = characterPositions[slotIndex];
 		if (position == null || !position.CanUseUltimate())
 		{
-			AddMessage("怒气不足，无法释放必杀技!", LogType.System);
+			AddMessage("怒气不足，无法释放狂气爆发!", LogType.System);
 			return;
 		}
 
 		bool released = rageManager.UseUltimate(slotIndex, player, enemies.ToArray());
 		if (!released)
 		{
-			AddMessage("必杀技释放失败!", LogType.System);
+			AddMessage("狂气爆发释放失败!", LogType.System);
 			return;
 		}
 
 		// 释放动画 + 表现刷新
 		position.PlayUltimateAnimation(player, enemies.ToArray());
-		AddMessage($"{position.Character?.Name ?? "角色"} 释放了必杀技！", LogType.System);
+		AddMessage($"{position.Character?.Name ?? "角色"} 释放了狂气爆发！", LogType.System);
 
 		UpdateRageDisplay();
 		UpdateUI();
 		UpdateEnemyUI();
 		UpdateBuffDebuffDisplay();
 		UpdateEnemyStatusIcons();
+
+		// ⚠️ 必须刷新手牌：**狂气爆发会往手里塞衍生卡**
+		// （波吕克斯「无罪的圣裁」→ 1 张「圣心」；珈伦「客官请慢用！」→ 1 张「奇妙料理」）。
+		// `UpdateUI()` 只更新血条 / 怒气 / 牌堆计数，**不重建手牌** ——
+		// 不补这一句，新卡就躺在 `player.Hand` 里但界面上看不见（直到下一次出牌才刷新）。
+		UpdateHandUI();
 
 		CheckGameOver();
 		GD.Print($"[BattleManager] OnUltimateSlotClicked completed: slot={slotIndex}");
@@ -753,17 +766,60 @@ namespace FishEatFish.Scenes
 		AddMessage("玩家结束了回合", LogType.System);
 		endTurnButton.Disabled = true;
 
+		// 保留叠层的回合末结算（要在弃牌之前 —— 弃牌会把「没被保留」的卡丢掉）
+		ProcessRetainStacks();
+
+		// 玩家身上的回合末效果（持续时间递减等）—— 以前也漏了
+		player?.ProcessTurnEndEffects();
+
 		player.DiscardHand();
 		isPlayerTurn = false;
 
 		CallDeferred(nameof(EnemyTurn));
 	}
 
+	/// <summary>
+	/// **保留叠层的回合末结算**（珈伦「静默守望」）。
+	///
+	/// 照参考游戏《终末前夜 Morimens》：「回合结束时若在手中，算力消耗提高 1，
+	/// 回复生命和护盾翻倍。最多叠加 2 次。」
+	///
+	/// → 每次回合结束、这张卡**还在手里** → 叠 1 层：
+	///   算力消耗 +1（`Cost` 重算），回复与护盾的倍率变成 2^层数。
+	/// </summary>
+	private void ProcessRetainStacks()
+	{
+		if (player == null) return;
+
+		foreach (Card card in player.Hand)
+		{
+			if (card == null) continue;
+
+			CardEffect effect = card.FindEffect(CardEffectType.RetainStack);
+			if (effect == null || effect.RetainStackMax <= 0) continue;
+			if (card.RetainStackCount >= effect.RetainStackMax) continue;
+
+			card.RetainStackCount++;
+			card.RecalcCost();
+
+			AddMessage($"「{card.Name}」留在手中，算力消耗提高到 {card.Cost}，回复生命和护盾翻倍（叠加 {card.RetainStackCount}/{effect.RetainStackMax}）", LogType.System);
+		}
+	}
+
 	private void EnemyTurn()
 	{
 		AddMessage("敌人回合", LogType.Enemy);
 
-		foreach (Enemy enemy in enemyManager.GetLivingEnemies())
+		List<Enemy> living = enemyManager.GetLivingEnemies();
+
+		// 回合开始：结算敌人身上的「回合开始」效果（持续时间刷新等）
+		foreach (Enemy enemy in living)
+		{
+			if (enemy == null || enemy.IsDead) continue;
+			enemy.ProcessTurnStartEffects();
+		}
+
+		foreach (Enemy enemy in living)
 		{
 			enemy.PerformAction(player, enemies);
 			AIAction action = enemy.CurrentAction;
@@ -786,6 +842,19 @@ namespace FishEatFish.Scenes
 			}
 		}
 
+		// ⚠️ **回合末结算**（2026-10-25 D54 补上）——
+		// 这一步以前**从来没跑过**：`TurnManager` 里有 `ProcessEnemyTurnEndEffects()`，
+		// 但那个类**从没被实例化**（死代码），真实回合流程在 BattleManager 里，
+		// 而这里漏了调用 → 敌人身上的回合末效果全是死的：
+		//   - 中毒「回合结束时受到等量层数的伤害」→ **从来没掉过血**
+		//   - 出血 / 虚弱（回合结束时移除 1 层）→ 层数从来不减
+		// 现在按参考游戏的口径：回合结束 → 扣血、减层。
+		foreach (Enemy enemy in living)
+		{
+			if (enemy == null || enemy.IsDead) continue;
+			enemy.ProcessTurnEndEffects();
+		}
+
 		UpdateUI();
 		UpdateEnemyUI();
 		UpdateBuffDebuffDisplay();
@@ -804,6 +873,9 @@ namespace FishEatFish.Scenes
 	{
 		if (player.CurrentHealth <= 0)
 		{
+			if (_battleOver) return true;
+			_battleOver = true;
+
 			battleEndRageHandler?.OnBattleEnd(false, player.CurrentHealth, player.MaxHealth);
 			ProcessPostBattleRage(false);
 			AddMessage("你输掉了战斗!", LogType.System);
@@ -816,6 +888,14 @@ namespace FishEatFish.Scenes
 
 		if (!enemyManager.HasLivingEnemies())
 		{
+			// ⚠️ **幂等守卫**（2026-10-25 D54 补）：`CheckGameOver` 会被**多处**调用
+			// （出牌结算 / 释放狂气爆发 / 回合末），同一帧里可能连着进两次。
+			// 第二次进来时 `Pressed -= OnEndTurnPressed` 会报「disconnect a nonexistent connection」，
+			// `Pressed += OnNextLevelPressed` 会报「already connected」——
+			// 结果按钮上可能挂着**两个**处理函数，点一下触发两遍。
+			if (_battleOver) return true;
+			_battleOver = true;
+
 			battleEndRageHandler?.OnBattleEnd(true, player.CurrentHealth, player.MaxHealth);
 			ProcessPostBattleRage(true);
 
@@ -1142,13 +1222,42 @@ namespace FishEatFish.Scenes
 
 		TriggerEngraving(card);
 
+		// 灵知觉醒：「珈伦打出卡牌后，回复体质×N% 生命，获得 5 点狂气」
+		// ⚠️ 是**每次打出卡牌后**触发，不是打出觉醒卡那一刻 —— 所以挂在出牌之后。
+		TriggerAwakening(card);
+
+		// 出牌计数（「可以使用 N 次」与「第 N 次打出时消耗」都用它）
+		card.UsedCount++;
+
 		if (player.Hand.Contains(card))
 		{
 			player.Hand.Remove(card);
-			// 消耗：打出后从牌库移除（不进弃牌堆）
-			if (!effectContext.CardConsumed)
+
+			// 「可以使用 N 次」：还没用满就**留在手里**（靠「保留」词缀留住），
+			// 用满次数才真正消耗（从牌库移除）。
+			bool reusable = card.MaxUsageCount > 0 && card.UsedCount < card.MaxUsageCount;
+			if (reusable)
 			{
-				player.DiscardPile.Add(card);
+				player.Hand.Add(card);
+			}
+			else
+			{
+				// 「第 N 次打出时 ⚠消耗」（波吕克斯「圣心」= 第 3 次）→ 这张牌彻底离场
+				bool consumedOnPlay = card.ConsumeOnPlayCount > 0 && card.UsedCount >= card.ConsumeOnPlayCount;
+				if (consumedOnPlay)
+				{
+					GD.Print($"[BattleManager] 「{card.Name}」第 {card.UsedCount} 次打出，触发消耗（从牌库移除）");
+				}
+				else if (card.ReturnToDeckTop)
+				{
+					// 「打出后将此卡牌洗入抽牌堆顶部」（波吕克斯「圣心」）
+					player.Deck.Insert(0, card);
+					GD.Print($"[BattleManager] 「{card.Name}」洗入抽牌堆顶部（第 {card.UsedCount} 次打出）");
+				}
+				else if (!effectContext.CardConsumed)
+				{
+					player.DiscardPile.Add(card);
+				}
 			}
 		}
 
@@ -1181,12 +1290,71 @@ namespace FishEatFish.Scenes
 	}
 
 	/// <summary>
+	/// **灵知觉醒的持续触发**。
+	///
+	/// 照参考游戏《终末前夜 Morimens》—— 珈伦「凸月之舞」：
+	/// 「⚠灵知觉醒：**珈伦打出卡牌后**，回复 体质×9% 点生命，获得 5 点狂气。
+	/// 打出「奇妙料理」后，对所有敌人施加 攻击力×15% 层中毒。」
+	///
+	/// ⚠️ 关键：**是「每次打出卡牌后」触发**，不是「打出觉醒卡那一刻」——
+	/// 所以触发点挂在出牌流程之后（觉醒卡自己打出时不算，觉醒是「打出后」才生效的）。
+	/// </summary>
+	private void TriggerAwakening(Card card)
+	{
+		if (card == null) return;
+
+		CharacterPosition owner = ResolveCardOwner(card);
+		if (owner == null || !owner.AwakeningActive) return;
+
+		// 打出觉醒卡本身不触发（觉醒是「打出后」才开始生效的）
+		if (!string.IsNullOrEmpty(owner.AwakeningSourceCardId) && card.CardId == owner.AwakeningSourceCardId)
+		{
+			return;
+		}
+
+		if (owner.AwakeningHealAmount > 0 && player != null)
+		{
+			player.Heal(owner.AwakeningHealAmount);
+			AddMessage($"灵知觉醒：回复{owner.AwakeningHealAmount}点生命", LogType.Heal);
+		}
+
+		if (owner.AwakeningRageGain > 0)
+		{
+			owner.AddRage(owner.AwakeningRageGain);
+			AddMessage($"灵知觉醒：获得{owner.AwakeningRageGain}点狂气", LogType.System);
+		}
+
+		// 打出指定那张衍生卡时，再叠一步「对所有敌人施加减益」
+		if (!string.IsNullOrEmpty(owner.AwakeningTriggerCardId) &&
+			card.CardId == owner.AwakeningTriggerCardId &&
+			!string.IsNullOrEmpty(owner.AwakeningDebuffId))
+		{
+			CardEffectContext ctx = BuildEffectContext(card);
+			CardEffectEngine.ApplyDebuffToAllEnemies(card, owner.AwakeningDebuffId, owner.AwakeningDebuffStacks, ctx);
+		}
+
+		UpdateRageDisplay();
+	}
+
+	/// <summary>
 	/// 找出这张卡属于哪个角色（用于「自身怒气」「团队怒气」这类需要出牌者的刻印）。
 	/// 找不到就返回 null，刻印里会做 null 保护。
 	/// </summary>
 	private CharacterPosition ResolveCardOwner(Card card)
 	{
 		if (card == null || attacker == null) return null;
+
+		// 运行时置入的衍生卡（「圣心」「奇妙料理」）不在卡组映射里 —— 靠卡上记的归属找
+		if (!string.IsNullOrEmpty(card.OwnerCharacterId))
+		{
+			for (int i = 0; i < attacker.Characters.Length && i < characterPositions.Count; i++)
+			{
+				if (attacker.Characters[i]?.CharacterId == card.OwnerCharacterId)
+				{
+					return characterPositions[i];
+				}
+			}
+		}
 
 		CharacterDefinition character = attacker.GetCharacterByCard(card);
 		if (character == null) return null;
