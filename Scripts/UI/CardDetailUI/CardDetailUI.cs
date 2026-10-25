@@ -24,8 +24,8 @@ namespace FishEatFish.UI.CardDetailPanel
 		private Label _typeLabel;
 		private Label _costLabel;
 		private Label _levelLabel;
-		private Label _statsLabel;
-		private Label _affixLabel;
+		private RichTextLabel _statsLabel;
+		private RichTextLabel _affixLabel;
 		private RichTextLabel _descLabel;
 		private Button _closeButton;
 
@@ -40,8 +40,8 @@ namespace FishEatFish.UI.CardDetailPanel
 			_typeLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/Header/TitleBox/TypeLabel");
 			_costLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/Header/TitleBox/CostLabel");
 			_levelLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/Header/TitleBox/LevelLabel");
-			_statsLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/StatsPanel/StatsLabel");
-			_affixLabel = GetNodeOrNull<Label>("Panel/Margin/VBox/AffixLabel");
+			_statsLabel = GetNodeOrNull<RichTextLabel>("Panel/Margin/VBox/StatsPanel/StatsLabel");
+			_affixLabel = GetNodeOrNull<RichTextLabel>("Panel/Margin/VBox/AffixLabel");
 			_descLabel = GetNodeOrNull<RichTextLabel>("Panel/Margin/VBox/DescLabel");
 			_closeButton = GetNodeOrNull<Button>("Panel/Margin/VBox/Footer/CloseButton");
 
@@ -143,6 +143,9 @@ namespace FishEatFish.UI.CardDetailPanel
 		/// <summary>
 		/// 属性区文本：**系数口径 + 当前值 + 下一级预览**。
 		/// 系数口径是参考图右侧「属性」面板的写法（「伤害 攻击力×20%」）。
+		///
+		/// ⚠️ 输出的文本**带 BBCode**（数值按统一配色着色）→ 承载它的
+		/// <c>StatsLabel</c> 必须是 <c>RichTextLabel</c>，普通 Label 会把标签当字面量显示。
 		/// </summary>
 		private static string BuildStatsText(Card card, CharacterAttributes attributes)
 		{
@@ -150,26 +153,26 @@ namespace FishEatFish.UI.CardDetailPanel
 
 			if (card.DamagePercent > 0)
 			{
-				lines.Add($"伤害　攻击力×{card.DamagePercent}%　→　{card.GetFinalDamage(attributes)} 点");
+				lines.Add($"伤害　攻击力×{card.DamagePercent}%　→　[color={TextColors.Damage}]{card.GetFinalDamage(attributes)}[/color] 点");
 			}
 			else
 			{
 				int damage = card.GetFinalDamage(attributes);
-				if (damage > 0) lines.Add($"伤害　{damage} 点");
+				if (damage > 0) lines.Add($"伤害　[color={TextColors.Damage}]{damage}[/color] 点");
 			}
 
 			if (card.ShieldPercent > 0)
 			{
-				lines.Add($"护盾　防御力×{card.ShieldPercent}%　→　{card.GetFinalShield(attributes)} 点");
+				lines.Add($"护盾　防御力×{card.ShieldPercent}%　→　[color={TextColors.Shield}]{card.GetFinalShield(attributes)}[/color] 点");
 			}
 			else
 			{
 				int shield = card.GetFinalShield(attributes);
-				if (shield > 0) lines.Add($"护盾　{shield} 点");
+				if (shield > 0) lines.Add($"护盾　[color={TextColors.Shield}]{shield}[/color] 点");
 			}
 
 			int rage = RageManager.GetRageForCard(card);
-			if (rage > 0) lines.Add($"狂气　{rage}");
+			if (rage > 0) lines.Add($"狂气　[color={TextColors.Rage}]{rage}[/color]");
 
 			// 下一级预览：等级系数 1+0.2×(级-1)，所以每升一级数值都涨
 			if (card.Level < card.MaxLevel)
@@ -177,8 +180,8 @@ namespace FishEatFish.UI.CardDetailPanel
 				int nextDamage = card.GetFinalDamage(attributes, card.Level + 1);
 				int nextShield = card.GetFinalShield(attributes, card.Level + 1);
 				string next = $"下一级（Lv.{card.Level + 1}）";
-				if (nextDamage > 0) next += $"　伤害 {nextDamage}";
-				if (nextShield > 0) next += $"　护盾 {nextShield}";
+				if (nextDamage > 0) next += $"　伤害 [color={TextColors.Damage}]{nextDamage}[/color]";
+				if (nextShield > 0) next += $"　护盾 [color={TextColors.Shield}]{nextShield}[/color]";
 				lines.Add(next);
 			}
 			else
@@ -205,11 +208,11 @@ namespace FishEatFish.UI.CardDetailPanel
 
 			if (card.IsRetain && !body.Contains("保留"))
 			{
-				parts.Add("保留");
+				parts.Add($"[color={TextColors.BuffAffix}]保留[/color]");
 			}
 			if (card.IsEngraved && !string.IsNullOrEmpty(card.EngravingEffect?.Name))
 			{
-				parts.Add($"刻印：{card.EngravingEffect.Name}");
+				parts.Add($"[color={TextColors.BuffAffix}]刻印：{card.EngravingEffect.Name}[/color]");
 			}
 
 			return parts.Count > 0 ? "词缀：" + string.Join("　", parts) : "";

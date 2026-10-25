@@ -188,7 +188,33 @@ public static class DescriptionGenerator
         // 用占位符后，卡面与战斗永远同源（同一条规则算出来的）。
         body = ReplaceValuePlaceholders(body, card, attributes);
 
+        // 数值着色（伤害红 / 护盾蓝 / 恢复绿 / 怒气橙）—— 在词缀着色**之前**做
+        body = ColorizeNumbers(body);
+
         return body + BuildAffixMarkText(card, body);
+    }
+
+    /// <summary>
+    /// **给正文里的「结果值」上色**（BBCode）。
+    ///
+    /// 照参考游戏《终末前夜 Morimens》的卡面：
+    /// 「造成 <b>37</b> 点伤害」红 · 「获得 <b>32</b> 点护盾」蓝 ·
+    /// 「回复 <b>24</b> 点生命」绿 · 「获得 <b>10</b> 点怒气」橙。
+    ///
+    /// ⚠️ **只有「点伤害 / 点护盾 / 点生命 / 点怒气」这类结果值着色**——
+    /// 「1 回合的虚弱」「施加 41 层中毒」里的**层数不着色**（参考图里它们是白色）。
+    /// 这条规则同时避开了「数字和词缀的 color 标签嵌套」的问题（BBCode 不支持嵌套）。
+    /// </summary>
+    /// <param name="body">正文（纯文本或已含 BBCode 均可）</param>
+    public static string ColorizeNumbers(string body)
+    {
+        if (string.IsNullOrEmpty(body)) return body;
+
+        body = Regex.Replace(body, @"(\d+)(?=\s*点伤害)", $"[color={TextColors.Damage}]$1[/color]");
+        body = Regex.Replace(body, @"(\d+)(?=\s*点护盾)", $"[color={TextColors.Shield}]$1[/color]");
+        body = Regex.Replace(body, @"(\d+)(?=\s*点生命)", $"[color={TextColors.Heal}]$1[/color]");
+        body = Regex.Replace(body, @"(\d+)(?=\s*点(?:怒气|狂气))", $"[color={TextColors.Rage}]$1[/color]");
+        return body;
     }
 
     /// <summary>把正文里的 <c>{heal}</c> / <c>{damage}</c> / <c>{shield}</c> 占位符换成实际数值</summary>
@@ -396,7 +422,8 @@ public static class DescriptionGenerator
             return ultimate.Description;
         }
 
-        return string.Join("，", parts);
+        // 数值着色（回复绿 / 减益层数不着色 / 怒气橙…）
+        return ColorizeNumbers(string.Join("，", parts));
     }
 
     public static string GetBuffDisplayName(string buffName)
@@ -497,6 +524,8 @@ public static class DescriptionGenerator
         string body = string.Join("", parts);
         // 文案里的数值占位符（{heal} / {damage} / {shield} / {poison}）→ 换成实际数值
         body = ReplaceValuePlaceholders(body, card, attributes);
+        // 数值着色（伤害红 / 护盾蓝 / 恢复绿 / 怒气橙）
+        body = ColorizeNumbers(body);
         return body + BuildAffixMarkText(card, body);
     }
 

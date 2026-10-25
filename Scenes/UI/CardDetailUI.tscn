@@ -121,17 +121,26 @@ text = "等级: 1/6"
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_stats")
 
-[node name="StatsLabel" type="Label" parent="Panel/Margin/VBox/StatsPanel"]
+[node name="StatsLabel" type="RichTextLabel" parent="Panel/Margin/VBox/StatsPanel"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_colors/default_color = Color(0.86, 0.88, 0.92, 1)
+theme_override_font_sizes/normal_font_size = 18
 text = "伤害　攻击力×10%　→　18 点"
+bbcode_enabled = true
+fit_content = false
+scroll_active = false
+selection_enabled = false
 autowrap_mode = 3
 
-[node name="AffixLabel" type="Label" parent="Panel/Margin/VBox"]
+[node name="AffixLabel" type="RichTextLabel" parent="Panel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.75, 0.35, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/default_color = Color(1, 0.75, 0.35, 1)
+theme_override_font_sizes/normal_font_size = 16
 text = "词缀：保留"
+bbcode_enabled = true
+fit_content = false
+scroll_active = false
+selection_enabled = false
 autowrap_mode = 3
 
 [node name="DescLabel" type="RichTextLabel" parent="Panel/Margin/VBox"]

@@ -1362,7 +1362,7 @@
             "style": "striker",
             "cost": 2,
             "isAttack": true,
-            "damagePercent": 80,
+            "damagePercent": 40,
             "isAreaAttack": true,
             "drawCountBase": 2,
             "drawCountPerLevel": 0,
@@ -1379,7 +1379,7 @@
                 },
                 {
                     "type": "damage",
-                    "percent": 80,
+                    "percent": 40,
                     "target": "allEnemies"
                 },
                 {
@@ -1394,7 +1394,7 @@
             "style": "striker",
             "cost": 3,
             "isAttack": true,
-            "damagePercent": 140,
+            "damagePercent": 70,
             "isRetain": true,
             "affixes": [
                 "retain"
@@ -1403,7 +1403,7 @@
             "effects": [
                 {
                     "type": "damage",
-                    "percent": 140,
+                    "percent": 70,
                     "target": "target",
                     "hitCount": 2
                 },

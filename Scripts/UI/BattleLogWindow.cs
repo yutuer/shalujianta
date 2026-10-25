@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using FishEatFish.Battle.Card;
 
 public partial class BattleLogWindow : Control
 {
@@ -209,13 +210,15 @@ public partial class BattleLogWindow : Control
 
     private Color GetColorForLogType(LogType type)
     {
+        // ⚠️ **统一走 TextColors 常量**（与卡面正文的数值配色同一份）——
+        //    以前这里自己写了一套色值，和卡面各漂各的。
         return type switch
         {
-            LogType.Damage => new Color("ff6b6b"),
-            LogType.Heal => new Color("6bff6b"),
-            LogType.Shield => new Color("6bb3ff"),
-            LogType.Energy => new Color("ffdd6b"),
-            LogType.Skill => new Color("dd6bff"),
+            LogType.Damage => new Color(TextColors.Damage),
+            LogType.Heal => new Color(TextColors.Heal),
+            LogType.Shield => new Color(TextColors.Shield),
+            LogType.Energy => new Color(TextColors.Energy),
+            LogType.Skill => new Color(TextColors.Skill),
             LogType.Enemy => new Color("ff9966"),
             LogType.System => new Color("888888"),
             _ => new Color("e0e0e0")
