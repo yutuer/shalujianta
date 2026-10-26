@@ -222,6 +222,14 @@ foreach ($c in $cards) {
         $problems += "[character_cards.json] 卡「$cid」是基本卡，effects 里缺 rage 条目（怒气应为 5 + 1×(级−1)）"
     }
 
+    # ⚠️ **灵知觉醒卡必须「打出即销毁」**（主人 2026-10-27 拍板）
+    # 「所有角色的卡牌3 都不能重复使用 —— 某个角色用过后，该次战斗该角色就处于灵知觉醒状态，
+    #   所以这张卡牌可以看成打出就销毁。」
+    # → 缺 consume 条目 = 打出后还会留在手里（净世之路还有 retain）→ 就能重复打出 → 违反口径。
+    if ($isAwakening -and -not $byType.ContainsKey('consume')) {
+        $problems += "[character_cards.json] 卡「$cid」是灵知觉醒卡，effects 里缺 consume 条目（灵知觉醒卡只能打出一次 —— 打出即从牌库移除；缺了就会变成可重复使用）"
+    }
+
     # 抽牌
     $drawCount = Get-IntField $c 'drawCountBase' 0
     if ($drawCount -gt 0) {

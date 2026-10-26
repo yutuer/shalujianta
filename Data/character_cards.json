@@ -1355,6 +1355,9 @@
                 },
                 {
                     "type": "retain"
+                },
+                {
+                    "type": "consume"
                 }
             ],
             "affixNotes": [
@@ -1559,6 +1562,9 @@
                 },
                 {
                     "type": "retain"
+                },
+                {
+                    "type": "consume"
                 }
             ],
             "affixNotes": [

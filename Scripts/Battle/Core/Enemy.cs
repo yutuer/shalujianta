@@ -69,7 +69,35 @@ public partial class Enemy : Node, IUnit
 		// 减益（易伤 / 破甲）要参与最终伤害计算 —— 不走这一步，
 		// 挂在敌人身上的减益就只是"挂了却毫无作用"的状态图标
 		actualDamage = CalculateModifiedDamage(actualDamage, this);
-		CurrentHealth = Mathf.Max(0, CurrentHealth - actualDamage);
+		ApplyDamageWithShield(actualDamage);
+	}
+
+	/// <summary>
+	/// **扣血**：**先扣护盾，护盾扣完还有剩余才扣血**。
+	///
+	/// ⚠️ 主人 2026-10-27 拍板：「目前扣血的时候，会先扣除护盾，护盾值为 0 才去扣血。」
+	/// → 主动伤害 / 固定伤害 / 纯粹伤害**三条通道统一**走这里（护盾是通用的减伤缓冲）。
+	///
+	/// ⚠️ **以后会增加「穿盾直接扣血」**（绕过护盾直接扣血）—— 那是以后的事，
+	/// 到时候另开一条通道（不走本方法），不要把护盾逻辑塞进数值公式里。
+	/// </summary>
+	private void ApplyDamageWithShield(int damage)
+	{
+		if (damage <= 0) return;
+
+		int remaining = damage;
+		if (Shield > 0)
+		{
+			int absorbed = Mathf.Min(Shield, remaining);
+			Shield -= absorbed;
+			remaining -= absorbed;
+			GD.Print($"[EnemyShield] {EnemyName} 的护盾吸收 {absorbed} 点伤害（护盾剩 {Shield}）");
+		}
+
+		if (remaining > 0)
+		{
+			CurrentHealth = Mathf.Max(0, CurrentHealth - remaining);
+		}
 	}
 
 	/// <summary>
@@ -83,7 +111,7 @@ public partial class Enemy : Node, IUnit
 	public void TakeFixedDamage(int damage)
 	{
 		if (damage <= 0) return;
-		CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
+		ApplyDamageWithShield(damage);
 	}
 
 	/// <summary>
@@ -102,7 +130,7 @@ public partial class Enemy : Node, IUnit
 	public void TakePureDamage(int damage)
 	{
 		if (damage <= 0) return;
-		CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
+		ApplyDamageWithShield(damage);
 		GD.Print($"[PureDamage] {EnemyName} 受到 {damage} 点纯粹伤害（剩余 {CurrentHealth}/{MaxHealth}）");
 	}
 

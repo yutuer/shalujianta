@@ -1329,7 +1329,12 @@ namespace FishEatFish.Scenes
 					player.Deck.Insert(0, card);
 					GD.Print($"[BattleManager] 「{card.Name}」洗入抽牌堆顶部（第 {card.UsedCount} 次打出）");
 				}
-				else if (!effectContext.CardConsumed)
+				else if (effectContext.CardConsumed)
+				{
+					// ⚠️ 「消耗」= 打出后**不进弃牌堆、从牌库移除**（灵知觉醒卡「打出即销毁」）
+					GD.Print($"[BattleManager] 「{card.Name}」打出后消耗（不进弃牌堆，从牌库移除）");
+				}
+				else
 				{
 					player.DiscardPile.Add(card);
 				}
