@@ -394,7 +394,7 @@
             "baseSilverKeyCharge": 15,
             "attackCardId": "sanga_attack",
             "defenseCardId": "sanga_defense",
-            "specialCardIds": ["sanga_special", "sanga_special2", "sanga_special3"],
+            "specialCardIds": ["sanga_special3", "sanga_special", "sanga_special2"],
             "ultimateSkillId": "sanga_ultimate"
         },
         {
@@ -415,7 +415,7 @@
             "baseSilverKeyCharge": 29.4,
             "attackCardId": "thais_attack",
             "defenseCardId": "thais_defense",
-            "specialCardIds": ["thais_special", "thais_special2", "thais_special3"],
+            "specialCardIds": ["thais_special3", "thais_special", "thais_special2"],
             "ultimateSkillId": "thais_ultimate"
         }
     ]

@@ -535,8 +535,13 @@ public partial class CharacterDefinition : Resource
     ///
     /// 定位**防御型**（wiki「唤醒体类型=防御型」）→ Tank → 三分类显示「防御型」。
     ///
-    /// 卡组：打击 + 防御 + 美的怜悯（技能1右）/ 封闭创作（技能2左）/ 忘我之境（灵知觉醒）；
+    /// 卡组：打击 + 防御 + 忘我之境（灵知觉醒）/ 美的怜悯（技能1右）/ 封闭创作（技能2左）；
     /// 狂气爆发「失落的艺术」。
+    ///
+    /// ⚠️ **专属卡顺序 = 显示顺序**：打击(1) / 防御(2) / **灵知觉醒卡(3)** / 技能卡1(4) / 技能卡2(5)。
+    /// 参考游戏《终末前夜》的「技能」页就是**灵知觉醒卡永远排在 5 张的正中间**（珈伦参考图：
+    /// 打击 / 防御 / 凸月之舞(灵知觉醒) / 蟾蜍炖菜 / 静默守望）→ 所以 `specialCardIds[0]`
+    /// **恒为灵知觉醒卡**。`tools/check-card-data.ps1` 有规则守着这条。
     /// </summary>
     public static CharacterDefinition CreateSanga()
     {
@@ -562,7 +567,8 @@ public partial class CharacterDefinition : Resource
             BaseMaxRage = 100,
             AttackCardId = "sanga_attack",
             DefenseCardId = "sanga_defense",
-            SpecialCardIds = new string[] { "sanga_special", "sanga_special2", "sanga_special3" },
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "sanga_special3", "sanga_special", "sanga_special2" },
             UltimateSkillId = "sanga_ultimate"
         };
         charDef.ApplyRaceDefaults();
@@ -584,8 +590,13 @@ public partial class CharacterDefinition : Resource
     ///
     /// 定位**辅助型**（wiki「唤醒体类型=辅助型」）→ Healer → 三分类显示「辅助型」。
     ///
-    /// 卡组：打击 + 防御 + 古老的爱抚（技能1右）/ 圣血的本能（技能2左）/ 目见母亲（灵知觉醒）
+    /// 卡组：打击 + 防御 + 目见母亲（灵知觉醒）/ 古老的爱抚（技能1右）/ 圣血的本能（技能2左）
     /// + 衍生卡「圣洁之子」；狂气爆发「丰穰之仪」。
+    ///
+    /// ⚠️ **专属卡顺序 = 显示顺序**：打击(1) / 防御(2) / **灵知觉醒卡(3)** / 技能卡1(4) / 技能卡2(5)。
+    /// 参考游戏《终末前夜》的「技能」页就是**灵知觉醒卡永远排在 5 张的正中间**（珈伦参考图：
+    /// 打击 / 防御 / 凸月之舞(灵知觉醒) / 蟾蜍炖菜 / 静默守望）→ 所以 `specialCardIds[0]`
+    /// **恒为灵知觉醒卡**。`tools/check-card-data.ps1` 有规则守着这条。
     /// </summary>
     public static CharacterDefinition CreateThais()
     {
@@ -610,7 +621,8 @@ public partial class CharacterDefinition : Resource
             BaseMaxRage = 100,
             AttackCardId = "thais_attack",
             DefenseCardId = "thais_defense",
-            SpecialCardIds = new string[] { "thais_special", "thais_special2", "thais_special3" },
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "thais_special3", "thais_special", "thais_special2" },
             UltimateSkillId = "thais_ultimate"
         };
         charDef.ApplyRaceDefaults();

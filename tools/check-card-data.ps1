@@ -130,6 +130,44 @@ foreach ($c in $cards) {
     }
 }
 
+# 5b) **灵知觉醒卡必须排在专属卡的第 1 位**（= 5 张卡显示时的正中间）
+#     依据：参考游戏《终末前夜》的「技能」页 —— 灵知觉醒卡**永远排在 5 张卡的正中间**。
+#     珈伦参考图（docs/screenshots/人物_珈伦/卡牌总览_珈伦.jpg）实测：
+#       打击 / 防御 / **凸月之舞(灵知觉醒)** / 蟾蜍炖菜 / 静默守望
+#     → 也就是「打击(1) / 防御(2) / 灵知觉醒(3) / 技能卡1(4) / 技能卡2(5)」。
+#     我们的显示顺序 = 打击 + 防御 + specialCardIds[]（CharacterGallery.GetDeckCardIds）
+#     → **specialCardIds[0] 恒为灵知觉醒卡**。
+#     ⚠️ 没有灵知觉醒卡的角色（12 个属相角色）不受这条约束。
+foreach ($ch in $characters) {
+    $cid = $ch.characterId
+    $specials = @()
+    if ($null -ne $ch.PSObject.Properties.Name -contains 'specialCardIds' -and $null -ne $ch.specialCardIds) {
+        $specials = @($ch.specialCardIds)
+    }
+    if ($specials.Count -eq 0) { continue }
+
+    $awakeIndexes = @()
+    for ($i = 0; $i -lt $specials.Count; $i++) {
+        $sid = $specials[$i]
+        if ($cardIndex.ContainsKey($sid) -and $cardIndex[$sid].cardType -eq 'awakening') {
+            $awakeIndexes += $i
+        }
+    }
+    if ($awakeIndexes.Count -eq 0) { continue }          # 没有灵知觉醒卡 → 不检查
+    if ($awakeIndexes.Count -gt 1) {
+        $awakeIds = @()
+        foreach ($sid in $specials) {
+            if ($cardIndex.ContainsKey($sid) -and $cardIndex[$sid].cardType -eq 'awakening') { $awakeIds += $sid }
+        }
+        $problems += "[characters.json] 角色「$cid」有多张灵知觉醒卡（$($awakeIds -join ', ')）—— 一个角色只能有一张"
+        continue
+    }
+    if ($awakeIndexes[0] -ne 0) {
+        $awakeId = $specials[$awakeIndexes[0]]
+        $problems += "[characters.json] 角色「$cid」的灵知觉醒卡「$awakeId」排在专属卡第 $($awakeIndexes[0] + 1) 位 —— **灵知觉醒卡必须永远显示在 5 张卡的正中间**（即 specialCardIds[0]），请把它挪到第 1 位"
+    }
+}
+
 # 6) 效果列表与旧字段**必须一致**（唯一真相源是 effects[]，旧字段是派生值）
 #    两处一旦漂移，就会出现「卡面写一套、战斗打另一套」。
 $RAGE_ATTACK = 15    # 攻击牌怒气（RageManager.RageOnAttack）
