@@ -56,8 +56,13 @@ public partial class CharacterDefinition : Resource
     [Export]
     public int BaseConstitution = 10;
 
+    /// <summary>
+    /// 暴击率（百分数，5 = 5%）。
+    /// ⚠️ 用 float —— 参考图「详细属性」面板给的是 **14.6%** 这种小数（wiki 升格5 原值同为 14.6%），
+    /// int 存不下会四舍五入成 15，跟参考图对不上。
+    /// </summary>
     [Export]
-    public int BaseCritRate = 5;
+    public float BaseCritRate = 5f;
 
     [Export]
     public int BaseCritDamage = 150;
@@ -449,7 +454,8 @@ public partial class CharacterDefinition : Resource
             BaseAttack = 182,
             BaseDefense = 156,
             BaseConstitution = 162,
-            BaseCritRate = 15,
+            // 暴击率 14.6%：参考图「详细属性」面板 + wiki 升格5 原值，两边一致
+            BaseCritRate = 14.6f,
             BaseCritDamage = 50,
             BaseRageReturn = 0,
             BaseSilverKeyCharge = 15,

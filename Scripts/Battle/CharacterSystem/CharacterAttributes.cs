@@ -7,7 +7,15 @@ public class CharacterAttributes
     public int Attack { get; set; } = 10;
     public int Defense { get; set; } = 5;
     public int Constitution { get; set; } = 10;
-    public int CritRate { get; set; } = 5;
+
+    /// <summary>
+    /// 暴击率（百分数，5 = 5%）。
+    /// ⚠️ 用 float 而不是 int —— 参考图「详细属性」面板给的是 **14.6%** 这种小数
+    /// （wiki 升格5 的原值也是 14.6%），int 存不下，只能四舍五入成 15，
+    /// 就跟参考图对不上了。
+    /// </summary>
+    public float CritRate { get; set; } = 5f;
+
     public int CritDamage { get; set; } = 150;
 
     public int DeathResistance { get; set; } = 0;
