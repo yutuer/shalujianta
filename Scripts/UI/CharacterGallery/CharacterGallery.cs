@@ -495,36 +495,21 @@ namespace FishEatFish.UI.CharacterGallery
 		}
 
 		/// <summary>
-		/// **狂气爆发说明文本** = 算出来的数值（造成 546 点伤害）+ 数据表里的补充说明，
-		/// 其中「圣心」那个词做成**可点击链接**（点了弹出衍生卡说明）。
+		/// **狂气爆发说明文本** = 数据表原文（占位符换成真值）+ 衍生卡名做成可点击链接。
+		///
+		/// 照参考游戏《终末前夜 Morimens》——说明是**一段话**：
+		/// 「对所有敌人造成 546 点伤害，使自身本回合下张指令卡享受「苦痛救赎」效果。将 1 张「圣心」置入手中。」
+		///
+		/// ⚠️ 2026-10-27 改过：原来是「按字段算出的数值要点」+「数据表原文」用逗号连起来 →
+		/// **整段内容说了两遍**，而且后半段还带着没替换的 <c>{heal}</c> 占位符。
+		/// 详见 <c>DescriptionGenerator.BuildUltimateDescriptionBBCode</c>。
 		/// </summary>
 		/// <param name="ultimate">狂气爆发</param>
 		/// <param name="attributes">角色属性（算数值要用）</param>
 		/// <returns>BBCode 文本</returns>
 		private static string BuildUltimateDescription(UltimateSkill ultimate, CharacterAttributes attributes)
 		{
-			if (ultimate == null) return "";
-
-			// ① 数值部分（与战斗同一个函数算出来的，不会漂）
-			string generated = DescriptionGenerator.GenerateUltimateDescription(ultimate, attributes);
-
-			// ② 补充说明（数据表里的原文）
-			string extra = ultimate.Description ?? "";
-
-			// ③ 「圣心」→ 可点击
-			// ⚠️ url 的值必须是**卡牌 id**（点击时传回来的 meta 就是 url 的值），
-			//    显示文字才是给人看的名字。
-			if (!string.IsNullOrEmpty(ultimate.DerivedCardId) &&
-				!string.IsNullOrEmpty(ultimate.DerivedCardName) &&
-				!string.IsNullOrEmpty(extra))
-			{
-				extra = extra.Replace(ultimate.DerivedCardName,
-					$"[url={ultimate.DerivedCardId}]{ultimate.DerivedCardName}[/url]");
-			}
-
-			if (string.IsNullOrEmpty(generated)) return extra;
-			if (string.IsNullOrEmpty(extra)) return generated;
-			return generated + "，" + extra;
+			return DescriptionGenerator.BuildUltimateDescriptionBBCode(ultimate, attributes);
 		}
 
 		/// <summary>

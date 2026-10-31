@@ -80,6 +80,12 @@ public static class UltimateExecutor
     /// 衍生卡不在卡组映射里（卡组只有打击 / 防御 / 专属卡），
     /// 所以这里从 <c>character_cards.json</c> 取模板 → 克隆一份独立实例 →
     /// 挂上释放者的属性与归属 → 放进手牌。
+    ///
+    /// ⚠️ **手牌满了就不放**（2026-10-27 主人要求）——
+    ///   以前是**无条件塞进 <c>player.Hand</c>**，于是卡排在第 11 位：
+    ///   界面不显示（手牌区只有 10 个位）、玩家也用不了，卡就凭空消失了。
+    ///   现在满了就**不放**，并在执行摘要里写明「手牌已满」，
+    ///   由 <c>BattleManager</c> 把摘要显示到战斗日志里给玩家看。
     /// </summary>
     private static void ApplyAddCardToHand(UltimateSkill skill, Player player, CharacterPosition owner, List<string> summary)
     {
@@ -98,6 +104,16 @@ public static class UltimateExecutor
         int added = 0;
         for (int i = 0; i < skill.AddCardToHandCount; i++)
         {
+            // ⚠️ 手牌上限 —— 与 Player.DrawCards 的规则一致（满了就抽不到）
+            if (player.Hand.Count >= player.MaxHandSize)
+            {
+                GD.Print($"[UltimateExecutor] 【{skill.Name}】手牌已满（{player.Hand.Count}/{player.MaxHandSize}），未能置入「{template.Name}」");
+                summary.Add($"手牌已满（{player.Hand.Count}/{player.MaxHandSize}），未能获得「{template.Name}」");
+                // ⚠️ 明确标记 —— UI 要靠它把战斗日志弹出来（摘要默认是折叠的，玩家看不到）
+                skill.LastAddCardToHandFailed = true;
+                return;
+            }
+
             Card.Card card = template.Clone();
             card.OwnerCharacterId = ownerCharacterId;
 
@@ -111,8 +127,11 @@ public static class UltimateExecutor
             added++;
         }
 
-        GD.Print($"[UltimateExecutor] 【{skill.Name}】将 {added} 张「{template.Name}」置入手中（归属 {ownerCharacterId}）");
-        summary.Add($"将{added}张「{template.Name}」置入手中");
+        if (added > 0)
+        {
+            GD.Print($"[UltimateExecutor] 【{skill.Name}】将 {added} 张「{template.Name}」置入手中（归属 {ownerCharacterId}）");
+            summary.Add($"将{added}张「{template.Name}」置入手中");
+        }
     }
 
     /// <summary>

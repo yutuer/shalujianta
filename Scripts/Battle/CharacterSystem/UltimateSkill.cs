@@ -123,6 +123,15 @@ public partial class UltimateSkill : Resource, ICardLevelable
     /// <summary>最近一次 Execute 的中文执行摘要</summary>
     public string LastExecuteSummary { get; private set; } = "";
 
+    /// <summary>
+    /// 最近一次 Execute 里**衍生卡没能置入手中**（手牌已满）。
+    ///
+    /// ⚠️ 这是一个**给 UI 用的明确状态**，不要靠去摘要字符串里找「手牌已满」来判断 ——
+    /// 战斗日志窗口默认是折叠的，玩家看不到摘要，
+    /// 所以「没拿到卡」这种**必须让玩家知道**的情况要把窗口弹出来（见 <c>BattleManager</c>）。
+    /// </summary>
+    public bool LastAddCardToHandFailed { get; set; } = false;
+
     [Export]
     public int Level { get; set; } = 1;
 
@@ -255,6 +264,9 @@ public partial class UltimateSkill : Resource, ICardLevelable
     public void Execute(Player player, Enemy[] enemies, CharacterPosition owner = null)
     {
         GD.Print($"[UltimateSkill] Execute called: {SkillId}（{Name}）");
+
+        // 每次执行前重置「衍生卡没拿到」的标记
+        LastAddCardToHandFailed = false;
 
         // 旧路径：EffectIds → EffectResolver（与新路径互不冲突）
         if (player != null)

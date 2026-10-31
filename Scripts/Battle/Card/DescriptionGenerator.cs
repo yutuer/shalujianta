@@ -352,6 +352,94 @@ public static class DescriptionGenerator
         return ColorizeAffixesInBody(GenerateCardFlavorText(card, attributes), card);
     }
 
+    /// <summary>
+    /// **狂气爆发说明里的数值占位符** → 换成**按当前等级算出来的真值**。
+    ///
+    /// 为什么需要（2026-10-27 实测抓到的）：
+    /// 珈伦「客官请慢用！」的说明原文写的是「回复 <c>{heal}</c> 点生命」，
+    /// 但面板**是把数据表原文直接贴上去**的 → 玩家看到的就是字面的 <c>{heal}</c>。
+    /// （卡面正文早就有这套占位符机制，见 <see cref="ReplaceValuePlaceholders"/> —— **狂气爆发漏了**。）
+    ///
+    /// ⚠️ **数值来源必须与战斗结算同一个公式**（<c>UltimateSkill.Calculated*</c>），
+    ///    否则会再现「卡面写 56、战斗给 28」这种自相矛盾。
+    /// </summary>
+    /// <param name="ultimate">狂气爆发数据</param>
+    /// <param name="attributes">角色属性（百分比口径要靠它）</param>
+    /// <param name="text">带占位符的原文</param>
+    /// <returns>占位符已替换的文本</returns>
+    public static string ReplaceUltimatePlaceholders(UltimateSkill ultimate, CharacterAttributes attributes, string text)
+    {
+        if (ultimate == null || string.IsNullOrEmpty(text) || !text.Contains("{")) return text;
+
+        // ⚠️ 百分比口径（攻击力 × 百分比）要靠 LinkedAttributes 才算得出来，
+        //    没挂上就回落到「没有角色属性」的分支 → 数值算成 0。
+        if (attributes != null && ultimate.LinkedAttributes == null)
+        {
+            ultimate.LinkedAttributes = attributes;
+        }
+
+        if (text.Contains("{damage}")) text = text.Replace("{damage}", ultimate.CalculatedDamage.ToString());
+        if (text.Contains("{heal}")) text = text.Replace("{heal}", ultimate.CalculatedHeal.ToString());
+        if (text.Contains("{shield}")) text = text.Replace("{shield}", ultimate.CalculatedShield.ToString());
+        if (text.Contains("{draw}")) text = text.Replace("{draw}", ultimate.CalculatedDrawCount.ToString());
+        if (text.Contains("{buff}")) text = text.Replace("{buff}", ultimate.CalculatedBuffValue.ToString());
+        if (text.Contains("{duration}")) text = text.Replace("{duration}", ultimate.BuffDuration.ToString());
+        if (text.Contains("{energy}")) text = text.Replace("{energy}", ultimate.EnergyGain.ToString());
+
+        // 减益层数（中毒 / 虚弱 / 减速 …）—— 百分比口径按攻击力算，固定口径按 buffValue 算
+        if (text.Contains("{poison}") || text.Contains("{debuff}"))
+        {
+            int layers = ultimate.CalculatedDebuffValue;
+            text = text.Replace("{poison}", layers.ToString()).Replace("{debuff}", layers.ToString());
+        }
+
+        return text;
+    }
+
+    /// <summary>
+    /// **狂气爆发说明文本**（BBCode）—— 卡牌总览面板用。
+    ///
+    /// 照参考游戏《终末前夜 Morimens》：
+    /// 珈伦「客官请慢用！」→ 「移除所有手牌的迟缓状态。回复 45 点生命。将 1 张「奇妙料理」置入手中。对所有敌人施加 47 层中毒。」
+    /// 波吕克斯「无罪的圣裁」→ 「对所有敌人造成 546 点伤害，使自身本回合下张指令卡享受「苦痛救赎」效果。将 1 张「圣心」置入手中。」
+    ///
+    /// ⚠️ **说明是「一段话」，不是「数值清单 + 数据表原文」两段拼** ——
+    ///    早期实现把「按字段算出的数值要点」和「数据表原文」用逗号连起来，
+    ///    结果**整段内容说了两遍**，而且后半段还带着没替换的 <c>{heal}</c> 占位符。
+    ///    现在改成：**数据表 description = 唯一真相源**（占位符换成真值），
+    ///    只有 description 为空的老数据才退回「按字段生成」。
+    /// </summary>
+    /// <param name="ultimate">狂气爆发数据</param>
+    /// <param name="attributes">角色属性（算数值要用）</param>
+    /// <returns>BBCode 文本</returns>
+    public static string BuildUltimateDescriptionBBCode(UltimateSkill ultimate, CharacterAttributes attributes)
+    {
+        if (ultimate == null) return "";
+
+        // ① 数据表原文（唯一真相源）+ 占位符换成真值
+        string text = ReplaceUltimatePlaceholders(ultimate, attributes, ultimate.Description ?? "");
+
+        // ② 没有文案的老数据 → 退回「按字段生成」
+        if (string.IsNullOrEmpty(text))
+        {
+            text = GenerateUltimateDescription(ultimate, attributes);
+        }
+
+        // ③ 衍生卡名（「圣心」「奇妙料理」）→ 可点击链接
+        // ⚠️ url 的值必须是**卡牌 id**（点击时传回来的 meta 就是 url 的值），
+        //    显示文字才是给人看的名字。
+        if (!string.IsNullOrEmpty(ultimate.DerivedCardId) &&
+            !string.IsNullOrEmpty(ultimate.DerivedCardName) &&
+            !string.IsNullOrEmpty(text))
+        {
+            text = text.Replace(ultimate.DerivedCardName,
+                $"[url={ultimate.DerivedCardId}]{ultimate.DerivedCardName}[/url]");
+        }
+
+        // ④ 数值着色（伤害红 / 护盾蓝 / 恢复绿 / 怒气橙）—— 与卡面正文同一套规则
+        return ColorizeNumbers(text);
+    }
+
     public static string GenerateUltimateDescription(UltimateSkill ultimate, CharacterAttributes attributes = null)
     {
         if (attributes == null)
@@ -444,7 +532,8 @@ public static class DescriptionGenerator
 
         if (parts.Count == 0)
         {
-            return ultimate.Description;
+            // ⚠️ 走占位符替换 —— 否则「{heal}」这类占位符会原样漏到玩家眼前
+            return ReplaceUltimatePlaceholders(ultimate, attributes, ultimate.Description ?? "");
         }
 
         // 数值着色（回复绿 / 减益层数不着色 / 怒气橙…）

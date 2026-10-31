@@ -378,6 +378,23 @@ namespace FishEatFish.Scenes
 		position.PlayUltimateAnimation(player, enemies.ToArray());
 		AddMessage($"{position.Character?.Name ?? "角色"} 释放了狂气爆发！", LogType.System);
 
+		// 把**实际执行摘要**也显示出来 —— 玩家必须知道狂气爆发到底做了什么，
+		// 尤其是「手牌已满（10/10），未能获得「圣心」」这种**没拿到东西**的提示
+		// （2026-10-27 主人要求：手牌满了要明确告诉玩家）。
+		UltimateSkill usedSkill = GetUsedUltimate(position);
+		string ultimateDetail = usedSkill?.LastExecuteSummary ?? "";
+		if (!string.IsNullOrEmpty(ultimateDetail))
+		{
+			AddMessage(ultimateDetail, LogType.System);
+		}
+
+		// ⚠️ 「衍生卡没拿到」必须让玩家**看见** —— 战斗日志窗口默认是折叠的，
+		//    只写进日志等于没提示 → 把窗口弹出来。
+		if (usedSkill != null && usedSkill.LastAddCardToHandFailed)
+		{
+			battleLogWindow?.ShowWindow();
+		}
+
 		UpdateRageDisplay();
 		UpdateUI();
 		UpdateEnemyUI();
@@ -392,6 +409,30 @@ namespace FishEatFish.Scenes
 
 		CheckGameOver();
 		GD.Print($"[BattleManager] OnUltimateSlotClicked completed: slot={slotIndex}");
+	}
+
+	/// <summary>
+	/// 取该角色**刚释放的狂气爆发**的数据（含执行摘要）。
+	///
+	/// 摘要由 <c>UltimateExecutor</c> 按实际结算生成（不是说明文本）——
+	/// 说明里写着的机制没实现时，日志不能说假话。
+	/// 返回 null 表示拿不到（没有狂气爆发数据）。
+	/// </summary>
+	private UltimateSkill GetUsedUltimate(CharacterPosition position)
+	{
+		if (position?.Character == null) return null;
+
+		string skillId = position.Character.UltimateSkillId;
+		if (string.IsNullOrEmpty(skillId)) return null;
+
+		UltimateSkill skill = UltimateSkill.GetUltimateById(skillId);
+		if (skill == null)
+		{
+			GD.PrintErr($"[BattleManager] 找不到狂气爆发数据：{skillId}");
+			return null;
+		}
+
+		return skill;
 	}
 
 	/// <summary>
