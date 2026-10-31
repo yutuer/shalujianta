@@ -20,7 +20,13 @@ public class CharacterAttributes
 
     public int DeathResistance { get; set; } = 0;
     public int SilverKeyCharge { get; set; } = 0;
-    public int RageReturn { get; set; } = 0;
+
+    /// <summary>
+    /// 狂气回充等级（消耗狂气后按 <c>floor(消耗量 × 等级 / 10)</c> 回冲）。
+    /// ⚠️ 用 float —— wiki 升格5（60 级 0 命）的原值是 **5.6**（珈伦），
+    /// int 存不下会截断成 5，就跟 wiki 对不上了。
+    /// </summary>
+    public float RageReturn { get; set; } = 0f;
     public int MaxRage { get; set; } = 100;
 
     public int CurrentRage { get; set; } = 0;
@@ -79,7 +85,11 @@ public class CharacterAttributes
     public int UseRage(int amount)
     {
         int actualUsed = Mathf.Min(amount, CurrentRage);
-        int returnAmount = Mathf.FloorToInt(actualUsed * RageReturn / 10f);
+        // ⚠️ RageReturn 是 float（wiki 原值 5.6 这种小数），**5.6f 实际是 5.59999990463257** ——
+        // 直接 floor(100 * 5.59999990463257 / 10) 会掉成 **55**（应为 56）。
+        // 所以：① 先按 double 算（把 float 的误差摊薄）② 加一个极小的 epsilon 抵消二进制表示误差。
+        //    epsilon 只在真实值恰好是整数时起作用（0.0001 远小于 1，不会把 x.9999 顶进位）。
+        int returnAmount = Mathf.FloorToInt((float)(actualUsed * (double)RageReturn / 10.0 + 0.0001));
         CurrentRage -= actualUsed;
         return returnAmount;
     }

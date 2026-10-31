@@ -73,8 +73,12 @@ public partial class CharacterDefinition : Resource
     [Export]
     public int BaseSilverKeyCharge = 15;
 
+    /// <summary>
+    /// 狂气回充等级（消耗狂气后按 <c>floor(消耗量 × 等级 / 10)</c> 回冲）。
+    /// ⚠️ 用 float —— wiki 升格5（60 级 0 命）的原值是 **5.6**（珈伦），int 存不下。
+    /// </summary>
     [Export]
-    public int BaseRageReturn = 2;
+    public float BaseRageReturn = 2f;
 
     [Export]
     public int BaseMaxRage = 100;
@@ -473,9 +477,15 @@ public partial class CharacterDefinition : Resource
     /// <summary>
     /// 珈伦 —— **可玩角色**（参考游戏《终末前夜 Morimens》，2026-10-25 主人提供截图）。
     ///
-    /// 属性照参考图「详细属性」面板：攻击 96 / 防御 108 / 体质 112 /
-    /// 暴击率 5% / 暴击伤害 50% / 基础狂气 100 / 狂气回充等级 10.4 /
-    /// 银钥充能等级 15 / 死亡抵抗 36.4%；定位**辅助型**。
+    /// 属性口径（主人 2026-11-01 拍板）：**统一用 wiki 的「60 级 0 命」数据**，
+    /// 即「通用值 + wiki 升格5 那 2 条覆盖」（见 <c>tools/wiki-character.ps1</c>）：
+    /// 攻击 96 / 防御 108 / 体质 112（wiki 60 级行）/
+    /// 暴击率 5% / 暴击伤害 50% / 界域精通 0 / 伤害强效 0 / 基础狂气 100 /
+    /// **狂气回充等级 5.6**（wiki 升格5）/ 银钥充能等级 15 /
+    /// **死亡抵抗 28**（wiki 升格5）；定位**辅助型**。
+    ///
+    /// ⚠️ 参考图面板给的是 **10.4 / 36.4**（那是**含额外 10 命**的值）——
+    /// 主人明说「先不要管命座的值，只使用 60 级 0 命的数据」，所以这里用 wiki 的裸值。
     ///
     /// 卡组：打击 + 防御 + 凸月之舞（灵知觉醒）/ 蟾蜍炖菜 / 静默守望；
     /// 狂气爆发「客官请慢用！」（狂气爆发）。
@@ -498,8 +508,8 @@ public partial class CharacterDefinition : Resource
             BaseConstitution = 112,
             BaseCritRate = 5,
             BaseCritDamage = 50,
-            BaseDeathResistance = 36,
-            BaseRageReturn = 10,
+            BaseDeathResistance = 28,
+            BaseRageReturn = 5.6f,
             BaseSilverKeyCharge = 15,
             BaseMaxRage = 100,
             AttackCardId = "jialun_attack",
