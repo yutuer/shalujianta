@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_thais" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8A3A46"/>
+      <stop offset="1" stop-color="#5E2730"/>
+    </linearGradient>
+    <linearGradient id="headGrad_thais" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A1616B"/>
+      <stop offset="1" stop-color="#8A3A46"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M74 262 C56 220 58 176 80 150" fill="none" stroke="#F0C888" stroke-width="6" stroke-linecap="round" />
+  <path d="M182 262 C200 220 198 176 176 150" fill="none" stroke="#F0C888" stroke-width="6" stroke-linecap="round" />
+  <path d="M66 214 C54 206 52 192 62 186" fill="none" stroke="#F0C888" stroke-width="5" stroke-linecap="round" />
+  <path d="M190 214 C202 206 204 192 194 186" fill="none" stroke="#F0C888" stroke-width="5" stroke-linecap="round" />
+  <path d="M110 132 C90.2 135 72.6 144 66 158 C70 188 76 202 80 214 C82 230 78 241 72 250 L69 296 L187 296 L184 250 C178 241 174 230 176 214 C180 202 186 188 190 158 C152.6 144 170.2 135 146 132 Z" fill="url(#bodyGrad_thais)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#AD9062" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_thais)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="58" r="18" fill="url(#headGrad_thais)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="58" r="18" fill="url(#headGrad_thais)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="58" r="9" fill="#F0C888" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="58" r="9" fill="#F0C888" stroke="#0B0E14" stroke-width="3" />
+  <path d="M128 62 C110 44 116 24 128 38 C140 24 146 44 128 62 Z" fill="#F0C888" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <path d="M128 62 C140 44 152 44 154 58" fill="none" stroke="#F0C888" stroke-width="5" stroke-linecap="round" />
+  <path d="M128 62 C116 44 104 44 102 58" fill="none" stroke="#F0C888" stroke-width="5" stroke-linecap="round" />
+  <path d="M128 191 L141 205 L128 219 L115 205 Z" fill="#F0C888" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

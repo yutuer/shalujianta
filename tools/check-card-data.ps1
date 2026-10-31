@@ -212,7 +212,15 @@ foreach ($c in $cards) {
             }
         }
         else {
-            $problems += "[character_cards.json] 卡「$cid」是专属指令卡，按参考口径**不给怒气**（参考图属性面板没有「狂气」行），请删掉 effects 里的 rage 条目"
+            # ⚠️ **白名单（2026-11-01 新增）**：wiki 上明确写了「给狂气」的专属指令卡。
+            #   参考图属性面板没有「狂气」行，所以以前一律禁止专属指令卡带 rage 条目；
+            #   但灰机 wiki 的原文是权威 —— 例如泰旖丝「古老的爱抚」6 级：
+            #   「选择一名其他唤醒体，使自身与该唤醒体均获得 20 点狂气。」
+            #   → 这类卡必须能带 rage 条目，否则 wiki 数据无法落地。
+            $rageWhitelist = @('thais_special')
+            if ($rageWhitelist -notcontains $cid) {
+                $problems += "[character_cards.json] 卡「$cid」是专属指令卡，按参考口径**不给怒气**（参考图属性面板没有「狂气」行），请删掉 effects 里的 rage 条目"
+            }
         }
     }
     elseif ($isAwakening) {

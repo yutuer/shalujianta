@@ -317,6 +317,20 @@ public static class UltimateExecutor
                     Duration = buffDuration
                 };
 
+            // ⚠️ **出血**（泰旖丝「丰穰之仪」2026-11-01 新增）
+            //
+            // 复用**已有的** BleedDebuff（词条：回合结束时受到等量层数的纯粹伤害并移除该状态），
+            // 只是把「减益槽」从 poison/weak/slow/silence 扩到 bleed。
+            //
+            // ⚠️ 出血的「层数即伤害」字段是 StatusEffect.StackCount（不像中毒有独立的 DamagePerTurn），
+            // 所以这里直接写 StackCount。
+            case "bleed":
+                return new BleedDebuff
+                {
+                    StackCount = buffValue,
+                    Duration = buffDuration
+                };
+
             default:
                 return null;
         }

@@ -1708,6 +1708,407 @@
                     "description": "打出后不会进入弃牌堆，而是从牌库中移除。"
                 }
             ]
+        },
+        {
+            "cardId": "sanga_attack",
+            "characterId": "sanga",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ]
+        },
+        {
+            "cardId": "sanga_defense",
+            "characterId": "sanga",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "sanga_special",
+            "characterId": "sanga",
+            "name": "美的怜悯",
+            "style": "striker",
+            "cost": 4,
+            "isAttack": false,
+            "shieldPercent": 24,
+            "affixes": [
+                "touch_damage",
+                "surge"
+            ],
+            "bodyAffixMarks": [
+                "surge"
+            ],
+            "description": "获得 {shield} 点护盾。获得 1 条触腕。⚠余波：获得等同于当前触腕数量的狂气。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 24
+                },
+                {
+                    "type": "stack",
+                    "stackId": "touch_arm",
+                    "count": 1
+                }
+            ],
+            "pendingMechanics": [
+                "余波：获得等同于当前触腕数量的狂气（缺 ragePerStack 效果字段，现已写入但不会结算）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "touch_damage",
+                    "name": "触腕伤害",
+                    "description": "「深海」界域的独特攻击效果，提高触腕造成的伤害。"
+                },
+                {
+                    "id": "surge",
+                    "name": "余波",
+                    "description": "此卡牌被弃置时，触发「余波」效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "sanga_special2",
+            "characterId": "sanga",
+            "name": "封闭创作",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "shieldPercent": 30,
+            "affixes": [
+                "vulnerable"
+            ],
+            "bodyAffixMarks": [
+                "vulnerable"
+            ],
+            "description": "下个回合开始时，驱散自身脆弱状态，获得 {shield} 点护盾。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 30
+                }
+            ],
+            "pendingMechanics": [
+                "时机应为「下个回合开始时」，现为打出时立即给盾（缺 onNextTurnStart 时机）",
+                "驱散自身脆弱状态（缺自我驱散效果）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "vulnerable",
+                    "name": "脆弱",
+                    "description": "获得的所有护盾降低 25%，回合结束时移除 1 层。"
+                }
+            ]
+        },
+        {
+            "cardId": "sanga_special3",
+            "characterId": "sanga",
+            "name": "忘我之境",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "touch_damage",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "touch_damage",
+                "retain"
+            ],
+            "description": "珊获得 50 点狂气。⚠灵知觉醒：触腕数量上限 +1，珊造成的护盾提高 15%。珊每次造成护盾 ✕触腕伤害 + 8。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "灵知觉醒授予：触腕数量上限 +1（缺觉醒字段位）",
+                "灵知觉醒授予：珊造成的护盾提高 15%（缺觉醒字段位）",
+                "灵知觉醒授予：每次造成护盾时触发触腕伤害 + 8（缺「造成护盾时」触发时机与触腕伤害机制）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "touch_damage",
+                    "name": "触腕伤害",
+                    "description": "「深海」界域的独特攻击效果，提高触腕造成的伤害。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "thais_attack",
+            "characterId": "thais",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ]
+        },
+        {
+            "cardId": "thais_defense",
+            "characterId": "thais",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "thais_special",
+            "characterId": "thais",
+            "name": "古老的爱抚",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "affixes": [
+                "strength"
+            ],
+            "bodyAffixMarks": [
+                "strength"
+            ],
+            "description": "选择一名其他唤醒体，使自身与该唤醒体均获得 20 点狂气。获得 9 点力量。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 15,
+                    "perLevel": 1
+                }
+            ],
+            "pendingMechanics": [
+                "选择一名其他唤醒体并让其也获得 20 点狂气（缺目标选择 UI 与友方目标结算）",
+                "获得 9 点力量（buff 效果目前只能挂在敌人身上，不能给自己）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "strength",
+                    "name": "力量",
+                    "description": "提高造成的主动伤害。"
+                }
+            ]
+        },
+        {
+            "cardId": "thais_special2",
+            "characterId": "thais",
+            "name": "圣血的本能",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "affixes": [
+                "embryo_fusion",
+                "blood_fear",
+                "blood_corrupt",
+                "blood_birth"
+            ],
+            "bodyAffixMarks": [
+                "embryo_fusion"
+            ],
+            "description": "⚠胚胎融合 +40，获得等同于 59 点银钥能量。选择：⚠恐惧之血、⚠溃烂之血、⚠生殖之血。",
+            "effects": [
+                {
+                    "type": "stack",
+                    "stackId": "embryo_fusion",
+                    "count": 40
+                }
+            ],
+            "pendingMechanics": [
+                "获得等同于 2 倍银钥充能（29.4 × 2 = 59）的银钥能量（缺 silverKey 效果）",
+                "三选一：恐惧之血 / 溃烂之血 / 生殖之血（缺选择 UI 与三个衍生效果）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "embryo_fusion",
+                    "name": "胚胎融合",
+                    "description": "当胚胎融合达到上限后，将一张「胚胎」置入手牌。"
+                },
+                {
+                    "id": "blood_fear",
+                    "name": "恐惧之血",
+                    "description": "虚弱所有敌人 1 回合。"
+                },
+                {
+                    "id": "blood_corrupt",
+                    "name": "溃烂之血",
+                    "description": "易伤所有敌人 1 回合。"
+                },
+                {
+                    "id": "blood_birth",
+                    "name": "生殖之血",
+                    "description": "胚胎融合 +20。"
+                }
+            ]
+        },
+        {
+            "cardId": "thais_special3",
+            "characterId": "thais",
+            "name": "目见母亲",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "泰旖丝获得 50 点狂气。⚠灵知觉醒：立刻获得 1 张「圣洁之子」。每当释放钥令时，将手中一个胚胎转化为圣洁之子。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "灵知觉醒授予：立刻获得 1 张「圣洁之子」（卡牌层缺 addCardToHand 效果，只有狂气爆发层有）",
+                "灵知觉醒授予：每当释放钥令时把手中的一个胚胎转化为圣洁之子（缺钥令释放时机钩子与胚胎机制）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "thais_derived",
+            "characterId": "thais",
+            "name": "圣洁之子",
+            "style": "striker",
+            "cost": 0,
+            "isAttack": false,
+            "cardType": "derived",
+            "isRetain": true,
+            "artCardId": "thais_special3",
+            "affixes": [
+                "retain",
+                "consume",
+                "devour"
+            ],
+            "bodyAffixMarks": [
+                "retain"
+            ],
+            "description": "当没有胚胎时，可被吞噬并触发两次效果。直接打出或自动转化时视为胚胎的 1.5 倍效果。⚠保留。⚠消耗。",
+            "effects": [
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "直接打出或自动转化时视为「胚胎」的 1.5 倍效果（缺胚胎机制与倍数结算）",
+                "可被吞噬并触发两次效果（缺吞噬机制）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                },
+                {
+                    "id": "consume",
+                    "name": "消耗",
+                    "description": "打出后不会进入弃牌堆，而是从牌库中移除。"
+                },
+                {
+                    "id": "devour",
+                    "name": "吞噬",
+                    "description": "若手牌中存在「胚胎」，消耗 1 张并触发后续效果。"
+                }
+            ]
         }
     ]
 }

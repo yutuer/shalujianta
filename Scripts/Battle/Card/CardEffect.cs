@@ -175,11 +175,29 @@ namespace FishEatFish.Battle.Card
 		/// </summary>
 		public const string SinMark = "sin_mark";
 
+		/// <summary>
+		/// **触腕**（珊身上的层数）——「深海」界域的独特资源：
+		/// 打出「美的怜悯」获得 1 条触腕，触腕伤害随触腕数量成长。
+		/// </summary>
+		public const string TouchArm = "touch_arm";
+
+		/// <summary>
+		/// **胚胎融合**（泰旖丝身上的层数）——「血肉」界域的资源：
+		/// 打出「圣血的本能」+40 层，到上限后把一张「胚胎」置入手牌。
+		/// </summary>
+		public const string EmbryoFusion = "embryo_fusion";
+
 		/// <summary>层数 id → 显示名</summary>
 		public static string DisplayName(string stackId)
 		{
 			if (string.IsNullOrEmpty(stackId)) return "层数";
-			return stackId == SinMark ? "罪印" : stackId;
+			return stackId switch
+			{
+				SinMark => "罪印",
+				TouchArm => "触腕",
+				EmbryoFusion => "胚胎融合",
+				_ => stackId
+			};
 		}
 	}
 

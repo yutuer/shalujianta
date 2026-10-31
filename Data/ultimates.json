@@ -334,6 +334,45 @@
             "addCardToHandId": "jialun_derived",
             "addCardToHandCount": 1,
             "addCardOwnerCharacterId": "jialun"
+        },
+        {
+            "skillId": "sanga_ultimate",
+            "characterId": "sanga",
+            "name": "失落的艺术",
+            "nameEn": "Lost Art",
+            "description": "获得 {shield} 点护盾。对所有敌人造成 {damage} 点伤害，每点护盾使伤害提高 3 点。在首领战中，该技能额外造成 1 次伤害。",
+            "rageCost": 100,
+            "damagePercent": 60,
+            "shield": 152,
+            "shieldBaseCoefficient": 0.25,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "每点护盾使伤害提高 3 点（缺 shieldDamageBonus 字段）",
+                "在首领战中额外造成 1 次伤害（缺首领战判定字段）",
+                "启灵3「艺术狂欢」：基础伤害与护盾提高 25%，额外享受 25% 暴击率与暴击伤害加成（本项目无启灵系统）"
+            ]
+        },
+        {
+            "skillId": "thais_ultimate",
+            "characterId": "thais",
+            "name": "丰穰之仪",
+            "nameEn": "Rite of Abundance",
+            "description": "吞噬：使其他唤醒体获得 15 点狂气。对所有敌人造成 {damage} 点伤害，造成 {debuff} 层出血并施加 92 层中毒并获得 46 点反击。选择 1 张手中的非衍生指令卡，将其 2 张附加消耗和虚无的原始复制置入手中，使其算力消耗 -1。",
+            "rageCost": 100,
+            "damagePercent": 135,
+            "applyDebuffName": "bleed",
+            "buffValue": 273,
+            "buffValuePerLevel": 0,
+            "buffDuration": 99,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "出血 273 层 = 150% 伤害（182.25 × 1.5）—— 用固定值口径（buffValue）而非攻击百分比，这样战斗与面板都是 wiki 的 6 级值（不随等级缩放）",
+                "吞噬：使其他唤醒体获得 15 点狂气（缺吞噬机制与友方结算）",
+                "施加 92 层中毒（狂气爆发目前只有一个减益槽，已给出血）",
+                "获得 46 点反击（缺反击效果）",
+                "把 1 张非衍生指令卡的 2 份原始复制置入手中（消耗 + 虚无 + 算力 -1）（缺复制卡效果）",
+                "启灵2「混沌之种」：本次置入手中的原始复制算力消耗 -2（本项目无启灵系统）"
+            ]
         }
     ]
 }

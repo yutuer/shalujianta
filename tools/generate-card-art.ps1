@@ -142,6 +142,9 @@ $PlayablePalette = [ordered]@{
     'rooster' = @{ Main = '#C9502F'; Accent = '#FFD98A'; Feature = 'rooster' }
     'dog'     = @{ Main = '#4B6BB0'; Accent = '#B6CCF5'; Feature = 'dog' }
     'pig'     = @{ Main = '#C58AB0'; Accent = '#FFE0F2'; Feature = 'pig' }
+    # 珊 / 泰旖丝（wiki 角色，2026-11-01 新增）—— 人形，用头盔冠饰而不是动物特征
+    'sanga'   = @{ Main = '#2F6E8A'; Accent = '#9EE0F0'; Feature = 'crest10' }
+    'thais'   = @{ Main = '#8A3A46'; Accent = '#F0C888'; Feature = 'crest11' }
 }
 
 # 12 星座 BOSS：角色是「人」，头像用头盔 + 冠饰，不套动物特征。

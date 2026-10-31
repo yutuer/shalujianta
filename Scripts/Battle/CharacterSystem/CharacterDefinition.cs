@@ -522,6 +522,102 @@ public partial class CharacterDefinition : Resource
     }
 
     /// <summary>
+    /// 珊（Sanga）—— **可玩角色**（灰机 wiki 角色页「珊」，2026-11-01 主人指定重现）。
+    ///
+    /// 属性口径（与珈伦一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 128 / 攻击 100 / 防御 152
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   黑印掉落 12.3% / 死亡抵抗 61.6%（通用值其余 7 项：暴击率5 / 暴击伤害50 /
+    ///   界域精通0 / 伤害强效0 / 基础狂气100 / 狂气回充0 / 银钥充能15）
+    ///
+    /// ⚠️ wiki 上**没有**生命 / 能量 / 抽牌三项 → 暂用 wiki 系角色默认值 30 / 2 / 2
+    /// （与波吕克斯、珈伦一致），等主人补参考图再调。
+    ///
+    /// 定位**防御型**（wiki「唤醒体类型=防御型」）→ Tank → 三分类显示「防御型」。
+    ///
+    /// 卡组：打击 + 防御 + 美的怜悯（技能1右）/ 封闭创作（技能2左）/ 忘我之境（灵知觉醒）；
+    /// 狂气爆发「失落的艺术」。
+    /// </summary>
+    public static CharacterDefinition CreateSanga()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "sanga",
+            Name = "珊",
+            NameEn = "Sanga",
+            Race = CharacterRace.Chaos,
+            // 防御型（wiki「唤醒体类型=防御型」）
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 100,
+            BaseDefense = 152,
+            BaseConstitution = 128,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            BaseBlackMarkDrop = 12.3f,
+            BaseDeathResistance = 62,
+            BaseSilverKeyCharge = 15,
+            BaseMaxRage = 100,
+            AttackCardId = "sanga_attack",
+            DefenseCardId = "sanga_defense",
+            SpecialCardIds = new string[] { "sanga_special", "sanga_special2", "sanga_special3" },
+            UltimateSkillId = "sanga_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// 泰旖丝（Thais）—— **可玩角色**（灰机 wiki 角色页「泰旖丝」，2026-11-01 主人指定重现）。
+    ///
+    /// 属性口径（与珈伦一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 140 / 攻击 135 / 防御 126
+    ///   （⚠️ 泰旖丝有「内在灵格限定」体质16 / 攻击15 / 防御14 —— 按主人 2026-11-01 拍板
+    ///   **只取 wiki 60 级 0 命裸值**，内在灵格不叠加）
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   狂气回充等级 2.4 / 银钥充能等级 29.4（通用值其余 7 项：暴击率5 / 暴击伤害50 /
+    ///   界域精通0 / 伤害强效0 / 基础狂气100 / 黑印掉落0 / 死亡抵抗0）
+    ///
+    /// ⚠️ wiki 上**没有**生命 / 能量 / 抽牌三项 → 暂用 wiki 系角色默认值 30 / 2 / 2。
+    ///
+    /// 定位**辅助型**（wiki「唤醒体类型=辅助型」）→ Healer → 三分类显示「辅助型」。
+    ///
+    /// 卡组：打击 + 防御 + 古老的爱抚（技能1右）/ 圣血的本能（技能2左）/ 目见母亲（灵知觉醒）
+    /// + 衍生卡「圣洁之子」；狂气爆发「丰穰之仪」。
+    /// </summary>
+    public static CharacterDefinition CreateThais()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "thais",
+            Name = "泰旖丝",
+            NameEn = "Thais",
+            Race = CharacterRace.Chaos,
+            // 辅助型（wiki「唤醒体类型=辅助型」）
+            Archetype = CharacterArchetype.Healer,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 135,
+            BaseDefense = 126,
+            BaseConstitution = 140,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            BaseRageReturn = 2.4f,
+            BaseSilverKeyCharge = 29,
+            BaseMaxRage = 100,
+            AttackCardId = "thais_attack",
+            DefenseCardId = "thais_defense",
+            SpecialCardIds = new string[] { "thais_special", "thais_special2", "thais_special3" },
+            UltimateSkillId = "thais_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
     /// **可玩角色**清单（卡组齐全的那些）。
     ///
     /// 为什么单独列一份：<see cref="GetAllCharacters"/> 里还有 12 个星座 BOSS ——
@@ -562,6 +658,8 @@ public partial class CharacterDefinition : Resource
             CreatePig(),
             CreatePollux(),
             CreateJialun(),
+            CreateSanga(),
+            CreateThais(),
             CreateMu(),
             CreateAldebaran(),
             CreateSaga(),

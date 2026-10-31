@@ -26,7 +26,13 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$RepoRoot = ''
+    [string]$RepoRoot = '',
+    # ⚠️ **只生成指定角色**（逗号分隔，例：`-Only sanga,thais`）。
+    #    为什么需要：12 生肖 + 波吕克斯/珈伦的立绘**已被主人手工精修过**，
+    #    而本脚本默认会**覆盖**已有文件（卡面插画脚本 generate-card-art.ps1 才是「默认不覆盖」），
+    #    一旦无脑重跑就会把主人的手改冲掉。
+    #    → 新增角色时用 -Only 只生成那一个，别全量跑。
+    [string[]]$Only = @()
 )
 
 $ErrorActionPreference = 'Stop'
@@ -405,6 +411,48 @@ $Characters['jialun'] = @{
         '<circle cx="160" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
         '<circle cx="96" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
         '<circle cx="160" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />'
+    )
+    Emblem = 'diamond'
+}
+
+# 珊（Sanga）—— 深海界域 / 珊瑚 / 防御型（wiki 角色，2026-11-01 新增）
+$Characters['sanga'] = @{
+    Main = '#2F6E8A'; Accent = '#9EE0F0'
+    Sh = 70; Wa = 52; Hp = 60
+    Behind = @(
+        '<path d="M88 258 C66 214 62 168 78 138" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M168 258 C190 214 194 168 178 138" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<circle cx="78" cy="132" r="8" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="178" cy="132" r="8" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />'
+    )
+    After = @(
+        '<circle cx="96" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M104 80 L116 54 L128 80 L140 54 L152 80" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />'
+    )
+    Emblem = 'diamond'
+}
+
+# 泰旖丝（Thais）—— 血肉界域 / 母树 / 辅助型（wiki 角色，2026-11-01 新增）
+$Characters['thais'] = @{
+    Main = '#8A3A46'; Accent = '#F0C888'
+    Sh = 62; Wa = 48; Hp = 56
+    Behind = @(
+        '<path d="M74 262 C56 220 58 176 80 150" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M182 262 C200 220 198 176 176 150" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M66 214 C54 206 52 192 62 186" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />',
+        '<path d="M190 214 C202 206 204 192 194 186" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M128 62 C110 44 116 24 128 38 C140 24 146 44 128 62 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />',
+        '<path d="M128 62 C140 44 152 44 154 58" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />',
+        '<path d="M128 62 C116 44 104 44 102 58" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />'
     )
     Emblem = 'diamond'
 }
@@ -984,7 +1032,12 @@ function Test-SvgFile {
 
 $written = @()
 
+# ⚠️ -Only 过滤：只生成指定角色（敌人与图标不参与过滤，量小且无手改风险）
+$onlyIds = @()
+foreach ($o in $Only) { $onlyIds += ($o -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }) }
+
 foreach ($id in $Characters.Keys) {
+    if ($onlyIds.Count -gt 0 -and ($onlyIds -notcontains $id)) { continue }
     $c = $Characters[$id]
     $svg = New-PortraitSvg -SvgId $id @c
     $path = Join-Path $PortraitDir ("char_$id.svg")

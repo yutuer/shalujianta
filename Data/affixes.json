@@ -62,6 +62,83 @@
             "symbol": "🐌",
             "color": "#c86bd8",
             "description": "使卡牌的算力消耗提高。"
+        },
+        {
+            "id": "touch_damage",
+            "name": "触腕伤害",
+            "symbol": "✕",
+            "color": "#c86bd8",
+            "description": "「深海」界域的独特攻击效果，提高触腕造成的伤害。"
+        },
+        {
+            "id": "surge",
+            "name": "余波",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "此卡牌被弃置时，触发「余波」效果。"
+        },
+        {
+            "id": "vulnerable",
+            "name": "脆弱",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "获得的所有护盾降低 25%，回合结束时移除 1 层。"
+        },
+        {
+            "id": "strength",
+            "name": "力量",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "提高造成的主动伤害。"
+        },
+        {
+            "id": "embryo_fusion",
+            "name": "胚胎融合",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "当胚胎融合达到上限后，将一张「胚胎」置入手牌。"
+        },
+        {
+            "id": "devour",
+            "name": "吞噬",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "若手牌中存在「胚胎」，消耗 1 张并触发后续效果。"
+        },
+        {
+            "id": "void",
+            "name": "虚无",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "若弃牌阶段仍在手牌中，卡牌将被消耗，本场战斗中不再出现。"
+        },
+        {
+            "id": "counter",
+            "name": "反击",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "承受主动伤害时，对伤害来源造成等量层数的纯粹伤害。"
+        },
+        {
+            "id": "blood_fear",
+            "name": "恐惧之血",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "虚弱所有敌人 1 回合。"
+        },
+        {
+            "id": "blood_corrupt",
+            "name": "溃烂之血",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "易伤所有敌人 1 回合。"
+        },
+        {
+            "id": "blood_birth",
+            "name": "生殖之血",
+            "symbol": "⚠",
+            "color": "#e8a34a",
+            "description": "胚胎融合 +20。"
         }
     ]
 }
