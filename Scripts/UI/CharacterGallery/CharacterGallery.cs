@@ -296,7 +296,10 @@ namespace FishEatFish.UI.CharacterGallery
 				$"体质　{character.BaseConstitution}",
 				$"基础狂气　{character.BaseMaxRage}",
 				$"狂气回充等级　{character.BaseRageReturn}",
-				$"银钥充能等级　{character.BaseSilverKeyCharge}",
+				// ⚠️ 小数点后一位固定显示（主人 2026-11-03 口径）：
+				// 泰旖丝的银钥充能等级是 29.4（wiki 原值），不能被截成 29；
+				// 其余角色 15 也统一显示成 15.0。
+				$"银钥充能等级　{character.BaseSilverKeyCharge:F1}",
 				$"黑印掉落　{character.BaseBlackMarkDrop}%",
 				$"死亡抵抗　{character.BaseDeathResistance}%"
 			};

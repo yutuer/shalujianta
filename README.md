@@ -10,9 +10,9 @@
 |---|---|
 | 引擎 | Godot 4.6.1-stable **mono**（.NET 8.0 / `net8.0`） |
 | 仓库 | <https://github.com/yutuer/shalujianta.git>（分支 `main`） |
-| 规模 | 172 个 C# 脚本 / 31,875 行（非空行） · 58 个 `.tscn` · 16 张 JSON 数据表 |
+| 规模 | 172 个 C# 脚本 / 31,896 行（非空行） · 58 个 `.tscn` · 16 张 JSON 数据表 |
 | 原始需求 | [`docs/原始策划案.md`](docs/原始策划案.md) |
-| 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 63 个条目 |
+| 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 64 个条目 |
 
 ---
 
@@ -253,7 +253,7 @@ MainMenu
 4. **改完代码必须 `dotnet build` 通过**再让用户测
 5. **六边形坐标常量见 §3.3**
 
-> 这 5 条之外，历史上踩过的 113 个坑（`.tscn` 漏绑脚本、无头环境模拟点击失效、git push 上传大文件、PowerShell 编码……）都记在 [`docs/踩坑记录.md`](docs/踩坑记录.md)。
+> 这 5 条之外，历史上踩过的 114 个坑（`.tscn` 漏绑脚本、无头环境模拟点击失效、git push 上传大文件、PowerShell 编码……）都记在 [`docs/踩坑记录.md`](docs/踩坑记录.md)。
 
 ---
 
@@ -291,7 +291,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 ## 6. 已知陷阱与经验
 
-完整的 113 条记在 **[`docs/踩坑记录.md`](docs/踩坑记录.md)**，改代码前建议扫一眼。最要命的几条：
+完整的 114 条记在 **[`docs/踩坑记录.md`](docs/踩坑记录.md)**，改代码前建议扫一眼。最要命的几条：
 
 | 坑 | 一句话 | 详见 |
 |---|---|---|
@@ -415,6 +415,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 | 日期 | 内容 |
 |---|---|
+| 2026-11-03 | **D62 银钥充能等级 float 化 + 属性面板显示成小数点后一位** —— 主人 2026-11-03 引用 D59 时的原话：「泰旖丝的『银钥充能等级』wiki 是 29.4，但 C# 字段 `BaseSilverKeyCharge` 是 int → 面板显示 29（D59 时 `BaseRageReturn` 已经 float 化过，这个字段漏了）。要不要跟 `BaseRageReturn` 一样改成 float？」→ 主人：「**修改，显示成小数点后一位**」。**口径**：字段 `int → float`（与 `BaseRageReturn` 对称）+ 面板 `{value:F1}` **固定小数点后一位**（⚠️ 参考图珈伦写的是「银钥充能等级 15」不补尾零，本项目按主人口径显示 15.0；对齐参考图只需去掉 `:F1` 一处）。**改法**：`CharacterDefinition.BaseSilverKeyCharge` → `float`（默认 `15f`；波吕克斯 / 珈伦 / 珊 三处 `15f`，泰旖丝 `29.4f`）+ `CharacterAttributes.SilverKeyCharge` → `float` + `CalculateSilverKeyFromPower` 仍返回 `int`（**double + 减 epsilon + `CeilToInt`**，项目口径向上取整）+ `CharacterGallery.FillAttributePanel` 改 `:F1`。**取整口径的坑**（记为踩坑 **§114**）：`ceil` 的 epsilon 方向与 `floor` **相反** —— 照抄 §107 的 `+ 0.0001` 会把 `ceil(15.0)` 顶成 **16**（`15×3` → 46），必须**减** epsilon。**风险面**：`Player.cs:207` 的 `silverKeyGain` 是**死变量**（算出来就丢，全项目零消费点，同 §108）→ 本次只影响面板显示，无战斗数值风险。**实测**（`res://Scenes/CharacterGallery.tscn`，background）：泰旖丝面板「银钥充能等级 **29.4**」✅（狂气回充等级 2.4 不受影响）；回归 珈伦 **15.0**、波吕克斯 **15.0**（狂气回充 5.6 / 暴击率 14.6% / 伤害强效 4.8% 均未变）；取整探针（GDScript 用 `PackedFloat32Array` 还原 C# float 的真实表示）`29.4f` = **29.3999996185303** → `ceil(×1)` = **30**、`15f` = 15.0 → `ceil(×1)` = **15** / `ceil(×3)` = **45** ✅；`dotnet build` 0 错 1 警告；`check-card-data.ps1` PASS；跑测日志 `finalErrors: []`。 |
 | 2026-11-01 | **D61 补充：推后复测结果** —— commit `fb5219d` 推上远端**之后**再跑一遍（`res://Scenes/CharacterGallery.tscn`，background）：**珊 = 打击 / 防御 / 忘我之境（灵知觉醒）/ 美的怜悯 / 封闭创作** ✅（截图留档）；`finalErrors: []`（游戏侧零报错）；**三级回读 L1/L2/L3 全 PASS**（L1 远端 SHA == 本地 `fb5219d`；L2 1017 个 blob 零差异；L3 8 个改动文件字节级 SHA256 全一致）。 |
 | 2026-11-01 | **D61 灵知觉醒卡永远显示在 5 张卡的正中间 —— 主人一句话规则** —— 主人 2026-11-01：「**灵知觉醒的卡牌永远显示在 5 张卡牌的中间**」。这句话能读成「要改成中间」也能读成「怎么又在中间」，方向相反 → **先找硬证据**：参考图 `docs/screenshots/人物_珈伦/卡牌总览_珈伦.jpg` 的「技能」页 = 打击 / 防御 / **凸月之舞（灵知觉醒）** / 蟾蜍炖菜 / 静默守望 → **觉醒卡在第 3 张（正中间）**；而 wiki 上珈伦是「技能卡1 = 蟾蜍炖菜 / 技能卡2 = 静默守望 / 灵知觉醒 = 凸月之舞」——**wiki 把灵知觉醒列成独立小节，游戏里它占第 3 位**。**根因**：D60 录入时照 wiki 小节顺序填 `specialCardIds[]`，而**数组顺序 = 显示顺序**（`CharacterGallery.GetDeckCardIds` = 打击 + 防御 + `specialCardIds[]` 原序）→ 珊 / 泰旖丝的觉醒卡落到**第 5 位**。**改法**：珊 → `["sanga_special3", "sanga_special", "sanga_special2"]`、泰旖丝 → `["thais_special3", "thais_special", "thais_special2"]`（`Data/characters.json` + `CharacterDefinition.cs` 两处同步，后者才是运行时真值）；波吕克斯 / 珈伦**本来就对，不动**。**让「永远」成立**：`tools/check-card-data.ps1` 新增**规则 5b**（有觉醒卡的角色，觉醒卡必须在 `specialCardIds[0]`，否则报错；12 个属相角色无觉醒卡不受约束）+ **反向验证**（故意改坏 → 脚本当场报错 → 还原 → PASS）。**实测**（`res://Scenes/CharacterGallery.tscn`，background）：珊 = 打击 / 防御 / **忘我之境** / 美的怜悯 / 封闭创作；泰旖丝 = 打击 / 防御 / **目见母亲** / 古老的爱抚 / 圣血的本能；**回归**珈伦 = 打击 / 防御 / **凸月之舞** / 蟾蜍炖菜 / 静默守望（与参考图逐字一致）、波吕克斯 = 打击 / 防御 / **净世之路** / 明灯灼魂 / 离垢的审判 → **4 个有觉醒卡的角色全部在正中间** ✅；卡面数值同步复核（珊 打击20/防御31/忘我之境50/美的怜悯73/封闭创作92；泰旖丝 打击27/防御26/目见母亲50/古老的爱抚20/胚胎融合+40）全是 wiki 6 级值 ✅；跑测日志 `finalErrors: []`。记为踩坑 **§113**（外部数据的「列出顺序」≠ 游戏里的「显示顺序」）。 |
 | 2026-11-01 | **D60 补充：推后复测结果** —— commit `d36d6f8` 推上远端**之后**再跑一遍实测（`background: true`，预设 `sanga_thais_team`）：**运行时属性** 珊 `atk 100 / def 152 / con 128 / deathRes 62 / blackMark 12.3 / silver 15`、泰旖丝 `atk 135 / def 126 / con 140 / rageReturn 2.4 / silver 29` → **与 wiki 60 级 0 命值一致** ✅；**卡组加载** `[CharacterCardLoader] Loaded 83 character cards` + `Attacker created with characters: 珊, 泰旖丝, 牛, 虎` ✅；**失落的艺术** 全敌 **60** 伤（守卫 80→22 / 游兵 70→11 / 斥候 60→0）+ `获得 38 点护盾（护盾 0 → 38）` ✅；**丰穰之仪** 全敌 **183** 伤（守卫 22→0 / 游兵 11→0）+ `为 守卫 附加减益 Bleed（数值 273，持续 99 回合）` → 敌人 UI `debuff = 1` ✅；**战斗结束 `胜利:True`**；**游戏侧零报错**（`finalErrors: []`）；**三级回读 L1/L2/L3 全 PASS**（L1 远端 SHA == 本地 `d36d6f84881584b33b073c937214fb058d8d0fd0`；L2 1017 个 blob 零差异；L3 46 个改动文件字节级 SHA256 全一致）。 |
@@ -500,7 +501,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 |---|---|
 | **本文** | 主干：现状 / 架构 / 进度 / 下一步 |
 | `.trae/rules/project_rules.md` | **开发铁律**（第一准则、UI 规范、日志规范、六边形常量） |
-| `docs/开发计划.md` | **迭代执行计划**：需求→开发→验证三步流程 + 63 个条目 + 重要度/难度排序 + 参考图索引 |
+| `docs/开发计划.md` | **迭代执行计划**：需求→开发→验证三步流程 + 64 个条目 + 重要度/难度排序 + 参考图索引 |
 | `tasks.md` | 134 行任务清单 + 依赖 + 状态 |
 | `GameDesign.md` | 完整策划案 18 章 + 未完成功能清单 |
 | `checklist.md` | 12 大类验收清单 |
@@ -509,7 +510,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 | 路径 | 内容 |
 |---|---|
-| `docs/踩坑记录.md` | **113 条真实踩坑与规矩**（改代码前扫一眼） |
+| `docs/踩坑记录.md` | **114 条真实踩坑与规矩**（改代码前扫一眼） |
 | `docs/卡牌设计.md` | **卡牌设计总表** —— 16 角色 × 5 张卡的现状盘点 + 等级数值口径 + 截图规格 + 待填总表 |
 | `docs/新角色接入指南.md` | **造一个新可玩角色的完整清单** —— 主人要提供哪些截图（照波吕克斯那套的文件名）+ 我要改哪 5 处 + 校验与实测清单 |
 | `docs/战斗场景改造计划.md` | **战斗场景改造计划**（🟢 P0~P2 已实施）—— 参考图对比 + 分批排期 + 美术缺口 |

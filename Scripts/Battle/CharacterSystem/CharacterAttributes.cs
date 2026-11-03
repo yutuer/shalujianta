@@ -19,7 +19,12 @@ public class CharacterAttributes
     public int CritDamage { get; set; } = 150;
 
     public int DeathResistance { get; set; } = 0;
-    public int SilverKeyCharge { get; set; } = 0;
+    /// <summary>
+    /// 银钥充能等级。
+    /// ⚠️ 用 float —— wiki 泰旖丝的原值是 **29.4**，int 存不下会截断成 29，
+    /// 「详细属性」面板就跟 wiki 对不上了。
+    /// </summary>
+    public float SilverKeyCharge { get; set; } = 0f;
 
     /// <summary>
     /// 狂气回充等级（消耗狂气后按 <c>floor(消耗量 × 等级 / 10)</c> 回冲）。
@@ -101,7 +106,14 @@ public class CharacterAttributes
 
     public int CalculateSilverKeyFromPower(int powerUsed)
     {
-        return powerUsed * SilverKeyCharge;
+        // ⚠️ SilverKeyCharge 是 float（wiki 原值 29.4 这种小数），**29.4f 实际是 29.399999618530273** ——
+        // 直接 `(int)` 截断会丢小数（29.4 → 29）。
+        // 项目口径是**向上取整**（跟参考游戏同口径），所以：
+        // ① 先按 double 算（摊薄 float 的二进制表示误差）
+        // ② **减**一个极小的 epsilon（ceil 方向要注意：加 epsilon 会把 15.0 顶成 16，
+        //    减 epsilon 才能挡住「因表示误差而略大于整数」的情况，结果仍是 15）。
+        //    29.4 × 1 → ceil = 30；15 × 1 → ceil = 15。
+        return Mathf.CeilToInt((float)(powerUsed * (double)SilverKeyCharge - 0.0001));
     }
 
     public void ApplyRaceDefaults(CharacterRace race)

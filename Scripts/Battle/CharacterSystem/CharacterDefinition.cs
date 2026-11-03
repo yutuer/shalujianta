@@ -70,8 +70,13 @@ public partial class CharacterDefinition : Resource
     [Export]
     public int BaseDeathResistance = 0;
 
+    /// <summary>
+    /// 银钥充能等级。
+    /// ⚠️ 用 float —— wiki 泰旖丝的原值是 **29.4**，int 存不下会截断成 29，
+    /// 「详细属性」面板就跟 wiki 对不上了（面板按**小数点后一位**显示）。
+    /// </summary>
     [Export]
-    public int BaseSilverKeyCharge = 15;
+    public float BaseSilverKeyCharge = 15f;
 
     /// <summary>
     /// 狂气回充等级（消耗狂气后按 <c>floor(消耗量 × 等级 / 10)</c> 回冲）。
@@ -462,7 +467,7 @@ public partial class CharacterDefinition : Resource
             BaseCritRate = 14.6f,
             BaseCritDamage = 50,
             BaseRageReturn = 0,
-            BaseSilverKeyCharge = 15,
+            BaseSilverKeyCharge = 15f,
             BaseDeathResistance = 0,
             BaseDamageBonus = 4.8f,
             AttackCardId = "pollux_attack",
@@ -510,7 +515,7 @@ public partial class CharacterDefinition : Resource
             BaseCritDamage = 50,
             BaseDeathResistance = 28,
             BaseRageReturn = 5.6f,
-            BaseSilverKeyCharge = 15,
+            BaseSilverKeyCharge = 15f,
             BaseMaxRage = 100,
             AttackCardId = "jialun_attack",
             DefenseCardId = "jialun_defense",
@@ -563,7 +568,7 @@ public partial class CharacterDefinition : Resource
             BaseCritDamage = 50,
             BaseBlackMarkDrop = 12.3f,
             BaseDeathResistance = 62,
-            BaseSilverKeyCharge = 15,
+            BaseSilverKeyCharge = 15f,
             BaseMaxRage = 100,
             AttackCardId = "sanga_attack",
             DefenseCardId = "sanga_defense",
@@ -617,7 +622,8 @@ public partial class CharacterDefinition : Resource
             BaseCritRate = 5,
             BaseCritDamage = 50,
             BaseRageReturn = 2.4f,
-            BaseSilverKeyCharge = 29,
+            // 银钥充能等级 29.4（wiki 原值，小数）→ 面板显示 29.4
+            BaseSilverKeyCharge = 29.4f,
             BaseMaxRage = 100,
             AttackCardId = "thais_attack",
             DefenseCardId = "thais_defense",
