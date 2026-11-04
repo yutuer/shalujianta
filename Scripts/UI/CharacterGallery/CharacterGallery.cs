@@ -292,24 +292,26 @@ namespace FishEatFish.UI.CharacterGallery
 				$"界域　{character.Race.GetDisplayName()}",
 				$"攻击　{character.BaseAttack}",
 				$"防御　{character.BaseDefense}",
-				$"暴击率　{character.BaseCritRate}%",
-				$"暴击伤害　{character.BaseCritDamage}%",
-				$"界域精通　{character.BaseDomainMastery}",
-				$"伤害强效　{character.BaseDamageBonus}%"
+				// ⚠️ **副属性一律小数点后一位**（主人 2026-11-04 口径）：
+				// 这些属性在 wiki 上可能带小数（暴击率 14.6 / 伤害强效 4.8 / 狂气回充 5.6 /
+				// 银钥充能 29.4 / 黑印掉落 12.3 / 死亡抵抗 61.6），
+				// 整数也要补成 15.0 —— 宁可多一位零，也不要让人以为「15.0 其实是 15.04」。
+				$"暴击率　{character.BaseCritRate:F1}%",
+				$"暴击伤害　{character.BaseCritDamage:F1}%",
+				$"界域精通　{character.BaseDomainMastery:F1}",
+				$"伤害强效　{character.BaseDamageBonus:F1}%"
 			};
 
 			var right = new List<string>
 			{
 				$"定位　{character.Archetype.GetRoleType()}",
 				$"体质　{character.BaseConstitution}",
+				// 基础狂气是**点数上限**（wiki 通用值恒为 100），不是百分比也不是等级小数 → 保持整数显示
 				$"基础狂气　{character.BaseMaxRage}",
-				$"狂气回充等级　{character.BaseRageReturn}",
-				// ⚠️ 小数点后一位固定显示（主人 2026-11-03 口径）：
-				// 泰旖丝的银钥充能等级是 29.4（wiki 原值），不能被截成 29；
-				// 其余角色 15 也统一显示成 15.0。
+				$"狂气回充等级　{character.BaseRageReturn:F1}",
 				$"银钥充能等级　{character.BaseSilverKeyCharge:F1}",
-				$"黑印掉落　{character.BaseBlackMarkDrop}%",
-				$"死亡抵抗　{character.BaseDeathResistance}%"
+				$"黑印掉落　{character.BaseBlackMarkDrop:F1}%",
+				$"死亡抵抗　{character.BaseDeathResistance:F1}%"
 			};
 
 			for (int i = 0; i < left.Count; i++)

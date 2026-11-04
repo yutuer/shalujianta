@@ -16,9 +16,18 @@ public class CharacterAttributes
     /// </summary>
     public float CritRate { get; set; } = 5f;
 
-    public int CritDamage { get; set; } = 150;
+    /// <summary>
+    /// 暴击伤害（百分数，50 = 50%）。
+    /// ⚠️ 用 float 而不是 int —— wiki 的属性可能带小数，int 存不下会丢精度。
+    /// </summary>
+    public float CritDamage { get; set; } = 150f;
 
-    public int DeathResistance { get; set; } = 0;
+    /// <summary>
+    /// 死亡抵抗 %。
+    /// ⚠️ 用 float —— wiki 珊的升格5 原值是 **61.6**（参考图珈伦 36.4%），
+    /// int 存不下会四舍五入成 62。
+    /// </summary>
+    public float DeathResistance { get; set; } = 0f;
     /// <summary>
     /// 银钥充能等级。
     /// ⚠️ 用 float —— wiki 泰旖丝的原值是 **29.4**，int 存不下会截断成 29，

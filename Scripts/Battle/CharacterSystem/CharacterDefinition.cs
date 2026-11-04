@@ -64,11 +64,21 @@ public partial class CharacterDefinition : Resource
     [Export]
     public float BaseCritRate = 5f;
 
+    /// <summary>
+    /// 暴击伤害（百分数，50 = 50%）。
+    /// ⚠️ 用 float —— 与暴击率同口径：wiki 的属性可能是小数，int 存不下会四舍五入丢精度。
+    /// （当前 4 个可玩角色的 wiki 原值都是整数 50，但 12 个星座 BOSS 是 150~185。）
+    /// </summary>
     [Export]
-    public int BaseCritDamage = 150;
+    public float BaseCritDamage = 150f;
 
+    /// <summary>
+    /// 死亡抵抗 %。
+    /// ⚠️ 用 float —— wiki 珊的升格5 原值是 **61.6**（参考图珈伦 36.4% 同理），
+    /// int 存不下会四舍五入成 62，属性面板就跟 wiki 对不上。
+    /// </summary>
     [Export]
-    public int BaseDeathResistance = 0;
+    public float BaseDeathResistance = 0f;
 
     /// <summary>
     /// 银钥充能等级。
@@ -81,16 +91,23 @@ public partial class CharacterDefinition : Resource
     /// <summary>
     /// 狂气回充等级（消耗狂气后按 <c>floor(消耗量 × 等级 / 10)</c> 回冲）。
     /// ⚠️ 用 float —— wiki 升格5（60 级 0 命）的原值是 **5.6**（珈伦），int 存不下。
+    ///
+    /// ⚠️ 默认值 = **0**（wiki 的通用值）。以前这里是 2f —— 那不是 wiki 值，
+    /// 而是老代码遗留，导致**没显式赋值这个字段的角色都吃到 2**
+    /// （珊就是：面板显示「狂气回充等级 2.0」，而 wiki 是 **0**）。
     /// </summary>
     [Export]
-    public float BaseRageReturn = 2f;
+    public float BaseRageReturn = 0f;
 
     [Export]
     public int BaseMaxRage = 100;
 
-    /// <summary>界域精通（参考图「详细属性」面板）</summary>
+    /// <summary>
+    /// 界域精通（参考图「详细属性」面板）。
+    /// ⚠️ 用 float —— 与其它副属性同口径，wiki 原值可能是小数，int 会丢精度。
+    /// </summary>
     [Export]
-    public int BaseDomainMastery = 0;
+    public float BaseDomainMastery = 0f;
 
     /// <summary>伤害强效 %（参考图「详细属性」面板）</summary>
     [Export]
@@ -260,8 +277,12 @@ public partial class CharacterDefinition : Resource
             BaseConstitution = 128,
             BaseCritRate = 5,
             BaseCritDamage = 50,
+            // 狂气回充等级 0（wiki 通用值）—— 显式写，别吃默认值
+            BaseRageReturn = 0f,
             BaseBlackMarkDrop = 12.3f,
-            BaseDeathResistance = 62,
+            // 死亡抵抗 61.6%（wiki 升格5 原值）—— ⚠️ 以前这里写的是 62（int 字段四舍五入的），
+            // 与 wiki / 参考图的小数口径对不上。
+            BaseDeathResistance = 61.6f,
             BaseSilverKeyCharge = 15f,
             BaseMaxRage = 100,
             AttackCardId = "sanga_attack",

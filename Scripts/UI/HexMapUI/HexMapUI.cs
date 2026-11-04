@@ -978,15 +978,17 @@ namespace FishEatFish.UI.HexMap
             }
         }
 
-        private void UpdateDeathResistanceDisplay(int amount)
+        private void UpdateDeathResistanceDisplay(float amount)
         {
             if (_deathResistanceLabel != null)
             {
-                _deathResistanceLabel.Text = $"{amount}%";
+                // ⚠️ 小数点后一位固定显示 —— 死亡抵抗本身带小数（wiki 珊 61.6 / 参考图 36.4），
+                // 参考游戏的地图 HUD 也是显示成 17% 这种「原值」。
+                _deathResistanceLabel.Text = $"{amount:F1}%";
             }
         }
 
-        private int GetCurrentDeathResistance()
+        private float GetCurrentDeathResistance()
         {
             // 地图场景里没有 BattleManager（且原来的绝对路径 /root/BattleManager/Attacker 也是错的），
             // 直接用已选角色的死亡抵抗
@@ -1000,7 +1002,7 @@ namespace FishEatFish.UI.HexMap
                     }
                 }
             }
-            return 10;
+            return 10f;
         }
 
         private void OnDeathResistanceButtonPressed()
