@@ -4,14 +4,16 @@ using FishEatFish.Battle.CharacterSystem;
 namespace FishEatFish.UI.CharacterGallery
 {
 	/// <summary>
-	/// 「角色一览」列表里的**一项**：头像 + 名字 + 类型。点一下进该角色的详情。
+	/// 「角色一览」列表里的**一项**：头像 + 名字 + 界域 + 类型 + 等级。点一下进该角色的详情。
 	///
-	/// 版式照参考图的「人物列表」：一列/几列圆头像 + 名字 + 类型标签。
+	/// 版式照参考图的「人物列表」：一列/几列圆头像 + 名字 + 类型标签；
+	/// **界域**一行是 2026-11-04 加的（D64：wiki 角色页的「|界域=超维/混沌/深海/血肉」）。
 	/// </summary>
 	public partial class CharacterGalleryItem : Panel
 	{
 		private TextureRect _avatarRect;
 		private Label _nameLabel;
+		private Label _raceLabel;
 		private Label _typeLabel;
 		private Label _levelLabel;
 
@@ -27,11 +29,13 @@ namespace FishEatFish.UI.CharacterGallery
 
 			_avatarRect = GetNodeOrNull<TextureRect>("VBox/AvatarRect");
 			_nameLabel = GetNodeOrNull<Label>("VBox/NameLabel");
+			_raceLabel = GetNodeOrNull<Label>("VBox/RaceLabel");
 			_typeLabel = GetNodeOrNull<Label>("VBox/TypeLabel");
 			_levelLabel = GetNodeOrNull<Label>("VBox/LevelLabel");
 
 			if (_avatarRect == null) GD.PrintErr("[CharacterGalleryItem] 未找到 VBox/AvatarRect");
 			if (_nameLabel == null) GD.PrintErr("[CharacterGalleryItem] 未找到 VBox/NameLabel");
+			if (_raceLabel == null) GD.PrintErr("[CharacterGalleryItem] 未找到 VBox/RaceLabel");
 			if (_typeLabel == null) GD.PrintErr("[CharacterGalleryItem] 未找到 VBox/TypeLabel");
 			if (_levelLabel == null) GD.PrintErr("[CharacterGalleryItem] 未找到 VBox/LevelLabel");
 
@@ -53,7 +57,10 @@ namespace FishEatFish.UI.CharacterGallery
 
 			if (_nameLabel != null) _nameLabel.Text = character.Name;
 
-			// 类型：伤害 / 辅助 / 防御（暂按 Archetype 映射，等主人给正式定位）
+			// 界域（wiki 角色页「|界域=超维/混沌/深海/血肉」）→ 显示成「X界域」
+			if (_raceLabel != null) _raceLabel.Text = character.Race.GetDisplayName();
+
+			// 类型：伤害 / 辅助 / 防御（按 Archetype 映射，与 wiki「唤醒体类型」一致）
 			if (_typeLabel != null) _typeLabel.Text = character.Archetype.GetRoleType();
 
 			if (_levelLabel != null) _levelLabel.Text = $"Lv.{level}";

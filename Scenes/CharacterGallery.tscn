@@ -139,6 +139,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 34
 text = "角色"
 
+[node name="RaceLabel" type="Label" parent="ListView/HBox/InfoColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.78, 0.5, 1)
+theme_override_font_sizes/font_size = 21
+text = "超维界域"
+
 [node name="TypeLabel" type="Label" parent="ListView/HBox/InfoColumn"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.75, 0.82, 1, 1)

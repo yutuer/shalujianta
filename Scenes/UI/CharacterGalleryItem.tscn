@@ -15,9 +15,9 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [node name="CharacterGalleryItem" type="Panel"]
-custom_minimum_size = Vector2(120, 164)
+custom_minimum_size = Vector2(120, 192)
 offset_right = 120.0
-offset_bottom = 164.0
+offset_bottom = 192.0
 script = ExtResource("1_item")
 
 [node name="VBox" type="VBoxContainer" parent="."]
@@ -49,6 +49,14 @@ theme_override_font_sizes/font_size = 18
 text = "角色"
 horizontal_alignment = 1
 clip_text = true
+
+[node name="RaceLabel" type="Label" parent="VBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.85, 0.78, 0.5, 1)
+theme_override_font_sizes/font_size = 13
+text = "超维界域"
+horizontal_alignment = 1
 
 [node name="TypeLabel" type="Label" parent="VBox"]
 layout_mode = 2

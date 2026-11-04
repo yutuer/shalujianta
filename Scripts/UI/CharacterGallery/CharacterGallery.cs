@@ -52,6 +52,7 @@ namespace FishEatFish.UI.CharacterGallery
 		private Label _countLabel;
 		private TextureRect _portraitRect;
 		private Label _nameLabel;
+		private Label _raceLabel;
 		private Label _typeLabel;
 		private Label _levelLabel;
 		private Label _cardLevelsLabel;
@@ -107,6 +108,7 @@ namespace FishEatFish.UI.CharacterGallery
 			_countLabel = GetNodeOrNull<Label>("ListView/HBox/LeftColumn/Header/CountLabel");
 			_portraitRect = GetNodeOrNull<TextureRect>("ListView/HBox/PortraitRect");
 			_nameLabel = GetNodeOrNull<Label>("ListView/HBox/InfoColumn/NameLabel");
+			_raceLabel = GetNodeOrNull<Label>("ListView/HBox/InfoColumn/RaceLabel");
 			_typeLabel = GetNodeOrNull<Label>("ListView/HBox/InfoColumn/TypeLabel");
 			_levelLabel = GetNodeOrNull<Label>("ListView/HBox/InfoColumn/LevelLabel");
 			_cardLevelsLabel = GetNodeOrNull<Label>("ListView/HBox/InfoColumn/CardLevelsLabel");
@@ -136,6 +138,7 @@ namespace FishEatFish.UI.CharacterGallery
 
 			if (_grid == null) GD.PrintErr("[CharacterGallery] 未找到 Grid");
 			if (_statsGrid == null) GD.PrintErr("[CharacterGallery] 未找到 StatsGrid");
+			if (_raceLabel == null) GD.PrintErr("[CharacterGallery] 未找到 RaceLabel");
 			if (_cardsRow == null) GD.PrintErr("[CharacterGallery] 未找到 CardsRow");
 			if (_avatarColumn == null) GD.PrintErr("[CharacterGallery] 未找到 AvatarColumn");
 
@@ -236,7 +239,9 @@ namespace FishEatFish.UI.CharacterGallery
 			}
 
 			if (_nameLabel != null) _nameLabel.Text = character.Name;
-			// 类型：伤害 / 辅助 / 防御（暂按 Archetype 映射，等主人给正式定位）
+			// 界域（wiki 角色页「|界域=超维/混沌/深海/血肉」）→ 显示成「X界域」
+			if (_raceLabel != null) _raceLabel.Text = character.Race.GetDisplayName();
+			// 类型：伤害 / 辅助 / 防御（按 Archetype 映射，与 wiki「唤醒体类型」一致）
 			if (_typeLabel != null) _typeLabel.Text = character.Archetype.GetRoleType();
 			if (_levelLabel != null) _levelLabel.Text = $"Lv.{CharacterLevel}";
 			if (_cardLevelsLabel != null) _cardLevelsLabel.Text = CardLevelText;
@@ -283,6 +288,8 @@ namespace FishEatFish.UI.CharacterGallery
 
 			var left = new List<string>
 			{
+				// 界域（wiki 角色页「|界域=超维/混沌/深海/血肉」）+ 唤醒体类型（三分类）
+				$"界域　{character.Race.GetDisplayName()}",
 				$"攻击　{character.BaseAttack}",
 				$"防御　{character.BaseDefense}",
 				$"暴击率　{character.BaseCritRate}%",
@@ -293,6 +300,7 @@ namespace FishEatFish.UI.CharacterGallery
 
 			var right = new List<string>
 			{
+				$"定位　{character.Archetype.GetRoleType()}",
 				$"体质　{character.BaseConstitution}",
 				$"基础狂气　{character.BaseMaxRage}",
 				$"狂气回充等级　{character.BaseRageReturn}",

@@ -145,6 +145,9 @@ public partial class CharacterDefinition : Resource
         {
             CharacterId = "pollux",
             Name = "波吕克斯",
+            // 界域=超维（wiki 角色页「|界域=超维」）、唤醒体类型=伤害型
+            Race = CharacterRace.Hyperdimension,
+            Archetype = CharacterArchetype.Striker,
             BaseHealth = 30,
             BaseEnergy = 2,
             BaseDrawCount = 2,
@@ -190,6 +193,7 @@ public partial class CharacterDefinition : Resource
             CharacterId = "jialun",
             Name = "珈伦",
             NameEn = "Jialun",
+            // 界域=混沌（wiki 角色页「|界域=混沌」）
             Race = CharacterRace.Chaos,
             // 辅助型（参考图「人物列表」右侧的类型标签）
             Archetype = CharacterArchetype.Debuffer,
@@ -227,6 +231,7 @@ public partial class CharacterDefinition : Resource
     /// （与波吕克斯、珈伦一致），等主人补参考图再调。
     ///
     /// 定位**防御型**（wiki「唤醒体类型=防御型」）→ Tank → 三分类显示「防御型」。
+    /// 界域**深海**（wiki「|界域=深海」）→ Race = Abyss。
     ///
     /// 卡组：打击 + 防御 + 忘我之境（灵知觉醒）/ 美的怜悯（技能1右）/ 封闭创作（技能2左）；
     /// 狂气爆发「失落的艺术」。
@@ -243,7 +248,8 @@ public partial class CharacterDefinition : Resource
             CharacterId = "sanga",
             Name = "珊",
             NameEn = "Sanga",
-            Race = CharacterRace.Chaos,
+            // 界域=深海（wiki 角色页「|界域=深海」）
+            Race = CharacterRace.Abyss,
             // 防御型（wiki「唤醒体类型=防御型」）
             Archetype = CharacterArchetype.Tank,
             BaseHealth = 30,
@@ -282,6 +288,7 @@ public partial class CharacterDefinition : Resource
     /// ⚠️ wiki 上**没有**生命 / 能量 / 抽牌三项 → 暂用 wiki 系角色默认值 30 / 2 / 2。
     ///
     /// 定位**辅助型**（wiki「唤醒体类型=辅助型」）→ Healer → 三分类显示「辅助型」。
+    /// 界域**血肉**（wiki「|界域=血肉」）→ Race = Flesh。
     ///
     /// 卡组：打击 + 防御 + 目见母亲（灵知觉醒）/ 古老的爱抚（技能1右）/ 圣血的本能（技能2左）
     /// + 衍生卡「圣洁之子」；狂气爆发「丰穰之仪」。
@@ -298,7 +305,8 @@ public partial class CharacterDefinition : Resource
             CharacterId = "thais",
             Name = "泰旖丝",
             NameEn = "Thais",
-            Race = CharacterRace.Chaos,
+            // 界域=血肉（wiki 角色页「|界域=血肉」）
+            Race = CharacterRace.Flesh,
             // 辅助型（wiki「唤醒体类型=辅助型」）
             Archetype = CharacterArchetype.Healer,
             BaseHealth = 30,
