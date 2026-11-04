@@ -108,7 +108,7 @@ foreach ($ch in $characters) {
                 $problems += "[character_cards.json] 打击卡「$cardId」缺 damagePercent（必须按「角色攻击 × 百分比」配数值）"
             }
         } else {
-            # 防御卡允许「不护盾但有别的词条」（如兔的防御抽 2 张），
+            # 防御卡允许「不护盾但有别的词条」（如带抽牌词条的防御卡），
             # 但那种情况必须显式带别的效果，不能是一张什么都不给的空牌。
             $hasShield = [int]$entry.shieldPercent -gt 0
             $hasOther = ([int]$entry.drawCountBase -gt 0) -or ([int]$entry.energyGainBase -gt 0) -or
@@ -137,7 +137,7 @@ foreach ($c in $cards) {
 #     → 也就是「打击(1) / 防御(2) / 灵知觉醒(3) / 技能卡1(4) / 技能卡2(5)」。
 #     我们的显示顺序 = 打击 + 防御 + specialCardIds[]（CharacterGallery.GetDeckCardIds）
 #     → **specialCardIds[0] 恒为灵知觉醒卡**。
-#     ⚠️ 没有灵知觉醒卡的角色（12 个属相角色）不受这条约束。
+#     ⚠️ 没有灵知觉醒卡的角色不受这条约束（12 星座 BOSS 无卡组；12 生肖测试角色已于 D63 删除）。
 foreach ($ch in $characters) {
     $cid = $ch.characterId
     $specials = @()

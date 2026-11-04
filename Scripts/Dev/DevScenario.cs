@@ -38,7 +38,7 @@ namespace FishEatFish.Dev
 	///
 	/// 为什么要它 —— 直接跑 HexMapScene 会跳过选人流程，导致
 	///   GlobalData.SelectedCharacters / EquippedKeyOrder / CurrentMap 全为 null，
-	///   战斗回退到默认阵容「鼠牛虎兔」而不是所选队伍，刻印可选卡牌列表也拿不到卡组。
+	///   战斗回退到默认阵容「波吕克斯 / 珈伦 / 珊 / 泰旖丝」而不是所选队伍，刻印可选卡牌列表也拿不到卡组。
 	/// 本类把这些全局量按真实流程补齐，所以「快」和「状态正确」可以兼得。
 	///
 	/// 启动方式：
@@ -425,10 +425,10 @@ namespace FishEatFish.Dev
 				GD.PrintErr($"[DevScenario] 队伍需要 4 人，当前 {team.Count} 人，回退默认队伍");
 				return new CharacterDefinition[]
 				{
-					CharacterDefinition.CreateRat(),
-					CharacterDefinition.CreateOx(),
-					CharacterDefinition.CreateTiger(),
-					CharacterDefinition.CreateRabbit()
+					CharacterDefinition.CreatePollux(),
+					CharacterDefinition.CreateJialun(),
+					CharacterDefinition.CreateSanga(),
+					CharacterDefinition.CreateThais()
 				};
 			}
 
@@ -439,18 +439,6 @@ namespace FishEatFish.Dev
 		{
 			switch (id)
 			{
-				case "rat": return CharacterDefinition.CreateRat();
-				case "ox": return CharacterDefinition.CreateOx();
-				case "tiger": return CharacterDefinition.CreateTiger();
-				case "rabbit": return CharacterDefinition.CreateRabbit();
-				case "dragon": return CharacterDefinition.CreateDragon();
-				case "snake": return CharacterDefinition.CreateSnake();
-				case "horse": return CharacterDefinition.CreateHorse();
-				case "goat": return CharacterDefinition.CreateGoat();
-				case "monkey": return CharacterDefinition.CreateMonkey();
-				case "rooster": return CharacterDefinition.CreateRooster();
-				case "dog": return CharacterDefinition.CreateDog();
-				case "pig": return CharacterDefinition.CreatePig();
 				case "pollux": return CharacterDefinition.CreatePollux();
 				case "jialun": return CharacterDefinition.CreateJialun();
 				case "sanga": return CharacterDefinition.CreateSanga();

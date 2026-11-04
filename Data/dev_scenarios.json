@@ -1,50 +1,50 @@
 {
   "presets": {
     "default": {
-      "desc": "选人完成后的默认状态：鼠牛虎兔 + 银光斩 + 第一张关卡 → 六边形地图",
-      "team": ["rat", "ox", "tiger", "rabbit"],
+      "desc": "选人完成后的默认状态：波吕克斯 + 珈伦 + 珊 + 泰旖丝 + 银光斩 + 第一张关卡 → 六边形地图",
+      "team": ["pollux", "jialun", "sanga", "thais"],
       "keyOrder": "silver_slash",
       "map": "map01",
       "target": "hexmap"
     },
     "jialun_team": {
-        "desc": "珈伦入队（验证新角色：属性 / 卡组 / 狂气爆发 / 词缀着色）",
-        "team": ["jialun", "ox", "tiger", "rabbit"],
+        "desc": "珈伦 + 其余三个真角色（验证珈伦：属性 / 卡组 / 狂气爆发 / 词缀着色）",
+        "team": ["jialun", "pollux", "sanga", "thais"],
         "keyOrder": "silver_slash",
         "map": "map01",
         "target": "battle"
     },
     "sanga_team": {
-        "desc": "珊入队（2026-11-01 D60：wiki 新角色 —— 属性 128/100/152 / 死亡的怜悯 / 忘我之境 / 失落的艺术）",
-        "team": ["sanga", "ox", "tiger", "rabbit"],
+        "desc": "珊 + 其余三个真角色（2026-11-01 D60：wiki 新角色 —— 属性 128/100/152 / 死亡的怜悯 / 忘我之境 / 失落的艺术）",
+        "team": ["sanga", "pollux", "jialun", "thais"],
         "keyOrder": "silver_slash",
         "map": "map01",
         "target": "battle"
     },
     "thais_team": {
-        "desc": "泰旖丝入队（2026-11-01 D60：wiki 新角色 —— 属性 140/135/126 / 古老的爱抚 / 圣血的本能 / 目见母亲 / 丰穰之仪）",
-        "team": ["thais", "ox", "tiger", "rabbit"],
+        "desc": "泰旖丝 + 其余三个真角色（2026-11-01 D60：wiki 新角色 —— 属性 140/135/126 / 古老的爱抚 / 圣血的本能 / 目见母亲 / 丰穰之仪）",
+        "team": ["thais", "pollux", "jialun", "sanga"],
         "keyOrder": "silver_slash",
         "map": "map01",
         "target": "battle"
     },
     "sanga_thais_team": {
         "desc": "珊 + 泰旖丝同队（2026-11-01 D60：一次跑测覆盖两个 wiki 新角色）",
-        "team": ["sanga", "thais", "ox", "tiger"],
+        "team": ["sanga", "thais", "pollux", "jialun"],
         "keyOrder": "silver_slash",
         "map": "map01",
         "target": "battle"
     },
     "battle": {
       "desc": "选人完成 → 直接进战斗（无地图上下文，敌人按 normal_wave）",
-      "team": ["rat", "ox", "tiger", "rabbit"],
+      "team": ["pollux", "jialun", "sanga", "thais"],
       "keyOrder": "silver_slash",
       "map": "map01",
       "target": "battle"
     },
     "near_shop": {
       "desc": "选人完成 + 落在商店格子旁边（不触发商店事件）",
-      "team": ["rat", "ox", "tiger", "rabbit"],
+      "team": ["pollux", "jialun", "sanga", "thais"],
       "keyOrder": "silver_slash",
       "map": "map01",
       "target": "hexmap",
@@ -52,7 +52,7 @@
     },
     "half_hp": {
       "desc": "选人完成 + 进地图时血量只有一半",
-      "team": ["rat", "ox", "tiger", "rabbit"],
+      "team": ["pollux", "jialun", "sanga", "thais"],
       "keyOrder": "silver_slash",
       "map": "map01",
       "target": "hexmap",
@@ -60,14 +60,14 @@
     },
     "step_on_boss": {
       "desc": "选人完成 + 直接站上 BOSS 格子（立刻触发 BOSS 战，用于验证触发链路）",
-      "team": ["rat", "ox", "tiger", "rabbit"],
+      "team": ["pollux", "jialun", "sanga", "thais"],
       "keyOrder": "silver_slash",
       "map": "map01",
       "target": "hexmap",
       "startOn": "boss"
     },    "near_boss": {
       "desc": "选人完成 + 站在 BOSS 格子旁边（走上去即触发 BOSS 战）",
-      "team": ["rat", "ox", "tiger", "rabbit"],
+      "team": ["pollux", "jialun", "sanga", "thais"],
       "keyOrder": "silver_slash",
       "map": "map01",
       "target": "hexmap",
@@ -75,28 +75,28 @@
     },
     "boss_battle": {
       "desc": "选人完成 → 直接打 BOSS 战（敌人按 boss_wave）",
-      "team": ["rat", "ox", "tiger", "rabbit"],
+      "team": ["pollux", "jialun", "sanga", "thais"],
       "keyOrder": "silver_slash",
       "map": "map01",
       "target": "battle",
       "enemyWave": "boss_wave"
     },    "pollux_team": {
-        "desc": "波吕克斯入队（验证新角色：属性 / 卡组 / 狂气爆发）",
-        "team": ["pollux", "ox", "tiger", "rabbit"],
+        "desc": "波吕克斯 + 其余三个真角色（验证波吕克斯：属性 / 卡组 / 狂气爆发）",
+        "team": ["pollux", "jialun", "sanga", "thais"],
         "keyOrder": "silver_slash",
         "map": "map01",
         "target": "battle"
     },
     "jialun_pollux": {
         "desc": "珈伦 + 波吕克斯同队（D54 用：验证圣心 128 / 灵知觉醒持续触发 / 静默守望叠层 / 客官请慢用！）",
-        "team": ["jialun", "pollux", "tiger", "rabbit"],
+        "team": ["jialun", "pollux", "sanga", "thais"],
         "keyOrder": "silver_slash",
         "map": "map01",
         "target": "battle"
     },
     "pollux_sinmark": {
         "desc": "波吕克斯入队 + 补手牌（净世之路 / 圣心）—— D55 用：测罪印 / 出血 / 纯粹伤害整条链",
-        "team": ["pollux", "ox", "tiger", "rabbit"],
+        "team": ["pollux", "jialun", "sanga", "thais"],
         "keyOrder": "silver_slash",
         "map": "map01",
         "target": "battle",
@@ -105,7 +105,7 @@
     },
     "jialun_pollux_boss": {
         "desc": "珈伦 + 波吕克斯打 BOSS（BOSS 血厚，测衍生卡「圣心 / 奇妙料理」不会被秒杀掉）",
-        "team": ["jialun", "pollux", "tiger", "rabbit"],
+        "team": ["jialun", "pollux", "sanga", "thais"],
         "keyOrder": "silver_slash",
         "map": "map01",
         "target": "battle",
@@ -113,7 +113,7 @@
     },
     "elite_battle": {
       "desc": "选人完成 + 直接进战斗，敌人按 elite_wave",
-      "team": ["rat", "ox", "tiger", "rabbit"],
+      "team": ["pollux", "jialun", "sanga", "thais"],
       "keyOrder": "silver_slash",
       "map": "map01",
       "target": "battle",

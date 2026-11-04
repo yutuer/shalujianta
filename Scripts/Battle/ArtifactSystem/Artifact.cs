@@ -173,8 +173,8 @@ public partial class Artifact : Resource
     {
         artifact.Type = ArtifactType.Character;
 
-        string[] characterIds = { "rat", "ox", "tiger", "rabbit", "dragon", "snake", "horse", "goat", "monkey", "rooster", "dog", "pig" };
-        string[] characterNames = { "鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪" };
+        string[] characterIds = { "pollux", "jialun", "sanga", "thais" };
+        string[] characterNames = { "波吕克斯", "珈伦", "珊", "泰旖丝" };
 
         RandomNumberGenerator rng = new RandomNumberGenerator();
         rng.Randomize();

@@ -128,20 +128,8 @@ function New-SvgDocument {
 # 主色与 generate-placeholder-svg.ps1 里的立绘保持一致，插画和立绘看起来是一套的。
 
 $PlayablePalette = [ordered]@{
-    'rat'     = @{ Main = '#7C6E96'; Accent = '#D8C8E8'; Feature = 'rat' }
     'pollux'  = @{ Main = '#5A63A8'; Accent = '#B4BCF0'; Feature = 'aiolos' }
     'jialun'  = @{ Main = '#3E9E8F'; Accent = '#B8F0E0'; Feature = 'crest8' }
-    'ox'      = @{ Main = '#9C7048'; Accent = '#E8C89A'; Feature = 'ox' }
-    'tiger'   = @{ Main = '#D8912F'; Accent = '#FFE0A0'; Feature = 'tiger' }
-    'rabbit'  = @{ Main = '#D9A8BE'; Accent = '#FFF0F6'; Feature = 'rabbit' }
-    'dragon'  = @{ Main = '#2F7E93'; Accent = '#8FE6F2'; Feature = 'dragon' }
-    'snake'   = @{ Main = '#3E9455'; Accent = '#B6F0C6'; Feature = 'snake' }
-    'horse'   = @{ Main = '#A8523F'; Accent = '#F0C0A0'; Feature = 'horse' }
-    'goat'    = @{ Main = '#CDBB84'; Accent = '#FFF6DA'; Feature = 'goat' }
-    'monkey'  = @{ Main = '#B5814A'; Accent = '#F0CE96'; Feature = 'monkey' }
-    'rooster' = @{ Main = '#C9502F'; Accent = '#FFD98A'; Feature = 'rooster' }
-    'dog'     = @{ Main = '#4B6BB0'; Accent = '#B6CCF5'; Feature = 'dog' }
-    'pig'     = @{ Main = '#C58AB0'; Accent = '#FFE0F2'; Feature = 'pig' }
     # 珊 / 泰旖丝（wiki 角色，2026-11-01 新增）—— 人形，用头盔冠饰而不是动物特征
     'sanga'   = @{ Main = '#2F6E8A'; Accent = '#9EE0F0'; Feature = 'crest10' }
     'thais'   = @{ Main = '#8A3A46'; Accent = '#F0C888'; Feature = 'crest11' }
@@ -366,128 +354,6 @@ function New-CardArtSvg {
 # ============================ 圆形头像构件 ============================
 
 # 动物角色头部特征（画在头部之上）
-function Expand-FeatureTokens {
-    param(
-        [string[]]$Lines,
-        [string]$Accent,
-        [string]$Light,
-        [string]$Dark
-    )
-    $out = @()
-    foreach ($line in $Lines) {
-        $t = $line.Replace('{0}', $Accent).Replace('{1}', $Light).Replace('{2}', $Dark)
-        $out += $t
-    }
-    return $out
-}
-
-function Get-AnimalFeature {
-    param(
-        [string]$Feature,
-        [string]$Accent,
-        [string]$Light,
-        [string]$Dark
-    )
-    switch ($Feature) {
-        'rat' {
-            @(
-                '<circle cx="45" cy="38" r="15" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<circle cx="83" cy="38" r="15" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<circle cx="45" cy="38" r="7" fill="{1}" />',
-                '<circle cx="83" cy="38" r="7" fill="{1}" />'
-            )
-        }
-        'ox' {
-            @(
-                '<path d="M48 50 C38 38 33 26 34 12" fill="none" stroke="{0}" stroke-width="9" stroke-linecap="round" />',
-                '<path d="M80 50 C90 38 95 26 94 12" fill="none" stroke="{0}" stroke-width="9" stroke-linecap="round" />',
-                '<ellipse cx="64" cy="86" rx="14" ry="9" fill="{1}" stroke="#0B0E14" stroke-width="3" />'
-            )
-        }
-        'tiger' {
-            @(
-                '<circle cx="44" cy="40" r="12" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<circle cx="84" cy="40" r="12" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<path d="M54 52 H74" fill="none" stroke="{1}" stroke-width="4" stroke-linecap="round" />',
-                '<path d="M56 62 H72" fill="none" stroke="{1}" stroke-width="4" stroke-linecap="round" />',
-                '<path d="M64 52 V70" fill="none" stroke="{1}" stroke-width="4" stroke-linecap="round" />'
-            )
-        }
-        'rabbit' {
-            @(
-                '<ellipse cx="50" cy="26" rx="9" ry="24" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<ellipse cx="78" cy="26" rx="9" ry="24" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<ellipse cx="50" cy="27" rx="4" ry="15" fill="{1}" />',
-                '<ellipse cx="78" cy="27" rx="4" ry="15" fill="{1}" />'
-            )
-        }
-        'dragon' {
-            @(
-                '<path d="M46 56 C32 46 24 46 16 54" fill="none" stroke="{0}" stroke-width="7" stroke-linecap="round" />',
-                '<path d="M82 56 C96 46 104 46 112 54" fill="none" stroke="{0}" stroke-width="7" stroke-linecap="round" />',
-                '<path d="M60 40 L64 22 L70 40 Z" fill="{1}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />',
-                '<circle cx="64" cy="86" r="5" fill="{1}" stroke="#0B0E14" stroke-width="2.5" />'
-            )
-        }
-        'snake' {
-            @(
-                '<path d="M28 96 C18 74 22 46 64 46 C106 46 110 74 100 96 Z" fill="{0}" fill-opacity="0.45" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-                '<path d="M64 88 L64 104" fill="none" stroke="{1}" stroke-width="4" stroke-linecap="round" />',
-                '<path d="M64 104 L58 114" fill="none" stroke="{1}" stroke-width="4" stroke-linecap="round" />',
-                '<path d="M64 104 L70 114" fill="none" stroke="{1}" stroke-width="4" stroke-linecap="round" />'
-            )
-        }
-        'horse' {
-            @(
-                '<path d="M46 48 L40 16 L58 40 Z" fill="{0}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-                '<path d="M82 48 L88 16 L70 40 Z" fill="{0}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-                '<path d="M50 42 C56 26 72 26 78 42" fill="none" stroke="{1}" stroke-width="8" stroke-linecap="round" />',
-                '<ellipse cx="64" cy="88" rx="16" ry="10" fill="{1}" stroke="#0B0E14" stroke-width="3" />'
-            )
-        }
-        'goat' {
-            @(
-                '<path d="M50 44 C34 36 30 18 44 14 C56 11 58 26 50 36" fill="none" stroke="{0}" stroke-width="8" stroke-linecap="round" />',
-                '<path d="M78 44 C94 36 98 18 84 14 C72 11 70 26 78 36" fill="none" stroke="{0}" stroke-width="8" stroke-linecap="round" />',
-                '<path d="M58 92 L64 112 L70 92 Z" fill="{1}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
-            )
-        }
-        'monkey' {
-            @(
-                '<circle cx="34" cy="72" r="12" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<circle cx="94" cy="72" r="12" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<path d="M56 34 C60 22 68 22 72 34" fill="none" stroke="{1}" stroke-width="8" stroke-linecap="round" />',
-                '<ellipse cx="64" cy="90" rx="15" ry="10" fill="{1}" stroke="#0B0E14" stroke-width="3" />'
-            )
-        }
-        'rooster' {
-            @(
-                '<path d="M52 42 C52 28 60 26 64 34 C68 24 76 26 76 40 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />',
-                '<path d="M76 68 L92 74 L76 80 Z" fill="{1}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />',
-                '<path d="M48 54 C36 62 36 78 48 84" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />'
-            )
-        }
-        'dog' {
-            @(
-                '<ellipse cx="30" cy="70" rx="11" ry="20" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<ellipse cx="98" cy="70" rx="11" ry="20" fill="{0}" stroke="#0B0E14" stroke-width="4" />',
-                '<ellipse cx="64" cy="88" rx="15" ry="11" fill="{1}" stroke="#0B0E14" stroke-width="3" />',
-                '<circle cx="64" cy="83" r="4" fill="#0B0E14" />'
-            )
-        }
-        'pig' {
-            @(
-                '<path d="M40 48 L26 30 L44 40 Z" fill="{0}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-                '<path d="M88 48 L102 30 L84 40 Z" fill="{0}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-                '<ellipse cx="64" cy="88" rx="16" ry="12" fill="{1}" stroke="#0B0E14" stroke-width="3" />',
-                '<circle cx="59" cy="88" r="2.6" fill="#0B0E14" />',
-                '<circle cx="69" cy="88" r="2.6" fill="#0B0E14" />'
-            )
-        }
-        default { @() }
-    }
-}
-
 # BOSS 头盔冠饰（12 种）
 function Get-CrestFeature {
     param(
@@ -561,9 +427,6 @@ function New-AvatarSvg {
     # 特征
     if ($Feature.StartsWith('crest')) {
         foreach ($l in (Get-CrestFeature -Feature $Feature -Accent $Accent -Light $light)) { $b += $l }
-    } else {
-        $featLines = Get-AnimalFeature -Feature $Feature -Accent $Accent -Light $featureLight -Dark $dark
-        foreach ($l in (Expand-FeatureTokens -Lines $featLines -Accent $Accent -Light $featureLight -Dark $dark)) { $b += $l }
     }
 
     # 外圈

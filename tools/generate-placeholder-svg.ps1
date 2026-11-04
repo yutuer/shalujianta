@@ -28,7 +28,7 @@
 param(
     [string]$RepoRoot = '',
     # ⚠️ **只生成指定角色**（逗号分隔，例：`-Only sanga,thais`）。
-    #    为什么需要：12 生肖 + 波吕克斯/珈伦的立绘**已被主人手工精修过**，
+    #    为什么需要：波吕克斯 / 珈伦 / 珊 / 泰旖丝的立绘**已被主人手工精修过**，
     #    而本脚本默认会**覆盖**已有文件（卡面插画脚本 generate-card-art.ps1 才是「默认不覆盖」），
     #    一旦无脑重跑就会把主人的手改冲掉。
     #    → 新增角色时用 -Only 只生成那一个，别全量跑。
@@ -84,7 +84,7 @@ function Format-Num {
 }
 
 # ============================ 胸章几何形 ============================
-# 12 个角色 12 种、6 个敌人 6 种，全部互不相同。
+# 4 个角色 4 种、6 个敌人 6 种，全部互不相同。
 
 function Get-Emblem {
     param(
@@ -364,26 +364,12 @@ function New-PortraitSvg {
     return New-SvgDocument -Width 256 -Height 320 -ViewBox '0 0 256 320' -Defs $defs -Body $b
 }
 
-# ============================ 12 个角色 ============================
+# ============================ 4 个角色 ============================
 # {MAIN}=主色 {LIGHT}=主色提亮 {DARK}=主色压暗
 # {ACC}=辅色 {ALIGHT}=辅色提亮 {ADARK}=辅色压暗
 
 $Characters = [ordered]@{}
 
-$Characters['rat'] = @{
-    Main = '#7C6E96'; Accent = '#D8C8E8'
-    Sh = 60; Wa = 44; Hp = 52
-    Behind = @(
-        '<path d="M180 252 C204 250 214 226 199 218 C188 212 181 226 190 233" fill="none" stroke="{ACC}" stroke-width="7" stroke-linecap="round" />'
-    )
-    After = @(
-        '<circle cx="96" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
-        '<circle cx="160" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
-        '<circle cx="96" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
-        '<circle cx="160" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />'
-    )
-    Emblem = 'diamond'
-}
 
 $Characters['pollux'] = @{
     Main = '#5A63A8'; Accent = '#B4BCF0'
@@ -457,185 +443,16 @@ $Characters['thais'] = @{
     Emblem = 'diamond'
 }
 
-$Characters['ox'] = @{
-    Main = '#9C7048'; Accent = '#E8C89A'
-    Sh = 74; Wa = 56; Hp = 64
-    After = @(
-        '<path d="M102 80 C88 66 80 52 78 34" fill="none" stroke="{ACC}" stroke-width="13" stroke-linecap="round" />',
-        '<path d="M154 80 C168 66 176 52 178 34" fill="none" stroke="{ACC}" stroke-width="13" stroke-linecap="round" />',
-        '<ellipse cx="128" cy="126" rx="17" ry="11" fill="{LIGHT}" stroke="#0B0E14" stroke-width="3" />',
-        '<circle cx="121" cy="124" r="2.6" fill="#0B0E14" />',
-        '<circle cx="135" cy="124" r="2.6" fill="#0B0E14" />',
-        '<circle cx="128" cy="141" r="8" fill="none" stroke="{ACC}" stroke-width="4" />'
-    )
-    Emblem = 'triangleUp'
-}
 
-$Characters['tiger'] = @{
-    Main = '#D8912F'; Accent = '#FFE0A0'
-    Sh = 72; Wa = 54; Hp = 62
-    After = @(
-        '<circle cx="98" cy="64" r="13" fill="{DARK}" stroke="#0B0E14" stroke-width="4.5" />',
-        '<circle cx="158" cy="64" r="13" fill="{DARK}" stroke="#0B0E14" stroke-width="4.5" />',
-        '<path d="M112 78 H144" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />',
-        '<path d="M114 88 H142" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />',
-        '<path d="M112 98 H144" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />',
-        '<path d="M128 78 V98" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />',
-        '<path d="M118 126 Q128 134 138 126" fill="none" stroke="#0B0E14" stroke-width="4" stroke-linecap="round" />',
-        '<path d="M100 118 L86 114" fill="none" stroke="{ACC}" stroke-width="3" stroke-linecap="round" />',
-        '<path d="M156 118 L170 114" fill="none" stroke="{ACC}" stroke-width="3" stroke-linecap="round" />'
-    )
-    Eyes = @(
-        '<ellipse cx="112" cy="112" rx="4.5" ry="5.5" fill="#0B0E14" />',
-        '<ellipse cx="144" cy="112" rx="4.5" ry="5.5" fill="#0B0E14" />'
-    ) -join "`n"
-    Emblem = 'circle'
-}
 
-$Characters['rabbit'] = @{
-    Main = '#D9A8BE'; Accent = '#FFF0F6'
-    Sh = 58; Wa = 42; Hp = 50
-    Behind = @(
-        '<circle cx="192" cy="238" r="12" fill="{ACC}" stroke="#0B0E14" stroke-width="4" />'
-    )
-    After = @(
-        '<ellipse cx="110" cy="46" rx="12" ry="34" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
-        '<ellipse cx="146" cy="46" rx="12" ry="34" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
-        '<ellipse cx="110" cy="48" rx="5" ry="22" fill="{ACC}" stroke="#0B0E14" stroke-width="2.5" />',
-        '<ellipse cx="146" cy="48" rx="5" ry="22" fill="{ACC}" stroke="#0B0E14" stroke-width="2.5" />',
-        '<path d="M124 118 L132 118 L128 126 Z" fill="{DARK}" stroke="#0B0E14" stroke-width="2" stroke-linejoin="round" />'
-    )
-    Emblem = 'hexagon'
-}
 
-$Characters['dragon'] = @{
-    Main = '#2F7E93'; Accent = '#8FE6F2'
-    Sh = 66; Wa = 48; Hp = 56
-    After = @(
-        '<path d="M106 74 C90 58 76 60 62 74" fill="none" stroke="{ACC}" stroke-width="10" stroke-linecap="round" />',
-        '<path d="M150 74 C166 58 180 60 194 74" fill="none" stroke="{ACC}" stroke-width="10" stroke-linecap="round" />',
-        '<polygon points="190,158 220,150 198,180" fill="{ACC}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-        '<polygon points="198,188 224,184 202,212" fill="{ACC}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-        '<polygon points="196,218 220,220 198,244" fill="{ACC}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-        '<circle cx="128" cy="128" r="5" fill="{ALIGHT}" stroke="#0B0E14" stroke-width="2.5" />'
-    )
-    Emblem = 'star5'
-}
 
-$Characters['snake'] = @{
-    Main = '#3E9455'; Accent = '#B6F0C6'
-    Sh = 56; Wa = 40; Hp = 48
-    Behind = @(
-        '<ellipse cx="66" cy="268" rx="30" ry="14" fill="none" stroke="{ACC}" stroke-width="12" />',
-        '<path d="M96 270 C108 254 96 238 82 244" fill="none" stroke="{MAIN}" stroke-width="12" stroke-linecap="round" />'
-    )
-    After = @(
-        '<path d="M106 70 L128 38 L150 70 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-        '<rect x="104" y="66" width="48" height="10" rx="4" fill="{MAIN}" stroke="#0B0E14" stroke-width="3" />',
-        '<circle cx="128" cy="62" r="5" fill="{ALIGHT}" stroke="#0B0E14" stroke-width="2.5" />'
-    )
-    Eyes = @(
-        '<ellipse cx="114" cy="106" rx="4.5" ry="8" fill="#0B0E14" />',
-        '<ellipse cx="142" cy="106" rx="4.5" ry="8" fill="#0B0E14" />'
-    ) -join "`n"
-    Emblem = 'triangleDown'
-}
 
-$Characters['horse'] = @{
-    Main = '#A8523F'; Accent = '#F0C0A0'
-    Sh = 70; Wa = 50; Hp = 58
-    Behind = @(
-        '<path d="M92 80 L98 40 L112 66 L128 28 L144 66 L158 40 L164 80 L128 94 Z" fill="{DARK}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-        '<path d="M186 250 C212 246 222 220 210 200" fill="none" stroke="{MAIN}" stroke-width="12" stroke-linecap="round" />'
-    )
-    After = @(
-        '<ellipse cx="128" cy="128" rx="18" ry="12" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
-        '<circle cx="121" cy="126" r="2.6" fill="#0B0E14" />',
-        '<circle cx="135" cy="126" r="2.6" fill="#0B0E14" />'
-    )
-    Emblem = 'ring'
-}
 
-$Characters['goat'] = @{
-    Main = '#CDBB84'; Accent = '#FFF6DA'
-    Sh = 66; Wa = 48; Hp = 56
-    After = @(
-        '<path d="M104 76 C88 72 78 56 88 46 C98 36 114 44 108 56 C104 63 96 60 99 54" fill="none" stroke="{ACC}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />',
-        '<path d="M152 76 C168 72 178 56 168 46 C158 36 142 44 148 56 C152 63 160 60 157 54" fill="none" stroke="{ACC}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />',
-        '<path d="M118 136 L128 176 L138 136 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />'
-    )
-    Emblem = 'cross'
-}
 
-$Characters['monkey'] = @{
-    Main = '#B5814A'; Accent = '#F0CE96'
-    Sh = 64; Wa = 48; Hp = 56
-    Behind = @(
-        '<circle cx="200" cy="244" r="22" fill="{ACC}" stroke="#0B0E14" stroke-width="4" />',
-        '<path d="M180 250 C192 260 202 258 206 248" fill="none" stroke="{MAIN}" stroke-width="10" stroke-linecap="round" />'
-    )
-    After = @(
-        '<circle cx="92" cy="100" r="15" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="4.5" />',
-        '<circle cx="164" cy="100" r="15" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="4.5" />',
-        '<circle cx="92" cy="100" r="7" fill="{ACC}" stroke="#0B0E14" stroke-width="2.5" />',
-        '<circle cx="164" cy="100" r="7" fill="{ACC}" stroke="#0B0E14" stroke-width="2.5" />',
-        '<ellipse cx="128" cy="122" rx="20" ry="14" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
-        '<circle cx="120" cy="119" r="2.6" fill="#0B0E14" />',
-        '<circle cx="136" cy="119" r="2.6" fill="#0B0E14" />'
-    )
-    Emblem = 'wave'
-}
 
-$Characters['rooster'] = @{
-    Main = '#C9502F'; Accent = '#FFD98A'
-    Sh = 58; Wa = 42; Hp = 50
-    After = @(
-        '<circle cx="114" cy="54" r="10" fill="{ACC}" stroke="#0B0E14" stroke-width="4" />',
-        '<circle cx="128" cy="44" r="12" fill="{ACC}" stroke="#0B0E14" stroke-width="4" />',
-        '<circle cx="142" cy="54" r="10" fill="{ACC}" stroke="#0B0E14" stroke-width="4" />',
-        '<rect x="106" y="60" width="44" height="11" rx="5" fill="{ACC}" stroke="#0B0E14" stroke-width="4" />',
-        '<path d="M118 124 L138 124 L128 148 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="4" stroke-linejoin="round" />',
-        '<circle cx="128" cy="147" r="7" fill="{MAIN}" stroke="#0B0E14" stroke-width="3" />'
-    )
-    Eyes = @(
-        '<ellipse cx="112" cy="102" rx="4.5" ry="5.5" fill="#0B0E14" />',
-        '<ellipse cx="144" cy="102" rx="4.5" ry="5.5" fill="#0B0E14" />'
-    ) -join "`n"
-    Emblem = 'chevron'
-}
 
-$Characters['dog'] = @{
-    Main = '#4B6BB0'; Accent = '#B6CCF5'
-    Sh = 68; Wa = 50; Hp = 58
-    After = @(
-        '<ellipse cx="90" cy="108" rx="14" ry="27" fill="{DARK}" stroke="#0B0E14" stroke-width="4.5" />',
-        '<ellipse cx="166" cy="108" rx="14" ry="27" fill="{DARK}" stroke="#0B0E14" stroke-width="4.5" />',
-        '<ellipse cx="128" cy="122" rx="19" ry="14" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
-        '<ellipse cx="128" cy="116" rx="8" ry="6" fill="#0B0E14" />'
-    )
-    Eyes = @(
-        '<ellipse cx="114" cy="100" rx="4.5" ry="5.5" fill="#0B0E14" />',
-        '<ellipse cx="142" cy="100" rx="4.5" ry="5.5" fill="#0B0E14" />'
-    ) -join "`n"
-    Emblem = 'square'
-}
 
-$Characters['pig'] = @{
-    Main = '#C58AB0'; Accent = '#FFE0F2'
-    Sh = 76; Wa = 60; Hp = 70
-    After = @(
-        '<circle cx="100" cy="66" r="14" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="4.5" />',
-        '<circle cx="156" cy="66" r="14" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="4.5" />',
-        '<ellipse cx="128" cy="118" rx="17" ry="12" fill="{ACC}" stroke="#0B0E14" stroke-width="3.5" />',
-        '<circle cx="121" cy="118" r="3" fill="#0B0E14" />',
-        '<circle cx="135" cy="118" r="3" fill="#0B0E14" />'
-    )
-    Eyes = @(
-        '<ellipse cx="112" cy="96" rx="4.5" ry="5.5" fill="#0B0E14" />',
-        '<ellipse cx="144" cy="96" rx="4.5" ry="5.5" fill="#0B0E14" />'
-    ) -join "`n"
-    Emblem = 'ellipse'
-}
 
 # ============================ 6 个敌人 ============================
 

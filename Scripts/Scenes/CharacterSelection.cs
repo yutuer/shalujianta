@@ -19,7 +19,7 @@ namespace FishEatFish.Scenes
         private Button _backButton;
         private Button _startButton;
 
-        private CharacterDefinition[] _allCharacters;
+        private List<CharacterDefinition> _allCharacters;
         private List<CharacterDefinition> _selectedCharacters = new List<CharacterDefinition>();
         private List<KeyOrder> _availableKeyOrders = new List<KeyOrder>();
         private KeyOrder _selectedKeyOrder;
@@ -47,7 +47,11 @@ namespace FishEatFish.Scenes
             _backButton.Pressed += OnBackPressed;
             _startButton.Pressed += OnStartPressed;
 
-            _allCharacters = CharacterDefinition.GetAllCharacters();
+            // ⚠️ 只列**可玩角色**（卡组齐全的）——
+            //   GetAllCharacters() 里还有 12 个星座 BOSS，它们没有卡牌（BOSS 卡已删），
+            //   选进队伍会得到一个没有卡组的残缺角色（2026-11-04 D63 起：12 生肖测试角色已删，
+            //   可玩角色只剩 波吕克斯 / 珈伦 / 珊 / 泰旖丝 4 个）。
+            _allCharacters = CharacterDefinition.GetPlayableCharacters();
             LoadKeyOrders();
             BuildCharacterGrid();
             BuildSelectedSlots();
@@ -110,13 +114,30 @@ namespace FishEatFish.Scenes
             HBoxContainer content = new HBoxContainer();
             centerContainer.AddChild(content);
 
-            Label iconLabel = new Label();
-            iconLabel.Text = GetCharacterEmoji(character.CharacterId);
-            iconLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            iconLabel.VerticalAlignment = VerticalAlignment.Center;
-            iconLabel.CustomMinimumSize = new Vector2(60, 60);
-            iconLabel.AddThemeFontSizeOverride("font_size", 50);
-            content.AddChild(iconLabel);
+            // ⚠️ 角色图标用**圆形头像**（avatar_<id>.svg），没有就退回立绘裁头部；
+            //   12 生肖测试角色删掉后，这里不再有「动物 emoji」可用（D63）。
+            TextureRect iconRect = new TextureRect();
+            iconRect.CustomMinimumSize = new Vector2(60, 60);
+            iconRect.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+            iconRect.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
+            string avatarPath = $"res://Assets/Portraits/avatar_{character.CharacterId}.svg";
+            if (ResourceLoader.Exists(avatarPath))
+            {
+                iconRect.Texture = ResourceLoader.Load<Texture2D>(avatarPath);
+            }
+            else
+            {
+                string portraitPath = character.GetPortraitPath();
+                if (!string.IsNullOrEmpty(portraitPath) && ResourceLoader.Exists(portraitPath))
+                {
+                    iconRect.Texture = new AtlasTexture
+                    {
+                        Atlas = ResourceLoader.Load<Texture2D>(portraitPath),
+                        Region = new Rect2(46, 40, 164, 130)
+                    };
+                }
+            }
+            content.AddChild(iconRect);
 
             VBoxContainer infoContainer = new VBoxContainer();
             infoContainer.Alignment = BoxContainer.AlignmentMode.Center;
@@ -149,26 +170,6 @@ namespace FishEatFish.Scenes
             {
                 OnCharacterSelected(character);
             }
-        }
-
-        private string GetCharacterEmoji(string characterId)
-        {
-            return characterId switch
-            {
-                "rat" => "🐭",
-                "ox" => "🐂",
-                "tiger" => "🐯",
-                "rabbit" => "🐰",
-                "dragon" => "🐲",
-                "snake" => "🐍",
-                "horse" => "🐴",
-                "goat" => "🐐",
-                "monkey" => "🐵",
-                "rooster" => "🐔",
-                "dog" => "🐶",
-                "pig" => "🐷",
-                _ => "❓"
-            };
         }
 
         private void BuildSelectedSlots()
@@ -317,7 +318,8 @@ namespace FishEatFish.Scenes
                 if (i < _selectedCharacters.Count)
                 {
                     var character = _selectedCharacters[i];
-                    _slotIcons[i].Text = GetCharacterEmoji(character.CharacterId);
+                    // 槽位图标用**名字首字**（12 生肖测试角色删掉后没有动物 emoji 可用了，D63）
+                    _slotIcons[i].Text = character.Name.Length > 0 ? character.Name.Substring(0, 1) : "·";
                     _slotLabels[i].Text = character.Name;
                 }
                 else

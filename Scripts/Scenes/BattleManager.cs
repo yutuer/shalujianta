@@ -117,10 +117,10 @@ namespace FishEatFish.Scenes
 			GD.PrintErr("No valid character selection found! Using default.");
 			CharacterDefinition[] defaultChars = new CharacterDefinition[]
 			{
-				CharacterDefinition.CreateRat(),
-				CharacterDefinition.CreateOx(),
-				CharacterDefinition.CreateTiger(),
-				CharacterDefinition.CreateRabbit()
+				CharacterDefinition.CreatePollux(),
+				CharacterDefinition.CreateJialun(),
+				CharacterDefinition.CreateSanga(),
+				CharacterDefinition.CreateThais()
 			};
 			attacker = new Attacker();
 			AddChild(attacker);

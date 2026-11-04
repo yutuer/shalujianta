@@ -521,22 +521,17 @@ public UltimateSkill Ultimate { get; set; } // 终极技能
 
 **角色创建工厂方法**:
 ```csharp
-// 12个生肖角色工厂方法
-CharacterDefinition.CreateRat()     // 鼠
-CharacterDefinition.CreateOx()      // 牛
-CharacterDefinition.CreateTiger()    // 虎
-CharacterDefinition.CreateRabbit()   // 兔
-CharacterDefinition.CreateDragon()  // 龙
-CharacterDefinition.CreateSnake()   // 蛇
-CharacterDefinition.CreateHorse()    // 马
-CharacterDefinition.CreateGoat()    // 羊
-CharacterDefinition.CreateMonkey()   // 猴
-CharacterDefinition.CreateRooster()  // 鸡
-CharacterDefinition.CreateDog()      // 狗
-CharacterDefinition.CreatePig()      // 猪
+// 4 个可玩角色工厂方法（12 生肖测试角色已于 2026-11-04 D63 删除；
+//  另有 12 个星座 BOSS 的 Create*()，它们没有卡组、是敌人 BOSS）
+CharacterDefinition.CreatePollux()   // 波吕克斯
+CharacterDefinition.CreateJialun()    // 珈伦
+CharacterDefinition.CreateSanga()     // 珊
+CharacterDefinition.CreateThais()     // 泰旖丝
 
-// 获取所有角色
+// 获取所有角色（含 12 星座 BOSS）
 CharacterDefinition.GetAllCharacters()
+// 只取卡组齐全的可玩角色（选人界面 / 角色一览走这个）
+CharacterDefinition.GetPlayableCharacters()
 ```
 
 ##### CharacterPosition (`Scripts/Battle/CharacterSystem/CharacterPosition.cs`)
@@ -1400,7 +1395,7 @@ Vector2 HexToWorld(HexCoord coord) {
 | 场景文件 (.tscn) | ~30 |
 | 数据配置文件 | ~10 |
 | 卡牌数量 | ~60+ |
-| 角色数量 | 12 (十二生肖) |
+| 角色数量 | 4 可玩角色（波吕克斯 / 珈伦 / 珊 / 泰旖丝）+ 12 星座 BOSS |
 | AI行为模式 | 3 (激进/均衡/防守) |
 
 ---

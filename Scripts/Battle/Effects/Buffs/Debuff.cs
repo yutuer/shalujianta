@@ -58,7 +58,7 @@ public partial class VulnerableDebuff : StatusEffect
     ///
     /// ⚠️ 原来这里靠 <c>_owner</c> 判断「被打的是不是被施加的那个敌人」，
     /// 但 <c>Enemy.AddStatusEffect</c> **从不调用 SetOwner** → _owner 恒为 null →
-    /// 判定恒不成立 → **易伤从来没生效过**（狂气爆发「龙王咆哮」的毒+易伤都打不出来）。
+    /// 判定恒不成立 → **易伤从来没生效过**（狂气爆发里的毒 + 易伤都打不出来）。
     /// 现在改成不依赖 owner：易伤总是施加给承受伤害的那个敌人自己。
     /// </summary>
     public override int ModifyDamageEnemy(int baseDamage, Core.Enemy attacker, Core.Enemy defender)
@@ -76,7 +76,7 @@ public partial class PoisonDebuff : StatusEffect
     /// 「固定伤害」词条：「不被力量、虚弱、易伤等状态影响，直接造成伤害。」
     /// → 所以这里的伤害**不走防御、不吃易伤/破甲**（见 <see cref="Core.Enemy.TakeFixedDamage"/>）。
     ///
-    /// ⚠️ 语义变了：以前这个字段是「每回合固定掉多少血」（12 生肖那几个狂气爆发按这个口径配），
+    /// ⚠️ 语义变了：以前这个字段是「每回合固定掉多少血」（早期那批狂气爆发按这个口径配），
     /// 现在它就是**层数**——施加 41 层 → 回合结束掉 41 点；再叠加 30 层 → 掉 71 点。
     /// </summary>
     [Export]

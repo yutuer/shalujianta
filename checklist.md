@@ -13,8 +13,8 @@
 
 | 验收项 | 状态 | 备注 |
 | :--- | :-- | :--- |
-| 12生肖角色数据加载正常 | ✅ | characters.json |
-| 角色选择界面显示12个角色 | ✅ | CharacterSelection.cs |
+| 角色数据加载正常 | ✅ | characters.json（2026-11-04 D63 起 = 4 名可玩角色：波吕克斯 / 珈伦 / 珊 / 泰旖丝） |
+| 角色选择界面显示可玩角色 | ✅ | CharacterSelection.cs（走 `GetPlayableCharacters()`，不列没有卡组的星座 BOSS） |
 | 角色选择后属性正确显示 | ✅ | CharacterDisplay.cs |
 | 4个角色槽位正确选择 | ✅ | |
 | 选择确认后进入战斗 | ✅ | |
