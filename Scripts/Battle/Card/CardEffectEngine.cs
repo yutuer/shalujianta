@@ -5,6 +5,7 @@ using FishEatFish.Battle.CharacterSystem;
 using FishEatFish.Battle.Core;
 using FishEatFish.Battle.Effects;
 using FishEatFish.Battle.Effects.Buffs;
+using FishEatFish.Scenes;
 
 namespace FishEatFish.Battle.Card
 {
@@ -90,14 +91,50 @@ namespace FishEatFish.Battle.Card
 		{
 			if (card == null || effects == null || ctx == null) return;
 
-			for (int i = 0; i < effects.Count; i++)
-			{
-				CardEffect effect = effects[i];
-				if (effect == null) continue;
-				if (!effect.MatchesTiming(timing)) continue;
+			// ⚠️ **D66 菲茵特「幼芽萌生」**：「若在本场战斗中触发过死亡抵抗，额外生效 1 次。」
+			//   → 先扫一遍效果列表里有没有 `repeatOnDeathResistance` 标记，
+			//     有的话再看「本场战斗是否触发过死亡抵抗」→ 决定整串效果跑 1 遍还是 2 遍。
+			int repeat = GetRepeatCount(effects);
 
-				ExecuteOne(card, effect, ctx);
+			for (int r = 0; r < repeat; r++)
+			{
+				for (int i = 0; i < effects.Count; i++)
+				{
+					CardEffect effect = effects[i];
+					if (effect == null) continue;
+					if (!effect.MatchesTiming(timing)) continue;
+
+					// 重复标记本身不产生效果（它只是「跑几遍」的开关）
+					if (effect.Type == CardEffectType.RepeatOnDeathResistance) continue;
+
+					ExecuteOne(card, effect, ctx);
+				}
 			}
+		}
+
+		/// <summary>
+		/// 算这串效果要执行几遍（菲茵特「幼芽萌生」的「额外生效 1 次」）。
+		/// </summary>
+		private static int GetRepeatCount(IReadOnlyList<CardEffect> effects)
+		{
+			foreach (CardEffect effect in effects)
+			{
+				if (effect == null) continue;
+				if (effect.Type != CardEffectType.RepeatOnDeathResistance) continue;
+
+				int wanted = effect.Count > 1 ? effect.Count : 2;
+
+				DeathResistanceSystem dr = GlobalData.DeathResistance;
+				if (dr == null || !dr.TriggeredThisBattle)
+				{
+					return 1;
+				}
+
+				GD.Print($"[CardEffectEngine] 本场战斗触发过死亡抵抗 → 该卡额外生效 {wanted - 1} 次（共 {wanted} 遍）");
+				return wanted;
+			}
+
+			return 1;
 		}
 
 		private static void ExecuteOne(Card card, CardEffect effect, CardEffectContext ctx)
@@ -148,6 +185,12 @@ namespace FishEatFish.Battle.Card
 					break;
 				case CardEffectType.Bleed:
 					ExecuteBleed(card, effect, ctx);
+					break;
+				case CardEffectType.DeathResistanceDecay:
+					ExecuteDeathResistanceDecay(card, effect, ctx);
+					break;
+				case CardEffectType.RepeatOnDeathResistance:
+					// 重复标记由外层 GetRepeatCount 处理，这里不做事
 					break;
 				default:
 					GD.PrintErr($"[CardEffectEngine] 未知效果类型：{effect.Type}（卡 {card.CardId}）");
@@ -288,6 +331,29 @@ namespace FishEatFish.Battle.Card
 				if (enemy == null || enemy.IsDead) continue;
 				ApplyBleed(enemy, stacks, ctx);
 			}
+		}
+
+		/// <summary>
+		/// **本场战斗死亡抵抗触发衰减率**（菲茵特「无边星彩」灵知觉醒）。
+		///
+		/// wiki 原文：「本场战斗{{词条|死亡抵抗}}触发衰减率从 50% 降低为 45%。」
+		/// 数据表：<c>{ "type": "deathResistanceDecay", "value": 45 }</c>（value = 百分比 45）。
+		/// </summary>
+		private static void ExecuteDeathResistanceDecay(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (effect.Value <= 0) return;
+
+			DeathResistanceSystem dr = GlobalData.DeathResistance;
+			if (dr == null)
+			{
+				GD.PrintErr($"[CardEffectEngine] 死亡抵抗系统不可用，{card.Name} 的衰减率调整已跳过");
+				return;
+			}
+
+			float rate = effect.Value / 100f;
+			if (rate > 1f) rate = 1f;
+
+			dr.SetDecayRate(rate);
 		}
 
 		/// <summary>

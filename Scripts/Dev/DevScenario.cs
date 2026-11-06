@@ -443,6 +443,7 @@ namespace FishEatFish.Dev
 				case "jialun": return CharacterDefinition.CreateJialun();
 				case "sanga": return CharacterDefinition.CreateSanga();
 				case "thais": return CharacterDefinition.CreateThais();
+				case "faint": return CharacterDefinition.CreateFaint();
 				default: return null;
 			}
 		}

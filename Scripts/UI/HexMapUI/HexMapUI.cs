@@ -991,15 +991,19 @@ namespace FishEatFish.UI.HexMap
         private float GetCurrentDeathResistance()
         {
             // 地图场景里没有 BattleManager（且原来的绝对路径 /root/BattleManager/Attacker 也是错的），
-            // 直接用已选角色的死亡抵抗
-            if (GlobalData.SelectedCharacters != null)
+            // 直接用已选角色的死亡抵抗。
+            //
+            // ⚠️ **D66 口径变更（2026-11-07 主人）**：死亡抵抗是**队伍里所有角色的总和值**，
+            // 原来这里是「取第一个选中角色」—— 错的口径。
+            //
+            // 并且显示的是**当前有效值**（已计入触发乘区与获得的加成），
+            // 不是各角色基础值之和 —— 触发过后队伍的那一半就是要减半的。
+            if (GlobalData.SelectedCharacters != null && GlobalData.SelectedCharacters.Length > 0)
             {
-                foreach (FishEatFish.Battle.CharacterSystem.CharacterDefinition character in GlobalData.SelectedCharacters)
+                DeathResistanceSystem system = GlobalData.DeathResistance;
+                if (system != null)
                 {
-                    if (character != null)
-                    {
-                        return character.BaseDeathResistance;
-                    }
+                    return system.GetTeamTotal(GlobalData.SelectedCharacters);
                 }
             }
             return 10f;

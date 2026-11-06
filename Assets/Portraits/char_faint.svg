@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_faint" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#557A4A"/>
+      <stop offset="1" stop-color="#3A5332"/>
+    </linearGradient>
+    <linearGradient id="headGrad_faint" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#77956E"/>
+      <stop offset="1" stop-color="#557A4A"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M52 268 C44 216 62 176 100 162" fill="none" stroke="#C6F0A8" stroke-width="6" stroke-linecap="round" />
+  <path d="M204 268 C212 216 194 176 156 162" fill="none" stroke="#C6F0A8" stroke-width="6" stroke-linecap="round" />
+  <path d="M128 268 L128 152" fill="none" stroke="#C6F0A8" stroke-width="6" stroke-linecap="round" />
+  <path d="M128 214 C106 202 96 182 102 166" fill="none" stroke="#C6F0A8" stroke-width="5" stroke-linecap="round" />
+  <path d="M128 234 C150 222 160 202 154 186" fill="none" stroke="#C6F0A8" stroke-width="5" stroke-linecap="round" />
+  <path d="M110 132 C88.4 135 69.2 144 62 158 C66 188 74 202 78 214 C80 230 76 241 70 250 L67 296 L189 296 L186 250 C180 241 176 230 178 214 C182 202 190 188 194 158 C153.2 144 172.4 135 146 132 Z" fill="url(#bodyGrad_faint)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#8FAD79" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_faint)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="58" r="18" fill="url(#headGrad_faint)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="58" r="18" fill="url(#headGrad_faint)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="58" r="9" fill="#C6F0A8" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="58" r="9" fill="#C6F0A8" stroke="#0B0E14" stroke-width="3" />
+  <path d="M128 96 C110 80 116 62 128 74 C140 62 146 80 128 96 Z" fill="#C6F0A8" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <path d="M128 191 L141 205 L128 219 L115 205 Z" fill="#C6F0A8" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

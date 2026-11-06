@@ -1,8 +1,10 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 using FishEatFish.Battle.Card;
 using FishEatFish.Battle.Core;
 using FishEatFish.Battle.Effects.Buffs;
+using FishEatFish.Scenes;
 
 namespace FishEatFish.Battle.CharacterSystem;
 
@@ -44,6 +46,8 @@ public static class UltimateExecutor
         ApplyEnergy(skill, player, summary);
         ApplyRemoveSlowFromHand(skill, player, summary);
         ApplyAddCardToHand(skill, player, owner, summary);
+        ApplyDeathResistance(skill, player, owner, summary);
+        ApplyDisperseSelfVulnerable(skill, player, summary);
 
         string result = summary.Count > 0 ? string.Join("，", summary) : "无实际效果";
         GD.Print($"[UltimateExecutor] Execute completed: {skill.Name} -> {result}");
@@ -425,5 +429,88 @@ public static class UltimateExecutor
         player.CurrentEnergy += skill.EnergyGain;
         GD.Print($"[UltimateExecutor] 【{skill.Name}】获得 {skill.EnergyGain} 点能量（能量 {energyBefore} → {player.CurrentEnergy}）");
         summary.Add($"获得{skill.EnergyGain}能量");
+    }
+
+    /// <summary>
+    /// **队伍死亡抵抗加成**（菲茵特「星之摇篮」）。
+    ///
+    /// wiki 原文（6 级）：
+    /// 「获得 [攻击力*120%] 层反击。**若{{词条|死亡抵抗}}不足 300% + x%，则 +150%。** 驱散自身{{词条|脆弱}}。」
+    /// 1 级：「…不足 200% + x%，则 +100%。」
+    ///
+    /// ## x% 是什么
+    /// wiki 天赋1「次生襁褓」：「菲茵特每拥有 1% 死亡抵抗属性，就使「星之摇篮」和「无边星彩」
+    /// 获得的{{词条|反击}}提高 0.2%，**「星之摇篮」的死亡抵抗上限 +2%**。」
+    /// → **x% = 菲茵特自己的死亡抵抗 × 2%**（菲茵特 33.6 → x = 67.2）。
+    ///
+    /// ## 口径（与主人的话对齐）
+    /// 主人 2026-11-07：「她的必杀技就是加死亡抵抗的。死亡抵抗是队伍里面的所有角色的总和值。」
+    /// → 这里的「死亡抵抗」是**队伍总和**，不是菲茵特个人值。
+    ///
+    /// ⚠️ 「若不足上限则 +N」= **门槛**：队伍总和已经 ≥ 上限时**不加**（不是加到上限为止）。
+    /// </summary>
+    private static void ApplyDeathResistance(UltimateSkill skill, Player player, CharacterPosition owner, List<string> summary)
+    {
+        if (skill.DeathResistanceGain <= 0) return;
+
+        if (player == null)
+        {
+            GD.PrintErr($"[UltimateExecutor] 【{skill.Name}】需要玩家才能结算队伍死亡抵抗，已跳过");
+            return;
+        }
+
+        DeathResistanceSystem system = GlobalData.DeathResistance;
+        if (system == null)
+        {
+            GD.PrintErr($"[UltimateExecutor] 【{skill.Name}】死亡抵抗系统不可用，已跳过");
+            return;
+        }
+
+        // 天赋1「次生襁褓」：菲茵特每 1% 死亡抵抗 → 「星之摇篮」的死亡抵抗上限 +2%
+        float ownDeathResistance = 0f;
+        if (owner?.Character != null)
+        {
+            ownDeathResistance = owner.Character.BaseDeathResistance;
+        }
+        float capBonus = ownDeathResistance * 2f;
+
+        float cap = skill.CalculatedDeathResistanceCap + capBonus;
+        float teamTotal = system.GetTeamTotal(player.TeamCharacters);
+        int gain = skill.CalculatedDeathResistanceGain;
+
+        if (teamTotal >= cap)
+        {
+            GD.Print($"[UltimateExecutor] 【{skill.Name}】队伍死亡抵抗 {teamTotal:F1}% 已达上限 {cap:F1}%（上限 = 基础 {skill.CalculatedDeathResistanceCap}% + 菲茵特死亡抵抗 {ownDeathResistance:F1}% × 2% = {capBonus:F1}%），本次不加成");
+            summary.Add($"队伍死亡抵抗已达上限 {cap:F1}%");
+            return;
+        }
+
+        system.AddBonus(gain);
+        GD.Print($"[UltimateExecutor] 【{skill.Name}】队伍死亡抵抗 +{gain}%（上限 {cap:F1}%，加前 {teamTotal:F1}%，加后 {system.GetTeamTotal(player.TeamCharacters):F1}%）");
+        summary.Add($"队伍死亡抵抗 +{gain}%");
+    }
+
+    /// <summary>
+    /// **驱散自身脆弱**（菲茵特「星之摇篮」）。
+    ///
+    /// 照 wiki：「驱散自身{{词条|脆弱}}。」
+    /// 脆弱词条：「获得的所有护盾降低 25%，回合结束时移除 1 层。」
+    /// </summary>
+    private static void ApplyDisperseSelfVulnerable(UltimateSkill skill, Player player, List<string> summary)
+    {
+        if (!skill.DisperseSelfVulnerable || player == null) return;
+
+        int removed = 0;
+        foreach (StatusEffect effect in player.StatusEffects.ToArray())
+        {
+            if (effect == null) continue;
+            if (effect.EffectName != "Vulnerable" && effect.EffectName != "脆弱") continue;
+
+            player.RemoveStatusEffect(effect);
+            removed++;
+        }
+
+        GD.Print($"[UltimateExecutor] 【{skill.Name}】驱散自身脆弱 {removed} 层");
+        summary.Add(removed > 0 ? $"驱散自身脆弱 {removed} 层" : "自身没有脆弱状态");
     }
 }

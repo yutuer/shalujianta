@@ -536,6 +536,12 @@ namespace FishEatFish.Scenes
 			player.MaxEnergy = attacker.TotalEnergy;
 			player.DrawCount = attacker.TotalDrawCount;
 			player.Class = "攻击者";
+
+			// ⚠️ **D66**：死亡抵抗是**队伍里所有角色的总和值**（主人 2026-11-07 口径），
+			// 而玩家是整队合并成的一个 Player → 必须把队伍挂到 Player 上，
+			// 死亡抵抗的判定点（Player.TakeDamage）才知道该算谁的总和。
+			player.TeamCharacters = attacker.Characters;
+
 			GD.Print($"[BattleManager] 使用Attacker属性: HP={player.MaxHealth}, Energy={player.MaxEnergy}, Draw={player.DrawCount}");
 		}
 		else
@@ -796,6 +802,12 @@ namespace FishEatFish.Scenes
 	private void StartBattle()
 	{
 		GD.Print("[BattleManager] ========== 战斗开始 ==========");
+
+		// ⚠️ **D66**：死亡抵抗的**战斗级**状态在这场战斗开始时重置
+		// （「本场战斗中是否触发过」「本场战斗的衰减率」），
+		// 而**调查级**状态（两个乘区 + 累计加成）**跨战斗保留**（「持续到调查结束」）。
+		GlobalData.DeathResistance?.OnBattleStart();
+
 		battleEndRageHandler?.OnBattleStart();
 		AddMessage("战斗开始!", LogType.System);
 		StartTurn();

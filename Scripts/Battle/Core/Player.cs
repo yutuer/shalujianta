@@ -2,6 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using FishEatFish.Battle.Effects.Buffs;
 using FishEatFish.Battle.CharacterSystem;
+using FishEatFish.Scenes;
 
 namespace FishEatFish.Battle.Core;
 
@@ -52,6 +53,16 @@ public partial class Player : Node, IUnit
 	public CharacterDefinition CharacterDef { get; set; }
 
 	public CharacterAttributes Attributes { get; set; }
+
+	/// <summary>
+	/// **本场战斗的队伍角色**（4 个唤醒体）—— D66 死亡抵抗要用。
+	///
+	/// 为什么需要它：本项目的玩家是**整队合并成的一个 Player**
+	/// （MaxHealth = 队伍生命总和），Player 本身没有「队伍成员」的概念，
+	/// 而死亡抵抗是**队伍里所有角色的总和值**（主人 2026-11-07 口径）→ 必须把队伍挂上来。
+	/// 由 <c>BattleManager.InitializePlayer()</c> 赋值。
+	/// </summary>
+	public CharacterDefinition[] TeamCharacters { get; set; }
 
 	public override void _Ready()
 	{
@@ -216,6 +227,9 @@ public partial class Player : Node, IUnit
 	{
 		int remainingDamage = damage;
 
+		// 记录扣血前是否还活着 —— 死亡抵抗只在「本来活着、被这一击打死」时才判定
+		bool wasAlive = CurrentHealth > 0;
+
 		if (Shield > 0)
 		{
 			if (Shield >= remainingDamage)
@@ -231,6 +245,53 @@ public partial class Player : Node, IUnit
 		}
 
 		CurrentHealth = Mathf.Max(0, CurrentHealth - remainingDamage);
+
+		// ⚠️ **死亡抵抗触发点**（D66）——
+		// 官方措辞是「**受到致命伤害时**」→ 判定必须挂在扣血的那一刻，
+		// 而不是等敌人回合全部打完再判（BattleManager.CheckGameOver 那时已经晚了一步）。
+		if (wasAlive && CurrentHealth <= 0)
+		{
+			TryTriggerDeathResistance();
+		}
+	}
+
+	/// <summary>
+	/// **死亡抵抗判定与结算**（D66）。
+	///
+	/// 官方口径（词条主表 + 参考图 tooltip）：
+	/// 「在战斗中受到致命伤害时有概率保留 1 点生命。
+	///   触发后下回合获得 2 点算力和抽 2 张牌，队伍的死亡抵抗减半，
+	///   后续获得的死亡抵抗减半，持续到调查结束。」
+	///
+	/// 概率 = **队伍里所有角色的死亡抵抗总和**（主人 2026-11-07 口径）；
+	/// 超过 100% 视为必触发（概率不可能大于 100%）。
+	/// </summary>
+	private void TryTriggerDeathResistance()
+	{
+		DeathResistanceSystem system = GlobalData.DeathResistance;
+		if (system == null) return;
+
+		float total = system.GetTeamTotal(TeamCharacters);
+		if (total <= 0f)
+		{
+			GD.Print($"[DeathResistance] 队伍死亡抵抗为 {total:F1}%，未触发");
+			return;
+		}
+
+		if (!DeathResistanceSystem.RollChance(total))
+		{
+			GD.Print($"[DeathResistance] 队伍死亡抵抗 {total:F1}%，本次未触发");
+			return;
+		}
+
+		// 触发 → 保留 1 点生命
+		CurrentHealth = 1;
+		system.OnTrigger();
+
+		GD.Print($"[DeathResistance] 队伍死亡抵抗 {total:F1}% 触发！保留 1 点生命");
+
+		// 「触发后下回合获得 2 点算力和抽 2 张牌」
+		AddStatusEffect(new DeathResistanceReviveEffect());
 	}
 
 	public void TakeModifiedDamage(int damage, Enemy attacker)

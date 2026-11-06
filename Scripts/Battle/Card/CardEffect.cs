@@ -252,6 +252,25 @@ namespace FishEatFish.Battle.Card
 		/// 数据表写法：<c>{ "type": "bleed", "requireAwakening": true }</c>
 		/// </summary>
 		public const string Bleed = "bleed";
+
+		/// <summary>
+		/// **本场战斗死亡抵抗触发衰减率**（菲茵特「无边星彩」灵知觉醒）。
+		///
+		/// wiki 原文：「本场战斗{{词条|死亡抵抗}}触发衰减率从 50% 降低为 45%。」
+		/// 数据表写法：<c>{ "type": "deathResistanceDecay", "value": 45 }</c>（value = 百分比）。
+		/// </summary>
+		public const string DeathResistanceDecay = "deathResistanceDecay";
+
+		/// <summary>
+		/// **本场战斗触发过死亡抵抗则额外生效 1 次**（菲茵特「幼芽萌生」）。
+		///
+		/// wiki 原文：「获得 [防御力*15%] 点护盾，回复 [体质*15%] 点生命。
+		/// **若在本场战斗中触发过{{词条|死亡抵抗}}，额外生效 1 次。**」
+		///
+		/// 数据表写法：<c>{ "type": "repeatOnDeathResistance", "count": 2 }</c>
+		/// —— 放在效果列表**第一位**，引擎先扫它决定整串效果要跑几遍。
+		/// </summary>
+		public const string RepeatOnDeathResistance = "repeatOnDeathResistance";
 	}
 
 	/// <summary>作用目标常量</summary>

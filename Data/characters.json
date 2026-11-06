@@ -84,6 +84,29 @@
             "defenseCardId": "thais_defense",
             "specialCardIds": ["thais_special3", "thais_special", "thais_special2"],
             "ultimateSkillId": "thais_ultimate"
+        },
+        {
+            "characterId": "faint",
+            "name": "菲茵特",
+            "nameEn": "Faint",
+            "race": "flesh",
+            "archetype": "tank",
+            "baseHealth": 30,
+            "baseEnergy": 2,
+            "baseDrawCount": 2,
+            "baseAttack": 80,
+            "baseDefense": 124,
+            "baseConstitution": 104,
+            "baseCritRate": 5,
+            "baseCritDamage": 50,
+            "baseRageReturn": 0,
+            "baseBlackMarkDrop": 3.6,
+            "baseDeathResistance": 33.6,
+            "baseSilverKeyCharge": 15,
+            "attackCardId": "faint_attack",
+            "defenseCardId": "faint_defense",
+            "specialCardIds": ["faint_special3", "faint_special", "faint_special2"],
+            "ultimateSkillId": "faint_ultimate"
         }
     ]
 }

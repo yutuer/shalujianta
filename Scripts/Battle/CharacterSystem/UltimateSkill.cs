@@ -76,6 +76,42 @@ public partial class UltimateSkill : Resource, ICardLevelable
     public int EnergyGain;
 
     /// <summary>
+    /// **队伍死亡抵抗加成**（%）—— 菲茵特「星之摇篮」。
+    ///
+    /// wiki 原文：「若{{词条|死亡抵抗}}不足 200% + x%，则 +100%」（1 级）
+    ///            「若{{词条|死亡抵抗}}不足 300% + x%，则 +150%」（6 级）
+    /// → 加成值 = 100 + 10×(等级-1)（1 级 100 / 6 级 150）。
+    ///
+    /// ⚠️ **x% = 菲茵特自己的死亡抵抗 × 2%**（wiki 天赋1「次生襁褓」：
+    ///    「「星之摇篮」的死亡抵抗上限 +2%」）→ 上限在运行时算，见 <see cref="UltimateExecutor"/>。
+    /// </summary>
+    [Export]
+    public int DeathResistanceGain;
+
+    /// <summary>死亡抵抗加成的每级增量（10 → 1 级 100 / 6 级 150）</summary>
+    [Export]
+    public int DeathResistanceGainPerLevel;
+
+    /// <summary>
+    /// **队伍死亡抵抗上限**（%）—— 「若队伍死亡抵抗不足 上限 + x%，则 +加成」。
+    ///
+    /// wiki：1 级 200% / 6 级 300% → 基准 200 + 20×(等级-1)。
+    /// </summary>
+    [Export]
+    public int DeathResistanceCap;
+
+    /// <summary>死亡抵抗上限的每级增量（20 → 1 级 200 / 6 级 300）</summary>
+    [Export]
+    public int DeathResistanceCapPerLevel;
+
+    /// <summary>
+    /// **驱散自身脆弱**（菲茵特「星之摇篮」）。
+    /// 照 wiki：「驱散自身{{词条|脆弱}}。」
+    /// </summary>
+    [Export]
+    public bool DisperseSelfVulnerable;
+
+    /// <summary>
     /// **移除所有手牌的「迟缓」状态**（珈伦「客官请慢用！」）。
     ///
     /// 照参考游戏《终末前夜 Morimens》：「移除所有手牌的 ⏱迟缓状态。」
@@ -203,6 +239,12 @@ public partial class UltimateSkill : Resource, ICardLevelable
     public int CalculatedDrawCount => CardLevelSystem.CalculateFixedValue(Level, DrawCount, DrawCountPerLevel);
 
     public int CalculatedBuffValue => CardLevelSystem.CalculateFixedValue(Level, BuffValue, BuffValuePerLevel);
+
+    /// <summary>队伍死亡抵抗加成（%）—— 1 级 100 / 6 级 150</summary>
+    public int CalculatedDeathResistanceGain => CardLevelSystem.CalculateFixedValue(Level, DeathResistanceGain, DeathResistanceGainPerLevel);
+
+    /// <summary>队伍死亡抵抗上限（%）—— 1 级 200 / 6 级 300（不含菲茵特天赋的 x%）</summary>
+    public int CalculatedDeathResistanceCap => CardLevelSystem.CalculateFixedValue(Level, DeathResistanceCap, DeathResistanceCapPerLevel);
 
     private void OnLinkedAttributeChanged()
     {

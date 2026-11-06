@@ -57,6 +57,13 @@
             "description": "造成的主动和触碰伤害降低 25%，回合结束时移除 1 层。"
         },
         {
+            "id": "exhaust",
+            "name": "衰竭",
+            "symbol": "⚡",
+            "color": "#c86bd8",
+            "description": "降低造成的主动伤害和触腕伤害。"
+        },
+        {
             "id": "slow",
             "name": "迟缓",
             "symbol": "🐌",

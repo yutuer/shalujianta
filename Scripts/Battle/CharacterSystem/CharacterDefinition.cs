@@ -353,6 +353,63 @@ public partial class CharacterDefinition : Resource
     }
 
     /// <summary>
+    /// **菲茵特**（wiki 角色页，2026-11-07 抓取）—— 界域血肉 / 防御型。
+    ///
+    /// 属性口径（与珊 / 泰旖丝一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 104 / 攻击 80 / 防御 124
+    ///   （⚠️ 菲茵特有「内在灵格限定」体质13 / 攻击10 / 防御16 —— 按主人 2026-11-01 拍板
+    ///   **只取 wiki 60 级 0 命裸值**，内在灵格不叠加）
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   黑印掉落 3.6 / 死亡抵抗 33.6（通用值其余 7 项：暴击率5 / 暴击伤害50 /
+    ///   界域精通0 / 伤害强效0 / 基础狂气100 / 狂气回充等级0 / 银钥充能等级15）
+    ///
+    /// ⚠️ wiki 上**没有**生命 / 能量 / 抽牌三项 → 暂用 wiki 系角色默认值 30 / 2 / 2。
+    ///
+    /// 定位**防御型**（wiki「唤醒体类型=防御型」）→ Tank → 三分类显示「防御型」。
+    /// 界域**血肉**（wiki「|界域=血肉」）→ Race = Flesh（与泰旖丝同界域）。
+    ///
+    /// 卡组：打击 + 防御 + 无边星彩（灵知觉醒）/ 养分汲取（技能1右）/ 幼芽萌生（技能2左）；
+    /// 狂气爆发「星之摇篮」。
+    ///
+    /// ⚠️ **专属卡顺序 = 显示顺序**：打击(1) / 防御(2) / **灵知觉醒卡(3)** / 技能卡1(4) / 技能卡2(5)。
+    /// → 所以 `specialCardIds[0]` **恒为灵知觉醒卡**（`tools/check-card-data.ps1` 有规则守着）。
+    /// </summary>
+    public static CharacterDefinition CreateFaint()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "faint",
+            Name = "菲茵特",
+            NameEn = "Faint",
+            // 界域=血肉（wiki 角色页「|界域=血肉」）
+            Race = CharacterRace.Flesh,
+            // 防御型（wiki「唤醒体类型=防御型」）
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 80,
+            BaseDefense = 124,
+            BaseConstitution = 104,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            BaseRageReturn = 0f,
+            BaseSilverKeyCharge = 15f,
+            BaseMaxRage = 100,
+            // 黑印掉落 3.6% / 死亡抵抗 33.6%（wiki 升格5 原值，小数）→ 面板显示 3.6 / 33.6
+            BaseBlackMarkDrop = 3.6f,
+            BaseDeathResistance = 33.6f,
+            AttackCardId = "faint_attack",
+            DefenseCardId = "faint_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "faint_special3", "faint_special", "faint_special2" },
+            UltimateSkillId = "faint_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
     /// **可玩角色**清单（卡组齐全的那些）。
     ///
     /// 为什么单独列一份：<see cref="GetAllCharacters"/> 里还有 12 个星座 BOSS ——
@@ -383,6 +440,7 @@ public partial class CharacterDefinition : Resource
             CreateJialun(),
             CreateSanga(),
             CreateThais(),
+            CreateFaint(),
             CreateMu(),
             CreateAldebaran(),
             CreateSaga(),

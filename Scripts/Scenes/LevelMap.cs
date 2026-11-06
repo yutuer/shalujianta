@@ -305,6 +305,12 @@ namespace FishEatFish.Scenes
             }
 
             GlobalData.CurrentMap = map;
+
+            // ⚠️ **换地图 = 换新调查**（D66）——
+            // 死亡抵抗的「触发乘区 / 获得乘区 / 累计加成」是「持续到调查结束」的存量，
+            // 换了地图就是新的一轮调查 → 全部清零。
+            GlobalData.DeathResistance.ResetForNewInvestigation();
+
             GetTree().ChangeSceneToFile("res://Scenes/CharacterSelection.tscn");
         }
 

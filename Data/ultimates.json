@@ -223,6 +223,33 @@
                 "把 1 张非衍生指令卡的 2 份原始复制置入手中（消耗 + 虚无 + 算力 -1）（缺复制卡效果）",
                 "启灵2「混沌之种」：本次置入手中的原始复制算力消耗 -2（本项目无启灵系统）"
             ]
+        },
+        {
+            "skillId": "faint_ultimate",
+            "characterId": "faint",
+            "name": "星之摇篮",
+            "nameEn": "Cradle of Stars",
+            "description": "吞噬：将 1 张算力消耗 0 的「幼芽萌生」置入手牌并附加消耗。虚弱全体敌方 2 回合。获得攻击力×120% 层反击。若队伍死亡抵抗不足 {deathResistanceCap}%，则队伍死亡抵抗 +{deathResistanceGain}%。驱散自身脆弱。",
+            "rageCost": 100,
+            "applyDebuffName": "weak",
+            "buffValue": 5,
+            "buffValuePerLevel": 0,
+            "buffDuration": 2,
+            "isAreaAttack": true,
+            "addCardToHandId": "faint_special2",
+            "addCardToHandCount": 1,
+            "addCardToHandOwnerCharacterId": "faint",
+            "deathResistanceGain": 100,
+            "deathResistanceGainPerLevel": 10,
+            "deathResistanceCap": 200,
+            "deathResistanceCapPerLevel": 20,
+            "disperseSelfVulnerable": true,
+            "pendingMechanics": [
+                "获得攻击力×120% 层反击（缺反击机制；wiki 天赋1「次生襁褓」的「每 1% 死亡抵抗 → 反击 +0.2%」也算不进）",
+                "虚弱全体敌方 2 回合 —— 官方虚弱是「造成的主动和触腕伤害降低 25%」，本项目用「攻击力降低 N 点」的近似口径",
+                "置入手中的「幼芽萌生」应是「算力消耗 0」的版本并「附加消耗」（本项目置入的是普通幼芽萌生，算力消耗 3，无消耗标记）",
+                "启灵7「破茧而生的新芽」：超限爆发使所有敌人临时降低等同于防御力 40% 的力量（随星之摇篮等级提升，本项目无启灵系统）"
+            ]
         }
     ]
 }

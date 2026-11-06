@@ -133,6 +133,8 @@ $PlayablePalette = [ordered]@{
     # 珊 / 泰旖丝（wiki 角色，2026-11-01 新增）—— 人形，用头盔冠饰而不是动物特征
     'sanga'   = @{ Main = '#2F6E8A'; Accent = '#9EE0F0'; Feature = 'crest10' }
     'thais'   = @{ Main = '#8A3A46'; Accent = '#F0C888'; Feature = 'crest11' }
+    # 菲茵特（Faint）—— 血肉界域 / 摇篮 / 嫩芽 / 防御型（wiki 角色，2026-11-07 新增）
+    'faint'   = @{ Main = '#557A4A'; Accent = '#C6F0A8'; Feature = 'crest12' }
 }
 
 # 12 星座 BOSS：角色是「人」，头像用头盔 + 冠饰，不套动物特征。
@@ -373,6 +375,8 @@ function Get-CrestFeature {
         'crest8' { @('<path d="M34 34 C34 14 52 8 64 22 C76 8 94 14 94 34" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />' -f $Accent) }
         'crest9' { @('<path d="M46 30 L64 10 L82 30 M46 30 H82" fill="none" stroke="{0}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />' -f $Accent) }
         'crest10' { @('<circle cx="64" cy="20" r="11" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent) }
+        # 菲茵特：嫩芽（wiki「没有种子不渴望着发芽」）
+        'crest12' { @('<path d="M64 36 L64 20" fill="none" stroke="{0}" stroke-width="5" stroke-linecap="round" />','<path d="M64 26 C54 24 48 16 50 10 C59 12 64 18 64 24 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />','<path d="M64 30 C74 28 80 20 78 14 C69 16 64 22 64 28 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />') }
         default { @('<path d="M44 32 C44 12 60 6 64 20 C68 6 84 12 84 32" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />' -f $Accent) }
     }
 }

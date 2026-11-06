@@ -109,6 +109,13 @@ public class UltimateLoader
         ultimate.DrawCountPerLevel = GetIntValue(dict, "drawCountPerLevel", 0);
         ultimate.BuffValuePerLevel = GetIntValue(dict, "buffValuePerLevel", 0);
 
+        // 队伍死亡抵抗（菲茵特「星之摇篮」）
+        ultimate.DeathResistanceGain = GetIntValue(dict, "deathResistanceGain", 0);
+        ultimate.DeathResistanceGainPerLevel = GetIntValue(dict, "deathResistanceGainPerLevel", 0);
+        ultimate.DeathResistanceCap = GetIntValue(dict, "deathResistanceCap", 0);
+        ultimate.DeathResistanceCapPerLevel = GetIntValue(dict, "deathResistanceCapPerLevel", 0);
+        ultimate.DisperseSelfVulnerable = GetBoolValue(dict, "disperseSelfVulnerable");
+
         // 伤害百分比口径（> 0 时按「角色攻击力 × 百分比」算）
         ultimate.DamagePercent = GetIntValue(dict, "damagePercent", 0);
 

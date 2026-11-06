@@ -10,9 +10,9 @@
 |---|---|
 | 引擎 | Godot 4.6.1-stable **mono**（.NET 8.0 / `net8.0`） |
 | 仓库 | <https://github.com/yutuer/shalujianta.git>（分支 `main`） |
-| 规模 | 172 个 C# 脚本 / 31,462 行（非空行） · 58 个 `.tscn` · 16 张 JSON 数据表 |
+| 规模 | 173 个 C# 脚本 / 31,968 行（非空行） · 58 个 `.tscn` · 16 张 JSON 数据表 |
 | 原始需求 | [`docs/原始策划案.md`](docs/原始策划案.md) |
-| 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 68 个条目 |
+| 当前迭代 | [`docs/开发计划.md`](docs/开发计划.md) · 69 个条目 |
 
 ---
 
@@ -129,7 +129,7 @@ FishEatFish/
 │  ├─ MainMenu / LevelMap / CharacterSelection / CharacterGallery / BattleScene / HexMapScene
 │  ├─ Dev/           DevScenario.tscn —— 调试场景准备器入口
 │  └─ UI/           50 个 UI 组件场景
-├─ Scripts/         172 个 .cs，按职责分层
+├─ Scripts/         173 个 .cs，按职责分层
 │  ├─ Scenes/       场景驱动（BattleManager 是战斗主循环核心）
 │  ├─ Dev/          DevScenario.cs —— 调试场景准备器逻辑
 │  ├─ Battle/       战斗核心
@@ -253,7 +253,7 @@ MainMenu
 4. **改完代码必须 `dotnet build` 通过**再让用户测
 5. **六边形坐标常量见 §3.3**
 
-> 这 5 条之外，历史上踩过的 119 个坑（`.tscn` 漏绑脚本、无头环境模拟点击失效、git push 上传大文件、PowerShell 编码……）都记在 [`docs/踩坑记录.md`](docs/踩坑记录.md)。
+> 这 5 条之外，历史上踩过的 122 个坑（`.tscn` 漏绑脚本、无头环境模拟点击失效、git push 上传大文件、PowerShell 编码……）都记在 [`docs/踩坑记录.md`](docs/踩坑记录.md)。
 
 ---
 
@@ -291,7 +291,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 ## 6. 已知陷阱与经验
 
-完整的 119 条记在 **[`docs/踩坑记录.md`](docs/踩坑记录.md)**，改代码前建议扫一眼。最要命的几条：
+完整的 122 条记在 **[`docs/踩坑记录.md`](docs/踩坑记录.md)**，改代码前建议扫一眼。最要命的几条：
 
 | 坑 | 一句话 | 详见 |
 |---|---|---|
@@ -515,7 +515,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 |---|---|
 | **本文** | 主干：现状 / 架构 / 进度 / 下一步 |
 | `.trae/rules/project_rules.md` | **开发铁律**（第一准则、UI 规范、日志规范、六边形常量） |
-| `docs/开发计划.md` | **迭代执行计划**：需求→开发→验证三步流程 + 68 个条目 + 重要度/难度排序 + 参考图索引 |
+| `docs/开发计划.md` | **迭代执行计划**：需求→开发→验证三步流程 + 69 个条目 + 重要度/难度排序 + 参考图索引 |
 | `tasks.md` | 134 行任务清单 + 依赖 + 状态 |
 | `GameDesign.md` | 完整策划案 18 章 + 未完成功能清单 |
 | `checklist.md` | 12 大类验收清单 |
@@ -524,7 +524,7 @@ powershell -ExecutionPolicy Bypass -File tools\check-task-stats.ps1
 
 | 路径 | 内容 |
 |---|---|
-| `docs/踩坑记录.md` | **119 条真实踩坑与规矩**（改代码前扫一眼） |
+| `docs/踩坑记录.md` | **122 条真实踩坑与规矩**（改代码前扫一眼） |
 | `docs/卡牌设计.md` | **卡牌设计总表** —— 16 角色 × 5 张卡的现状盘点 + 等级数值口径 + 截图规格 + 待填总表 |
 | `docs/新角色接入指南.md` | **造一个新可玩角色的完整清单** —— 主人要提供哪些截图（照波吕克斯那套的文件名）+ 我要改哪 5 处 + 校验与实测清单 |
 | `docs/战斗场景改造计划.md` | **战斗场景改造计划**（🟢 P0~P2 已实施）—— 参考图对比 + 分批排期 + 美术缺口 |

@@ -443,6 +443,27 @@ $Characters['thais'] = @{
     Emblem = 'diamond'
 }
 
+# 菲茵特（Faint）—— 血肉界域 / 摇篮 / 嫩芽 / 防御型（wiki 角色，2026-11-07 新增）
+$Characters['faint'] = @{
+    Main = '#557A4A'; Accent = '#C6F0A8'
+    Sh = 66; Wa = 50; Hp = 58
+    Behind = @(
+        '<path d="M52 268 C44 216 62 176 100 162" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M204 268 C212 216 194 176 156 162" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M128 268 L128 152" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M128 214 C106 202 96 182 102 166" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />',
+        '<path d="M128 234 C150 222 160 202 154 186" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="58" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="58" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M128 96 C110 80 116 62 128 74 C140 62 146 80 128 96 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'diamond'
+}
+
 
 
 

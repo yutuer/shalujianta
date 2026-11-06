@@ -837,6 +837,185 @@
                     "description": "若手牌中存在「胚胎」，消耗 1 张并触发后续效果。"
                 }
             ]
+        },
+        {
+            "cardId": "faint_attack",
+            "characterId": "faint",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "启灵1「双生之星」：造成 2 次伤害，获得 50% 伤害的临时反击（本项目无启灵系统）"
+            ]
+        },
+        {
+            "cardId": "faint_defense",
+            "characterId": "faint",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "启灵2「枯萎之歌」：护盾提高 25，获得与护盾等量的反击（本项目无启灵系统）"
+            ]
+        },
+        {
+            "cardId": "faint_special3",
+            "characterId": "faint",
+            "name": "无边星彩",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "菲茵特获得 25 点狂气。⚠灵知觉醒：获得攻击力×60% 层反击。本场战斗死亡抵抗触发衰减率从 50% 降低为 45%。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "deathResistanceDecay",
+                    "value": 45
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "灵知觉醒授予：获得攻击力×60% 层反击（缺反击效果）",
+                "灵知觉醒授予：打出卡牌时偷取所有敌人攻击力×5% 点临时力量（缺偷取机制）",
+                "灵知觉醒授予：回合结束时造成等同于 50% 自身反击的固定伤害（缺反击状态与回合末钩子）",
+                "效果 4 是「真实伤害」而非「固定伤害」（本项目无真实伤害通道）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "faint_special",
+            "characterId": "faint",
+            "name": "养分汲取",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "affixes": [
+                "exhaust"
+            ],
+            "bodyAffixMarks": [
+                "exhaust"
+            ],
+            "description": "获得攻击力×12% 点力量。使所有敌人临时降低防御力×8% 点衰竭。",
+            "effects": [
+                {
+                    "type": "debuff",
+                    "debuff": "weak",
+                    "value": 5,
+                    "duration": 2,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "获得攻击力×12% 点力量（buff 效果目前只能挂在敌人身上，不能给自己）",
+                "「使所有敌人临时降低防御力×8% 点衰竭」—— 官方词条「衰竭」是「降低造成的主动伤害和触腕伤害」，本项目没有衰竭减益，用已有的「虚弱」（降低攻击力 N 点）近似"
+            ],
+            "affixNotes": [
+                {
+                    "id": "exhaust",
+                    "name": "衰竭",
+                    "description": "降低造成的主动伤害和触腕伤害。"
+                }
+            ]
+        },
+        {
+            "cardId": "faint_special2",
+            "characterId": "faint",
+            "name": "幼芽萌生",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "isRetain": true,
+            "affixes": [
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "retain"
+            ],
+            "description": "获得防御力×15% 点护盾，回复体质×15% 点生命。若在本场战斗中触发过死亡抵抗，额外生效 1 次。⚠保留。",
+            "effects": [
+                {
+                    "type": "repeatOnDeathResistance",
+                    "count": 2
+                },
+                {
+                    "type": "shield",
+                    "percent": 15
+                },
+                {
+                    "type": "heal",
+                    "percent": 15
+                },
+                {
+                    "type": "retain"
+                }
+            ],
+            "affixNotes": [
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
         }
     ]
 }

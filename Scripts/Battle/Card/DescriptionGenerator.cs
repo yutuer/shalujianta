@@ -393,6 +393,20 @@ public static class DescriptionGenerator
             text = text.Replace("{poison}", layers.ToString()).Replace("{debuff}", layers.ToString());
         }
 
+        // 队伍死亡抵抗（菲茵特「星之摇篮」）
+        if (text.Contains("{deathResistanceGain}"))
+        {
+            text = text.Replace("{deathResistanceGain}", ultimate.CalculatedDeathResistanceGain.ToString());
+        }
+        if (text.Contains("{deathResistanceCap}"))
+        {
+            // 上限 = 等级基准 + 菲茵特天赋1「次生襁褓」的 x%（她每 1% 死亡抵抗 → 上限 +2%）
+            CharacterAttributes owner = ultimate.LinkedAttributes ?? attributes;
+            float ownDeathResistance = owner != null ? owner.DeathResistance : 0f;
+            float cap = ultimate.CalculatedDeathResistanceCap + ownDeathResistance * 2f;
+            text = text.Replace("{deathResistanceCap}", cap.ToString("F1"));
+        }
+
         return text;
     }
 

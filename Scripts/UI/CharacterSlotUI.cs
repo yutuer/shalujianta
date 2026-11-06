@@ -71,6 +71,25 @@ public partial class CharacterSlotUI : Panel
             _avatarRect.MouseFilter = MouseFilterEnum.Ignore;
         }
 
+        // ⚠️ **AvatarBox 容器本身也要 Ignore**（2026-11-07 D67 实测发现）。
+        //
+        // 症状：战斗界面**点头像放不出狂气爆发**。
+        // 原因：AvatarBox 是 Panel/VBox 容器，mouse_filter 默认 STOP →
+        //       它把鼠标事件吃掉，事件**不会冒泡到槽位本体**（CharacterSlotUI），
+        //       于是槽位的 _GuiInput 收不到点击。
+        //       （原来只把 AvatarRect / RageRing 设成 Ignore，漏了它们的**父容器** AvatarBox。）
+        //
+        // 后果：玩家只能点到头像**下方**的名字那一条才能释放狂气爆发。
+        var avatarBox = GetNodeOrNull<Control>("VBoxContainer/AvatarBox");
+        if (avatarBox == null)
+        {
+            GD.PrintErr("[CharacterSlotUI] 未找到节点：VBoxContainer/AvatarBox");
+        }
+        else
+        {
+            avatarBox.MouseFilter = MouseFilterEnum.Ignore;
+        }
+
         if (_nameLabel == null)
         {
             GD.PrintErr("[CharacterSlotUI] 未找到节点：VBoxContainer/NameLabel");
