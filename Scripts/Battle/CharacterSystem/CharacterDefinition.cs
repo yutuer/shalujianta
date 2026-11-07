@@ -410,8 +410,64 @@ public partial class CharacterDefinition : Resource
     }
 
     /// <summary>
-    /// **可玩角色**清单（卡组齐全的那些）。
+    /// 诺缔拉（Nautila）—— **可玩角色**（灰机 wiki 角色页「诺缔拉」，2026-11-07 主人指定重现）。
     ///
+    /// 属性口径（与菲茵特一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **152** / 攻击 **92** / 防御 **160**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   界域精通 **24** / 伤害强效 **4.8%**
+    ///   （通用值其余 7 项：暴击率5 / 暴击伤害50 / 基础狂气100 / 狂气回充0 /
+    ///    银钥充能15 / 黑印掉落0 / 死亡抵抗0）
+    ///
+    /// 界域 = **混沌**（wiki「|界域=混沌」）、定位 **防御型**（wiki「唤醒体类型=防御型」）。
+    ///
+    /// 卡组：打击 + 防御 + **维修大师（灵知觉醒）** / 高热区禁入 / 短期记忆；
+    /// 狂气爆发「整装待发」。
+    ///
+    /// ⚠️ **她是「反击」机制的第一个角色** ——
+    /// 反击层数是**角色身上的 buff**（不是卡上的状态），
+    /// 受主动伤害时对伤害来源造成等量层数的**纯粹伤害**
+    /// （详见 <c>CharacterPosition.CounterStacks</c> 与 <c>Player.TriggerCounter</c>）。
+    /// </summary>
+    public static CharacterDefinition CreateNuodila()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "nuodila",
+            Name = "诺缔拉",
+            NameEn = "Nautila",
+            // 界域=混沌（wiki 角色页「|界域=混沌」）
+            Race = CharacterRace.Chaos,
+            // 防御型（wiki「唤醒体类型=防御型」）
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 92,
+            BaseDefense = 160,
+            BaseConstitution = 152,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            // 界域精通 24 / 伤害强效 4.8%（wiki 升格5 原值，小数）→ 面板显示 24.0 / 4.8%
+            BaseDomainMastery = 24f,
+            BaseDamageBonus = 4.8f,
+            BaseRageReturn = 0f,
+            BaseSilverKeyCharge = 15f,
+            BaseMaxRage = 100,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            AttackCardId = "nuodila_attack",
+            DefenseCardId = "nuodila_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "nuodila_special3", "nuodila_special", "nuodila_special2" },
+            UltimateSkillId = "nuodila_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **可玩角色**清单（卡组齐全的那些）。
     /// 为什么单独列一份：<see cref="GetAllCharacters"/> 里还有 12 个星座 BOSS ——
     /// 它们**不使用卡牌**（BOSS 卡已删），卡组是空的，进「角色一览」只会显示成空壳。
     /// 判定口径：该角色的打击卡 / 防御卡在 <c>character_cards.json</c> 里都能查到。
@@ -441,6 +497,7 @@ public partial class CharacterDefinition : Resource
             CreateSanga(),
             CreateThais(),
             CreateFaint(),
+            CreateNuodila(),
             CreateMu(),
             CreateAldebaran(),
             CreateSaga(),

@@ -135,6 +135,8 @@ $PlayablePalette = [ordered]@{
     'thais'   = @{ Main = '#8A3A46'; Accent = '#F0C888'; Feature = 'crest11' }
     # 菲茵特（Faint）—— 血肉界域 / 摇篮 / 嫩芽 / 防御型（wiki 角色，2026-11-07 新增）
     'faint'   = @{ Main = '#557A4A'; Accent = '#C6F0A8'; Feature = 'crest12' }
+    # 诺缔拉（Nautila）—— 混沌界域 / 机械师 / 焊接 / 防御型（wiki 角色，2026-11-07 新增）
+    'nuodila' = @{ Main = '#46596B'; Accent = '#FFB65C'; Feature = 'crest13' }
 }
 
 # 12 星座 BOSS：角色是「人」，头像用头盔 + 冠饰，不套动物特征。
@@ -377,6 +379,8 @@ function Get-CrestFeature {
         'crest10' { @('<circle cx="64" cy="20" r="11" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent) }
         # 菲茵特：嫩芽（wiki「没有种子不渴望着发芽」）
         'crest12' { @('<path d="M64 36 L64 20" fill="none" stroke="{0}" stroke-width="5" stroke-linecap="round" />','<path d="M64 26 C54 24 48 16 50 10 C59 12 64 18 64 24 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />','<path d="M64 30 C74 28 80 20 78 14 C69 16 64 22 64 28 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />') }
+        # 诺缔拉：扳手（wiki「没有什么是焊接补不好的」）—— 机械师
+        'crest13' { @('<path d="M52 12 L74 34" fill="none" stroke="{0}" stroke-width="7" stroke-linecap="round" />','<path d="M44 20 A10 10 0 0 0 44 36 L52 36 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />','<path d="M68 30 L82 44" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />') }
         default { @('<path d="M44 32 C44 12 60 6 64 20 C68 6 84 12 84 32" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />' -f $Accent) }
     }
 }

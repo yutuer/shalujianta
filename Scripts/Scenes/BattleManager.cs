@@ -542,6 +542,11 @@ namespace FishEatFish.Scenes
 			// 死亡抵抗的判定点（Player.TakeDamage）才知道该算谁的总和。
 			player.TeamCharacters = attacker.Characters;
 
+			// ⚠️ **D68 反击**：反击是**角色身上的 buff**（层数存在 CharacterPosition 上），
+			// 玩家是整队合并成的一个 Player → 必须把队伍的角色位置也挂上去，
+			// 队伍受一次伤害时才知道该算哪些角色的反击总和。
+			player.TeamPositions = characterPositions;
+
 			GD.Print($"[BattleManager] 使用Attacker属性: HP={player.MaxHealth}, Energy={player.MaxEnergy}, Draw={player.DrawCount}");
 		}
 		else
@@ -782,6 +787,10 @@ namespace FishEatFish.Scenes
 			if (pos == null) continue;
 			StatusEffect sinMark = pos.GetSinMarkStatus();
 			if (sinMark != null) list.Add(sinMark);
+
+			// ⚠️ **D68 反击**：和罪印一样挂在**角色**身上 → 从角色位置取
+			StatusEffect counter = pos.GetCounterStatus();
+			if (counter != null) list.Add(counter);
 		}
 
 		return list;

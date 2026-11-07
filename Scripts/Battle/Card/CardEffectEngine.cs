@@ -192,6 +192,12 @@ namespace FishEatFish.Battle.Card
 				case CardEffectType.RepeatOnDeathResistance:
 					// 重复标记由外层 GetRepeatCount 处理，这里不做事
 					break;
+				case CardEffectType.Counter:
+					ExecuteCounter(card, effect, ctx);
+					break;
+				case CardEffectType.TriggerCounter:
+					ExecuteTriggerCounter(card, effect, ctx);
+					break;
 				default:
 					GD.PrintErr($"[CardEffectEngine] 未知效果类型：{effect.Type}（卡 {card.CardId}）");
 					break;
@@ -357,6 +363,84 @@ namespace FishEatFish.Battle.Card
 		}
 
 		/// <summary>
+		/// **获得反击层数**（D68，诺缔拉「打击」/「高热区禁入」/ 菲茵特「无边星彩」）。
+		///
+		/// wiki 原文：「获得 <font color=#b75a64>[攻击力*30%]</font> 层{{词条|反击}}。」
+		/// → 层数 = **攻击力 × 百分比 × 等级系数**（跟伤害/护盾百分比同一套缩放）。
+		///
+		/// ⚠️ 存在**角色身上**（不是卡上）→ 洗回抽牌堆 / 被弃掉都不影响。
+		/// </summary>
+		private static void ExecuteCounter(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (ctx.RageTarget == null)
+			{
+				GD.PrintErr($"[CardEffectEngine] 反击效果没有归属角色：{card.CardId}");
+				return;
+			}
+
+			if (effect.Percent <= 0) return;
+
+			int attack = ctx.Attributes?.Attack ?? 0;
+			if (attack <= 0) return;
+
+			// ⚠️ 跟伤害/护盾同一套：先转 double 再乘，避免 float 精度少一格（踩坑 §107 / §114）
+			float stacks = (float)((double)attack * effect.Percent / 100.0 * CardLevelSystem.CalculateCoefficient(card.Level));
+			if (stacks <= 0f) return;
+
+			// ⚠ 用**实际获得**的层数写日志（已含「施加的反击提高 50%」倍率），别用未乘倍率的原始值
+			float gained = ctx.RageTarget.AddCounter(stacks, effect.Temporary);
+			Log(ctx, $"获得{gained:F1}层反击", LogType.System);
+		}
+
+		/// <summary>
+		/// **触发反击**（D68，诺缔拉「整装待发」：「对所有敌人触发 100% {{词条|反击}}」）。
+		///
+		/// → 对每个目标造成「队伍当前总反击 × 百分比」的**纯粹伤害**。
+		/// </summary>
+		private static void ExecuteTriggerCounter(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (ctx.Player == null) return;
+			if (effect.Percent <= 0) return;
+
+			float teamCounter = ctx.Player.GetTeamCounter();
+			if (teamCounter <= 0f)
+			{
+				GD.Print($"[CardEffectEngine] {card.Name} 触发反击，但队伍当前没有反击层数");
+				return;
+			}
+
+			float damage = teamCounter * effect.Percent / 100f;
+			int counterDamage = Mathf.CeilToInt(damage);
+			if (counterDamage <= 0) return;
+
+			List<Enemy> targets = new List<Enemy>();
+			if (effect.Target == CardEffectTarget.AllEnemies)
+			{
+				foreach (Enemy enemy in ctx.Enemies)
+				{
+					if (enemy == null || enemy.IsDead) continue;
+					targets.Add(enemy);
+				}
+			}
+			else
+			{
+				Enemy single = ctx.ResolveEnemyTarget?.Invoke(card);
+				if (single != null && !single.IsDead) targets.Add(single);
+			}
+
+			if (targets.Count == 0) return;
+
+			GD.Print($"[CardEffectEngine] {card.Name} 触发反击：队伍总反击 {teamCounter:F1} 层 × {effect.Percent}% → {counterDamage} 点纯粹伤害（{targets.Count} 个目标）");
+
+			foreach (Enemy target in targets)
+			{
+				target.TakePureDamage(counterDamage);
+			}
+
+			Log(ctx, $"对所有敌人触发{counterDamage}点反击伤害", LogType.Damage);
+		}
+
+		/// <summary>
 		/// **出血百分比**：
 		/// 需要觉醒的 → 取觉醒授予的百分比（觉醒没授予这张卡就是 0 = 不施加）；
 		/// 不需要觉醒的 → 取效果自身的 <c>percentOfDamage</c>。
@@ -408,7 +492,9 @@ namespace FishEatFish.Battle.Card
 		/// <summary>护盾：百分比（防御力×N%）或固定值</summary>
 		private static void ExecuteShield(Card card, CardEffect effect, CardEffectContext ctx)
 		{
-			int shield = CardEffectCalculator.CalculateShield(card, effect, ctx.Attributes);
+			// ⚠️ 「施加的护盾提高 50%」（诺缔拉灵知觉醒）→ 倍率从**出牌角色**那里取
+			float gainMultiplier = ctx.RageTarget != null ? ctx.RageTarget.ShieldGainMultiplier : 1.0f;
+			int shield = CardEffectCalculator.CalculateShield(card, effect, ctx.Attributes, gainMultiplier);
 			if (shield <= 0 || ctx.Player == null) return;
 
 			ctx.Player.AddShield(shield);
@@ -598,7 +684,9 @@ namespace FishEatFish.Battle.Card
 				effect.AwakeningTriggerCardId,
 				card.CardId,
 				effect.AwakeningBleedCardId,
-				effect.AwakeningBleedPercent);
+				effect.AwakeningBleedPercent,
+				effect.AwakeningCounterPercent,
+				effect.AwakeningShieldPercent);
 
 			// 登记「弃牌阶段后」的层数效果（罪印）
 			// ⚠️ 重复打出会走到「已登记过」的分支 → 只更新数值，不新增条目（不会翻倍结算）
@@ -688,7 +776,7 @@ namespace FishEatFish.Battle.Card
 		/// ⚠️ 卡上有**保留叠加**时（珈伦「静默守望」）再乘 2^层数 ——
 		/// 参考游戏：「回合结束时若在手中，算力消耗提高 1，回复生命和护盾翻倍。最多叠加 2 次。」
 		/// </summary>
-		public static int CalculateShield(Card card, CardEffect effect, CharacterAttributes attributes)
+		public static int CalculateShield(Card card, CardEffect effect, CharacterAttributes attributes, float gainMultiplier = 1.0f)
 		{
 			if (card == null || effect == null) return 0;
 
@@ -705,6 +793,13 @@ namespace FishEatFish.Battle.Card
 			else
 			{
 				return 0;
+			}
+
+			// ⚠️ **「施加的护盾提高 50%」**（诺缔拉灵知觉醒「维修大师」）
+			//   → 倍率作用在**这一次施加**上（觉醒之前的不追溯）。
+			if (gainMultiplier > 0f && gainMultiplier != 1f)
+			{
+				value = Mathf.CeilToInt(value * gainMultiplier);
 			}
 
 			return value * GetRetainStackMultiplier(card);

@@ -243,12 +243,33 @@
             "deathResistanceGainPerLevel": 10,
             "deathResistanceCap": 200,
             "deathResistanceCapPerLevel": 20,
+            "counterGainPercent": 60,
             "disperseSelfVulnerable": true,
             "pendingMechanics": [
-                "获得攻击力×120% 层反击（缺反击机制；wiki 天赋1「次生襁褓」的「每 1% 死亡抵抗 → 反击 +0.2%」也算不进）",
+                "wiki 天赋1「次生襁褓」：「菲茵特每拥有 1% 死亡抵抗属性，就使「星之摇篮」和「无边星彩」获得的反击提高 0.2%」—— 本项目的反击不区分来源，本天赋暂未落地",
                 "虚弱全体敌方 2 回合 —— 官方虚弱是「造成的主动和触腕伤害降低 25%」，本项目用「攻击力降低 N 点」的近似口径",
                 "置入手中的「幼芽萌生」应是「算力消耗 0」的版本并「附加消耗」（本项目置入的是普通幼芽萌生，算力消耗 3，无消耗标记）",
                 "启灵7「破茧而生的新芽」：超限爆发使所有敌人临时降低等同于防御力 40% 的力量（随星之摇篮等级提升，本项目无启灵系统）"
+            ]
+        },
+        {
+            "skillId": "nuodila_ultimate",
+            "characterId": "nuodila",
+            "name": "整装待发",
+            "nameEn": "Ready to Depart",
+            "rageCost": 100,
+            "shield": 160,
+            "shieldBaseCoefficient": 0.15,
+            "shieldBonusPercent": 50,
+            "counterGainPercent": 25,
+            "counterTriggerPercent": 100,
+            "isAreaAttack": true,
+            "description": "获得防御力×15% 点护盾和攻击力×25% 层反击。使当前的护盾提高 50%。对所有敌人触发 100% 反击。",
+            "pendingMechanics": [
+                "天赋1「诺缔拉每拥有 1 点界域精通，「整装待发」造成的反击就提高 0.25%」—— 本项目的反击不区分来源（受击触发 vs 狂气爆发触发），该天赋暂未落地",
+                "启灵3：对所有敌人触发 150% 反击；自身免疫脆弱、虚弱、易伤 1 回合（本项目无启灵系统，也没有「自身免疫」减益机制）",
+                "启灵7「引擎启动！」：超限爆发提高当前护盾 50% 的效果变为无视护盾上限，对所有敌人造成的固定伤害提高为反击的 500%（本项目无启灵系统、无超限爆发）",
+                "启灵15「王牌机械师」：灵知觉醒「维修大师」获得强化，所有唤醒体固定反击提高 30%（本项目无启灵系统）"
             ]
         }
     ]

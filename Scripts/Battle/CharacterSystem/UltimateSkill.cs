@@ -112,6 +112,31 @@ public partial class UltimateSkill : Resource, ICardLevelable
     public bool DisperseSelfVulnerable;
 
     /// <summary>
+    /// **获得反击层数**（攻击力百分比）—— 诺缔拉「整装待发」/ 菲茵特「星之摇篮」。
+    ///
+    /// wiki 原文：「获得 <font color=#b75a64>[攻击力*50%]</font> 层{{词条|反击}}。」
+    /// → 存 **1 级口径**（6 级 wiki 值 ÷ 2，见卡牌百分比的统一口径）。
+    /// </summary>
+    [Export]
+    public int CounterGainPercent;
+
+    /// <summary>
+    /// **对所有敌人触发反击**（百分比）—— 诺缔拉「整装待发」：「对所有敌人触发 100% {{词条|反击}}」。
+    ///
+    /// → 对每个敌人造成「队伍当前总反击 × 百分比」的**纯粹伤害**。
+    /// </summary>
+    [Export]
+    public int CounterTriggerPercent;
+
+    /// <summary>
+    /// **使当前的护盾提高 N%**（诺缔拉「整装待发」：「使当前的护盾提高 50%」）。
+    ///
+    /// ⚠️ 是**当前护盾**（含这次新加的）整体提高，不是「新加的护盾提高」。
+    /// </summary>
+    [Export]
+    public int ShieldBonusPercent;
+
+    /// <summary>
     /// **移除所有手牌的「迟缓」状态**（珈伦「客官请慢用！」）。
     ///
     /// 照参考游戏《终末前夜 Morimens》：「移除所有手牌的 ⏱迟缓状态。」
@@ -245,6 +270,16 @@ public partial class UltimateSkill : Resource, ICardLevelable
 
     /// <summary>队伍死亡抵抗上限（%）—— 1 级 200 / 6 级 300（不含菲茵特天赋的 x%）</summary>
     public int CalculatedDeathResistanceCap => CardLevelSystem.CalculateFixedValue(Level, DeathResistanceCap, DeathResistanceCapPerLevel);
+
+    /// <summary>
+    /// **获得反击的层数**（攻击力 × 百分比 × 等级系数）——
+    /// ⚠️ 保持 **float**：反击层数是 float（踩坑 §118「字段的数值类型 = 精度上限」）。
+    /// </summary>
+    public float CalculatedCounterGain => CounterGainPercent > 0
+        ? (float)((double)(_linkedAttributes != null ? _linkedAttributes.Attack : 0)
+            * CounterGainPercent / 100.0
+            * CardLevelSystem.CalculateCoefficient(Level))
+        : 0f;
 
     private void OnLinkedAttributeChanged()
     {

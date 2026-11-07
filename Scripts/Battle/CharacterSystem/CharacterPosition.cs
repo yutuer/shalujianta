@@ -137,6 +137,120 @@ public partial class CharacterPosition : Node2D
         GD.Print($"[CharacterPosition] {Character?.Name} 获得 {amount} 层{CardStackIds.DisplayName(stackId)}（当前 {GetStack(stackId)} 层）");
     }
 
+    // ==================== 反击（诺缔拉）：挂在角色身上的 buff ====================
+
+    /// <summary>
+    /// **反击层数（永久部分）**——
+    /// 照参考游戏《终末前夜 Morimens》「反击」词条：
+    /// 「承受主动伤害时，对伤害来源造成**等量层数的纯粹伤害**。」
+    ///
+    /// ⚠️ 主人 2026-11-07 口径：「**使用了之后会有 buff 的层数**，
+    /// 根据层数来对攻击方造成反弹的伤害」
+    /// → 反击是**角色身上的 buff**（不是卡上的状态），**层数就是反弹伤害的量**。
+    ///
+    /// ⚠️ 用 **float** 不是 int —— 层数来自「攻击力×N%」（诺缔拉 6 级攻击 92 → 92×25% = 23），
+    ///    在赋值那一刻就取整会直接丢精度（踩坑 §118：字段的数值类型 = 精度上限）。
+    /// </summary>
+    public float CounterStacks { get; private set; } = 0f;
+
+    /// <summary>
+    /// **临时反击层数**（诺缔拉「高热区禁入」给的「临时反击」）。
+    ///
+    /// ⚠️ 主人 2026-11-07 拍板：**到本回合结束清除**。
+    /// </summary>
+    public float TempCounterStacks { get; private set; } = 0f;
+
+    /// <summary>
+    /// **获得反击时的倍率**（诺缔拉灵知觉醒「维修大师」：
+    /// 「诺缔拉施加的护盾和{{词条|反击}}提高 50%」→ ×1.5）。
+    ///
+    /// ⚠️ 作用在**获得的那一刻**（不是对已有层数整体放大）——
+    /// wiki 说的是「**施加的**反击提高 50%」，觉醒之前已经攒下的反击不该被追溯放大。
+    /// </summary>
+    public float CounterGainMultiplier { get; private set; } = 1.0f;
+
+    /// <summary>
+    /// **获得护盾时的倍率**（同一句觉醒描述里的另一半：「施加的护盾提高 50%」）。
+    /// </summary>
+    public float ShieldGainMultiplier { get; private set; } = 1.0f;
+
+    /// <summary>
+    /// 这个角色当前的**总反击层数**（永久 + 临时）。
+    /// 受主动伤害时用它算反弹伤害。
+    /// </summary>
+    public float TotalCounter => CounterStacks + TempCounterStacks;
+
+    /// <summary>
+    /// **加反击层数**。
+    /// </summary>
+    /// <param name="amount">层数（未乘倍率）</param>
+    /// <param name="temporary">true = 临时（回合结束清除）</param>
+    /// <returns>**实际获得**的层数（已乘「施加的反击提高 X%」倍率）—— 调用方拿它写日志，别拿未乘倍率的原始值</returns>
+    public float AddCounter(float amount, bool temporary)
+    {
+        if (amount <= 0f) return 0f;
+
+        // ⚠️ 获得时乘倍率（「施加的反击提高 50%」）
+        float finalAmount = (float)((double)amount * CounterGainMultiplier);
+        if (finalAmount <= 0f) return 0f;
+
+        if (temporary)
+        {
+            TempCounterStacks += finalAmount;
+        }
+        else
+        {
+            CounterStacks += finalAmount;
+        }
+
+        GD.Print($"[CharacterPosition] {Character?.Name} 获得 {finalAmount:F1} 层反击（{(temporary ? "临时" : "永久")}，当前总反击 {TotalCounter:F1}）");
+        return finalAmount;
+    }
+
+    /// <summary>
+    /// **清除临时反击**（回合结束时调用）—— 主人 2026-11-07 拍板：临时反击到本回合结束清除。
+    /// </summary>
+    public void ClearTempCounter()
+    {
+        if (TempCounterStacks <= 0f) return;
+
+        GD.Print($"[CharacterPosition] {Character?.Name} 的临时反击 {TempCounterStacks:F1} 层已结束");
+        TempCounterStacks = 0f;
+    }
+
+    /// <summary>
+    /// **设置获得反击 / 护盾时的倍率**（灵知觉醒授予）。
+    /// </summary>
+    public void SetGainMultipliers(float counterMultiplier, float shieldMultiplier)
+    {
+        if (counterMultiplier > 0f) CounterGainMultiplier = counterMultiplier;
+        if (shieldMultiplier > 0f) ShieldGainMultiplier = shieldMultiplier;
+
+        GD.Print($"[CharacterPosition] {Character?.Name} 施加的反击 ×{CounterGainMultiplier:F2}、护盾 ×{ShieldGainMultiplier:F2}");
+    }
+
+    /// <summary>反击的**显示用**状态（没有反击时返回 null）</summary>
+    private StatusEffect _counterStatus;
+
+    /// <summary>
+    /// 取反击的**显示用**状态（纯展示：层数的真值是 <see cref="TotalCounter"/>）。
+    /// 和罪印一样挂在**角色**身上，所以由 <c>BattleManager.BuildPlayerStatusList</c> 收集。
+    /// </summary>
+    public StatusEffect GetCounterStatus()
+    {
+        float stacks = TotalCounter;
+        if (stacks <= 0f) return null;
+
+        if (_counterStatus == null)
+        {
+            _counterStatus = EffectRegistry.CreateBuff(CardStackIds.Counter);
+            _counterStatus.EffectType = StatusEffectType.Buff;
+        }
+
+        _counterStatus.StackCount = Mathf.CeilToInt(stacks);
+        return _counterStatus;
+    }
+
     /// <summary>罪印的**显示用**状态（没有罪印时返回 null）</summary>
     private StatusEffect _sinMarkStatus;
 
@@ -202,7 +316,7 @@ public partial class CharacterPosition : Node2D
     /// → 重复打出不叠加，但也不清空已有状态。
     /// </summary>
     public bool ActivateAwakening(int healAmount, int rageGain, string debuffId, int debuffStacks, string triggerCardId, string sourceCardId = "",
-        string bleedCardId = "", int bleedPercent = 0)
+        string bleedCardId = "", int bleedPercent = 0, int counterPercent = 0, int shieldPercent = 0)
     {
         if (AwakeningActive)
         {
@@ -219,6 +333,15 @@ public partial class CharacterPosition : Node2D
         AwakeningSourceCardId = sourceCardId ?? "";
         AwakeningBleedCardId = bleedCardId ?? "";
         AwakeningBleedPercent = bleedPercent;
+
+        // ⚠️ **「施加的护盾和反击提高 N%」**（诺缔拉「维修大师」）——
+        // 作用在**获得的那一刻**（不是对已有层数整体放大）。
+        if (counterPercent > 0 || shieldPercent > 0)
+        {
+            float counterMul = counterPercent > 0 ? 1f + counterPercent / 100f : 1f;
+            float shieldMul = shieldPercent > 0 ? 1f + shieldPercent / 100f : 1f;
+            SetGainMultipliers(counterMul, shieldMul);
+        }
 
         // ⚠️ 「每打出一张卡牌回复 X 生命 + Y 狂气」只有配了数值的觉醒卡才有
         // （波吕克斯「净世之路」没有这条 → 别写成「回复0生命 + 0狂气」，那是误导）

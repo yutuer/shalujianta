@@ -32,6 +32,7 @@ public static class EffectRegistry
         { "burn", "res://Assets/Icons/status_burn.svg" },
         { "bleed", "res://Assets/Icons/status_bleed.svg" },
         { "sin_mark", "res://Assets/Icons/status_sin_mark.svg" },
+        { "counter", "res://Assets/Icons/status_counter.svg" },
         { "slow", "res://Assets/Icons/status_slow.svg" },
         { "silence", "res://Assets/Icons/status_silence.svg" },
         { "defense_down", "res://Assets/Icons/status_defense_down.svg" }
@@ -137,6 +138,8 @@ public static class EffectRegistry
             "fury" => new FuryBuff(),
             // 罪印（显示用；层数真值在 CharacterPosition 上）
             "sin_mark" => new SinMarkBuff(),
+            // 反击（显示用；层数真值在 CharacterPosition 上）
+            "counter" => new CounterBuff(),
             _ => null
         };
     }

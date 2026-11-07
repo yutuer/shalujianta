@@ -50,7 +50,7 @@ namespace FishEatFish.Scenes
             // ⚠️ 只列**可玩角色**（卡组齐全的）——
             //   GetAllCharacters() 里还有 12 个星座 BOSS，它们没有卡牌（BOSS 卡已删），
             //   选进队伍会得到一个没有卡组的残缺角色（2026-11-04 D63 起：12 生肖测试角色已删，
-            //   可玩角色是 波吕克斯 / 珈伦 / 珊 / 泰旖丝 / 菲茵特 5 个 —— 菲茵特 2026-11-07 D67 新增）。
+            //   可玩角色是 波吕克斯 / 珈伦 / 珊 / 泰旖丝 / 菲茵特 / 诺缔拉 6 个 —— 菲茵特 2026-11-07 D67 新增、诺缔拉 2026-11-07 D68 新增）。
             _allCharacters = CharacterDefinition.GetPlayableCharacters();
             LoadKeyOrders();
             BuildCharacterGrid();

@@ -913,6 +913,10 @@
                     "type": "awakening"
                 },
                 {
+                    "type": "counter",
+                    "percent": 30
+                },
+                {
                     "type": "deathResistanceDecay",
                     "value": 45
                 },
@@ -1008,6 +1012,161 @@
                 {
                     "type": "retain"
                 }
+            ],
+            "affixNotes": [
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "nuodila_attack",
+            "characterId": "nuodila",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                },
+                {
+                    "type": "counter",
+                    "percent": 15
+                }
+            ],
+            "pendingMechanics": [
+                "启灵1「双生之星」：「基础打击」获得等同于 15% 攻击力的反击（效果随「基础打击」的等级提高，满级时为 30%）—— 本项目无启灵系统"
+            ]
+        },
+        {
+            "cardId": "nuodila_defense",
+            "characterId": "nuodila",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "nuodila_special",
+            "characterId": "nuodila",
+            "name": "高热区禁入",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "shieldPercent": 20,
+            "description": "获得防御力×20% 点护盾和攻击力×120% 点临时反击。⚠临时反击到本回合结束清除。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 20
+                },
+                {
+                    "type": "counter",
+                    "percent": 120,
+                    "temporary": true
+                }
+            ],
+            "affixes": [
+                "counter"
+            ],
+            "bodyAffixMarks": [
+                "counter"
+            ],
+            "pendingMechanics": [
+                "「在首领战中，获得 3 倍临时反击」—— 本项目没有「首领战」状态判定",
+                "启灵2：预备1（回合结束后，算力消耗 -1，被弃掉后也会触发该效果）—— 本项目无启灵系统"
+            ],
+            "affixNotes": [
+                {
+                    "id": "counter",
+                    "name": "反击",
+                    "description": "承受主动伤害时，对伤害来源造成等量层数的纯粹伤害。"
+                }
+            ]
+        },
+        {
+            "cardId": "nuodila_special2",
+            "characterId": "nuodila",
+            "name": "短期记忆",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "description": "获得防御力×10% 点护盾。选择 1 名其他唤醒体获得 10 点狂气。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 10
+                },
+                {
+                    "type": "rage",
+                    "value": 10,
+                    "perLevel": 2
+                }
+            ],
+            "pendingMechanics": [
+                "「选择 1 名其他唤醒体获得狂气」—— 本项目没有「选择其他唤醒体」的目标机制（狂气只能给这张卡所属的角色）"
+            ]
+        },
+        {
+            "cardId": "nuodila_special3",
+            "characterId": "nuodila",
+            "name": "维修大师",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "retain"
+            ],
+            "description": "诺缔拉获得 25 点狂气。⚠灵知觉醒：诺缔拉施加的护盾和反击提高 50%。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening",
+                    "awakeningCounterPercent": 50,
+                    "awakeningShieldPercent": 50
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "启灵3：「整装待发」触发反击倍率 +50%，释放后自身免疫脆弱、虚弱、易伤 1 回合 —— 本项目无启灵系统，且没有「自身免疫」减益机制"
             ],
             "affixNotes": [
                 {

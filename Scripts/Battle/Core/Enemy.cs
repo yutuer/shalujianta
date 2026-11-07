@@ -143,7 +143,9 @@ public partial class Enemy : Node, IUnit
 	public void AttackPlayer(Player player)
 	{
 		int damage = CombatCalculator.CalculateDamageWithVariance(Attack);
-		player.TakeDamage(damage);
+		// ⚠️ **把来源传进去**（D68 反击要用）：
+		// 「承受主动伤害时，对伤害来源造成等量层数的纯粹伤害」→ 没有来源就反弹不了。
+		player.TakeDamage(damage, this);
 	}
 
 	public void PerformAction(Player player, List<Enemy> allEnemies)

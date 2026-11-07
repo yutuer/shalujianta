@@ -107,6 +107,31 @@
             "defenseCardId": "faint_defense",
             "specialCardIds": ["faint_special3", "faint_special", "faint_special2"],
             "ultimateSkillId": "faint_ultimate"
+        },
+        {
+            "characterId": "nuodila",
+            "name": "诺缔拉",
+            "nameEn": "Nautila",
+            "race": "chaos",
+            "archetype": "tank",
+            "baseHealth": 30,
+            "baseEnergy": 2,
+            "baseDrawCount": 2,
+            "baseAttack": 92,
+            "baseDefense": 160,
+            "baseConstitution": 152,
+            "baseCritRate": 5,
+            "baseCritDamage": 50,
+            "baseDomainMastery": 24,
+            "baseDamageBonus": 4.8,
+            "baseRageReturn": 0,
+            "baseBlackMarkDrop": 0,
+            "baseDeathResistance": 0,
+            "baseSilverKeyCharge": 15,
+            "attackCardId": "nuodila_attack",
+            "defenseCardId": "nuodila_defense",
+            "specialCardIds": ["nuodila_special3", "nuodila_special", "nuodila_special2"],
+            "ultimateSkillId": "nuodila_ultimate"
         }
     ]
 }

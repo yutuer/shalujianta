@@ -28,6 +28,12 @@ namespace FishEatFish.Battle.Card
 		/// <summary>百分比（对角色属性）：伤害 = 攻击力×N%，护盾 = 防御力×N%</summary>
 		public int Percent { get; set; }
 
+		/// <summary>
+		/// **临时**（反击用）—— true = 临时反击，**到本回合结束清除**（主人 2026-11-07 拍板）。
+		/// 只有 <see cref="CardEffectType.Counter"/> 用得到。
+		/// </summary>
+		public bool Temporary { get; set; }
+
 		/// <summary>固定数值：怒气 / 治疗 / 能量 / 增益减益的层数或数值</summary>
 		public int Value { get; set; }
 
@@ -92,6 +98,19 @@ namespace FishEatFish.Battle.Card
 		/// <summary>灵知觉醒：减益 id（poison 等）</summary>
 		public string AwakeningDebuff { get; set; } = "";
 
+		/// <summary>
+		/// **灵知觉醒授予的「反击提高百分比」**（诺缔拉「维修大师」= 50）。
+		///
+		/// wiki 原文：「{{词条|灵知觉醒}}：诺缔拉施加的护盾和{{词条|反击}}提高 50%。」
+		/// → 作用在**获得的那一刻**（觉醒之前攒下的不被追溯放大）。
+		/// </summary>
+		public int AwakeningCounterPercent { get; set; }
+
+		/// <summary>
+		/// **灵知觉醒授予的「护盾提高百分比」**（诺缔拉「维修大师」= 50）。
+		/// 和 <see cref="AwakeningCounterPercent"/> 是同一句话里的两半。
+		/// </summary>
+		public int AwakeningShieldPercent { get; set; }
 		/// <summary>
 		/// **保留叠加的最大层数**（珈伦「静默守望」= 2，启灵1 后为 3）。
 		/// 回合结束时这张卡还在手里 → 算力消耗 +1、回复与护盾翻倍，叠到上限为止。
@@ -176,6 +195,18 @@ namespace FishEatFish.Battle.Card
 		public const string SinMark = "sin_mark";
 
 		/// <summary>
+		/// **反击**（诺缔拉身上的 buff）——
+		/// 照参考游戏《终末前夜 Morimens》「反击」词条：
+		/// 「承受主动伤害时，对伤害来源造成等量层数的纯粹伤害。」
+		///
+		/// ⚠️ 它的「层数」是 **float**（来自「攻击力×N%」），
+		/// 所以**不走 <see cref="CardEffectType.Stack"/> 那套 int 层数**，
+		/// 而是 <c>CharacterPosition.CounterStacks</c> 单独一套。
+		/// 这个 id 只用于**显示用**的状态图标。
+		/// </summary>
+		public const string Counter = "counter";
+
+		/// <summary>
 		/// **触腕**（珊身上的层数）——「深海」界域的独特资源：
 		/// 打出「美的怜悯」获得 1 条触腕，触腕伤害随触腕数量成长。
 		/// </summary>
@@ -194,6 +225,7 @@ namespace FishEatFish.Battle.Card
 			return stackId switch
 			{
 				SinMark => "罪印",
+				Counter => "反击",
 				TouchArm => "触腕",
 				EmbryoFusion => "胚胎融合",
 				_ => stackId
@@ -271,6 +303,27 @@ namespace FishEatFish.Battle.Card
 		/// —— 放在效果列表**第一位**，引擎先扫它决定整串效果要跑几遍。
 		/// </summary>
 		public const string RepeatOnDeathResistance = "repeatOnDeathResistance";
+
+		/// <summary>
+		/// **获得反击层数**（诺缔拉「打击」/「高热区禁入」/「整装待发」）。
+		///
+		/// wiki 原文：「获得 <font color=#b75a64>[攻击力*30%]</font> 层{{词条|反击}}。」
+		/// → 层数 = **攻击力 × 百分比 × 等级系数**（照卡牌其它百分比字段的口径）。
+		///
+		/// 数据表写法：<c>{ "type": "counter", "percent": 15, "temporary": false }</c>
+		/// —— <c>percent</c> 是**攻击力百分比**（1 级口径），
+		/// <c>temporary</c> = true 时是**临时反击**（到本回合结束清除）。
+		/// </summary>
+		public const string Counter = "counter";
+
+		/// <summary>
+		/// **触发反击**（诺缔拉「整装待发」：「对所有敌人触发 100% {{词条|反击}}」）。
+		///
+		/// → 对每个目标造成「当前队伍总反击 × 百分比」的**纯粹伤害**。
+		///
+		/// 数据表写法：<c>{ "type": "triggerCounter", "percent": 100, "target": "allEnemies" }</c>
+		/// </summary>
+		public const string TriggerCounter = "triggerCounter";
 	}
 
 	/// <summary>作用目标常量</summary>

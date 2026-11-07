@@ -187,7 +187,12 @@ public class CharacterCardLoader
                     RequireAwakening = effectDict.ContainsKey("requireAwakening") && (bool)effectDict["requireAwakening"],
                     // 灵知觉醒授予的出血（「圣心」造成 100% 伤害的出血）
                     AwakeningBleedCardId = effectDict.ContainsKey("awakeningBleedCardId") ? effectDict["awakeningBleedCardId"].ToString() : "",
-                    AwakeningBleedPercent = effectDict.ContainsKey("awakeningBleedPercent") ? (int)(long)effectDict["awakeningBleedPercent"] : 0
+                    AwakeningBleedPercent = effectDict.ContainsKey("awakeningBleedPercent") ? (int)(long)effectDict["awakeningBleedPercent"] : 0,
+                    // ⚠️ **临时反击**（诺缔拉「高热区禁入」）：到本回合结束清除
+                    Temporary = effectDict.ContainsKey("temporary") && (bool)effectDict["temporary"],
+                    // 灵知觉醒授予的「施加的护盾和反击提高 N%」（诺缔拉「维修大师」= 50）
+                    AwakeningCounterPercent = effectDict.ContainsKey("awakeningCounterPercent") ? (int)(long)effectDict["awakeningCounterPercent"] : 0,
+                    AwakeningShieldPercent = effectDict.ContainsKey("awakeningShieldPercent") ? (int)(long)effectDict["awakeningShieldPercent"] : 0
                 };
 
                 if (effectDict.ContainsKey("timing") && effectDict["timing"].Obj != null)

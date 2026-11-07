@@ -115,6 +115,9 @@ public class UltimateLoader
         ultimate.DeathResistanceCap = GetIntValue(dict, "deathResistanceCap", 0);
         ultimate.DeathResistanceCapPerLevel = GetIntValue(dict, "deathResistanceCapPerLevel", 0);
         ultimate.DisperseSelfVulnerable = GetBoolValue(dict, "disperseSelfVulnerable");
+        ultimate.CounterGainPercent = GetIntValue(dict, "counterGainPercent", 0);
+        ultimate.CounterTriggerPercent = GetIntValue(dict, "counterTriggerPercent", 0);
+        ultimate.ShieldBonusPercent = GetIntValue(dict, "shieldBonusPercent", 0);
 
         // 伤害百分比口径（> 0 时按「角色攻击力 × 百分比」算）
         ultimate.DamagePercent = GetIntValue(dict, "damagePercent", 0);

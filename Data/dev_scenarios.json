@@ -49,6 +49,20 @@
         "map": "map01",
         "target": "hexmap"
     },
+    "nuodila_team": {
+        "desc": "诺缔拉 + 其余三个真角色（2026-11-07 D68：wiki 新角色 —— 属性 152/92/160 / 界域精通 24 / 伤害强效 4.8 / 高热区禁入 / 短期记忆 / 维修大师 / 整装待发）",
+        "team": ["nuodila", "pollux", "jialun", "sanga"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
+    },
+    "nuodila_map": {
+        "desc": "诺缔拉队伍 → 六边形地图（诺缔拉是混沌界域 → 队伍死亡抵抗同样吃 +100%）",
+        "team": ["nuodila", "pollux", "jialun", "sanga"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "hexmap"
+    },
     "battle": {
       "desc": "选人完成 → 直接进战斗（无地图上下文，敌人按 normal_wave）",
       "team": ["pollux", "jialun", "sanga", "thais"],

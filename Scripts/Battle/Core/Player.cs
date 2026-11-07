@@ -64,6 +64,17 @@ public partial class Player : Node, IUnit
 	/// </summary>
 	public CharacterDefinition[] TeamCharacters { get; set; }
 
+	/// <summary>
+	/// **本场战斗的队伍角色位置**（运行时状态挂在这里）—— D68 反击要用。
+	///
+	/// 为什么需要它：反击是**角色身上的 buff**（层数存在 <see cref="CharacterPosition"/> 上），
+	/// 而本项目的玩家是**整队合并成的一个 Player**（MaxHealth = 队伍生命总和）
+	/// → 队伍受一次伤害时，队伍里**每个角色的反击都该结算**
+	/// （参考游戏里每个唤醒体各自挨打、各自反弹）。
+	/// 由 <c>BattleManager.InitializePlayer()</c> 赋值。
+	/// </summary>
+	public List<CharacterPosition> TeamPositions { get; set; } = new List<CharacterPosition>();
+
 	public override void _Ready()
 	{
 		if (CharacterDef != null)
@@ -223,7 +234,16 @@ public partial class Player : Node, IUnit
 		}
 	}
 
-	public void TakeDamage(int damage)
+	/// <summary>
+	/// **受到伤害**（主动伤害通道）。
+	/// </summary>
+	/// <param name="damage">伤害值</param>
+	/// <param name="attacker">
+	/// 伤害来源（敌人）。
+	/// ⚠️ **反击要用**：「承受主动伤害时，对伤害来源造成等量层数的纯粹伤害」
+	/// → 没有来源就反弹不了（null = 无来源伤害，不触发反击）。
+	/// </param>
+	public void TakeDamage(int damage, Enemy attacker = null)
 	{
 		int remainingDamage = damage;
 
@@ -246,6 +266,15 @@ public partial class Player : Node, IUnit
 
 		CurrentHealth = Mathf.Max(0, CurrentHealth - remainingDamage);
 
+		// ⚠️ **反击触发点**（D68）——
+		// 官方措辞是「**承受主动伤害时**」→ 判定挂在这一击真正造成了伤害的那一刻。
+		// ⚠️ 只认**主动伤害**这条通道：固定伤害 / 纯粹伤害不走 TakeDamage → 不会触发反击
+		//    （敌人的毒、反击本身造成的纯粹伤害都不能再反弹回来，否则会无限循环）。
+		if (damage > 0 && attacker != null && !attacker.IsDead)
+		{
+			TriggerCounter(attacker);
+		}
+
 		// ⚠️ **死亡抵抗触发点**（D66）——
 		// 官方措辞是「**受到致命伤害时**」→ 判定必须挂在扣血的那一刻，
 		// 而不是等敌人回合全部打完再判（BattleManager.CheckGameOver 那时已经晚了一步）。
@@ -253,6 +282,46 @@ public partial class Player : Node, IUnit
 		{
 			TryTriggerDeathResistance();
 		}
+	}
+
+	/// <summary>
+	/// **队伍当前的总反击层数**（D68）——
+	/// 队伍里每个角色的反击层数之和（各角色自己的倍率已算进 <see cref="CharacterPosition.TotalCounter"/>）。
+	/// </summary>
+	public float GetTeamCounter()
+	{
+		float total = 0f;
+		if (TeamPositions == null) return total;
+
+		foreach (CharacterPosition pos in TeamPositions)
+		{
+			if (pos == null) continue;
+			total += pos.TotalCounter;
+		}
+
+		return total;
+	}
+
+	/// <summary>
+	/// **触发反击**（D68）——
+	/// 照参考游戏《终末前夜 Morimens》「反击」词条：
+	/// 「承受主动伤害时，对伤害来源造成**等量层数的纯粹伤害**。」
+	///
+	/// ⚠️ 走的是 **纯粹伤害通道**（<c>Enemy.TakePureDamage</c>）：
+	/// 不暴击 / 不吃力量·伤害强效·最终伤害·易伤 / 不做防御减免 / **不挂来源**
+	/// → 反击本身不会再触发一次反击（不会递归）。
+	/// </summary>
+	private void TriggerCounter(Enemy attacker)
+	{
+		float stacks = GetTeamCounter();
+		if (stacks <= 0f) return;
+
+		// 层数 → 伤害：照项目惯例**向上取整**（ceil）
+		int counterDamage = Mathf.CeilToInt(stacks);
+		if (counterDamage <= 0) return;
+
+		GD.Print($"[Counter] 队伍总反击 {stacks:F1} 层触发！对 {attacker.EnemyName} 造成 {counterDamage} 点纯粹伤害");
+		attacker.TakePureDamage(counterDamage);
 	}
 
 	/// <summary>
@@ -297,7 +366,17 @@ public partial class Player : Node, IUnit
 	public void TakeModifiedDamage(int damage, Enemy attacker)
 	{
 		int modifiedDamage = CalculateModifiedDamage(damage, attacker);
-		TakeDamage(modifiedDamage);
+		TakeDamage(modifiedDamage, attacker);
+	}
+
+	/// <summary>
+	/// <see cref="IUnit.TakeDamage"/> 的显式实现 —— 走的是「无来源」那条（不会触发反击）。
+	/// ⚠️ C# 里**可选参数不改变方法签名**，所以 <c>TakeDamage(int, Enemy = null)</c>
+	/// 并不实现 <c>IUnit.TakeDamage(int)</c> → 必须显式补一个。
+	/// </summary>
+	void IUnit.TakeDamage(int damage)
+	{
+		TakeDamage(damage, null);
 	}
 
 	public void Heal(int amount)
@@ -348,6 +427,24 @@ public partial class Player : Node, IUnit
 			effect.OnTurnEndPlayer(this);
 		}
 		_statusEffects.RemoveAll(e => e.IsExpired());
+
+		// ⚠️ **临时反击到本回合结束清除**（D68，主人 2026-11-07 拍板）
+		ClearTempCounter();
+	}
+
+	/// <summary>
+	/// **清除队伍里所有角色的临时反击**（D68）——
+	/// 主人 2026-11-07 拍板：诺缔拉「高热区禁入」给的「临时反击」**到本回合结束清除**。
+	/// </summary>
+	private void ClearTempCounter()
+	{
+		if (TeamPositions == null) return;
+
+		foreach (CharacterPosition pos in TeamPositions)
+		{
+			if (pos == null) continue;
+			pos.ClearTempCounter();
+		}
 	}
 
 	public int CalculateModifiedDamage(int baseDamage, Enemy attacker)

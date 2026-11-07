@@ -255,7 +255,9 @@ foreach ($c in $cards) {
             #   但灰机 wiki 的原文是权威 —— 例如泰旖丝「古老的爱抚」6 级：
             #   「选择一名其他唤醒体，使自身与该唤醒体均获得 20 点狂气。」
             #   → 这类卡必须能带 rage 条目，否则 wiki 数据无法落地。
-            $rageWhitelist = @('thais_special')
+            #   （2026-11-07 加 nuodila_special2：诺缔拉「短期记忆」6 级
+            #   「获得防御力×20% 点护盾。选择 1 名其他唤醒体获得 20 点狂气。」）
+            $rageWhitelist = @('thais_special', 'nuodila_special2')
             if ($rageWhitelist -notcontains $cid) {
                 $problems += "[character_cards.json] 卡「$cid」是专属指令卡，按参考口径**不给怒气**（参考图属性面板没有「狂气」行），请删掉 effects 里的 rage 条目"
             }

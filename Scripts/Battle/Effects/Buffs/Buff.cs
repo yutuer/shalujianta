@@ -150,3 +150,26 @@ public partial class SinMarkBuff : StatusEffect
     /// <summary>层数 id（避免在这里引用 Card 命名空间造成循环依赖）</summary>
     private const string CardStackIdsSinMark = "sin_mark";
 }
+
+/// <summary>
+/// **反击**（诺缔拉身上的 buff）—— 照参考游戏《终末前夜 Morimens》「反击」词条：
+/// 「承受主动伤害时，对伤害来源造成等量层数的纯粹伤害。」
+///
+/// ⚠️ **纯显示用**：层数的真值在 <c>CharacterPosition.CounterStacks</c> 上
+/// （角色身上的 buff，主人 2026-11-07 口径「使用了之后会有 buff 的层数」），
+/// 这里只是把它包成一个状态，好让状态图标行能画出「⚔反击 ×N」。
+/// </summary>
+public partial class CounterBuff : StatusEffect
+{
+    public CounterBuff()
+    {
+        EffectName = "反击";
+        Description = "承受主动伤害时，对伤害来源造成等量层数的纯粹伤害。";
+        Duration = 99;
+        EffectType = StatusEffectType.Buff;
+        IconPath = EffectRegistry.GetBuffIconPath(CardStackIdsCounter);
+    }
+
+    /// <summary>层数 id（避免在这里引用 Card 命名空间造成循环依赖）</summary>
+    private const string CardStackIdsCounter = "counter";
+}

@@ -41,7 +41,10 @@ public static class UltimateExecutor
         ApplyDamage(skill, targets, summary);
         ApplyDebuff(skill, targets, summary);
         ApplyHeal(skill, player, summary);
-        ApplyShield(skill, player, summary);
+        ApplyShield(skill, player, owner, summary);
+        ApplyShieldBonus(skill, player, summary);
+        ApplyCounter(skill, owner, summary);
+        ApplyCounterTrigger(skill, player, enemies, summary);
         ApplyDrawCards(skill, player, summary);
         ApplyEnergy(skill, player, summary);
         ApplyRemoveSlowFromHand(skill, player, summary);
@@ -366,7 +369,7 @@ public static class UltimateExecutor
     /// <summary>
     /// 护盾结算
     /// </summary>
-    private static void ApplyShield(UltimateSkill skill, Player player, List<string> summary)
+    private static void ApplyShield(UltimateSkill skill, Player player, CharacterPosition owner, List<string> summary)
     {
         int shield = skill.CalculatedShield;
         if (shield <= 0)
@@ -380,10 +383,91 @@ public static class UltimateExecutor
             return;
         }
 
+        // ⚠ 「**施加的**护盾提高 50%」→ 狂气爆发给的护盾也是「施加的护盾」，
+        // 一样要乘觉醒倍率（卡牌的护盾走 CardEffectEngine.ShieldGainMultiplier，两边口径一致）
+        float multiplier = owner != null ? owner.ShieldGainMultiplier : 1f;
+        int finalShield = Mathf.CeilToInt((float)((double)shield * multiplier));
+        if (finalShield <= 0) return;
+
         int shieldBefore = player.Shield;
-        player.AddShield(shield);
-        GD.Print($"[UltimateExecutor] 【{skill.Name}】获得 {shield} 点护盾（护盾 {shieldBefore} → {player.Shield}）");
-        summary.Add($"获得{shield}护盾");
+        player.AddShield(finalShield);
+        GD.Print($"[UltimateExecutor] 【{skill.Name}】获得 {finalShield} 点护盾（护盾 {shieldBefore} → {player.Shield}）");
+        summary.Add($"获得{finalShield}护盾");
+    }
+
+    /// <summary>
+    /// **使当前的护盾提高 N%**（诺缔拉「整装待发」：「使当前的护盾提高 50%」）。
+    ///
+    /// ⚠️ 是**当前护盾**（含这次新加的）整体提高，不是「新加的那部分提高」。
+    /// </summary>
+    private static void ApplyShieldBonus(UltimateSkill skill, Player player, List<string> summary)
+    {
+        if (skill.ShieldBonusPercent <= 0) return;
+        if (player == null || player.Shield <= 0) return;
+
+        int before = player.Shield;
+        player.Shield = Mathf.CeilToInt(before * (100 + skill.ShieldBonusPercent) / 100f);
+        GD.Print($"[UltimateExecutor] 【{skill.Name}】当前护盾提高 {skill.ShieldBonusPercent}%（{before} → {player.Shield}）");
+        summary.Add($"当前护盾提高{skill.ShieldBonusPercent}%");
+    }
+
+    /// <summary>
+    /// **获得反击层数**（诺缔拉「整装待发」/ 菲茵特「星之摇篮」）。
+    ///
+    /// wiki 原文：「获得 <font color=#b75a64>[攻击力*50%]</font> 层{{词条|反击}}。」
+    /// → 层数挂在**释放者身上**（永久层）。
+    /// </summary>
+    private static void ApplyCounter(UltimateSkill skill, CharacterPosition owner, List<string> summary)
+    {
+        if (skill.CounterGainPercent <= 0) return;
+
+        if (owner == null)
+        {
+            GD.PrintErr($"[UltimateExecutor] 【{skill.Name}】获得反击需要归属角色，已跳过");
+            return;
+        }
+
+        float stacks = skill.CalculatedCounterGain;
+        if (stacks <= 0f) return;
+
+        // ⚠ 用**实际获得**的层数（已含「施加的反击提高 X%」倍率），别用未乘倍率的原始值
+        float gained = owner.AddCounter(stacks, false);
+        GD.Print($"[UltimateExecutor] 【{skill.Name}】获得 {gained:F1} 层反击");
+        summary.Add($"获得{gained:F1}层反击");
+    }
+
+    /// <summary>
+    /// **对所有敌人触发反击**（诺缔拉「整装待发」：「对所有敌人触发 100% {{词条|反击}}」）。
+    ///
+    /// → 对每个**活着的敌人**造成「队伍当前总反击 × 百分比」的**纯粹伤害**。
+    /// </summary>
+    private static void ApplyCounterTrigger(UltimateSkill skill, Player player, Enemy[] enemies, List<string> summary)
+    {
+        if (skill.CounterTriggerPercent <= 0) return;
+        if (player == null) return;
+
+        float teamCounter = player.GetTeamCounter();
+        if (teamCounter <= 0f)
+        {
+            GD.Print($"[UltimateExecutor] 【{skill.Name}】队伍当前没有反击层数，未触发反击");
+            summary.Add("队伍没有反击层数，未触发反击");
+            return;
+        }
+
+        List<Enemy> alive = GetAliveEnemies(enemies);
+        if (alive.Count == 0) return;
+
+        int damage = Mathf.CeilToInt(teamCounter * skill.CounterTriggerPercent / 100f);
+        if (damage <= 0) return;
+
+        GD.Print($"[UltimateExecutor] 【{skill.Name}】对所有敌人触发反击：队伍总反击 {teamCounter:F1} 层 × {skill.CounterTriggerPercent}% → {damage} 点纯粹伤害（{alive.Count} 个目标）");
+
+        foreach (Enemy enemy in alive)
+        {
+            enemy.TakePureDamage(damage);
+        }
+
+        summary.Add($"对所有敌人触发{damage}点反击伤害");
     }
 
     /// <summary>

@@ -464,6 +464,28 @@ $Characters['faint'] = @{
     Emblem = 'diamond'
 }
 
+# 诺缔拉（Nautila）—— 混沌界域 / 机械师 / 焊接 / 防御型（wiki 角色，2026-11-07 新增）
+$Characters['nuodila'] = @{
+    Main = '#46596B'; Accent = '#FFB65C'
+    Sh = 70; Wa = 54; Hp = 54
+    Behind = @(
+        '<path d="M48 270 L48 190" fill="none" stroke="{ACC}" stroke-width="7" stroke-linecap="round" />',
+        '<path d="M208 270 L208 190" fill="none" stroke="{ACC}" stroke-width="7" stroke-linecap="round" />',
+        '<path d="M48 190 L128 150 L208 190" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />',
+        '<path d="M128 150 L128 96" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M92 268 L128 232 L164 268" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M110 78 L146 78 L138 104 L118 104 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />',
+        '<path d="M128 104 L128 126" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />'
+    )
+    Emblem = 'hexagon'
+}
+
 
 
 
