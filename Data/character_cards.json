@@ -573,7 +573,7 @@
                 "touch_damage",
                 "retain"
             ],
-            "description": "珊获得 50 点狂气。⚠灵知觉醒：触腕数量上限 +1，珊造成的护盾提高 15%。珊每次造成护盾 ✕触腕伤害 + 8。⚠保留。",
+            "description": "⚠灵知觉醒：触腕数量上限 +1，珊造成的护盾提高 15%。珊每次造成护盾 ✕触腕伤害 + 8。⚠保留。",
             "effects": [
                 {
                     "type": "rage",
@@ -667,7 +667,7 @@
             "bodyAffixMarks": [
                 "strength"
             ],
-            "description": "选择一名其他唤醒体，使自身与该唤醒体均获得 20 点狂气。获得 9 点力量。",
+            "description": "选择一名其他唤醒体，使自身与该唤醒体均获得 {rage} 点狂气。获得 9 点力量。",
             "effects": [
                 {
                     "type": "rage",
@@ -755,7 +755,7 @@
                 "awakening",
                 "retain"
             ],
-            "description": "泰旖丝获得 50 点狂气。⚠灵知觉醒：立刻获得 1 张「圣洁之子」。每当释放钥令时，将手中一个胚胎转化为圣洁之子。⚠保留。",
+            "description": "⚠灵知觉醒：立刻获得 1 张「圣洁之子」。每当释放钥令时，将手中一个胚胎转化为圣洁之子。⚠保留。",
             "effects": [
                 {
                     "type": "rage",
@@ -902,7 +902,7 @@
                 "awakening",
                 "retain"
             ],
-            "description": "菲茵特获得 25 点狂气。⚠灵知觉醒：获得攻击力×60% 层反击。本场战斗死亡抵抗触发衰减率从 50% 降低为 45%。⚠保留。",
+            "description": "⚠灵知觉醒：获得 {counter} 层反击。本场战斗死亡抵抗触发衰减率从 50% 降低为 45%。⚠保留。",
             "effects": [
                 {
                     "type": "rage",
@@ -995,7 +995,7 @@
             "bodyAffixMarks": [
                 "retain"
             ],
-            "description": "获得防御力×15% 点护盾，回复体质×15% 点生命。若在本场战斗中触发过死亡抵抗，额外生效 1 次。⚠保留。",
+            "description": "获得 {shield} 点护盾，回复 {heal} 点生命。若在本场战斗中触发过死亡抵抗，额外生效 1 次。⚠保留。",
             "effects": [
                 {
                     "type": "repeatOnDeathResistance",
@@ -1077,7 +1077,7 @@
             "cost": 3,
             "isAttack": false,
             "shieldPercent": 20,
-            "description": "获得防御力×20% 点护盾和攻击力×120% 点临时反击。⚠临时反击到本回合结束清除。",
+            "description": "获得 {shield} 点护盾和 {counter} 层临时反击。⚠临时反击到本回合结束清除。",
             "effects": [
                 {
                     "type": "shield",
@@ -1115,7 +1115,7 @@
             "cost": 1,
             "isAttack": false,
             "shieldPercent": 10,
-            "description": "获得防御力×10% 点护盾。选择 1 名其他唤醒体获得 10 点狂气。",
+            "description": "获得 {shield} 点护盾。选择 1 名其他唤醒体获得 {rage} 点狂气。",
             "effects": [
                 {
                     "type": "shield",
@@ -1146,7 +1146,7 @@
             "bodyAffixMarks": [
                 "retain"
             ],
-            "description": "诺缔拉获得 25 点狂气。⚠灵知觉醒：诺缔拉施加的护盾和反击提高 50%。⚠保留。",
+            "description": "⚠灵知觉醒：诺缔拉施加的护盾和反击提高 50%。⚠保留。",
             "effects": [
                 {
                     "type": "rage",

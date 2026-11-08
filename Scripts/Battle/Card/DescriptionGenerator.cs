@@ -30,6 +30,23 @@ public static class DescriptionGenerator
             parts.Add($"获得 {shield} 点护盾");
         }
 
+        // 反击（D68）：卡面**必须**显示反击层数 ——
+        //   卡片数据里有 counter 效果、卡面却一个字都不写 = 数值静默丢失
+        //   （诺缔拉「打击」带 counter 15%，自动生成描述原本完全不提反击）。
+        //   公式与战斗结算共用 CardEffectCalculator.CalculateCounter（踩坑 §124）。
+        var counterEffect = card.FindEffect(CardEffectType.Counter);
+        if (counterEffect != null)
+        {
+            int counterValue = (int)System.Math.Ceiling(
+                CardEffectCalculator.CalculateCounter(card, counterEffect, attributes));
+            if (counterValue > 0)
+            {
+                parts.Add(counterEffect.Temporary
+                    ? $"获得 {counterValue} 层临时反击"
+                    : $"获得 {counterValue} 层反击");
+            }
+        }
+
         if (card.HealAmount > 0)
         {
             int heal = attributes != null
@@ -270,6 +287,27 @@ public static class DescriptionGenerator
             }
             body = body.Replace("{poison}", value.ToString());
         }
+        if (body.Contains("{counter}"))
+        {
+            // ⚠️ **反击层数**（D68，诺缔拉「高热区禁入」/ 菲茵特「无边星彩」）——
+            //    与战斗结算**同一套公式**（CardEffectCalculator.CalculateCounter）→ 卡面写多少、战斗就涨多少。
+            //    层数向上取整（与状态图标的层数口径一致）。
+            CardEffect counter = card.FindEffect(CardEffectType.Counter);
+            int value = counter != null
+                ? (int)System.Math.Ceiling(CardEffectCalculator.CalculateCounter(card, counter, attributes))
+                : 0;
+            body = body.Replace("{counter}", value.ToString());
+        }
+        if (body.Contains("{rage}"))
+        {
+            // ⚠️ **狂气** = 效果列表里 rage 条目的 value + perLevel ×（等级 − 1）
+            //    （与 RageManager.GetRageForCard / CardEffectEngine.ExecuteRage 同一个公式）。
+            CardEffect rage = card.FindEffect(CardEffectType.Rage);
+            int value = rage != null
+                ? CardLevelSystem.CalculateFixedValue(card.Level, rage.Value, rage.PerLevel)
+                : 0;
+            body = body.Replace("{rage}", value.ToString());
+        }
         return body;
     }
 
@@ -385,6 +423,13 @@ public static class DescriptionGenerator
         if (text.Contains("{buff}")) text = text.Replace("{buff}", ultimate.CalculatedBuffValue.ToString());
         if (text.Contains("{duration}")) text = text.Replace("{duration}", ultimate.BuffDuration.ToString());
         if (text.Contains("{energy}")) text = text.Replace("{energy}", ultimate.EnergyGain.ToString());
+
+        // ⚠️ **获得反击的层数**（D68，诺缔拉「整装待发」/ 菲茵特「星之摇篮」）——
+        //    与战斗结算同一个值（UltimateSkill.CalculatedCounterGain），向上取整显示。
+        if (text.Contains("{counter}"))
+        {
+            text = text.Replace("{counter}", ((int)System.Math.Ceiling(ultimate.CalculatedCounterGain)).ToString());
+        }
 
         // 减益层数（中毒 / 虚弱 / 减速 …）—— 百分比口径按攻击力算，固定口径按 buffValue 算
         if (text.Contains("{poison}") || text.Contains("{debuff}"))
@@ -645,6 +690,28 @@ public static class DescriptionGenerator
                     : $"抽 {draw} 张。");
             }
             if (rage > 0) parts.Add($"{owner} {rage} 点怒气。");
+        }
+
+        // 反击（D68）：卡面**必须**显示反击层数 ——
+        //   数据表里有 counter 效果、卡面却一个字都不写 = 数值静默丢失
+        //   （诺缔拉「打击」带 counter 15%，自动生成的正文原本完全不提反击）。
+        //   ⚠️ 正文里已经写过（模板里写了 {counter} 或「层反击」）→ 不重复写。
+        //   公式与战斗结算共用 CardEffectCalculator.CalculateCounter（踩坑 §124）。
+        var counterEffect = card.FindEffect(CardEffectType.Counter);
+        if (counterEffect != null)
+        {
+            string joined = string.Join("", parts);
+            if (!joined.Contains("{counter}") && !joined.Contains("层反击"))
+            {
+                int counterValue = (int)System.Math.Ceiling(
+                    CardEffectCalculator.CalculateCounter(card, counterEffect, attributes));
+                if (counterValue > 0)
+                {
+                    parts.Add(counterEffect.Temporary
+                        ? $"获得 {counterValue} 层临时反击。"
+                        : $"获得 {counterValue} 层反击。");
+                }
+            }
         }
 
         // 词缀标注（保留 / 消耗 / 回合唯一 + 特有词缀）——

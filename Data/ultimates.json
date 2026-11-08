@@ -229,7 +229,7 @@
             "characterId": "faint",
             "name": "星之摇篮",
             "nameEn": "Cradle of Stars",
-            "description": "吞噬：将 1 张算力消耗 0 的「幼芽萌生」置入手牌并附加消耗。虚弱全体敌方 2 回合。获得攻击力×120% 层反击。若队伍死亡抵抗不足 {deathResistanceCap}%，则队伍死亡抵抗 +{deathResistanceGain}%。驱散自身脆弱。",
+            "description": "吞噬：将 1 张算力消耗 0 的「幼芽萌生」置入手牌并附加消耗。虚弱全体敌方 2 回合。获得 {counter} 层反击。若队伍死亡抵抗不足 {deathResistanceCap}%，则队伍死亡抵抗 +{deathResistanceGain}%。驱散自身脆弱。",
             "rageCost": 100,
             "applyDebuffName": "weak",
             "buffValue": 5,
@@ -264,7 +264,7 @@
             "counterGainPercent": 25,
             "counterTriggerPercent": 100,
             "isAreaAttack": true,
-            "description": "获得防御力×15% 点护盾和攻击力×25% 层反击。使当前的护盾提高 50%。对所有敌人触发 100% 反击。",
+            "description": "获得 {shield} 点护盾和 {counter} 层反击。使当前的护盾提高 50%。对所有敌人触发 100% 反击。",
             "pendingMechanics": [
                 "天赋1「诺缔拉每拥有 1 点界域精通，「整装待发」造成的反击就提高 0.25%」—— 本项目的反击不区分来源（受击触发 vs 狂气爆发触发），该天赋暂未落地",
                 "启灵3：对所有敌人触发 150% 反击；自身免疫脆弱、虚弱、易伤 1 回合（本项目无启灵系统，也没有「自身免疫」减益机制）",

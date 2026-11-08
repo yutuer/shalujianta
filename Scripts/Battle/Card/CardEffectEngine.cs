@@ -380,11 +380,9 @@ namespace FishEatFish.Battle.Card
 
 			if (effect.Percent <= 0) return;
 
-			int attack = ctx.Attributes?.Attack ?? 0;
-			if (attack <= 0) return;
-
-			// ⚠️ 跟伤害/护盾同一套：先转 double 再乘，避免 float 精度少一格（踩坑 §107 / §114）
-			float stacks = (float)((double)attack * effect.Percent / 100.0 * CardLevelSystem.CalculateCoefficient(card.Level));
+			// ⚠️ 公式**只写一处**（<c>CardEffectCalculator.CalculateCounter</c>）：
+			//    卡面显示与战斗结算共用同一套 → 不会再现「卡面写 X、战斗给 Y」（踩坑 §124）。
+			float stacks = CardEffectCalculator.CalculateCounter(card, effect, ctx.Attributes);
 			if (stacks <= 0f) return;
 
 			// ⚠ 用**实际获得**的层数写日志（已含「施加的反击提高 50%」倍率），别用未乘倍率的原始值
@@ -866,6 +864,28 @@ namespace FishEatFish.Battle.Card
 				return CardLevelSystem.CalculateAttributeLinkedValue(level, effect.Value, 1f);
 			}
 			return 0;
+		}
+
+		/// <summary>
+		/// **反击层数 = 攻击力 × 百分比 × 等级系数**（D68，诺缔拉「高热区禁入」/ 菲茵特「无边星彩」）。
+		///
+		/// ⚠️ 公式**只写这一处** —— 卡面显示与战斗结算共用它，
+		///    所以不会再现「卡面写 221 层、战斗涨 110 层」（踩坑 §124）。
+		///
+		/// ⚠️ 保持 **float**：反击层数是 float（踩坑 §118「字段的数值类型 = 精度上限」）；
+		///    卡面显示时再向上取整（与状态图标的层数口径一致）。
+		/// </summary>
+		public static float CalculateCounter(Card card, CardEffect effect, CharacterAttributes attributes)
+		{
+			if (card == null || effect == null) return 0f;
+			if (effect.Percent <= 0 || attributes == null) return 0f;
+
+			int attack = attributes.Attack;
+			if (attack <= 0) return 0f;
+
+			// ⚠️ 跟伤害/护盾同一套：先转 double 再乘，避免 float 精度少一格（踩坑 §107 / §114）
+			return (float)((double)attack * effect.Percent / 100.0
+				* CardLevelSystem.CalculateCoefficient(card.Level));
 		}
 	}
 }
