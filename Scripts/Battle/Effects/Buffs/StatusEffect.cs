@@ -109,6 +109,25 @@ public abstract partial class StatusEffect : Resource
         return baseDamage;
     }
 
+    /// <summary>
+    /// 修正「**这个单位自己打出去**」的伤害。
+    ///
+    /// ⚠️ 与上面两个不一样：
+    ///   - <see cref="ModifyDamageEnemy"/> 改的是「**受到**的伤害」（遍历的是**承受者**身上的状态）
+    ///   - <see cref="ModifyDamagePlayer"/> 改的是「玩家**受到**的伤害」（遍历玩家身上的状态）
+    ///   - **本方法**改的是「**自己造成**的伤害」（遍历**施打者**身上的状态）
+    ///
+    /// 灰机 wiki 词条「力量降低」（旧称「衰竭」）：
+    /// 「降低造成的主动伤害和触腕伤害。」→ 减益挂在**敌人**身上，
+    /// 降低的是**敌人打向玩家**的伤害 → 只能从这里走。
+    /// </summary>
+    /// <param name="baseDamage">原始伤害</param>
+    /// <param name="attacker">造成这个伤害的单位</param>
+    public virtual int ModifyOutgoingDamage(int baseDamage, Core.Enemy attacker)
+    {
+        return baseDamage;
+    }
+
     public virtual int ModifyHealing(int baseHealing, Core.Player target)
     {
         return baseHealing;

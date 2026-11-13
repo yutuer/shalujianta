@@ -959,24 +959,23 @@
             "bodyAffixMarks": [
                 "exhaust"
             ],
-            "description": "获得攻击力×24% 点力量。使所有敌人临时降低防御力×16% 点衰竭。",
+            "description": "获得攻击力×24% 点力量。使所有敌人临时降低 {strengthDown} 点力量。",
             "effects": [
                 {
                     "type": "debuff",
-                    "debuff": "weak",
-                    "value": 5,
+                    "debuff": "strengthdown",
+                    "defensePercent": 8,
                     "duration": 2,
                     "target": "allEnemies"
                 }
             ],
             "pendingMechanics": [
-                "获得攻击力×24% 点力量（卡面写的是 wiki 6 级原文 24%；数据表里存的是 1 级值 12%，满级系数 ×2 才还原 24%）—— buff 效果目前只能挂在敌人身上，不能给自己（要实现得先开「给自己加增益」的通道，见 docs/开发计划.md D70）",
-                "「使所有敌人临时降低防御力×16% 点衰竭」—— 官方词条「衰竭」是「降低造成的主动伤害和触腕伤害」，本项目没有衰竭减益，用已有的「虚弱」（降低攻击力 N 点）近似；⚠️ 而且值是**固定 5**，不是「防御力×16%」的百分比（本项目的减益百分比只按攻击力算，没有防御力口径）"
+                "获得攻击力×24% 点力量（卡面写的是 wiki 6 级原文 24%；数据表里存的是 1 级值 12%，满级系数 ×2 才还原 24%）—— buff 效果目前只能挂在敌人身上，不能给自己（要实现得先开「给自己加增益」的通道，见 docs/开发计划.md D70）"
             ],
             "affixNotes": [
                 {
                     "id": "exhaust",
-                    "name": "衰竭",
+                    "name": "力量",
                     "description": "降低造成的主动伤害和触腕伤害。"
                 }
             ]
@@ -1564,16 +1563,36 @@
             "style": "striker",
             "cost": 3,
             "isAttack": false,
-            "description": "驱散自身虚弱状态，获得 攻击力×40% 点临时触腕伤害和 攻击力×40% 点临时力量。若当前姿态为「静海」，额外使所有敌人在本回合中降低 防御力×40% 点衰竭。[余波]：驱使 1 条触腕攻击敌方。",
+            "description": "驱散自身虚弱状态，获得 攻击力×40% 点临时触腕伤害和 攻击力×40% 点临时力量。若当前姿态为「静海」，额外使所有敌人在本回合中降低 {strengthDown} 点力量。[余波]：驱使 1 条触腕攻击敌方。",
+            "affixes": [
+                "exhaust"
+            ],
+            "bodyAffixMarks": [
+                "exhaust"
+            ],
             "effects": [
                 {
                     "type": "disperseSelfDebuff",
                     "debuff": "weak"
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "strengthdown",
+                    "defensePercent": 20,
+                    "duration": 1,
+                    "target": "allEnemies"
+                }
+            ],
+            "affixNotes": [
+                {
+                    "id": "exhaust",
+                    "name": "力量",
+                    "description": "降低造成的主动伤害和触腕伤害。"
                 }
             ],
             "pendingMechanics": [
                 "获得 攻击力×40% 点临时触腕伤害和 攻击力×40% 点临时力量（缺「临时触腕伤害」与「临时力量」机制；且 buff 效果目前只能挂在敌人身上，不能给自己，见 docs/开发计划.md D70）",
-                "若当前姿态为「静海」，额外使所有敌人降低 防御力×40% 点衰竭（本项目没有「姿态」系统；且减益百分比只按攻击力算，没有防御力口径，见 docs/开发计划.md D70）",
+                "「若当前姿态为「静海」，额外使所有敌人降低 防御力×40% 点力量」—— 降低力量的效果本身**已实现**（D72），但**触发条件「静海姿态」未实现**（本项目没有「姿态」系统）→ ⚠️ 目前是**无条件**生效的，姿态系统落地后要改成条件触发",
                 "[余波]：驱使 1 条触腕攻击敌方（缺「余波」触发器与触腕攻击）",
                 "启灵3：获得 15% 临时暴击率（本项目无启灵系统，也没有临时暴击率机制）"
             ]
@@ -1840,7 +1859,7 @@
             "bodyAffixMarks": [
                 "retain"
             ],
-            "description": "对所有敌人造成 {damage} 点必定暴击的伤害并施加 {poison} 层中毒。⚠保留。",
+            "description": "对所有敌人造成 {damage} 点必定暴击的伤害并触发 80% 中毒（按目标身上的中毒层数 × 80% 造成纯粹伤害）。⚠保留。",
             "effects": [
                 {
                     "type": "damage",
@@ -1848,10 +1867,8 @@
                     "target": "allEnemies"
                 },
                 {
-                    "type": "debuff",
-                    "debuff": "poison",
+                    "type": "triggerPoison",
                     "percent": 80,
-                    "duration": 99,
                     "target": "allEnemies"
                 },
                 {
@@ -1860,7 +1877,7 @@
             ],
             "pendingMechanics": [
                 "必定暴击（本项目没有「必定暴击」的机制）",
-                "「触发 80% 中毒」wiki 原文没写「攻击力×」，本项目按「施加攻击力×80% 层中毒」实现（L1 80% / L6 160%），口径待主人确认",
+                "「触发 80% 中毒」—— 主人口径（2026-11-13）：目标身上有多少层毒，就造成「毒层数 × 80%」的**纯粹伤害**；⚠️ **不消耗毒层**（结算完毒层保留，回合末照常再结算一次中毒）。百分比在 wiki 效果1~6 都是 80%，不随等级变化",
                 "启灵1：[胚胎融合] +15 +x / [共振3]：[胚胎融合] +50（本项目无启灵系统与共振系统；「胚胎融合」层数只有珊 / 泰旖丝那条链路在用）"
             ],
             "affixNotes": [
@@ -1879,7 +1896,13 @@
             "cost": 2,
             "isAttack": false,
             "isAreaAttack": true,
-            "description": "对所有敌人施加 {poison} 层中毒并使其临时降低 防御力×30% 点衰竭。",
+            "affixes": [
+                "exhaust"
+            ],
+            "bodyAffixMarks": [
+                "exhaust"
+            ],
+            "description": "对所有敌人施加 {poison} 层中毒并使其临时降低 {strengthDown} 点力量。",
             "effects": [
                 {
                     "type": "debuff",
@@ -1890,14 +1913,20 @@
                 },
                 {
                     "type": "debuff",
-                    "debuff": "weak",
-                    "value": 5,
+                    "debuff": "strengthdown",
+                    "defensePercent": 15,
                     "duration": 2,
                     "target": "allEnemies"
                 }
             ],
+            "affixNotes": [
+                {
+                    "id": "exhaust",
+                    "name": "力量",
+                    "description": "降低造成的主动伤害和触腕伤害。"
+                }
+            ],
             "pendingMechanics": [
-                "「使其临时降低 防御力×30% 点衰竭」—— 本项目用已有的「虚弱」（降低攻击力 N 点）近似，⚠ 值是**固定 5**（随等级系数放大），不是「防御力×30%」的百分比（本项目的减益百分比只按攻击力算，没有防御力口径，见 docs/开发计划.md D70）",
                 "[共振3]：对所有敌人施加 1 层痴醉（缺「共振」系统与「痴醉」减益）"
             ]
         },

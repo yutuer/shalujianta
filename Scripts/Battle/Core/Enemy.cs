@@ -143,9 +143,48 @@ public partial class Enemy : Node, IUnit
 	public void AttackPlayer(Player player)
 	{
 		int damage = CombatCalculator.CalculateDamageWithVariance(Attack);
+		// ⚠️ **力量降低**（wiki 旧称「衰竭」，D72）：减益挂在**敌人**身上 →
+		//    降低的是「**敌人打出去**」的伤害，所以走 CalculateOutgoingDamage
+		//    （不是 CalculateModifiedDamage —— 那个改的是「敌人**受到**的伤害」）。
+		damage = CalculateOutgoingDamage(damage);
 		// ⚠️ **把来源传进去**（D68 反击要用）：
 		// 「承受主动伤害时，对伤害来源造成等量层数的纯粹伤害」→ 没有来源就反弹不了。
 		player.TakeDamage(damage, this);
+	}
+
+	/// <summary>
+	/// 修正「**这个敌人自己打出去**」的伤害 —— 遍历**它自己**身上的状态。
+	///
+	/// ⚠️ 与 <see cref="CalculateModifiedDamage"/> 的区别（很容易搞混）：
+	///   - <c>CalculateModifiedDamage</c>：遍历**承受者**身上的状态 → 改「**受到的**伤害」
+	///   - <c>CalculateOutgoingDamage</c>：遍历**施打者**身上的状态 → 改「**造成的**伤害」
+	///     （力量降低 / 衰竭就走这条）
+	/// </summary>
+	public int CalculateOutgoingDamage(int baseDamage)
+	{
+		int modifiedDamage = baseDamage;
+		foreach (StatusEffect effect in _statusEffects)
+		{
+			modifiedDamage = effect.ModifyOutgoingDamage(modifiedDamage, this);
+		}
+		return modifiedDamage;
+	}
+
+	/// <summary>
+	/// **这个敌人身上的中毒层数**（= 中毒在回合末会造成的纯粹伤害值）。
+	///
+	/// ⚠️ 中毒的「层数」存在 <see cref="PoisonDebuff.DamagePerTurn"/> 里，
+	/// **不是 <c>StackCount</c>** —— 词条是「回合结束时受到等量层数的纯粹伤害」，
+	/// 层数即伤害值；多次施加时 <c>PoisonDebuff.MergeStacks</c> 加的也是 DamagePerTurn。
+	/// </summary>
+	public int GetPoisonStacks()
+	{
+		int stacks = 0;
+		foreach (StatusEffect effect in _statusEffects)
+		{
+			if (effect is PoisonDebuff poison) stacks += poison.DamagePerTurn;
+		}
+		return stacks;
 	}
 
 	public void PerformAction(Player player, List<Enemy> allEnemies)

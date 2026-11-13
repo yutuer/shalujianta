@@ -74,6 +74,9 @@ public class UltimateLoader
         ultimate.Heal = GetIntValue(dict, "heal", 0);
         ultimate.HealPercent = GetIntValue(dict, "healPercent", 0);
         ultimate.DebuffValuePercent = GetIntValue(dict, "debuffValuePercent", 0);
+        // ⚠️ **降低力量**（wiki 旧称「衰竭」，D72）：按施法者防御力百分比算的第二个减益
+        ultimate.StrengthDownPercent = GetIntValue(dict, "strengthDownPercent", 0);
+        ultimate.StrengthDownDuration = GetIntValue(dict, "strengthDownDuration", 0);
         ultimate.Shield = GetIntValue(dict, "shield", 0);
         ultimate.DrawCount = GetIntValue(dict, "drawCount", 0);
         ultimate.BuffValue = GetIntValue(dict, "buffValue", 0);

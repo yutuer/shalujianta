@@ -40,6 +40,7 @@ public static class UltimateExecutor
 
         ApplyDamage(skill, targets, summary);
         ApplyDebuff(skill, targets, summary);
+        ApplyStrengthDown(skill, targets, summary);
         ApplyHeal(skill, player, summary);
         ApplyShield(skill, player, owner, summary);
         ApplyShieldBonus(skill, player, summary);
@@ -293,6 +294,41 @@ public static class UltimateExecutor
     }
 
     /// <summary>
+    /// **降低所有敌人的力量**（wiki 旧称「衰竭」，D72）。
+    ///
+    /// 灰机 wiki：「【吞噬】：临时降低所有敌人 [防御力×N%] 点衰竭。」
+    /// ⚠️ 词条「衰竭」的 displayname 是「**力量**」，力量是百分比型 →
+    ///    降低 N 点力量 = 敌人造成的伤害 −N%。
+    ///
+    /// ⚠️ 这是**第二个减益槽**（第一个是 <see cref="ApplyDebuff"/> 给的中毒）——
+    ///    狂气爆发以前只有「一个减益槽」，所以这类效果只能挂 pendingMechanics；
+    ///    本轮加了这个槽位，「降低力量」就能真跑了。
+    /// </summary>
+    private static void ApplyStrengthDown(UltimateSkill skill, List<Enemy> targets, List<string> summary)
+    {
+        if (skill.StrengthDownPercent <= 0 || targets.Count == 0) return;
+
+        int value = skill.CalculatedStrengthDown;
+        if (value <= 0) return;
+
+        int duration = skill.StrengthDownDuration > 0 ? skill.StrengthDownDuration : skill.BuffDuration;
+
+        foreach (Enemy enemy in targets)
+        {
+            StatusEffect debuff = new StrengthDownDebuff
+            {
+                DamageReductionPercent = value,
+                Duration = duration
+            };
+            debuff.Initialize();
+            enemy.AddStatusEffect(debuff);
+            GD.Print($"[UltimateExecutor] 【{skill.Name}】为 {enemy.EnemyName} 附加力量降低（伤害 -{value}%，持续 {duration} 回合）");
+        }
+
+        summary.Add($"附加力量降低（伤害-{value}%，持续{duration}回合）");
+    }
+
+    /// <summary>
     /// 按减益名创建减益实例（Duration 与数值都显式赋值，不使用类内默认值）
     /// </summary>
     private static StatusEffect CreateDebuff(string debuffName, int buffValue, int buffDuration)
@@ -334,6 +370,17 @@ public static class UltimateExecutor
                 return new VulnerableDebuff
                 {
                     DamageIncrease = buffValue,
+                    Duration = buffDuration
+                };
+
+            // ⚠️ **力量降低**（wiki 旧称「衰竭」，D72）
+            //
+            // 词条「衰竭」的 displayname 是「**力量**」，desc =「降低造成的主动伤害和触腕伤害。」
+            // → 力量是百分比型：N 点力量 = 伤害 +N% → 降低 N 点 = 伤害 −N%。
+            case "strengthdown":
+                return new StrengthDownDebuff
+                {
+                    DamageReductionPercent = buffValue,
                     Duration = buffDuration
                 };
 

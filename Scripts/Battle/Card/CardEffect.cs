@@ -29,6 +29,19 @@ namespace FishEatFish.Battle.Card
 		public int Percent { get; set; }
 
 		/// <summary>
+		/// **按施法者「防御力」算的百分比**（D72）。
+		///
+		/// 灰机 wiki 有一类减益的数值是按**防御力**算的：
+		/// 「使所有敌人临时降低 **防御力×N%** 点力量」（徐「寄吻于扇」／菲茵特「养分汲取」／图鲁「螺湮重临」）。
+		///
+		/// ⚠️ 本项目的减益百分比**默认按攻击力算**（<see cref="Percent"/>）→
+		/// 所以这一类要单独用 <see cref="DefensePercent"/> 表达，**别混进 Percent**。
+		/// ⚠️ 基数是**施法者自己**的防御力（不是目标的）——
+		///    否则同一个卡打在防御力不同的敌人身上数值会变，**卡面就没法显示确切值**了。
+		/// </summary>
+		public int DefensePercent { get; set; }
+
+		/// <summary>
 		/// **临时**（反击用）—— true = 临时反击，**到本回合结束清除**（主人 2026-11-07 拍板）。
 		/// 只有 <see cref="CardEffectType.Counter"/> 用得到。
 		/// </summary>
@@ -334,6 +347,21 @@ namespace FishEatFish.Battle.Card
 		/// 数据表写法：<c>{ "type": "disperseSelfDebuff", "debuff": "weak" }</c>
 		/// </summary>
 		public const string DisperseSelfDebuff = "disperseSelfDebuff";
+
+		/// <summary>
+		/// **触发目标身上的中毒**（徐「入骨相思」：「造成 攻击力×300% 点必定暴击的伤害并**触发 80% 中毒**」）。
+		///
+		/// 灰机 wiki 词条「中毒」：「回合结束时受到等量层数的**纯粹伤害**。」
+		/// → 主人口径（2026-11-13）：「对方身上有多少层的毒，就给对方造成 **80% × 毒层数** 的伤害」。
+		///
+		/// → 所以本效果 = **按目标身上的中毒层数 × 百分比**造成**纯粹伤害**（不走防御、不吃易伤/破甲）。
+		/// ⚠️ **不消耗毒层**（主人 2026-11-13 拍板）：结算完毒层还在，
+		///    回合末仍会照常结算一次中毒（等于同一份毒吃两遍）。
+		/// ⚠️ 百分比**不随卡牌等级变**（wiki 效果1~6 都是 80%）→ 这里**不乘等级系数**。
+		///
+		/// 数据表写法：<c>{ "type": "triggerPoison", "percent": 80, "target": "allEnemies" }</c>
+		/// </summary>
+		public const string TriggerPoison = "triggerPoison";
 	}
 
 	/// <summary>作用目标常量</summary>

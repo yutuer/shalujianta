@@ -287,6 +287,24 @@ public static class DescriptionGenerator
             }
             body = body.Replace("{poison}", value.ToString());
         }
+        if (body.Contains("{strengthDown}"))
+        {
+            // ⚠️ **降低力量的点数**（D72，徐「寄吻于扇」／菲茵特「养分汲取」／图鲁「螺湮重临」）
+            //    = 施法者**防御力** × 百分比 × 等级系数 —— 与战斗结算同一个公式
+            //    （CardEffectCalculator.CalculateDebuffValue → defensePercent 分支）。
+            //    ⚠️ 别再在文案里写「防御力×30%」这种**没算出来的字面**（踩坑 §126）——
+            //    卡面显示的字面和战斗实际生效的数值会分裂。
+            int value = 0;
+            foreach (CardEffect e in card.Effects)
+            {
+                if (e.Type == CardEffectType.Debuff && e.Debuff == "strengthdown")
+                {
+                    value = CardEffectCalculator.CalculateDebuffValue(card, e, attributes);
+                    break;
+                }
+            }
+            body = body.Replace("{strengthDown}", value.ToString());
+        }
         if (body.Contains("{counter}"))
         {
             // ⚠️ **反击层数**（D68，诺缔拉「高热区禁入」/ 菲茵特「无边星彩」）——
@@ -436,6 +454,15 @@ public static class DescriptionGenerator
         {
             int layers = ultimate.CalculatedDebuffValue;
             text = text.Replace("{poison}", layers.ToString()).Replace("{debuff}", layers.ToString());
+        }
+
+        // ⚠️ **降低力量的点数**（D72，徐「夜雾下的情誓」）
+        //    = 施法者**防御力** × strengthDownPercent% × 等级系数 —— 与战斗结算同一个值
+        //    （UltimateSkill.CalculatedStrengthDown → UltimateExecutor.ApplyStrengthDown）。
+        //    ⚠️ 别再在文案里写「防御力×40%」这种**没算出来的字面**（踩坑 §126）。
+        if (text.Contains("{strengthDown}"))
+        {
+            text = text.Replace("{strengthDown}", ultimate.CalculatedStrengthDown.ToString());
         }
 
         // 队伍死亡抵抗（菲茵特「星之摇篮」）
@@ -621,6 +648,8 @@ public static class DescriptionGenerator
             "poison" => "中毒",
             "slow" => "减速",
             "silence" => "沉默",
+            // ⚠️ **力量降低**（wiki 旧称「衰竭」，D72）—— 词条「衰竭」的 displayname 就是「力量」
+            "strengthdown" => "力量",
             _ => debuffName
         };
     }

@@ -227,3 +227,41 @@ public partial class DefenseDownDebuff : StatusEffect
         return baseDamage + baseDamage * DamageIncreasePercent / 100;
     }
 }
+
+/// <summary>
+/// **力量降低**（灰机 wiki 词条「衰竭」／「力量降低」）
+///
+/// 词条原文：「**降低造成的主动伤害和触腕伤害。**」
+/// 词条的 displayname 就是「**力量**」（旧称「衰竭」只是内部 id），
+/// 所以卡面上写的是「降低 XX 点**力量**」而不是「XX 点衰竭」。
+///
+/// ⚠️ **力量是百分比型**：wiki 词条「力量」= 「提高造成的主动伤害%」→
+/// 力量 N 点 = 伤害 +N% → 力量降低 N 点 = 伤害 −N%。
+/// （和「虚弱」不同：「虚弱」是每层固定 −25%，是另一条减益。）
+///
+/// ⚠️ 这个减益挂在**敌人**身上 → 降低的是**敌人打向玩家**的伤害，
+/// 所以它走 <see cref="StatusEffect.ModifyOutgoingDamage"/>（改「自己造成的伤害」），
+/// 而不是 <see cref="StatusEffect.ModifyDamageEnemy"/>（那个改的是「自己受到的伤害」）。
+/// </summary>
+public partial class StrengthDownDebuff : StatusEffect
+{
+    /// <summary>降低的百分比点数（力量降低 N 点 = 造成的伤害 −N%）</summary>
+    [Export]
+    public int DamageReductionPercent { get; set; } = 0;
+
+    public StrengthDownDebuff()
+    {
+        EffectName = "StrengthDown";
+        Description = "造成的伤害降低 %d%%";
+        Duration = 2;
+        EffectType = StatusEffectType.Debuff;
+    }
+
+    /// <summary>降低「自己打出去」的伤害（敌人 → 玩家）</summary>
+    public override int ModifyOutgoingDamage(int baseDamage, Core.Enemy attacker)
+    {
+        if (DamageReductionPercent <= 0) return baseDamage;
+        int reduced = baseDamage - baseDamage * DamageReductionPercent / 100;
+        return reduced < 0 ? 0 : reduced;
+    }
+}

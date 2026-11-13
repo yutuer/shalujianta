@@ -715,6 +715,8 @@ public partial class Card : Resource, ICardLevelable
 			case SlowDebuff sd: sd.EnergyReduction = value; break;
 			case VulnerableDebuff vd: vd.DamageIncrease = value; break;
 			case DefenseDownDebuff dd: dd.DamageIncreasePercent = value; break;
+			// ⚠️ **力量降低**（wiki 旧称「衰竭」）：N 点力量 = 造成的伤害 −N%
+			case StrengthDownDebuff sd: sd.DamageReductionPercent = value; break;
 			default:
 				GD.PrintErr($"[Card] 减益「{debuff.EffectName}」没有对应的数值字段，卡牌数值 {value} 未生效");
 				break;

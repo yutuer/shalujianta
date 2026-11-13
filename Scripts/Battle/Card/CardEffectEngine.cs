@@ -202,6 +202,9 @@ namespace FishEatFish.Battle.Card
 				case CardEffectType.DisperseSelfDebuff:
 					ExecuteDisperseSelfDebuff(card, effect, ctx);
 					break;
+			case CardEffectType.TriggerPoison:
+					ExecuteTriggerPoison(card, effect, ctx);
+					break;
 				default:
 					GD.PrintErr($"[CardEffectEngine] 未知效果类型：{effect.Type}（卡 {card.CardId}）");
 					break;
@@ -658,6 +661,54 @@ namespace FishEatFish.Battle.Card
 		}
 
 		/// <summary>
+		/// **触发目标身上的中毒**（徐「入骨相思」：「造成 攻击力×300% 点必定暴击的伤害并触发 80% 中毒」）。
+		///
+		/// 灰机 wiki 词条「中毒」：「回合结束时受到等量层数的纯粹伤害。」
+		/// → 主人口径（2026-11-13）：「对方身上有多少层的毒，就给对方造成 80%×毒层数的伤害。」
+		///
+		/// → 对每个目标造成「其身上中毒层数 × 百分比」的**纯粹伤害**。
+		/// ⚠️ **不消耗毒层**（主人 2026-11-13 拍板）：毒层保留，回合末照常再结算一次中毒。
+		/// ⚠️ 百分比**不乘等级系数**（wiki 效果1~6 都是 80%）。
+		/// </summary>
+		private static void ExecuteTriggerPoison(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (effect.Percent <= 0) return;
+
+			List<Enemy> targets = new List<Enemy>();
+			if (effect.Target == CardEffectTarget.AllEnemies)
+			{
+				if (ctx.Enemies == null) return;
+				foreach (Enemy enemy in ctx.Enemies)
+				{
+					if (enemy == null || enemy.IsDead) continue;
+					targets.Add(enemy);
+				}
+			}
+			else
+			{
+				Enemy target = ctx.ResolveEnemyTarget?.Invoke(card);
+				if (target == null) return;
+				targets.Add(target);
+			}
+
+			foreach (Enemy enemy in targets)
+			{
+				int stacks = enemy.GetPoisonStacks();
+				if (stacks <= 0)
+				{
+					Log(ctx, $"你使用了{card.Name}，{enemy.EnemyName} 身上没有中毒层数，未触发中毒", LogType.System);
+					continue;
+				}
+
+				int damage = CardEffectCalculator.CalculateTriggerPoisonDamage(stacks, effect);
+				if (damage <= 0) continue;
+
+				// ⚠️ **纯粹伤害**（与中毒回合末那条同一通道）：不走防御、不吃易伤/破甲、不挂来源
+				enemy.TakePureDamage(damage);
+				Log(ctx, $"你使用了{card.Name}，触发 {enemy.EnemyName} 的 {stacks} 层中毒，造成 {damage} 点纯粹伤害", LogType.System);
+			}
+		}
+		/// <summary>
 		/// **灵知觉醒**：打出后使角色在本场战斗中获得特殊能力。
 		///
 		/// 照参考游戏《终末前夜 Morimens》—— 珈伦「凸月之舞」：
@@ -892,6 +943,12 @@ namespace FishEatFish.Battle.Card
 			if (card == null || effect == null) return 0;
 
 			int level = card.Level;
+			// ⚠️ **按防御力算的百分比**（D72）：「降低 防御力×N% 点力量」这类减益。
+			//    基数是**施法者自己**的防御力（不是目标的）—— 否则卡面没法显示确切值。
+			if (effect.DefensePercent > 0 && attributes != null)
+			{
+				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Defense, effect.DefensePercent / 100f);
+			}
 			if (effect.Percent > 0 && attributes != null)
 			{
 				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Attack, effect.Percent / 100f);
@@ -903,6 +960,19 @@ namespace FishEatFish.Battle.Card
 			return 0;
 		}
 
+		/// <summary>
+		/// **触发中毒的伤害** = 目标身上的中毒层数 × 百分比（徐「入骨相思」，D72）。
+		///
+		/// ⚠️ **不乘等级系数**（wiki 效果1~6 都是 80% → 这个百分比是固定的）。
+		/// ⚠️ 向上取整（与伤害 / 护盾同一口径）。
+		/// </summary>
+		public static int CalculateTriggerPoisonDamage(int poisonStacks, CardEffect effect)
+		{
+			if (poisonStacks <= 0 || effect == null || effect.Percent <= 0) return 0;
+			// ⚠️ 先转 double 再算，避免 float 精度少一格（踩坑 §107 / §114）
+			double raw = (double)poisonStacks * effect.Percent / 100.0;
+			return Mathf.CeilToInt((float)raw);
+		}
 		/// <summary>
 		/// **反击层数 = 攻击力 × 百分比 × 等级系数**（D68，诺缔拉「高热区禁入」/ 菲茵特「无边星彩」）。
 		///

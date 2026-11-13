@@ -160,6 +160,8 @@ public class CharacterCardLoader
                 {
                     Type = effectDict.ContainsKey("type") ? effectDict["type"].ToString() : "",
                     Percent = effectDict.ContainsKey("percent") ? (int)(long)effectDict["percent"] : 0,
+                    // ⚠️ **按施法者防御力算的百分比**（D72）：「降低 防御力×N% 点力量」这类减益
+                    DefensePercent = effectDict.ContainsKey("defensePercent") ? (int)(long)effectDict["defensePercent"] : 0,
                     Value = effectDict.ContainsKey("value") ? (int)(long)effectDict["value"] : 0,
                     // 怒气的「每级增长」：value + perLevel × (等级 − 1)（照参考游戏口径）
                     PerLevel = effectDict.ContainsKey("perLevel") ? (int)(long)effectDict["perLevel"] : 0,

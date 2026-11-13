@@ -47,6 +47,25 @@ public partial class UltimateSkill : Resource, ICardLevelable
     [Export]
     public int DebuffValuePercent;
 
+    /// <summary>
+    /// **降低力量的点数按「施法者防御力」百分比算**（D72）。
+    ///
+    /// 灰机 wiki 的一类减益（徐「夜雾下的情誓」／菲茵特「养分汲取」／图鲁「螺湮重临」）：
+    /// 「临时降低所有敌人 **防御力×N%** 点{{词条|衰竭}}。」
+    ///
+    /// ⚠️ wiki 里「衰竭」的 displayname 是「**力量**」（旧称「衰竭」只是内部 id），
+    /// 且力量是**百分比型**（力量 N 点 = 造成的伤害 +N%）→ 力量降低 N 点 = 伤害 −N%。
+    /// ⚠️ 存的是 **1 级值**（wiki 效果1 的百分比），满级由等级系数 ×2 还原 wiki 效果6。
+    /// ⚠️ 基数是**施法者自己**的防御力 —— 否则同一招打在防御力不同的敌人身上数值会变，
+    ///    **卡面就没法显示确切值**了。
+    /// </summary>
+    [Export]
+    public int StrengthDownPercent;
+
+    /// <summary>降低力量的持续回合（D72）</summary>
+    [Export]
+    public int StrengthDownDuration;
+
     [Export]
     public int Shield;
 
@@ -288,6 +307,16 @@ public partial class UltimateSkill : Resource, ICardLevelable
     public int CalculatedDebuffValue => DebuffValuePercent > 0
         ? CardLevelSystem.CalculateAttributeLinkedValue(Level, _linkedAttributes != null ? _linkedAttributes.Attack : 0, DebuffValuePercent / 100f)
         : CalculatedBuffValue;
+
+    /// <summary>
+    /// **降低力量的点数** = 施法者防御力 × <see cref="StrengthDownPercent"/>% × 等级系数（D72）。
+    ///
+    /// ⚠️ 基数是**施法者自己的防御力**（不是目标的）→ 卡面能显示一个确定值。
+    /// 例：徐「夜雾下的情誓」（1 级 20% → 满级 40%）：113 × 20% × 2 = **46 点**。
+    /// </summary>
+    public int CalculatedStrengthDown => StrengthDownPercent > 0
+        ? CardLevelSystem.CalculateAttributeLinkedValue(Level, _linkedAttributes != null ? _linkedAttributes.Defense : 0, StrengthDownPercent / 100f)
+        : 0;
 
     public int CalculatedShield => CardLevelSystem.CalculateAttributeLinkedValue(Level, Shield, ShieldBaseCoefficient);
 

@@ -35,7 +35,10 @@ public static class EffectRegistry
         { "counter", "res://Assets/Icons/status_counter.svg" },
         { "slow", "res://Assets/Icons/status_slow.svg" },
         { "silence", "res://Assets/Icons/status_silence.svg" },
-        { "defense_down", "res://Assets/Icons/status_defense_down.svg" }
+        { "defense_down", "res://Assets/Icons/status_defense_down.svg" },
+        // ⚠️ **力量降低**（wiki 旧称「衰竭」）—— 复用「力量」图标（同一个图标文件，wiki 词条表里
+        // 「衰竭」与「力量降低」共用 衰竭-图标），本项目没有单独画一个。
+        { "strengthdown", "res://Assets/Icons/status_strength.svg" }
     };
 
     /// <summary>
@@ -187,6 +190,8 @@ public static class EffectRegistry
             "slow" => new SlowDebuff(),
             "silence" => new SilenceDebuff(),
             "defensedown" => new DefenseDownDebuff(),
+            // ⚠️ **力量降低**（wiki 旧称「衰竭」）：降低造成的主动伤害 N%
+            "strengthdown" => new StrengthDownDebuff(),
             _ => null
         };
     }
