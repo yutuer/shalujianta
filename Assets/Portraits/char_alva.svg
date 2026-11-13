@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_alva" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7A4E8C"/>
+      <stop offset="1" stop-color="#53355F"/>
+    </linearGradient>
+    <linearGradient id="headGrad_alva" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9571A3"/>
+      <stop offset="1" stop-color="#7A4E8C"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M128 34 L128 300" fill="none" stroke="#F0C0E8" stroke-width="6" stroke-linecap="round" />
+  <path d="M64 94 L192 94" fill="none" stroke="#F0C0E8" stroke-width="6" stroke-linecap="round" />
+  <path d="M110 132 C90.2 135 72.6 144 66 158 C70 188 78 202 82 214 C84 230 80 241 74 250 L71 296 L185 296 L182 250 C176 241 172 230 174 214 C178 202 186 188 190 158 C152.6 144 170.2 135 146 132 Z" fill="url(#bodyGrad_alva)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#AD8AA7" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_alva)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="60" r="18" fill="url(#headGrad_alva)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="60" r="18" fill="url(#headGrad_alva)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="60" r="9" fill="#F0C0E8" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="60" r="9" fill="#F0C0E8" stroke="#0B0E14" stroke-width="3" />
+  <path d="M112 88 L144 88 L136 112 L120 112 Z" fill="#F0C0E8" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <path d="M137 191 C117 198 140 208 120 213" fill="none" stroke="#F0C0E8" stroke-width="6" stroke-linecap="round" />
+</svg>

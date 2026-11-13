@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using FishEatFish.Battle.CharacterSystem;
 using FishEatFish.Battle.Core;
@@ -197,6 +198,9 @@ namespace FishEatFish.Battle.Card
 					break;
 				case CardEffectType.TriggerCounter:
 					ExecuteTriggerCounter(card, effect, ctx);
+					break;
+				case CardEffectType.DisperseSelfDebuff:
+					ExecuteDisperseSelfDebuff(card, effect, ctx);
 					break;
 				default:
 					GD.PrintErr($"[CardEffectEngine] 未知效果类型：{effect.Type}（卡 {card.CardId}）");
@@ -436,6 +440,39 @@ namespace FishEatFish.Battle.Card
 			}
 
 			Log(ctx, $"对所有敌人触发{counterDamage}点反击伤害", LogType.Damage);
+		}
+
+		/// <summary>
+		/// **驱散自身减益**（D71，图鲁「螺湮重临」：「驱散自身{{词条|虚弱}}状态。」）。
+		///
+		/// → 移除**玩家自己**身上同名（<c>EffectName</c>）的减益。
+		/// ⚠️ 数据表里写的是**减益 id**（weak / poison / …），
+		///    而状态对象里存的是**状态名**（Weak / Poison）→ 这里做不区分大小写的比对。
+		/// </summary>
+		private static void ExecuteDisperseSelfDebuff(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (string.IsNullOrEmpty(effect.Debuff)) return;
+			if (ctx.Player == null) return;
+
+			string wanted = effect.Debuff.Trim();
+			int removed = 0;
+
+			foreach (StatusEffect status in ctx.Player.StatusEffects.ToArray())
+			{
+				if (status == null) continue;
+				if (!string.Equals(status.EffectName, wanted, System.StringComparison.OrdinalIgnoreCase)) continue;
+				ctx.Player.RemoveStatusEffect(status);
+				removed++;
+			}
+
+			if (removed <= 0)
+			{
+				GD.Print($"[CardEffectEngine] {card.Name} 驱散自身 {wanted}：自身没有该状态");
+				return;
+			}
+
+			GD.Print($"[CardEffectEngine] {card.Name} 驱散自身 {wanted} {removed} 层");
+			Log(ctx, $"驱散自身{wanted}状态 {removed} 层", LogType.System);
 		}
 
 		/// <summary>

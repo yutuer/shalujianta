@@ -51,6 +51,8 @@ public static class UltimateExecutor
         ApplyAddCardToHand(skill, player, owner, summary);
         ApplyDeathResistance(skill, player, owner, summary);
         ApplyDisperseSelfVulnerable(skill, player, summary);
+        ApplyDisperseSelfDebuff(skill, player, summary);
+        ApplyStack(skill, owner, summary);
 
         string result = summary.Count > 0 ? string.Join("，", summary) : "无实际效果";
         GD.Print($"[UltimateExecutor] Execute completed: {skill.Name} -> {result}");
@@ -324,6 +326,17 @@ public static class UltimateExecutor
                     Duration = buffDuration
                 };
 
+            // ⚠️ **易伤**（D71，艾尔瓦「无止境的正义」：「易伤所有敌人 1 回合」）
+            //
+            // 复用已有的 VulnerableDebuff（词条：受到伤害 +N%）。
+            // ⚠️ wiki 原文没给数值 → 用减益表里的标准值（50 = 受到伤害 +50%）。
+            case "vulnerable":
+                return new VulnerableDebuff
+                {
+                    DamageIncrease = buffValue,
+                    Duration = buffDuration
+                };
+
             // ⚠️ **出血**（泰旖丝「丰穰之仪」2026-11-01 新增）
             //
             // 复用**已有的** BleedDebuff（词条：回合结束时受到等量层数的纯粹伤害并移除该状态），
@@ -488,6 +501,15 @@ public static class UltimateExecutor
         }
 
         int handBefore = player.Hand.Count;
+        if (skill.DrawFilter == CardDrawFilter.Strike)
+        {
+            // D71：希洛「绝境求生」—— 抽 N 张「打击」（不是随机抽，是从牌堆里找打击卡）
+            int drawn = player.DrawStrikeCards(drawCount);
+            GD.Print($"[UltimateExecutor] 【{skill.Name}】抽 {drawn} 张打击卡");
+            summary.Add(drawn > 0 ? $"抽{drawn}张打击卡" : "牌堆里没有打击卡");
+            return;
+        }
+
         player.DrawCards(drawCount);
         GD.Print($"[UltimateExecutor] 【{skill.Name}】抽 {drawCount} 张牌（手牌 {handBefore} → {player.Hand.Count}）");
         summary.Add($"抽{drawCount}张");
@@ -580,6 +602,55 @@ public static class UltimateExecutor
     /// 照 wiki：「驱散自身{{词条|脆弱}}。」
     /// 脆弱词条：「获得的所有护盾降低 25%，回合结束时移除 1 层。」
     /// </summary>
+    /// <summary>
+    /// **驱散自身减益**（D71，希洛「绝境求生」）。
+    ///
+    /// wiki 原文（6 级）：「驱散自身{{词条|虚弱}}和非永久{{词条|力量}}降低状态。」
+    /// → 数据表字段 <c>disperseSelfDebuffName</c> = 减益 id（weak），
+    ///    执行器按状态名（Weak）比对，**不区分大小写**。
+    /// ⚠️ 只认减益 id 里的那一种 —— 「非永久力量降低」那部分还没实现（见数据表的 pendingMechanics）。
+    /// </summary>
+    private static void ApplyDisperseSelfDebuff(UltimateSkill skill, Player player, List<string> summary)
+    {
+        if (string.IsNullOrEmpty(skill.DisperseSelfDebuffName) || player == null) return;
+
+        string wanted = skill.DisperseSelfDebuffName.Trim();
+        int removed = 0;
+
+        foreach (StatusEffect effect in player.StatusEffects.ToArray())
+        {
+            if (effect == null) continue;
+            if (!string.Equals(effect.EffectName, wanted, System.StringComparison.OrdinalIgnoreCase)) continue;
+            player.RemoveStatusEffect(effect);
+            removed++;
+        }
+
+        GD.Print($"[UltimateExecutor] [{skill.Name}] 驱散自身 {wanted} {removed} 层");
+        summary.Add(removed > 0 ? $"驱散自身{wanted}状态 {removed} 层" : "自身没有可驱散的状态");
+    }
+
+    /// <summary>
+    /// **获得层数**（D71，图鲁「星辰正位之刻」：「获得 1 条触腕。」）。
+    ///
+    /// → 层数加在**释放者身上**（跟卡牌的 <c>stack</c> 效果同一套：<see cref="CharacterPosition.AddStack"/>）。
+    /// ⚠️ 本项目的触腕只有「层数」没有「触腕攻击」执行器 → 只影响显示与上限（见图鲁「不朽威仪」）。
+    /// </summary>
+    private static void ApplyStack(UltimateSkill skill, CharacterPosition owner, List<string> summary)
+    {
+        if (string.IsNullOrEmpty(skill.StackId) || skill.StackCount <= 0) return;
+
+        if (owner == null)
+        {
+            GD.PrintErr($"[UltimateExecutor] [{skill.Name}] 获得层数需要归属角色，已跳过");
+            return;
+        }
+
+        owner.AddStack(skill.StackId, skill.StackCount);
+        int current = owner.GetStack(skill.StackId);
+        GD.Print($"[UltimateExecutor] [{skill.Name}] 获得 {skill.StackCount} 层 {CardStackIds.DisplayName(skill.StackId)}（当前 {current} 层）");
+        summary.Add($"获得{skill.StackCount}层{CardStackIds.DisplayName(skill.StackId)}");
+    }
+
     private static void ApplyDisperseSelfVulnerable(UltimateSkill skill, Player player, List<string> summary)
     {
         if (!skill.DisperseSelfVulnerable || player == null) return;

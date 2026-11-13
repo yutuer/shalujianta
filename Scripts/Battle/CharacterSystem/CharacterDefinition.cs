@@ -467,6 +467,258 @@ public partial class CharacterDefinition : Resource
     }
 
     /// <summary>
+    /// **艾尔瓦**（Alva）—— **可玩角色**（灰机 wiki 角色页「艾尔瓦」，2026-11-13 主人指定新增）。
+    ///
+    /// 属性口径（与诺缔拉一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **120** / 攻击 **128** / 防御 **140**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   黑印掉落 **3.6%** / 死亡抵抗 **33.6%**
+    ///   （通用值其余 7 项：暴击率5 / 暴击伤害50 / 界域精通0 / 伤害强效0 /
+    ///    基础狂气100 / 狂气回充0 / 银钥充能15）
+    ///
+    /// 界域 = **混沌**（wiki「|界域=混沌」）、定位 **防御型**（wiki「唤醒体类型=防御型」）。
+    ///
+    /// 卡组：打击 + 防御 + 战地卓识（灵知觉醒）/ 临战体势 / 心眼利刃；
+    /// 狂气爆发「无止境的正义」。
+    ///
+    /// ⚠️ **专属卡顺序 = 显示顺序**：打击(1) / 防御(2) / **灵知觉醒卡(3)** / 技能卡1(4) / 技能卡2(5)。
+    /// → 所以 `specialCardIds[0]` **恒为灵知觉醒卡**（`tools/check-card-data.ps1` 有规则守着）。
+    /// </summary>
+    public static CharacterDefinition CreateAlva()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "alva",
+            Name = "艾尔瓦",
+            NameEn = "Alva",
+            // 界域=混沌（wiki 角色页「|界域=混沌」）
+            Race = CharacterRace.Chaos,
+            // 防御型（wiki「唤醒体类型=防御型」）
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 128,
+            BaseDefense = 140,
+            BaseConstitution = 120,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            BaseRageReturn = 0f,
+            // 黑印掉落 3.6% / 死亡抵抗 33.6%（wiki 升格5 原值，小数）→ 面板显示 3.6 / 33.6
+            BaseBlackMarkDrop = 3.6f,
+            BaseDeathResistance = 33.6f,
+            BaseSilverKeyCharge = 15f,
+            BaseMaxRage = 100,
+            AttackCardId = "alva_attack",
+            DefenseCardId = "alva_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "alva_special3", "alva_special", "alva_special2" },
+            UltimateSkillId = "alva_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **莱克**（Ryker）—— **可玩角色**（灰机 wiki 角色页「莱克」，2026-11-13 主人指定新增）。
+    ///
+    /// 属性口径（与艾尔瓦一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **180** / 攻击 **149** / 防御 **144**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   暴击率 **9.8%** / 黑印掉落 **7.2%**
+    ///   （通用值其余 7 项：暴击伤害50 / 界域精通0 / 伤害强效0 / 基础狂气100 /
+    ///    狂气回充0 / 银钥充能15 / 死亡抵抗0）
+    ///
+    /// 界域 = **混沌**、定位 **辅助型**（wiki「唤醒体类型=辅助型」）
+    /// → 辅助型 = Healer / Debuffer 两档；莱克**不治疗**（他的牌是抽牌 / 力量 / 多段伤害）
+    /// → 取 Debuffer（界面只显示三分类「辅助型」，两档显示一样）。
+    ///
+    /// 卡组：打击 + 防御 + 绝佳运气（灵知觉醒）/ 意外收获 / 摊牌时刻；
+    /// 狂气爆发「肆意豪赌」。
+    /// </summary>
+    public static CharacterDefinition CreateRyker()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "ryker",
+            Name = "莱克",
+            NameEn = "Ryker",
+            Race = CharacterRace.Chaos,
+            Archetype = CharacterArchetype.Debuffer,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 149,
+            BaseDefense = 144,
+            BaseConstitution = 180,
+            // 暴击率 9.8%（wiki 升格5 原值，小数）→ 面板显示 9.8%
+            BaseCritRate = 9.8f,
+            BaseCritDamage = 50,
+            BaseRageReturn = 0f,
+            BaseBlackMarkDrop = 7.2f,
+            BaseDeathResistance = 0f,
+            BaseSilverKeyCharge = 15f,
+            BaseMaxRage = 100,
+            AttackCardId = "ryker_attack",
+            DefenseCardId = "ryker_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "ryker_special3", "ryker_special", "ryker_special2" },
+            UltimateSkillId = "ryker_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **图鲁**（Tulu）—— **可玩角色**（灰机 wiki 角色页「图鲁」，2026-11-13 主人指定新增）。
+    ///
+    /// 属性口径（与艾尔瓦一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **153** / 攻击 **171** / 防御 **135**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   狂气回充等级 **2.4** / 银钥充能等级 **26.2**
+    ///   （通用值其余 7 项：暴击率5 / 暴击伤害50 / 界域精通0 / 伤害强效0 /
+    ///    基础狂气100 / 黑印掉落0 / 死亡抵抗0）
+    ///
+    /// 界域 = **深海**、定位 **伤害型**（wiki「唤醒体类型=伤害型」）→ Striker。
+    /// ⚠️ 他的牌全是「触腕」机制 —— 本项目有触腕**层数**，但**没有触腕攻击的执行器**（见 pendingMechanics）。
+    ///
+    /// 卡组：打击 + 防御 + 不朽威仪（灵知觉醒）/ 深渊号令 / 螺湮重临；
+    /// 狂气爆发「星辰正位之刻」。
+    /// </summary>
+    public static CharacterDefinition CreateTulu()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "tulu",
+            Name = "图鲁",
+            NameEn = "Tulu",
+            Race = CharacterRace.Abyss,
+            Archetype = CharacterArchetype.Striker,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 171,
+            BaseDefense = 135,
+            BaseConstitution = 153,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            // 狂气回充等级 2.4 / 银钥充能等级 26.2（wiki 升格5 原值，小数）
+            BaseRageReturn = 2.4f,
+            BaseSilverKeyCharge = 26.2f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "tulu_attack",
+            DefenseCardId = "tulu_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "tulu_special3", "tulu_special", "tulu_special2" },
+            UltimateSkillId = "tulu_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **希洛**（Helot）—— **可玩角色**（灰机 wiki 角色页「希洛」，2026-11-13 主人指定新增）。
+    ///
+    /// 属性口径（与艾尔瓦一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **140** / 攻击 **136** / 防御 **100**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   暴击率 **17.8%** / 伤害强效 **11.2%**
+    ///   （通用值其余 7 项：暴击伤害50 / 界域精通0 / 基础狂气100 / 狂气回充0 /
+    ///    银钥充能15 / 黑印掉落0 / 死亡抵抗0）
+    ///
+    /// 界域 = **血肉**、定位 **伤害型**（wiki「唤醒体类型=伤害型」）→ Striker。
+    ///
+    /// 卡组：打击 + 防御 + 复仇宣言（灵知觉醒）/ 破链一击 / 绵长恨怨；
+    /// 狂气爆发「绝境求生」。
+    /// </summary>
+    public static CharacterDefinition CreateHelot()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "helot",
+            Name = "希洛",
+            NameEn = "Helot",
+            Race = CharacterRace.Flesh,
+            Archetype = CharacterArchetype.Striker,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 136,
+            BaseDefense = 100,
+            BaseConstitution = 140,
+            // 暴击率 17.8% / 伤害强效 11.2%（wiki 升格5 原值，小数）
+            BaseCritRate = 17.8f,
+            BaseCritDamage = 50,
+            BaseDamageBonus = 11.2f,
+            BaseRageReturn = 0f,
+            BaseSilverKeyCharge = 15f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "helot_attack",
+            DefenseCardId = "helot_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "helot_special3", "helot_special", "helot_special2" },
+            UltimateSkillId = "helot_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **徐**（Xu）—— **可玩角色**（灰机 wiki 角色页「徐」，2026-11-13 主人指定新增）。
+    ///
+    /// 属性口径（与艾尔瓦一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **203** / 攻击 **122** / 防御 **113**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   伤害强效 **9.6%** / 死亡抵抗 **16.8%**
+    ///   （通用值其余 7 项：暴击率5 / 暴击伤害50 / 界域精通0 / 基础狂气100 /
+    ///    狂气回充0 / 银钥充能15 / 黑印掉落0）
+    ///
+    /// 界域 = **血肉**、定位 **辅助型**（wiki「唤醒体类型=辅助型」）
+    /// → 辅助型 = Healer / Debuffer 两档；徐**不治疗**（他的牌是中毒 / 衰竭 / 共振）
+    /// → 取 Debuffer（界面只显示三分类「辅助型」，两档显示一样）。
+    ///
+    /// 卡组：打击 + 防御 + 不梦乡之主（灵知觉醒）/ 入骨相思 / 寄吻于扇；
+    /// 狂气爆发「夜雾下的情誓」。
+    /// </summary>
+    public static CharacterDefinition CreateXu()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "xu",
+            Name = "徐",
+            NameEn = "Xu",
+            Race = CharacterRace.Flesh,
+            Archetype = CharacterArchetype.Debuffer,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 122,
+            BaseDefense = 113,
+            BaseConstitution = 203,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            // 伤害强效 9.6% / 死亡抵抗 16.8%（wiki 升格5 原值，小数）
+            BaseDamageBonus = 9.6f,
+            BaseDeathResistance = 16.8f,
+            BaseRageReturn = 0f,
+            BaseSilverKeyCharge = 15f,
+            BaseBlackMarkDrop = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "xu_attack",
+            DefenseCardId = "xu_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "xu_special3", "xu_special", "xu_special2" },
+            UltimateSkillId = "xu_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
     /// **可玩角色**清单（卡组齐全的那些）。
     /// 为什么单独列一份：<see cref="GetAllCharacters"/> 里还有 12 个星座 BOSS ——
     /// 它们**不使用卡牌**（BOSS 卡已删），卡组是空的，进「角色一览」只会显示成空壳。
@@ -498,6 +750,11 @@ public partial class CharacterDefinition : Resource
             CreateThais(),
             CreateFaint(),
             CreateNuodila(),
+            CreateAlva(),
+            CreateRyker(),
+            CreateTulu(),
+            CreateHelot(),
+            CreateXu(),
             CreateMu(),
             CreateAldebaran(),
             CreateSaga(),

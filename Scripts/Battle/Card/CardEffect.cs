@@ -324,6 +324,16 @@ namespace FishEatFish.Battle.Card
 		/// 数据表写法：<c>{ "type": "triggerCounter", "percent": 100, "target": "allEnemies" }</c>
 		/// </summary>
 		public const string TriggerCounter = "triggerCounter";
+
+		/// <summary>
+		/// **驱散自身减益**（图鲁「螺湮重临」：「驱散自身{{词条|虚弱}}状态。」）。
+		///
+		/// → 移除**玩家自己**身上指定 id 的减益（weak / poison / …）。
+		/// ⚠️ 减益 id 复用 <see cref="CardEffect.Debuff"/> 字段（不新增字段 → 加载器不用改）。
+		///
+		/// 数据表写法：<c>{ "type": "disperseSelfDebuff", "debuff": "weak" }</c>
+		/// </summary>
+		public const string DisperseSelfDebuff = "disperseSelfDebuff";
 	}
 
 	/// <summary>作用目标常量</summary>

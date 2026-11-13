@@ -187,6 +187,51 @@ public partial class Player : Node, IUnit
 		return drawn;
 	}
 
+	/// <summary>
+	/// 抽「**打击**」卡（D71：希洛「绝境求生」——「【吞噬】：抽 3 张「打击」」）。
+	///
+	/// 与 <see cref="DrawCards"/> 的区别：**不是随机抽** ——
+	/// 从牌堆里按顺序找出打击卡（判定依据 = 卡牌 id 的 <c>_attack</c> 后缀，
+	/// 本项目所有角色的打击卡都用这个后缀）并放进手牌。
+	/// 牌堆里没有打击卡就抽不到（返回实际抽到的张数）。
+	/// </summary>
+	/// <param name="count">想抽几张</param>
+	/// <returns>实际抽到的张数</returns>
+	public int DrawStrikeCards(int count)
+	{
+		int drawn = 0;
+
+		for (int i = 0; i < count; i++)
+		{
+			if (Deck.Count == 0)
+			{
+				ShuffleDiscardIntoDeck();
+			}
+
+			if (Deck.Count == 0) break;
+			if (Hand.Count >= MaxHandSize) break;
+
+			int foundIndex = -1;
+			for (int j = 0; j < Deck.Count; j++)
+			{
+				Card.Card candidate = Deck[j];
+				if (candidate == null) continue;
+				if (!candidate.CardId.EndsWith("_attack")) continue;
+				foundIndex = j;
+				break;
+			}
+
+			if (foundIndex < 0) break;   // 牌堆里没有打击卡了
+
+			Card.Card picked = Deck[foundIndex];
+			Deck.RemoveAt(foundIndex);
+			Hand.Add(picked);
+			drawn++;
+		}
+
+		return drawn;
+	}
+
 	public void ShuffleDeck()
 	{
 		RandomNumberGenerator rng = new RandomNumberGenerator();

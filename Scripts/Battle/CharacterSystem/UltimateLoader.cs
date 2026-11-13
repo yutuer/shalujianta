@@ -118,9 +118,14 @@ public class UltimateLoader
         ultimate.CounterGainPercent = GetIntValue(dict, "counterGainPercent", 0);
         ultimate.CounterTriggerPercent = GetIntValue(dict, "counterTriggerPercent", 0);
         ultimate.ShieldBonusPercent = GetIntValue(dict, "shieldBonusPercent", 0);
-
         // 伤害百分比口径（> 0 时按「角色攻击力 × 百分比」算）
         ultimate.DamagePercent = GetIntValue(dict, "damagePercent", 0);
+
+        // D71 新角色用的三个字段（驱散自身减益 / 获得层数 / 抽牌筛选）
+        ultimate.DisperseSelfDebuffName = GetStringValue(dict, "disperseSelfDebuffName").ToLower();
+        ultimate.StackId = GetStringValue(dict, "stackId");
+        ultimate.StackCount = GetIntValue(dict, "stackCount", 0);
+        ultimate.DrawFilter = GetStringValue(dict, "drawFilter");
 
         // 说明里提到的衍生卡（点它弹衍生卡说明面板）
         ultimate.DerivedCardId = GetStringValue(dict, "derivedCardId");

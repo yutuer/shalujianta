@@ -486,6 +486,104 @@ $Characters['nuodila'] = @{
     Emblem = 'hexagon'
 }
 
+# ===== D71 新增 5 个 wiki 角色（2026-11-13 主人指定）=====
+# ⚠️ 加了新角色后跑本脚本要用 -Only（例：-Only alva,ryker,tulu,helot,xu），
+#    别全量跑 —— 波吕克斯 / 珈伦 / 珊 / 泰旖丝的立绘已被主人手工精修过。
+
+# 艾尔瓦（Alva）—— 混沌界域 / 防御型 / 军刀与正义之星
+$Characters['alva'] = @{
+    Main = '#7A4E8C'; Accent = '#F0C0E8'
+    Sh = 62; Wa = 46; Hp = 54
+    Behind = @(
+        '<path d="M128 34 L128 300" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M64 94 L192 94" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M112 88 L144 88 L136 112 L120 112 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'scale'
+}
+
+# 莱克（Ryker）—— 混沌界域 / 辅助型 / 扑克与筹码
+$Characters['ryker'] = @{
+    Main = '#8C6A3E'; Accent = '#F0E0A0'
+    Sh = 66; Wa = 50; Hp = 56
+    Behind = @(
+        '<path d="M64 20 L104 44 L64 68 L24 44 Z" fill="none" stroke="{ACC}" stroke-width="5" stroke-linejoin="round" />',
+        '<circle cx="192" cy="210" r="18" fill="none" stroke="{ACC}" stroke-width="5" />',
+        '<circle cx="192" cy="210" r="9" fill="none" stroke="{ACC}" stroke-width="4" />'
+    )
+    After = @(
+        '<circle cx="96" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M84 40 L172 40 L164 22 L92 22 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'doubleCircle'
+}
+
+# 图鲁（Tulu）—— 深海界域 / 伤害型 / 触腕
+$Characters['tulu'] = @{
+    Main = '#2A6E7E'; Accent = '#6EE8E0'
+    Sh = 74; Wa = 56; Hp = 60
+    Behind = @(
+        '<path d="M52 280 C34 226 44 168 74 140" fill="none" stroke="{ACC}" stroke-width="7" stroke-linecap="round" />',
+        '<path d="M204 280 C222 226 212 168 182 140" fill="none" stroke="{ACC}" stroke-width="7" stroke-linecap="round" />',
+        '<circle cx="74" cy="134" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="182" cy="134" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M104 30 L152 30 L142 6 L114 6 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'teardrop'
+}
+
+# 希洛（Helot）—— 血肉界域 / 伤害型 / 锁链与颈刺
+$Characters['helot'] = @{
+    Main = '#7A2A3E'; Accent = '#E89098'
+    Sh = 58; Wa = 44; Hp = 52
+    Behind = @(
+        '<path d="M40 40 L52 62 L40 84 L28 62 Z" fill="none" stroke="{ACC}" stroke-width="5" stroke-linejoin="round" />',
+        '<path d="M216 40 L228 62 L216 84 L204 62 Z" fill="none" stroke="{ACC}" stroke-width="5" stroke-linejoin="round" />',
+        '<path d="M128 96 L128 132" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M118 84 L138 84 L128 108 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'bars'
+}
+
+# 徐（Xu）—— 血肉界域 / 辅助型 / 扇与不梦乡
+$Characters['xu'] = @{
+    Main = '#4E3A7A'; Accent = '#D0A8F0'
+    Sh = 60; Wa = 44; Hp = 54
+    Behind = @(
+        '<path d="M46 96 C46 60 84 44 128 44 C172 44 210 60 210 96" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M64 88 L118 50 M128 88 L128 44 M192 88 L138 50" fill="none" stroke="{ACC}" stroke-width="4" stroke-linecap="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M110 92 L146 92 L128 118 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'sparkle'
+}
+
 
 
 

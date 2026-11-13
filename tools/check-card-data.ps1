@@ -257,7 +257,9 @@ foreach ($c in $cards) {
             #   → 这类卡必须能带 rage 条目，否则 wiki 数据无法落地。
             #   （2026-11-07 加 nuodila_special2：诺缔拉「短期记忆」6 级
             #   「获得防御力×20% 点护盾。选择 1 名其他唤醒体获得 20 点狂气。」）
-            $rageWhitelist = @('thais_special', 'nuodila_special2')
+            #   （2026-11-13 加 ryker_special2：莱克「摊牌时刻」6 级
+            #   「造成攻击力×40% 点伤害 1~6 次。莱克获得 15 点狂气。」）
+            $rageWhitelist = @('thais_special', 'nuodila_special2', 'ryker_special2')
             if ($rageWhitelist -notcontains $cid) {
                 $problems += "[character_cards.json] 卡「$cid」是专属指令卡，按参考口径**不给怒气**（参考图属性面板没有「狂气」行），请删掉 effects 里的 rage 条目"
             }

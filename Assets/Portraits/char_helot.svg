@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_helot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7A2A3E"/>
+      <stop offset="1" stop-color="#531D2A"/>
+    </linearGradient>
+    <linearGradient id="headGrad_helot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#955565"/>
+      <stop offset="1" stop-color="#7A2A3E"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M40 40 L52 62 L40 84 L28 62 Z" fill="none" stroke="#E89098" stroke-width="5" stroke-linejoin="round" />
+  <path d="M216 40 L228 62 L216 84 L204 62 Z" fill="none" stroke="#E89098" stroke-width="5" stroke-linejoin="round" />
+  <path d="M128 96 L128 132" fill="none" stroke="#E89098" stroke-width="5" stroke-linecap="round" />
+  <path d="M110 132 C92 135 76 144 70 158 C74 188 80 202 84 214 C86 230 82 241 76 250 L73 296 L183 296 L180 250 C174 241 170 230 172 214 C176 202 182 188 186 158 C152 144 168 135 146 132 Z" fill="url(#bodyGrad_helot)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#A7686D" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_helot)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="60" r="18" fill="url(#headGrad_helot)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="60" r="18" fill="url(#headGrad_helot)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="60" r="9" fill="#E89098" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="60" r="9" fill="#E89098" stroke="#0B0E14" stroke-width="3" />
+  <path d="M118 84 L138 84 L128 108 Z" fill="#E89098" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <rect x="116" y="195" width="24" height="4" rx="2" fill="#E89098" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <rect x="116" y="203" width="24" height="4" rx="2" fill="#E89098" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <rect x="116" y="211" width="24" height="4" rx="2" fill="#E89098" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

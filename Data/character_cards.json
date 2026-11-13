@@ -1175,6 +1175,781 @@
                     "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
                 }
             ]
+        },
+{
+            "cardId": "alva_attack",
+            "characterId": "alva",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "启灵3「若算力不足时可消耗 3 点黑印打出并生效 2 次」—— 本项目无启灵系统，也没有「消耗黑印打出」的机制"
+            ]
+        },
+        {
+            "cardId": "alva_defense",
+            "characterId": "alva",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "启灵3「若算力不足时可消耗 3 点黑印打出并生效 2 次」—— 本项目无启灵系统，也没有「消耗黑印打出」的机制"
+            ]
+        },
+        {
+            "cardId": "alva_special",
+            "characterId": "alva",
+            "name": "临战体势",
+            "style": "striker",
+            "cost": 0,
+            "isAttack": false,
+            "isRetain": true,
+            "shieldPercent": 10,
+            "affixes": [
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "retain"
+            ],
+            "description": "获得 {shield} 点护盾。回合结束时若在手中，下次打出时额外造成 1 次护盾。驱散所有唤醒体封印状态。⚠保留。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 10
+                },
+                {
+                    "type": "retain"
+                }
+            ],
+            "pendingMechanics": [
+                "回合结束时若在手中，下次打出时额外造成 1 次护盾（本项目的「保留叠加」语义不同：那是「算力消耗 +1、回复与护盾翻倍」，不是「下次打出时额外造成 1 次护盾」）",
+                "驱散所有唤醒体封印状态（本项目没有「封印」减益，也没有「驱散友方状态」机制）",
+                "启灵1：视为「防御」（本项目无启灵系统，也没有「视为某张卡」机制）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "alva_special2",
+            "characterId": "alva",
+            "name": "心眼利刃",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": true,
+            "damagePercent": 60,
+            "description": "造成 {damage} 点伤害。每点护盾使伤害提高 2 点。在本回合中每打出 1 张「防御」，算力消耗 -1。视为「打击」。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 60,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "每点护盾使伤害提高 2 点（缺「伤害随护盾提高」的机制）",
+                "在本回合中每打出 1 张「防御」，算力消耗 -1（缺「打出防御牌降费」机制）",
+                "视为「打击」（本项目没有「视为某张卡」机制）"
+            ]
+        },
+        {
+            "cardId": "alva_special3",
+            "characterId": "alva",
+            "name": "战地卓识",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：获得 防御力×8% 点戒备。艾尔瓦指令卡造成的伤害随当前护盾提高，每点护盾提高 2。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "获得 防御力×8% 点戒备（卡面写的是 wiki 6 级原文 8%；数据表存 1 级值 4%）—— buff 效果目前只能挂在敌人身上，不能给自己（见 docs/开发计划.md D70）",
+                "艾尔瓦指令卡造成的伤害随当前护盾提高，每点护盾提高 2（缺「伤害随护盾提高」的机制）",
+                "启灵3：自身获得 50% 临时暴击率和暴击伤害（本项目无启灵系统，也没有临时暴击率机制）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "ryker_attack",
+            "characterId": "ryker",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "启灵3「若算力不足时可消耗 3 点黑印打出并生效 2 次」—— 本项目无启灵系统，也没有「消耗黑印打出」的机制"
+            ]
+        },
+        {
+            "cardId": "ryker_defense",
+            "characterId": "ryker",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "启灵3「若算力不足时可消耗 3 点黑印打出并生效 2 次」—— 本项目无启灵系统，也没有「消耗黑印打出」的机制"
+            ]
+        },
+        {
+            "cardId": "ryker_special",
+            "characterId": "ryker",
+            "name": "意外收获",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 20,
+            "description": "造成 {damage} 点伤害。选择 1 张抽牌堆的牌置入手中，若暴击则使选择的卡牌算力消耗降低 1 点。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 20,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "选择 1 张抽牌堆的牌置入手中（缺「从抽牌堆选牌置入手牌」机制 —— 本项目的抽牌是从牌堆按顺序取）",
+                "若暴击则使选择的卡牌算力消耗降低 1 点（缺「卡牌算力消耗临时降低」机制）",
+                "启灵1：使选择的卡牌算力消耗降低 2 点（本项目无启灵系统）"
+            ]
+        },
+        {
+            "cardId": "ryker_special2",
+            "characterId": "ryker",
+            "name": "摊牌时刻",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "damagePercent": 20,
+            "description": "造成 {damage} 点伤害 1~6 次。莱克获得 {rage} 点狂气。若造成 6 次或以上伤害，获得 1 张算力消耗为 0 附加消耗的「意外收获」。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 10,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 20,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "造成 1~6 次伤害（本项目的命中次数是固定值 HitCount，没有随机次数机制）—— 数据表存的是单次伤害",
+                "若造成 6 次或以上伤害，获得 1 张算力消耗为 0 附加消耗的「意外收获」（缺「置入指定卡牌 + 算力消耗 0 + 附加消耗」的组合机制）",
+                "启灵1：每次暴击额外获得 3 点狂气（本项目无启灵系统，也没有暴击计数）"
+            ]
+        },
+        {
+            "cardId": "ryker_special3",
+            "characterId": "ryker",
+            "name": "绝佳运气",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：获得 攻击力×18% 点力量。在本场战斗中，获得一个所选的「混沌的遗赠」造物，或是将一个已拥有的「混沌的遗赠」升级。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "获得 攻击力×18% 点力量（卡面写的是 wiki 6 级原文 18%；数据表存 1 级值 9%）—— buff 效果目前只能挂在敌人身上，不能给自己（见 docs/开发计划.md D70）",
+                "获得 / 升级造物「混沌的遗赠」（本项目没有造物系统）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "tulu_attack",
+            "characterId": "tulu",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "「额外享受 x% 触腕伤害和力量加成」（本项目没有触腕伤害加成通道）",
+                "[余波]：驱使 1 条触腕攻击敌方（缺「余波」触发器与触腕攻击）",
+                "启灵2：获得 攻击力×12% 点临时触腕伤害和 攻击力×12% 点临时力量（本项目无启灵系统，也没有临时触腕伤害机制）"
+            ]
+        },
+        {
+            "cardId": "tulu_defense",
+            "characterId": "tulu",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "[余波]：驱使 1 条触腕攻击敌方（缺「余波」触发器与触腕攻击）",
+                "启灵2：获得 攻击力×12% 点临时触腕伤害和 攻击力×12% 点临时力量（本项目无启灵系统，也没有临时触腕伤害机制）"
+            ]
+        },
+        {
+            "cardId": "tulu_special",
+            "characterId": "tulu",
+            "name": "深渊号令",
+            "style": "striker",
+            "cost": 4,
+            "isAttack": true,
+            "isAreaAttack": true,
+            "damagePercent": 60,
+            "description": "对所有敌人造成 {damage} 点穿刺伤害，额外享受 x% 触腕伤害和力量加成。使所有触腕攻击 1 次，造成 150% 的穿刺伤害。[余波]：驱使 1 条触腕攻击敌方。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 60,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "穿刺伤害（本项目没有「穿刺 / 物理 / 法术」的伤害类型区分）",
+                "额外享受 x% 触腕伤害和力量加成（本项目没有触腕伤害加成通道）",
+                "使所有触腕攻击 1 次，造成 150% 的穿刺伤害（缺「驱使触腕攻击」的执行器）",
+                "[余波]：驱使 1 条触腕攻击敌方（缺「余波」触发器与触腕攻击）",
+                "启灵1：使所有触腕攻击所有敌人 1 次 / 若当前姿态为「静海」，算力消耗降低 2 点（本项目无启灵系统，也没有「姿态」系统）"
+            ]
+        },
+        {
+            "cardId": "tulu_special2",
+            "characterId": "tulu",
+            "name": "螺湮重临",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "description": "驱散自身虚弱状态，获得 攻击力×40% 点临时触腕伤害和 攻击力×40% 点临时力量。若当前姿态为「静海」，额外使所有敌人在本回合中降低 防御力×40% 点衰竭。[余波]：驱使 1 条触腕攻击敌方。",
+            "effects": [
+                {
+                    "type": "disperseSelfDebuff",
+                    "debuff": "weak"
+                }
+            ],
+            "pendingMechanics": [
+                "获得 攻击力×40% 点临时触腕伤害和 攻击力×40% 点临时力量（缺「临时触腕伤害」与「临时力量」机制；且 buff 效果目前只能挂在敌人身上，不能给自己，见 docs/开发计划.md D70）",
+                "若当前姿态为「静海」，额外使所有敌人降低 防御力×40% 点衰竭（本项目没有「姿态」系统；且减益百分比只按攻击力算，没有防御力口径，见 docs/开发计划.md D70）",
+                "[余波]：驱使 1 条触腕攻击敌方（缺「余波」触发器与触腕攻击）",
+                "启灵3：获得 15% 临时暴击率（本项目无启灵系统，也没有临时暴击率机制）"
+            ]
+        },
+        {
+            "cardId": "tulu_special3",
+            "characterId": "tulu",
+            "name": "不朽威仪",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：触腕数量上限 +1。图鲁每消耗 1 点算力或弃掉 1 张图鲁的指令卡，获得 攻击力×3.2% 点触腕伤害和 攻击力×3.2% 点力量。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "触腕数量上限 +1（本项目没有触腕上限机制）",
+                "每消耗 1 点算力或弃掉 1 张卡，获得 攻击力×3.2% 点触腕伤害和 攻击力×3.2% 点力量（缺「消耗算力 / 弃牌」触发器，也没有触腕伤害与临时力量机制）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "helot_attack",
+            "characterId": "helot",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "启灵3：和 10% 暴击伤害（本项目无启灵系统，也没有「附带暴击伤害」的机制）"
+            ]
+        },
+        {
+            "cardId": "helot_defense",
+            "characterId": "helot",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "启灵2：和 25% 临时暴击率（本项目无启灵系统，也没有临时暴击率机制）"
+            ]
+        },
+        {
+            "cardId": "helot_special",
+            "characterId": "helot",
+            "name": "破链一击",
+            "style": "striker",
+            "cost": 4,
+            "isAttack": true,
+            "damagePercent": 100,
+            "description": "造成 {damage} 点伤害。手牌中每有 1 张其他「打击」，使基础伤害提高 15%，额外享受 1 倍力量加成。弃掉所有「打击」。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 100,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "视为「打击」（本项目没有「视为某张卡」机制）",
+                "手牌中每有 1 张其他「打击」，使基础伤害提高 15%（缺「按手牌里同类卡数量加伤」的机制）",
+                "额外享受 1 倍力量加成（缺「力量加成倍率」的机制）",
+                "弃掉所有「打击」（缺「按卡名弃掉手牌」的机制）"
+            ]
+        },
+        {
+            "cardId": "helot_special2",
+            "characterId": "helot",
+            "name": "绵长恨怨",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "isAreaAttack": true,
+            "damagePercent": 25,
+            "description": "失去 10% 当前生命。对所有敌人造成 {damage} 点伤害和等量伤害的出血。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 25,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "bleed",
+                    "percentOfDamage": 100
+                }
+            ],
+            "pendingMechanics": [
+                "失去 10% 当前生命（缺「自身损失生命」机制）",
+                "生成 2 张随机唤醒体的「打击」置入手牌并附加消耗（缺「按其他角色的卡生成新卡置入手牌」的机制）",
+                "视为「打击」（本项目没有「视为某张卡」机制）"
+            ]
+        },
+        {
+            "cardId": "helot_special3",
+            "characterId": "helot",
+            "name": "复仇宣言",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：希洛的卡牌获得保留。回合结束后，使「破链一击」的打击加成和「绵长恨怨」基础伤害提高 10%。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "希洛的卡牌获得保留（灵知觉醒授予的「全体保留」机制缺失 —— 本项目的保留是卡牌自己的词缀）",
+                "回合结束后，使「破链一击」的打击加成和「绵长恨怨」基础伤害提高 10%（缺「回合末永久提升指定卡效果」的机制）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "xu_attack",
+            "characterId": "xu",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "启灵2：[共振3]：额外获得 15 点狂气（本项目无启灵系统，也没有「共振」系统）"
+            ]
+        },
+        {
+            "cardId": "xu_defense",
+            "characterId": "xu",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "启灵2：[共振3]：额外获得 15 点狂气（本项目无启灵系统，也没有「共振」系统）"
+            ]
+        },
+        {
+            "cardId": "xu_special",
+            "characterId": "xu",
+            "name": "入骨相思",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": true,
+            "isAreaAttack": true,
+            "damagePercent": 150,
+            "isRetain": true,
+            "affixes": [
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "retain"
+            ],
+            "description": "对所有敌人造成 {damage} 点必定暴击的伤害并施加 {poison} 层中毒。⚠保留。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 150,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "poison",
+                    "percent": 80,
+                    "duration": 99,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "retain"
+                }
+            ],
+            "pendingMechanics": [
+                "必定暴击（本项目没有「必定暴击」的机制）",
+                "「触发 80% 中毒」wiki 原文没写「攻击力×」，本项目按「施加攻击力×80% 层中毒」实现（L1 80% / L6 160%），口径待主人确认",
+                "启灵1：[胚胎融合] +15 +x / [共振3]：[胚胎融合] +50（本项目无启灵系统与共振系统；「胚胎融合」层数只有珊 / 泰旖丝那条链路在用）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "xu_special2",
+            "characterId": "xu",
+            "name": "寄吻于扇",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "isAreaAttack": true,
+            "description": "对所有敌人施加 {poison} 层中毒并使其临时降低 防御力×30% 点衰竭。",
+            "effects": [
+                {
+                    "type": "debuff",
+                    "debuff": "poison",
+                    "percent": 40,
+                    "duration": 99,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "weak",
+                    "value": 5,
+                    "duration": 2,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "「使其临时降低 防御力×30% 点衰竭」—— 本项目用已有的「虚弱」（降低攻击力 N 点）近似，⚠ 值是**固定 5**（随等级系数放大），不是「防御力×30%」的百分比（本项目的减益百分比只按攻击力算，没有防御力口径，见 docs/开发计划.md D70）",
+                "[共振3]：对所有敌人施加 1 层痴醉（缺「共振」系统与「痴醉」减益）"
+            ]
+        },
+        {
+            "cardId": "xu_special3",
+            "characterId": "xu",
+            "name": "不梦乡之主",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：徐的每种指令卡每回合首次触发共振效果时，使其算力消耗变为 0。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "每种指令卡每回合首次触发共振效果时，算力消耗变为 0（缺「共振」系统与「每回合首次」的触发计数）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
         }
     ]
 }

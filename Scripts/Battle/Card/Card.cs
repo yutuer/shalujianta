@@ -48,6 +48,8 @@ public static class CardDrawFilter
     public const string None = "";
     /// <summary>抽「算力消耗最低的指令卡」（参考游戏：明灯灼魂）</summary>
     public const string LowestCostInstruction = "lowestCostInstruction";
+    /// <summary>抽「打击」卡（D71：希洛「绝境求生」「抽 3 张「打击」」）</summary>
+    public const string Strike = "strike";
 }
 
 public partial class Card : Resource, ICardLevelable

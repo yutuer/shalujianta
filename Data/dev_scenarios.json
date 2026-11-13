@@ -63,6 +63,48 @@
         "map": "map01",
         "target": "hexmap"
     },
+    "alva_team": {
+      "desc": "艾尔瓦 + 其余三个真角色（2026-11-13 D71：wiki 新角色 —— 属性 120/128/140 / 黑印掉落 3.6 / 死亡抵抗 33.6 / 临战体势 / 心眼利刃 / 战地卓识 / 无止境的正义）",
+      "team": ["alva", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "ryker_team": {
+      "desc": "莱克 + 其余三个真角色（2026-11-13 D71：wiki 新角色 —— 属性 180/149/144 / 暴击率 9.8 / 黑印掉落 7.2 / 意外收获 / 摊牌时刻 / 绝佳运气 / 肆意豪赌）",
+      "team": ["ryker", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "tulu_team": {
+      "desc": "图鲁 + 其余三个真角色（2026-11-13 D71：wiki 新角色 —— 属性 153/171/135 / 狂气回充 2.4 / 银钥充能 26.2 / 深渊号令 / 螺湮重临 / 不朽威仪 / 星辰正位之刻）",
+      "team": ["tulu", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "helot_team": {
+      "desc": "希洛 + 其余三个真角色（2026-11-13 D71：wiki 新角色 —— 属性 140/136/100 / 暴击率 17.8 / 伤害强效 11.2 / 破链一击 / 绵长恨怨 / 复仇宣言 / 绝境求生）",
+      "team": ["helot", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "xu_team": {
+      "desc": "徐 + 其余三个真角色（2026-11-13 D71：wiki 新角色 —— 属性 203/122/113 / 伤害强效 9.6 / 死亡抵抗 16.8 / 入骨相思 / 寄吻于扇 / 不梦乡之主 / 夜雾下的情誓）",
+      "team": ["xu", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "d71_team": {
+      "desc": "D71 四个新角色同队（艾尔瓦 + 莱克 + 图鲁 + 希洛，一次跑测覆盖 4 个 wiki 新角色；徐用 xu_team 单独跑）",
+      "team": ["alva", "ryker", "tulu", "helot"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
     "battle": {
       "desc": "选人完成 → 直接进战斗（无地图上下文，敌人按 normal_wave）",
       "team": ["pollux", "jialun", "sanga", "thais"],

@@ -271,6 +271,93 @@
                 "启灵7「引擎启动！」：超限爆发提高当前护盾 50% 的效果变为无视护盾上限，对所有敌人造成的固定伤害提高为反击的 500%（本项目无启灵系统、无超限爆发）",
                 "启灵15「王牌机械师」：灵知觉醒「维修大师」获得强化，所有唤醒体固定反击提高 30%（本项目无启灵系统）"
             ]
+        },
+        {
+            "skillId": "alva_ultimate",
+            "characterId": "alva",
+            "name": "无止境的正义",
+            "nameEn": "Endless Justice",
+            "description": "获得 {shield} 点护盾。弃掉手牌中所有的状态卡和症状卡，并抽取等同于弃掉数量的卡牌。易伤所有敌人 1 回合。",
+            "rageCost": 100,
+            "shield": 140,
+            "shieldBaseCoefficient": 0.5,
+            "applyDebuffName": "vulnerable",
+            "buffValue": 50,
+            "buffValuePerLevel": 0,
+            "buffDuration": 1,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "弃掉手牌中所有的状态卡和症状卡，并抽取等同于弃掉数量的卡牌（缺「按类别弃牌」与「按弃牌数抽牌」机制）",
+                "启灵2：抽取的卡牌 +1（本项目无启灵系统）",
+                "启灵3：艾尔瓦获得 50% 临时暴击率和暴击伤害（本项目无启灵系统，也没有临时暴击率机制）",
+                "「易伤」wiki 原文没给数值，本项目用减益表里的标准值（VulnerableDebuff 默认 50% = 受到伤害 +50%），持续 1 回合"
+            ]
+        },
+        {
+            "skillId": "ryker_ultimate",
+            "characterId": "ryker",
+            "name": "肆意豪赌",
+            "nameEn": "Wild Gambling",
+            "description": "对所有敌人造成 {damage} 点伤害。随机抽 1~6 张牌，每抽 1 张牌获得 攻击力×4.5% 点力量。",
+            "rageCost": 100,
+            "damagePercent": 120,
+            "damageBaseCoefficient": 1.0,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "随机抽 1~6 张牌（本项目的抽牌数是固定值，没有随机张数机制）",
+                "每抽 1 张牌获得 攻击力×4.5% 点力量（缺「按抽牌数给自己加力量」机制；且力量 buff 目前只能挂在敌人身上）"
+            ]
+        },
+        {
+            "skillId": "tulu_ultimate",
+            "characterId": "tulu",
+            "name": "星辰正位之刻",
+            "nameEn": "The Hour of Stars Aligned",
+            "description": "获得 1 条触腕。获得 攻击力×52% 点临时触腕伤害和 攻击力×52% 点临时力量。获得 25% 临时暴击率。",
+            "rageCost": 100,
+            "stackId": "touch_arm",
+            "stackCount": 1,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "获得 攻击力×52% 点临时触腕伤害和 攻击力×52% 点临时力量（缺「临时触腕伤害」与「临时力量」机制）",
+                "获得 25% 临时暴击率（本项目没有临时暴击率机制）",
+                "「触腕」层数只落在角色身上（显示用），本项目还没有「触腕攻击」的执行器"
+            ]
+        },
+        {
+            "skillId": "helot_ultimate",
+            "characterId": "helot",
+            "name": "绝境求生",
+            "nameEn": "Survival at the Last Resort",
+            "description": "【吞噬】：抽 {draw} 张「打击」，临时手牌上限 +2，使希洛的「打击」基础伤害在本场战斗中提高 10%。驱散自身虚弱和非永久力量降低状态，在本回合中「打击」造成的伤害提高 80%，希洛造成的伤害提高 x%。",
+            "rageCost": 100,
+            "drawCount": 3,
+            "drawFilter": "strike",
+            "disperseSelfDebuffName": "weak",
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "【吞噬】本身的效果（临时手牌上限 +2、使希洛的「打击」基础伤害在本场战斗中提高 10%）（缺「吞噬」与「本场战斗永久提升卡牌基础伤害」的机制）",
+                "本回合中「打击」造成的伤害提高 80%、希洛造成的伤害提高 x%（缺「本回合伤害加成」与「指定角色伤害加成」的机制）",
+                "驱散自身「非永久力量降低」状态（本项目只实现了驱散「虚弱」这一种）"
+            ]
+        },
+        {
+            "skillId": "xu_ultimate",
+            "characterId": "xu",
+            "name": "夜雾下的情誓",
+            "nameEn": "Vows Beneath the Night Fog",
+            "description": "【吞噬】：临时降低所有敌人 防御力×40% 点衰竭。获得 {energy} 点算力，对所有敌人施加 {poison} 层中毒。选择相许或夺魄。",
+            "rageCost": 100,
+            "energyGain": 3,
+            "applyDebuffName": "poison",
+            "debuffValuePercent": 80,
+            "buffDuration": 99,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "【吞噬】：临时降低所有敌人 防御力×40% 点衰竭（狂气爆发只有一个减益槽，已给中毒；且本项目的减益百分比只按攻击力算，没有防御力口径，见 docs/开发计划.md D70）",
+                "选择「相许」或「夺魄」（缺「二选一分支」机制）",
+                "启灵3：自身下次触发的共振效果翻倍（本项目无启灵系统，也没有共振系统）"
+            ]
         }
     ]
 }

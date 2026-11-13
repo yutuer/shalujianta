@@ -445,6 +445,11 @@ namespace FishEatFish.Dev
 				case "thais": return CharacterDefinition.CreateThais();
 				case "faint": return CharacterDefinition.CreateFaint();
 				case "nuodila": return CharacterDefinition.CreateNuodila();
+				case "alva": return CharacterDefinition.CreateAlva();
+				case "ryker": return CharacterDefinition.CreateRyker();
+				case "tulu": return CharacterDefinition.CreateTulu();
+				case "helot": return CharacterDefinition.CreateHelot();
+				case "xu": return CharacterDefinition.CreateXu();
 				default: return null;
 			}
 		}

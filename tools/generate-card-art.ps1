@@ -137,6 +137,17 @@ $PlayablePalette = [ordered]@{
     'faint'   = @{ Main = '#557A4A'; Accent = '#C6F0A8'; Feature = 'crest12' }
     # 诺缔拉（Nautila）—— 混沌界域 / 机械师 / 焊接 / 防御型（wiki 角色，2026-11-07 新增）
     'nuodila' = @{ Main = '#46596B'; Accent = '#FFB65C'; Feature = 'crest13' }
+    # D71 新增 5 个 wiki 角色（2026-11-13 主人指定）
+    # 艾尔瓦 —— 混沌 / 防御型 / 军刀与正义之星
+    'alva'    = @{ Main = '#7A4E8C'; Accent = '#F0C0E8'; Feature = 'crest14' }
+    # 莱克 —— 混沌 / 辅助型 / 扑克与筹码
+    'ryker'   = @{ Main = '#8C6A3E'; Accent = '#F0E0A0'; Feature = 'crest15' }
+    # 图鲁 —— 深海 / 伤害型 / 触腕
+    'tulu'    = @{ Main = '#2A6E7E'; Accent = '#6EE8E0'; Feature = 'crest16' }
+    # 希洛 —— 血肉 / 伤害型 / 锁链与颈刺
+    'helot'   = @{ Main = '#7A2A3E'; Accent = '#E89098'; Feature = 'crest17' }
+    # 徐 —— 血肉 / 辅助型 / 扇与不梦乡
+    'xu'      = @{ Main = '#4E3A7A'; Accent = '#D0A8F0'; Feature = 'crest18' }
 }
 
 # 12 星座 BOSS：角色是「人」，头像用头盔 + 冠饰，不套动物特征。
@@ -381,6 +392,17 @@ function Get-CrestFeature {
         'crest12' { @('<path d="M64 36 L64 20" fill="none" stroke="{0}" stroke-width="5" stroke-linecap="round" />','<path d="M64 26 C54 24 48 16 50 10 C59 12 64 18 64 24 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />','<path d="M64 30 C74 28 80 20 78 14 C69 16 64 22 64 28 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />') }
         # 诺缔拉：扳手（wiki「没有什么是焊接补不好的」）—— 机械师
         'crest13' { @('<path d="M52 12 L74 34" fill="none" stroke="{0}" stroke-width="7" stroke-linecap="round" />','<path d="M44 20 A10 10 0 0 0 44 36 L52 36 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />','<path d="M68 30 L82 44" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />') }
+        # ===== D71 新增 5 个 wiki 角色（2026-11-13）=====
+        # 艾尔瓦：正义之星（十字准星）
+        'crest14' { @('<path d="M64 6 L64 40 M46 23 L82 23" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />' -f $Accent) }
+        # 莱克：扑克牌（菱形）
+        'crest15' { @('<path d="M64 6 L86 22 L64 40 L42 22 Z" fill="none" stroke="{0}" stroke-width="5" stroke-linejoin="round" />' -f $Accent) }
+        # 图鲁：触腕（两条弧）
+        'crest16' { @('<path d="M40 10 C58 22 58 34 40 46" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />' -f $Accent, '<path d="M88 10 C70 22 70 34 88 46" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />' -f $Accent) }
+        # 希洛：锁链尖刺
+        'crest17' { @('<path d="M44 12 L58 42 L72 12" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />' -f $Accent) }
+        # 徐：扇骨
+        'crest18' { @('<path d="M64 44 L64 12" fill="none" stroke="{0}" stroke-width="5" stroke-linecap="round" />' -f $Accent, '<path d="M64 12 C76 12 86 20 88 32 C76 26 70 24 64 24 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />' -f $Accent) }
         default { @('<path d="M44 32 C44 12 60 6 64 20 C68 6 84 12 84 32" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />' -f $Accent) }
     }
 }

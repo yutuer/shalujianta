@@ -181,6 +181,36 @@ public partial class UltimateSkill : Resource, ICardLevelable
     [Export]
     public string DerivedCardName = "";
 
+    /// <summary>
+    /// **驱散自身减益**（减益 id，如 weak）—— 希洛「绝境求生」。
+    ///
+    /// wiki 原文（6 级）：「驱散自身{{词条|虚弱}}和非永久{{词条|力量}}降低状态。」
+    /// → 减益 id 写在 <c>disperseSelfDebuffName</c>，执行器按状态名比对（不区分大小写）。
+    /// </summary>
+    [Export]
+    public string DisperseSelfDebuffName = "";
+
+    /// <summary>
+    /// **释放后获得的层数**（stackId，如 touch_arm）—— 图鲁「星辰正位之刻」。
+    ///
+    /// wiki 原文（6 级）：「获得 1 条触腕。」
+    /// → 层数加在**释放者身上**（跟卡牌的 <c>stack</c> 效果同一套）。
+    /// </summary>
+    [Export]
+    public string StackId = "";
+
+    /// <summary>层数（配合 <see cref="StackId"/> 使用）</summary>
+    [Export]
+    public int StackCount = 0;
+
+    /// <summary>
+    /// **抽牌筛选**（与卡牌的 <c>drawFilter</c> 同一套取值）—— 希洛「绝境求生」。
+    ///
+    /// wiki 原文（6 级）：「【吞噬】：抽 3 张「打击」」
+    /// </summary>
+    [Export]
+    public string DrawFilter = "";
+
     /// <summary>最近一次 Execute 的中文执行摘要</summary>
     public string LastExecuteSummary { get; private set; } = "";
 
