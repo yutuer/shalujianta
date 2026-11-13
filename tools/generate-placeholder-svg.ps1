@@ -584,6 +584,108 @@ $Characters['xu'] = @{
     Emblem = 'sparkle'
 }
 
+# ===== D73 新增 5 个 wiki 角色（2026-11-14 主人指定）=====
+# ⚠️ 加了新角色后跑本脚本要用 -Only（例：-Only murphy,jenkin,winkle,clementine,castor），
+#    别全量跑 —— 老角色的立绘已被主人手工精修过。
+# ⚠️ 胸章形状必须与既有角色/敌人**互不相同**（本脚本自检会查重）。
+
+# 墨菲（Murphy）—— 深海界域 / 防御型 / 触腕与献祭
+$Characters['murphy'] = @{
+    Main = '#1F5F73'; Accent = '#7FD6C4'
+    Sh = 72; Wa = 54; Hp = 60
+    Behind = @(
+        '<path d="M46 286 C26 232 40 172 72 146" fill="none" stroke="{ACC}" stroke-width="7" stroke-linecap="round" />',
+        '<path d="M210 286 C230 232 216 172 184 146" fill="none" stroke="{ACC}" stroke-width="7" stroke-linecap="round" />',
+        '<circle cx="72" cy="140" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="184" cy="140" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M104 86 L152 86 L146 110 L110 110 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'wave'
+}
+
+# 詹金（Jenkin）—— 超维界域 / 伤害型 / 鼠群与雾都街童
+$Characters['jenkin'] = @{
+    Main = '#4A4438'; Accent = '#D8C070'
+    Sh = 58; Wa = 46; Hp = 52
+    Behind = @(
+        '<path d="M40 268 L58 246 L76 268 L58 290 Z" fill="none" stroke="{ACC}" stroke-width="5" stroke-linejoin="round" />',
+        '<path d="M180 268 L198 246 L216 268 L198 290 Z" fill="none" stroke="{ACC}" stroke-width="5" stroke-linejoin="round" />',
+        '<circle cx="58" cy="258" r="4" fill="{ACC}" stroke="#0B0E14" stroke-width="2" />',
+        '<circle cx="198" cy="258" r="4" fill="{ACC}" stroke="#0B0E14" stroke-width="2" />'
+    )
+    After = @(
+        '<circle cx="96" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="60" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="60" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M112 82 L144 82 L136 104 L120 104 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'saltire'
+}
+
+# 温柯尔（Winkle）—— 超维界域 / 防御型 / 能量射线与无形迁移
+$Characters['winkle'] = @{
+    Main = '#3A5A8C'; Accent = '#9FD8FF'
+    Sh = 64; Wa = 48; Hp = 56
+    Behind = @(
+        '<path d="M30 150 L128 40 L226 150" fill="none" stroke="{ACC}" stroke-width="6" stroke-linejoin="round" />',
+        '<path d="M70 176 L128 96 L186 176" fill="none" stroke="{ACC}" stroke-width="5" stroke-linejoin="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M110 86 L146 86 L128 112 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'chevron'
+}
+
+# 克莱门汀（Clementine）—— 超维界域 / 辅助型 / 生命重构与治疗
+$Characters['clementine'] = @{
+    Main = '#6B4C7A'; Accent = '#E8C0E0'
+    Sh = 60; Wa = 46; Hp = 54
+    Behind = @(
+        '<path d="M128 24 L128 88" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M96 56 L160 56" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<circle cx="128" cy="56" r="20" fill="none" stroke="{ACC}" stroke-width="5" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M112 90 L144 90 L128 114 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'cross'
+}
+
+# 卡斯托尔（Castor）—— 超维界域 / 防御型 / 孤嚎鸟与黑羽
+$Characters['castor'] = @{
+    Main = '#2E3A4A'; Accent = '#C8B088'
+    Sh = 70; Wa = 54; Hp = 60
+    Behind = @(
+        '<path d="M52 268 C34 216 44 162 70 138" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M204 268 C222 216 212 162 186 138" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M128 18 L150 46 L128 74 L106 46 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="64" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="64" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="64" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="64" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M112 96 L144 96 L128 118 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'triangleUp'
+}
+
+
 
 
 

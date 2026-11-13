@@ -148,6 +148,17 @@ $PlayablePalette = [ordered]@{
     'helot'   = @{ Main = '#7A2A3E'; Accent = '#E89098'; Feature = 'crest17' }
     # 徐 —— 血肉 / 辅助型 / 扇与不梦乡
     'xu'      = @{ Main = '#4E3A7A'; Accent = '#D0A8F0'; Feature = 'crest18' }
+    # D73 新增 5 个 wiki 角色（2026-11-14 主人指定）
+    # 墨菲 —— 深海 / 防御型 / 触腕与圣女
+    'murphy'     = @{ Main = '#1F5F73'; Accent = '#7FD6C4'; Feature = 'crest19' }
+    # 詹金 —— 超维 / 伤害型 / 鼠群与雾都街童
+    'jenkin'     = @{ Main = '#4A4438'; Accent = '#D8C070'; Feature = 'crest20' }
+    # 温柯尔 —— 超维 / 防御型 / 能量射线与无形迁移
+    'winkle'     = @{ Main = '#3A5A8C'; Accent = '#9FD8FF'; Feature = 'crest21' }
+    # 克莱门汀 —— 超维 / 辅助型 / 生命重构与治疗
+    'clementine' = @{ Main = '#6B4C7A'; Accent = '#E8C0E0'; Feature = 'crest22' }
+    # 卡斯托尔 —— 超维 / 防御型 / 孤嚎鸟与黑羽
+    'castor'     = @{ Main = '#2E3A4A'; Accent = '#C8B088'; Feature = 'crest23' }
 }
 
 # 12 星座 BOSS：角色是「人」，头像用头盔 + 冠饰，不套动物特征。
@@ -403,6 +414,17 @@ function Get-CrestFeature {
         'crest17' { @('<path d="M44 12 L58 42 L72 12" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />' -f $Accent) }
         # 徐：扇骨
         'crest18' { @('<path d="M64 44 L64 12" fill="none" stroke="{0}" stroke-width="5" stroke-linecap="round" />' -f $Accent, '<path d="M64 12 C76 12 86 20 88 32 C76 26 70 24 64 24 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />' -f $Accent) }
+        # ===== D73 新增 5 个 wiki 角色（2026-11-14）=====
+        # 墨菲：触腕（海浪）
+        'crest19' { @('<path d="M26 30 C40 16 52 40 66 28 C80 16 92 40 102 30" fill="none" stroke="{0}" stroke-width="7" stroke-linecap="round" />' -f $Accent) }
+        # 詹金：鼠爪
+        'crest20' { @('<ellipse cx="46" cy="22" rx="7" ry="9" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent, '<ellipse cx="64" cy="16" rx="7" ry="9" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent, '<ellipse cx="82" cy="22" rx="7" ry="9" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent, '<ellipse cx="64" cy="40" rx="13" ry="10" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent) }
+        # 温柯尔：能量射线
+        'crest21' { @('<path d="M64 6 L64 20" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />' -f $Accent, '<path d="M34 18 L46 28" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />' -f $Accent, '<path d="M94 18 L82 28" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />' -f $Accent, '<circle cx="64" cy="38" r="10" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent) }
+        # 克莱门汀：生命重构（叶形）
+        'crest22' { @('<path d="M64 8 C48 26 44 38 52 44 C60 50 68 50 76 44 C84 38 80 26 64 8 Z" fill="none" stroke="{0}" stroke-width="6" stroke-linejoin="round" />' -f $Accent) }
+        # 卡斯托尔：孤嚎鸟
+        'crest23' { @('<path d="M38 20 L64 46 L90 20" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />' -f $Accent, '<path d="M64 46 L64 60" fill="none" stroke="{0}" stroke-width="5" stroke-linecap="round" />' -f $Accent) }
         default { @('<path d="M44 32 C44 12 60 6 64 20 C68 6 84 12 84 32" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />' -f $Accent) }
     }
 }

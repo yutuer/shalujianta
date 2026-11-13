@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_clementine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6B4C7A"/>
+      <stop offset="1" stop-color="#493453"/>
+    </linearGradient>
+    <linearGradient id="headGrad_clementine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#897095"/>
+      <stop offset="1" stop-color="#6B4C7A"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M128 24 L128 88" fill="none" stroke="#E8C0E0" stroke-width="6" stroke-linecap="round" />
+  <path d="M96 56 L160 56" fill="none" stroke="#E8C0E0" stroke-width="6" stroke-linecap="round" />
+  <circle cx="128" cy="56" r="20" fill="none" stroke="#E8C0E0" stroke-width="5" />
+  <path d="M110 132 C91.1 135 74.3 144 68 158 C72 188 78 202 82 214 C84 230 80 241 74 250 L71 296 L185 296 L182 250 C176 241 172 230 174 214 C178 202 184 188 188 158 C152.3 144 169.1 135 146 132 Z" fill="url(#bodyGrad_clementine)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#A78AA1" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_clementine)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="62" r="18" fill="url(#headGrad_clementine)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="62" r="18" fill="url(#headGrad_clementine)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="62" r="9" fill="#E8C0E0" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="62" r="9" fill="#E8C0E0" stroke="#0B0E14" stroke-width="3" />
+  <path d="M112 90 L144 90 L128 114 Z" fill="#E8C0E0" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <path d="M123 191 H133 V200 H142 V210 H133 V219 H123 V210 H114 V200 H123 Z" fill="#E8C0E0" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

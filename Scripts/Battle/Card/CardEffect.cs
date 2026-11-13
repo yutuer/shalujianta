@@ -69,6 +69,58 @@ namespace FishEatFish.Battle.Card
 		/// <summary>命中次数（1 = 一次；2 = 「造成 x 点伤害 2 次」）</summary>
 		public int HitCount { get; set; } = 1;
 
+		/// <summary>
+		/// **洗入抽牌堆的卡牌 id**（D73）。
+		///
+		/// 灰机 wiki 里有一类卡不是「打出」，而是**洗进抽牌堆**：
+		///   - 詹金「集结鼠群」：「将 1 张造成 攻击力×30% 点伤害 X+4 次伤害的「鼠群冲击」洗入抽牌堆顶部。」
+		///   - 卡斯托尔「蔽日之羽」/「不屈的孤嚎鸟」：「将 1 张「黑羽」洗入抽牌堆。」
+		///
+		/// 洗进去的那张是**别的卡牌条目**（衍生卡），所以要单独存 id。
+		/// 数据表写法：<c>{ "type": "shuffleIntoDeck", "shuffleCardId": "jenkin_mouse_shock", "shuffleCount": 1 }</c>
+		/// </summary>
+		public string ShuffleCardId { get; set; } = "";
+
+		/// <summary>洗入抽牌堆的张数（配合 <see cref="ShuffleCardId"/>）</summary>
+		public int ShuffleCount { get; set; }
+
+		/// <summary>
+		/// 洗入时**覆盖的算力消耗**（-1 = 不覆盖，沿用模板卡自身的费用）。
+		///
+		/// 詹金「雾都街童」：「将 3 张附加{{词条|消耗}}、**算力消耗为 0** 的「布朗出动！」置入手牌。」
+		/// </summary>
+		public int ShuffleCost { get; set; } = -1;
+
+		/// <summary>
+		/// 洗入 / 置入手牌时是否**附加「消耗」词缀**（打出即从牌库移除）。
+		///
+		/// 詹金「雾都街童」：「将 3 张附加{{词条|消耗}}、算力消耗为 0 的「布朗出动！」置入手牌。」
+		/// </summary>
+		public bool ShuffleConsume { get; set; }
+
+		/// <summary>
+		/// **弃牌换护盾**：每弃掉 1 张牌，护盾提高 N%（D73：温柯尔「精神重建」）。
+		///
+		/// wiki 原文：「获得 [防御力*20%] 点护盾，**弃掉所有手牌，每弃掉 1 张牌获得的护盾提高 50%**。」
+		/// → 本效果 = 先算基础护盾，再按弃牌张数 × N% 放大。
+		///
+		/// ⚠️ **它仍然是「shield」效果**（不是另一个效果类型）——
+		///    否则卡面正文里的 <c>{shield}</c> 占位符找不到 shield 条目 → 数值会算成 0。
+		/// ⚠️ 「保留」的牌**不弃**（与 <c>Player.DiscardHand</c> 的口径一致）。
+		/// </summary>
+		public int DiscardShieldBonusPercent { get; set; }
+
+		/// <summary>
+		/// **按「最大生命」算的护盾百分比**（D73：墨菲「圣女作成」）。
+		///
+		/// wiki 原文：「获得总计（**最大生命 5%** + [防御力*10%]）点护盾和 1 点算力。」
+		///
+		/// ⚠️ 本项目的「最大生命」= <see cref="CharacterSystem.CharacterAttributes.MaxHealth"/>
+		///    = **体质**（<c>MaxHealth =&gt; Constitution</c>）→ 基数取体质。
+		/// ⚠️ 与 <see cref="Percent"/>（防御力百分比）**分开写**，别混进同一个字段。
+		/// </summary>
+		public int HealthPercent { get; set; }
+
 		/// <summary>增益 id（<c>Data/buffs.json</c>）</summary>
 		public string Buff { get; set; } = "";
 
@@ -362,6 +414,22 @@ namespace FishEatFish.Battle.Card
 		/// 数据表写法：<c>{ "type": "triggerPoison", "percent": 80, "target": "allEnemies" }</c>
 		/// </summary>
 		public const string TriggerPoison = "triggerPoison";
+
+		/// <summary>
+		/// **洗牌入抽牌堆**（D73）——
+		/// 把一张**衍生卡**洗进抽牌堆（不是置入手牌）。
+		///
+		/// 灰机 wiki：
+		///   - 詹金「集结鼠群」：「将 1 张造成 攻击力×30% 点伤害 X+4 次伤害的「鼠群冲击」洗入抽牌堆顶部。」
+		///   - 卡斯托尔「蔽日之羽」：「将 1 张「黑羽」洗入抽牌堆。」
+		///
+		/// 数据表写法：
+		/// <c>{ "type": "shuffleIntoDeck", "shuffleCardId": "jenkin_mouse_shock", "shuffleCount": 1 }</c>
+		/// ⚠️ 洗入的卡是**独立实例**（从模板克隆），不是共享同一个 Card 对象。
+		/// </summary>
+		public const string ShuffleIntoDeck = "shuffleIntoDeck";
+
+
 	}
 
 	/// <summary>作用目标常量</summary>

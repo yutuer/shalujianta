@@ -360,6 +360,86 @@
                 "选择「相许」或「夺魄」（缺「二选一分支」机制）",
                 "启灵3：自身下次触发的共振效果翻倍（本项目无启灵系统，也没有共振系统）"
             ]
-        }
-    ]
+        },
+        {
+            "skillId": "murphy_ultimate",
+            "characterId": "murphy",
+            "name": "虚妄继承者",
+            "nameEn": "Heir of Illusion",
+            "description": "所有敌人本回合伤害降低 50%，获得 {shield} 点护盾。",
+            "rageCost": 100,
+            "shield": 158,
+            "shieldBaseCoefficient": 0.3,
+            "enemyDamageReductionPercent": 50,
+            "enemyDamageReductionDuration": 1,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "但自身受到攻击时被施加一半伤害的献祭，持续 1 回合（本项目没有「献祭」减益系统）",
+                "使所有触腕攻击 1 次（本项目只有触腕层数，没有「触腕攻击」执行器）"
+            ]
+        },
+        {
+            "skillId": "jenkin_ultimate",
+            "characterId": "jenkin",
+            "name": "雾都街童",
+            "nameEn": "Street Child of the Fog City",
+            "description": "将 3 张附加消耗、算力消耗为 0 的「布朗出动！」置入手牌。",
+            "rageCost": 100,
+            "addCardToHandId": "jenkin_special2",
+            "addCardToHandCount": 3,
+            "addCardCost": 0,
+            "addCardConsume": true,
+            "pendingMechanics": [
+                "临时暴击伤害 +50%（本项目没有「临时暴击伤害」机制）",
+                "启灵3：额外获得 1 张「布朗出动！」（本项目无启灵系统，也没有「启灵」解锁流程）"
+            ]
+        },
+        {
+            "skillId": "winkle_ultimate",
+            "characterId": "winkle",
+            "name": "无形迁移",
+            "nameEn": "Formless Migration",
+            "description": "驱散自身脆弱状态并获得 {shield} 点护盾。获得 {counter} 层反击。",
+            "rageCost": 100,
+            "shield": 128,
+            "shieldBaseCoefficient": 0.32,
+            "disperseSelfDebuffName": "weak",
+            "counterGainPercent": 40,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "选择 1 名其他唤醒体获得 35 点狂气（本项目没有「选择其他友方」的目标选择机制）",
+                "启灵3：护盾与反击提高 25%；使选择的唤醒体本回合释放 2 次狂气爆发后才会进入冷却（本项目无启灵系统，也没有狂气爆发冷却机制）"
+            ]
+        },
+        {
+            "skillId": "clementine_ultimate",
+            "characterId": "clementine",
+            "name": "生命重构治疗",
+            "nameEn": "Life Reconstruction Therapy",
+            "description": "对所有敌人造成 {damage} 点伤害。",
+            "rageCost": 100,
+            "damagePercent": 300,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "移除自身所有共感，选择转化为所有敌人的精神创伤或恐惧固着（本项目没有「共感 / 精神创伤 / 恐惧固着」减益系统）",
+                "获得 150% 克莱门汀银钥充能的银钥能量（本项目没有「银钥能量」效果）",
+                "启灵1：伤害提高 20%；启灵2：每移除 1 层共感使基础伤害提高 3%（本项目无启灵系统）"
+            ]
+        },
+        {
+            "skillId": "castor_ultimate",
+            "characterId": "castor",
+            "name": "不屈的孤嚎鸟",
+            "nameEn": "The Unbroken Lone Screaming Bird",
+            "description": "获得 {shield} 点护盾，将 3 张「黑羽」洗入抽牌堆。",
+            "rageCost": 100,
+            "shield": 158,
+            "shieldBaseCoefficient": 0.45,
+            "shuffleCardId": "castor_black_feather",
+            "shuffleCount": 3,
+            "isAreaAttack": true,
+            "pendingMechanics": [
+                "启灵7「飞跃荆棘海」：超限爆发额外将 3 张「黑羽」置入手中、本回合「黑羽」保留的护盾提高卡斯托尔防御力的 10%、每次打出「黑羽」额外施加攻击力 160% 的侵蚀（本项目无启灵系统、无超限爆发）"
+            ]
+        }    ]
 }

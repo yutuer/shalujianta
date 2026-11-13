@@ -719,6 +719,263 @@ public partial class CharacterDefinition : Resource
     }
 
     /// <summary>
+    /// **墨菲**（Murphy）—— **可玩角色**（灰机 wiki 角色页「墨菲」，2026-11-14 主人指定新增）。
+    ///
+    /// 属性口径（与 D71 一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **131** / 攻击 **140** / 防御 **158**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   狂气回充 **4.8** / 银钥充能 **22.2**
+    ///   （通用值其余 7 项：暴击率5 / 暴击伤害50 / 界域精通0 / 伤害强效0 /
+    ///    基础狂气100 / 黑印掉落0 / 死亡抵抗0）
+    ///
+    /// 界域 = **深海**、定位 **防御型**（wiki「唤醒体类型=防御型」）→ Tank。
+    ///
+    /// 卡组：打击 + 防御 + 受造之物（灵知觉醒）/ 螺湮逆流 / 圣女作成；
+    /// 狂气爆发「虚妄继承者」。
+    /// </summary>
+    public static CharacterDefinition CreateMurphy()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "murphy",
+            Name = "墨菲",
+            NameEn = "Murphy",
+            // 界域=深海（wiki 角色页「|界域=深海」）
+            Race = CharacterRace.Abyss,
+            // 防御型（wiki「唤醒体类型=防御型」）
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 140,
+            BaseDefense = 158,
+            BaseConstitution = 131,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            // 狂气回充 4.8 / 银钥充能 22.2（wiki 升格5 原值，小数）
+            BaseRageReturn = 4.8f,
+            BaseSilverKeyCharge = 22.2f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "murphy_attack",
+            DefenseCardId = "murphy_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "murphy_special3", "murphy_special", "murphy_special2" },
+            UltimateSkillId = "murphy_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **詹金**（Jenkin）—— **可玩角色**（灰机 wiki 角色页「詹金」，2026-11-14 主人指定新增）。
+    ///
+    /// 属性口径（与 D71 一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **100** / 攻击 **140** / 防御 **104**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   暴击率 **14.6%** / 界域精通 **12**
+    ///   （通用值其余 7 项：暴击伤害50 / 伤害强效0 / 基础狂气100 / 狂气回充0 /
+    ///    银钥充能15 / 黑印掉落0 / 死亡抵抗0）
+    ///
+    /// 界域 = **超维**、定位 **伤害型**（wiki「唤醒体类型=伤害型」）→ Striker。
+    ///
+    /// 卡组：打击 + 防御 + 空间折叠（灵知觉醒）/ 集结鼠群 / 布朗出动！；
+    /// 狂气爆发「雾都街童」。衍生卡「鼠群冲击」由「集结鼠群」洗入抽牌堆。
+    /// </summary>
+    public static CharacterDefinition CreateJenkin()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "jenkin",
+            Name = "詹金",
+            NameEn = "Jenkin",
+            // 界域=超维（wiki 角色页「|界域=超维」）
+            Race = CharacterRace.Hyperdimension,
+            // 伤害型（wiki「唤醒体类型=伤害型」）
+            Archetype = CharacterArchetype.Striker,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 140,
+            BaseDefense = 104,
+            BaseConstitution = 100,
+            // 暴击率 14.6%（wiki 升格5 原值，小数）/ 界域精通 12
+            BaseCritRate = 14.6f,
+            BaseCritDamage = 50,
+            BaseDomainMastery = 12f,
+            BaseDamageBonus = 0f,
+            BaseRageReturn = 0f,
+            BaseSilverKeyCharge = 15f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "jenkin_attack",
+            DefenseCardId = "jenkin_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "jenkin_special3", "jenkin_special", "jenkin_special2" },
+            UltimateSkillId = "jenkin_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **温柯尔**（Winkle）—— **可玩角色**（灰机 wiki 角色页「温柯尔」，2026-11-14 主人指定新增）。
+    ///
+    /// 属性口径（与 D71 一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **112** / 攻击 **100** / 防御 **128**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   狂气回充 **5.6** / 黑印掉落 **4.8**
+    ///   （通用值其余 7 项：暴击率5 / 暴击伤害50 / 界域精通0 / 伤害强效0 /
+    ///    基础狂气100 / 银钥充能15 / 死亡抵抗0）
+    ///
+    /// 界域 = **超维**、定位 **防御型**（wiki「唤醒体类型=防御型」）→ Tank。
+    ///
+    /// 卡组：打击 + 防御 + 自我封锁（灵知觉醒）/ 能量射线 / 精神重建；
+    /// 狂气爆发「无形迁移」。
+    /// </summary>
+    public static CharacterDefinition CreateWinkle()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "winkle",
+            Name = "温柯尔",
+            NameEn = "Winkle",
+            // 界域=超维（wiki 角色页「|界域=超维」）
+            Race = CharacterRace.Hyperdimension,
+            // 防御型（wiki「唤醒体类型=防御型」）
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 100,
+            BaseDefense = 128,
+            BaseConstitution = 112,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            // 狂气回充 5.6 / 黑印掉落 4.8（wiki 升格5 原值，小数）
+            BaseRageReturn = 5.6f,
+            BaseBlackMarkDrop = 4.8f,
+            BaseSilverKeyCharge = 15f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "winkle_attack",
+            DefenseCardId = "winkle_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "winkle_special3", "winkle_special", "winkle_special2" },
+            UltimateSkillId = "winkle_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **克莱门汀**（Clementine）—— **可玩角色**（灰机 wiki 角色页「克莱门汀」，2026-11-14 主人指定新增）。
+    ///
+    /// 属性口径（与 D71 一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **126** / 攻击 **149** / 防御 **122**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   伤害强效 **4.8%** / 银钥充能 **29.4**
+    ///   （通用值其余 7 项：暴击率5 / 暴击伤害50 / 界域精通0 / 基础狂气100 /
+    ///    狂气回充0 / 黑印掉落0 / 死亡抵抗0）
+    ///
+    /// 界域 = **超维**、定位 **辅助型**（wiki「唤醒体类型=辅助型」）
+    /// → 辅助型 = Healer / Debuffer 两档；克莱门汀**会治疗**（狂气爆发「生命重构治疗」
+    /// 名字是治疗，但 wiki 效果是全体敌人受伤 + 移除共感）→ 取 Healer。
+    ///
+    /// 卡组：打击 + 防御 + 妖虫的呼唤（灵知觉醒）/ 痛苦榨取 / 精神抚慰；
+    /// 狂气爆发「生命重构治疗」。
+    /// </summary>
+    public static CharacterDefinition CreateClementine()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "clementine",
+            Name = "克莱门汀",
+            NameEn = "Clementine",
+            // 界域=超维（wiki 角色页「|界域=超维」）
+            Race = CharacterRace.Hyperdimension,
+            // 辅助型（wiki「唤醒体类型=辅助型」）
+            Archetype = CharacterArchetype.Healer,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 149,
+            BaseDefense = 122,
+            BaseConstitution = 126,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            // 伤害强效 4.8% / 银钥充能 29.4（wiki 升格5 原值，小数）
+            BaseDamageBonus = 4.8f,
+            BaseSilverKeyCharge = 29.4f,
+            BaseRageReturn = 0f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "clementine_attack",
+            DefenseCardId = "clementine_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "clementine_special3", "clementine_special", "clementine_special2" },
+            UltimateSkillId = "clementine_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **卡斯托尔**（Castor）—— **可玩角色**（灰机 wiki 角色页「卡斯托尔」，2026-11-14 主人指定新增）。
+    ///
+    /// 属性口径（与 D71 一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **149** / 攻击 **135** / 防御 **158**
+    /// - 其余 9 项 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   暴击伤害 **57.2%** / 伤害强效 **9.6%**
+    ///   （通用值其余 7 项：暴击率5 / 界域精通0 / 基础狂气100 / 狂气回充0 /
+    ///    银钥充能15 / 黑印掉落0 / 死亡抵抗0）
+    ///
+    /// 界域 = **超维**、定位 **防御型**（wiki「唤醒体类型=防御型」）→ Tank。
+    ///
+    /// 卡组：打击 + 防御 + 翱翔夙愿（灵知觉醒）/ 蔽日之羽 / 穿行永夜；
+    /// 狂气爆发「不屈的孤嚎鸟」。衍生卡「黑羽」由狂气爆发洗入抽牌堆。
+    /// </summary>
+    public static CharacterDefinition CreateCastor()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "castor",
+            Name = "卡斯托尔",
+            NameEn = "Castor",
+            // 界域=超维（wiki 角色页「|界域=超维」）
+            Race = CharacterRace.Hyperdimension,
+            // 防御型（wiki「唤醒体类型=防御型」）
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 135,
+            BaseDefense = 158,
+            BaseConstitution = 149,
+            BaseCritRate = 5,
+            // 暴击伤害 57.2%（wiki 升格5 原值，小数）
+            BaseCritDamage = 57.2f,
+            // 伤害强效 9.6%（wiki 升格5 原值，小数）
+            BaseDamageBonus = 9.6f,
+            BaseRageReturn = 0f,
+            BaseSilverKeyCharge = 15f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "castor_attack",
+            DefenseCardId = "castor_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "castor_special3", "castor_special", "castor_special2" },
+            UltimateSkillId = "castor_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
     /// **可玩角色**清单（卡组齐全的那些）。
     /// 为什么单独列一份：<see cref="GetAllCharacters"/> 里还有 12 个星座 BOSS ——
     /// 它们**不使用卡牌**（BOSS 卡已删），卡组是空的，进「角色一览」只会显示成空壳。
@@ -755,6 +1012,11 @@ public partial class CharacterDefinition : Resource
             CreateTulu(),
             CreateHelot(),
             CreateXu(),
+            CreateMurphy(),
+            CreateJenkin(),
+            CreateWinkle(),
+            CreateClementine(),
+            CreateCastor(),
             CreateMu(),
             CreateAldebaran(),
             CreateSaga(),

@@ -205,6 +205,10 @@ namespace FishEatFish.Battle.Card
 			case CardEffectType.TriggerPoison:
 					ExecuteTriggerPoison(card, effect, ctx);
 					break;
+				case CardEffectType.ShuffleIntoDeck:
+					ExecuteShuffleIntoDeck(card, effect, ctx);
+					break;
+
 				default:
 					GD.PrintErr($"[CardEffectEngine] 未知效果类型：{effect.Type}（卡 {card.CardId}）");
 					break;
@@ -258,9 +262,16 @@ namespace FishEatFish.Battle.Card
 
 			for (int i = 0; i < hits; i++)
 			{
-				target.TakeDamage(damage);
-				ctx.AddLastDamage(target, damage);
-				ApplySinMarkBleed(target, damage, sinMarkPercent, ctx);
+				// ⚠️ **随机目标**（D73：詹金「鼠群冲击」：「对随机敌人造成…伤害 X+4 次」）
+				//   → **每一次命中都重新抽一个存活敌人**（不是同一个人挨 5 下）。
+				Enemy hitTarget = card.Target == TargetType.Random
+					? ctx.ResolveEnemyTarget?.Invoke(card)
+					: target;
+				if (hitTarget == null) continue;
+				
+				hitTarget.TakeDamage(damage);
+				ctx.AddLastDamage(hitTarget, damage);
+				ApplySinMarkBleed(hitTarget, damage, sinMarkPercent, ctx);
 			}
 
 			string targetDescription = card.Target switch
@@ -534,6 +545,21 @@ namespace FishEatFish.Battle.Card
 			float gainMultiplier = ctx.RageTarget != null ? ctx.RageTarget.ShieldGainMultiplier : 1.0f;
 			int shield = CardEffectCalculator.CalculateShield(card, effect, ctx.Attributes, gainMultiplier);
 			if (shield <= 0 || ctx.Player == null) return;
+		
+			// ⚠️ **弃牌换护盾**（D73：温柯尔「精神重建」）：
+			//   「弃掉所有手牌，每弃掉 1 张牌获得的护盾提高 50%」
+			//   → 先弃牌（保留牌不弃），再按弃掉的张数放大护盾。
+			if (effect.DiscardShieldBonusPercent > 0)
+			{
+				int discarded = ctx.Player.DiscardHandForShield();
+				if (discarded > 0)
+				{
+					// ⚠️ 先转 double 再算，避免 float 精度少一格（踩坑 §107 / §114）
+					double boosted = (double)shield * (1.0 + discarded * effect.DiscardShieldBonusPercent / 100.0);
+					shield = Mathf.CeilToInt((float)boosted);
+					Log(ctx, $"弃掉{discarded}张手牌，护盾提高{discarded * effect.DiscardShieldBonusPercent}%", LogType.System);
+				}
+			}
 
 			ctx.Player.AddShield(shield);
 			Log(ctx, $"你使用了{card.Name}，获得{shield}点护盾", LogType.Shield);
@@ -708,6 +734,29 @@ namespace FishEatFish.Battle.Card
 				Log(ctx, $"你使用了{card.Name}，触发 {enemy.EnemyName} 的 {stacks} 层中毒，造成 {damage} 点纯粹伤害", LogType.System);
 			}
 		}
+		
+		/// <summary>
+		/// **洗牌入抽牌堆**（D73）——
+		/// 把一张**衍生卡**洗进抽牌堆（不是置入手牌）。
+		///
+		/// 灰机 wiki：
+		///   - 詹金「集结鼠群」：「将 1 张造成 攻击力×30% 点伤害 X+4 次伤害的「鼠群冲击」洗入抽牌堆顶部。」
+		///   - 卡斯托尔「蔽日之羽」：「将 1 张「黑羽」洗入抽牌堆。」
+		///
+		/// ⚠️ 洗进去的是**独立实例**（从模板克隆），不共享同一个 Card 对象。
+		/// </summary>
+		private static void ExecuteShuffleIntoDeck(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (string.IsNullOrEmpty(effect.ShuffleCardId) || ctx.Player == null) return;
+		
+			int count = effect.ShuffleCount > 0 ? effect.ShuffleCount : 1;
+			int inserted = ctx.Player.InsertCardsToDeckTop(
+				effect.ShuffleCardId, count, effect.ShuffleCost, effect.ShuffleConsume, card.Level);
+		
+			Log(ctx, $"你使用了{card.Name}，将 {inserted} 张「{effect.ShuffleCardId}」洗入抽牌堆", LogType.System);
+		}
+		
+
 		/// <summary>
 		/// **灵知觉醒**：打出后使角色在本场战斗中获得特殊能力。
 		///
@@ -867,7 +916,7 @@ namespace FishEatFish.Battle.Card
 			if (card == null || effect == null) return 0;
 
 			int level = card.Level;
-			int value;
+			int value = 0;
 			if (effect.Percent > 0 && attributes != null)
 			{
 				value = CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Defense, effect.Percent / 100f);
@@ -876,10 +925,17 @@ namespace FishEatFish.Battle.Card
 			{
 				value = CardLevelSystem.CalculateAttributeLinkedValue(level, effect.Value, 1f);
 			}
-			else
+		
+			// ⚠️ **按「最大生命」算的那一部分**（D73：墨菲「圣女作成」：
+			//    「获得总计（最大生命 5% + [防御力*10%]）点护盾和 1 点算力。」）
+			//   → 本项目的「最大生命」= 体质（<c>MaxHealth =&gt; Constitution</c>）→ 基数取体质。
+			//   → 与 <c>Percent</c>（防御力百分比）**相加**，不是二选一。
+			if (effect.HealthPercent > 0 && attributes != null)
 			{
-				return 0;
+				value += CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Constitution, effect.HealthPercent / 100f);
 			}
+		
+			if (value <= 0) return 0;
 
 			// ⚠️ **「施加的护盾提高 50%」**（诺缔拉灵知觉醒「维修大师」）
 			//   → 倍率作用在**这一次施加**上（觉醒之前的不追溯）。

@@ -264,6 +264,109 @@ public partial class Player : Node, IUnit
 		}
 	}
 
+	/// <summary>
+	/// **把一张衍生卡洗进抽牌堆顶部**（D73）。
+	///
+	/// 灰机 wiki：
+	///   - 詹金「集结鼠群」：「将 1 张造成 攻击力×30% 点伤害 X+4 次伤害的「鼠群冲击」洗入抽牌堆顶部。」
+	///   - 卡斯托尔「蔽日之羽」：「将 1 张「黑羽」洗入抽牌堆。」
+	///
+	/// ⚠️ 洗进去的是**独立实例**（从模板克隆），不共享同一个 Card 对象。
+	/// ⚠️ 洗到**牌堆顶部**（索引 0）→ 下次抽牌优先抽到它（wiki 说的「顶部」）。
+	/// </summary>
+	/// <param name="cardId">衍生卡的 id（在 character_cards.json 里）</param>
+	/// <param name="count">洗几张</param>
+	/// <param name="costOverride">覆盖算力消耗（-1 = 不覆盖）</param>
+	/// <param name="consume">是否附加「消耗」词缀（打出即销毁）</param>
+	/// <param name="level">洗进去那张卡的等级（0 = 沿用模板卡自身的等级）</param>
+	/// <returns>实际洗入的张数</returns>
+	public int InsertCardsToDeckTop(string cardId, int count, int costOverride = -1, bool consume = false, int level = 0)
+	{
+		if (string.IsNullOrEmpty(cardId) || count <= 0) return 0;
+	
+		int inserted = 0;
+		for (int i = 0; i < count; i++)
+		{
+			Card.Card template = CharacterCardLoader.GetCharacterCard(cardId);
+			if (template == null)
+			{
+				GD.PrintErr($"[Player] 衍生卡「{cardId}」不在 character_cards.json 里，无法洗入抽牌堆");
+				break;
+			}
+	
+			Card.Card instance = template.Clone();
+
+			// ⚠️ **继承来源卡的等级**（D73：詹金「集结鼠群」L1 生成攻击力×30% 的「鼠群冲击」、
+			//    L6 生成攻击力×60% 的）—— 不继承的话，6 级的集结鼠群会生成 1 级的鼠群冲击（数值掉一半）。
+			if (level > 0)
+			{
+				instance.Level = Mathf.Clamp(level, 1, instance.MaxLevel);
+			}
+	
+			// ⚠️ **覆盖算力消耗**（詹金「雾都街童」：「算力消耗为 0 的「布朗出动！」」）
+			if (costOverride >= 0)
+			{
+				instance.Cost = costOverride;
+				instance.BaseCost = costOverride;
+			}
+	
+			// ⚠️ **附加「消耗」词缀**（同上：「附加{{词条|消耗}}」）——
+			//   消耗是由**效果列表里的 consume 条目**生效的（BattleManager 读 ctx.CardConsumed），
+			//   所以这里既加词缀（卡面标注「⚠消耗。」）也加效果条目（战斗里真的销毁）。
+			if (consume)
+			{
+				if (!instance.Affixes.Contains(Card.CardAffix.Consume))
+				{
+					instance.Affixes.Add(Card.CardAffix.Consume);
+				}
+	
+				bool hasConsumeEffect = false;
+				foreach (Card.CardEffect e in instance.Effects)
+				{
+					if (e.Type == Card.CardEffectType.Consume)
+					{
+						hasConsumeEffect = true;
+						break;
+					}
+				}
+				if (!hasConsumeEffect)
+				{
+					instance.Effects.Add(new Card.CardEffect { Type = Card.CardEffectType.Consume });
+				}
+			}
+	
+			Deck.Insert(0, instance);
+			inserted++;
+		}
+	
+		GD.Print($"[Player] 洗入抽牌堆：「{cardId}」× {inserted}");
+		return inserted;
+	}
+	
+	/// <summary>
+	/// **弃掉所有手牌**（「保留」的牌不弃），返回弃掉的张数（D73：温柯尔「精神重建」）。
+	///
+	/// ⚠️ 与 <see cref="DiscardHand"/> 的区别：**返回张数**（那张卡要用它算护盾加成）。
+	/// </summary>
+	public int DiscardHandForShield()
+	{
+		List<Card.Card> cardsToDiscard = new List<Card.Card>();
+		foreach (Card.Card card in Hand)
+		{
+			if (card == null) continue;
+			if (card.IsRetain) continue;
+			cardsToDiscard.Add(card);
+		}
+	
+		foreach (Card.Card card in cardsToDiscard)
+		{
+			Hand.Remove(card);
+			DiscardPile.Add(card);
+		}
+	
+		return cardsToDiscard.Count;
+	}
+	
 	public void PlayCard(Card.Card card)
 	{
 		if (CurrentEnergy >= card.Cost)

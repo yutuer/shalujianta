@@ -105,7 +105,48 @@
       "map": "map01",
       "target": "battle"
     },
-    "battle": {
+    "murphy_team": {
+      "desc": "墨菲 + 其余三个真角色（2026-11-14 D73：wiki 新角色 —— 属性 131/140/158 / 狂气回充 4.8 / 银钥充能 22.2 / 螺湮逆流 / 圣女作成 / 受造之物 / 虚妄继承者）",
+      "team": ["murphy", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "jenkin_team": {
+      "desc": "詹金 + 其余三个真角色（2026-11-14 D73：wiki 新角色 —— 属性 100/140/104 / 暴击率 14.6 / 界域精通 12 / 集结鼠群 / 布朗出动！ / 空间折叠 / 雾都街童 / 鼠群冲击）",
+      "team": ["jenkin", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "winkle_team": {
+      "desc": "温柯尔 + 其余三个真角色（2026-11-14 D73：wiki 新角色 —— 属性 112/100/128 / 狂气回充 5.6 / 黑印掉落 4.8 / 能量射线 / 精神重建 / 自我封锁 / 无形迁移）",
+      "team": ["winkle", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "clementine_team": {
+      "desc": "克莱门汀 + 其余三个真角色（2026-11-14 D73：wiki 新角色 —— 属性 126/149/122 / 伤害强效 4.8 / 银钥充能 29.4 / 痛苦榨取 / 精神抚慰 / 妖虫的呼唤 / 生命重构治疗）",
+      "team": ["clementine", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "castor_team": {
+      "desc": "卡斯托尔 + 其余三个真角色（2026-11-14 D73：wiki 新角色 —— 属性 149/135/158 / 暴击伤害 57.2 / 伤害强效 9.6 / 蔽日之羽 / 穿行永夜 / 翱翔夙愿 / 不屈的孤嚎鸟 / 黑羽）",
+      "team": ["castor", "pollux", "jialun", "sanga"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },
+    "d73_team": {
+      "desc": "D73 四个新角色同队（墨菲 + 詹金 + 温柯尔 + 克莱门汀，一次跑测覆盖 4 个 wiki 新角色；卡斯托尔用 castor_team 单独跑）",
+      "team": ["murphy", "jenkin", "winkle", "clementine"],
+      "keyOrder": "silver_slash",
+      "map": "map01",
+      "target": "battle"
+    },    "battle": {
       "desc": "选人完成 → 直接进战斗（无地图上下文，敌人按 normal_wave）",
       "team": ["pollux", "jialun", "sanga", "thais"],
       "keyOrder": "silver_slash",

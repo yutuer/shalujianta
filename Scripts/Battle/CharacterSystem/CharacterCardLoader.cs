@@ -194,7 +194,16 @@ public class CharacterCardLoader
                     Temporary = effectDict.ContainsKey("temporary") && (bool)effectDict["temporary"],
                     // 灵知觉醒授予的「施加的护盾和反击提高 N%」（诺缔拉「维修大师」= 50）
                     AwakeningCounterPercent = effectDict.ContainsKey("awakeningCounterPercent") ? (int)(long)effectDict["awakeningCounterPercent"] : 0,
-                    AwakeningShieldPercent = effectDict.ContainsKey("awakeningShieldPercent") ? (int)(long)effectDict["awakeningShieldPercent"] : 0
+                    AwakeningShieldPercent = effectDict.ContainsKey("awakeningShieldPercent") ? (int)(long)effectDict["awakeningShieldPercent"] : 0,
+                    // ⚠️ **洗入抽牌堆的衍生卡**（D73：詹金「集结鼠群」/ 卡斯托尔「黑羽」）
+                    ShuffleCardId = effectDict.ContainsKey("shuffleCardId") ? effectDict["shuffleCardId"].ToString() : "",
+                    ShuffleCount = effectDict.ContainsKey("shuffleCount") ? (int)(long)effectDict["shuffleCount"] : 0,
+                    ShuffleCost = effectDict.ContainsKey("shuffleCost") ? (int)(long)effectDict["shuffleCost"] : -1,
+                    ShuffleConsume = effectDict.ContainsKey("shuffleConsume") && (bool)effectDict["shuffleConsume"],
+                    // ⚠️ **弃牌换护盾**的加成百分比（D73：温柯尔「精神重建」）
+                    DiscardShieldBonusPercent = effectDict.ContainsKey("discardShieldBonusPercent") ? (int)(long)effectDict["discardShieldBonusPercent"] : 0,
+                    // ⚠️ **按「最大生命」算的护盾百分比**（D73：墨菲「圣女作成」）
+                    HealthPercent = effectDict.ContainsKey("healthPercent") ? (int)(long)effectDict["healthPercent"] : 0
                 };
 
                 if (effectDict.ContainsKey("timing") && effectDict["timing"].Obj != null)
@@ -252,7 +261,9 @@ public class CharacterCardLoader
             {
                 "front" => TargetType.Front,
                 "rear" => TargetType.Rear,
-                "random" => TargetType.Position,
+                // ⚠️ D73：「random」现在真的是**随机敌人**（詹金「鼠群冲击」），
+                //   以前被映射成 Position（按位置取）—— 那不是随机。
+                "random" => TargetType.Random,
                 _ => TargetType.None
             };
         }

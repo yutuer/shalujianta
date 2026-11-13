@@ -130,6 +130,16 @@ public class UltimateLoader
         ultimate.StackCount = GetIntValue(dict, "stackCount", 0);
         ultimate.DrawFilter = GetStringValue(dict, "drawFilter");
 
+        // D73 新字段（洗入抽牌堆 / 置入手牌的覆盖 / 全体敌人降伤）
+        ultimate.ShuffleCardId = GetStringValue(dict, "shuffleCardId");
+        ultimate.ShuffleCount = GetIntValue(dict, "shuffleCount", 0);
+        ultimate.ShuffleCost = GetIntValue(dict, "shuffleCost", -1);
+        ultimate.ShuffleConsume = GetBoolValue(dict, "shuffleConsume");
+        ultimate.AddCardCost = GetIntValue(dict, "addCardCost", -1);
+        ultimate.AddCardConsume = GetBoolValue(dict, "addCardConsume");
+        ultimate.EnemyDamageReductionPercent = GetIntValue(dict, "enemyDamageReductionPercent", 0);
+        ultimate.EnemyDamageReductionDuration = GetIntValue(dict, "enemyDamageReductionDuration", 1);
+
         // 说明里提到的衍生卡（点它弹衍生卡说明面板）
         ultimate.DerivedCardId = GetStringValue(dict, "derivedCardId");
         ultimate.DerivedCardName = GetStringValue(dict, "derivedCardName");

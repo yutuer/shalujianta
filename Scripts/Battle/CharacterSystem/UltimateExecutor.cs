@@ -54,6 +54,8 @@ public static class UltimateExecutor
         ApplyDisperseSelfVulnerable(skill, player, summary);
         ApplyDisperseSelfDebuff(skill, player, summary);
         ApplyStack(skill, owner, summary);
+        ApplyShuffleIntoDeck(skill, player, summary);
+        ApplyEnemyDamageReduction(skill, targets, summary);
 
         string result = summary.Count > 0 ? string.Join("，", summary) : "无实际效果";
         GD.Print($"[UltimateExecutor] Execute completed: {skill.Name} -> {result}");
@@ -126,6 +128,34 @@ public static class UltimateExecutor
 
             Card.Card card = template.Clone();
             card.OwnerCharacterId = ownerCharacterId;
+
+            // ⚠️ **覆盖算力消耗 + 附加「消耗」词缀**（D73：詹金「雾都街童」
+            //   「将 3 张附加{{词条|消耗}}、算力消耗为 0 的「布朗出动！」置入手牌。」）
+            if (skill.AddCardCost >= 0)
+            {
+                card.Cost = skill.AddCardCost;
+                card.BaseCost = skill.AddCardCost;
+            }
+            if (skill.AddCardConsume)
+            {
+                if (!card.Affixes.Contains(Card.CardAffix.Consume))
+                {
+                    card.Affixes.Add(Card.CardAffix.Consume);
+                }
+                bool hasConsumeEffect = false;
+                foreach (Card.CardEffect e in card.Effects)
+                {
+                    if (e.Type == Card.CardEffectType.Consume)
+                    {
+                        hasConsumeEffect = true;
+                        break;
+                    }
+                }
+                if (!hasConsumeEffect)
+                {
+                    card.Effects.Add(new Card.CardEffect { Type = Card.CardEffectType.Consume });
+                }
+            }
 
             // 挂上释放者的属性 —— 卡面与战斗结算都按这个角色的属性算
             if (owner?.Character != null)
@@ -326,6 +356,47 @@ public static class UltimateExecutor
         }
 
         summary.Add($"附加力量降低（伤害-{value}%，持续{duration}回合）");
+    }
+
+    /// <summary>
+    /// **把衍生卡洗进抽牌堆**（D73：卡斯托尔「不屈的孤嚎鸟」：「将 3 张「黑羽」洗入抽牌堆。」）。
+    /// </summary>
+    private static void ApplyShuffleIntoDeck(UltimateSkill skill, Player player, List<string> summary)
+    {
+        if (string.IsNullOrEmpty(skill.ShuffleCardId) || skill.ShuffleCount <= 0 || player == null) return;
+
+        int inserted = player.InsertCardsToDeckTop(
+            skill.ShuffleCardId, skill.ShuffleCount, skill.ShuffleCost, skill.ShuffleConsume, skill.Level);
+
+        GD.Print($"[UltimateExecutor] 【{skill.Name}】将 {inserted} 张「{skill.ShuffleCardId}」洗入抽牌堆");
+        summary.Add($"将{inserted}张衍生卡洗入抽牌堆");
+    }
+
+    /// <summary>
+    /// **全体敌人伤害降低 N%**（D73：墨菲「虚妄继承者」：「所有敌人本回合伤害降低 50%。」）。
+    ///
+    /// ⚠️ 复用 <see cref="StrengthDownDebuff"/>（力量降低 = 造成的伤害 −N%）——
+    ///    词条「力量」本身就是百分比型，所以「伤害降低 50%」= 力量降低 50 点。
+    /// </summary>
+    private static void ApplyEnemyDamageReduction(UltimateSkill skill, List<Enemy> targets, List<string> summary)
+    {
+        if (skill.EnemyDamageReductionPercent <= 0 || targets.Count == 0) return;
+
+        int duration = skill.EnemyDamageReductionDuration > 0 ? skill.EnemyDamageReductionDuration : 1;
+
+        foreach (Enemy enemy in targets)
+        {
+            StatusEffect debuff = new StrengthDownDebuff
+            {
+                DamageReductionPercent = skill.EnemyDamageReductionPercent,
+                Duration = duration
+            };
+            debuff.Initialize();
+            enemy.AddStatusEffect(debuff);
+            GD.Print($"[UltimateExecutor] 【{skill.Name}】{enemy.EnemyName} 伤害降低 {skill.EnemyDamageReductionPercent}%，持续 {duration} 回合");
+        }
+
+        summary.Add($"所有敌人伤害降低{skill.EnemyDamageReductionPercent}%（持续{duration}回合）");
     }
 
     /// <summary>

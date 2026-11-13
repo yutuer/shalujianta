@@ -94,7 +94,25 @@ public partial class EnemyManager
             TargetType.Front => GetFrontmostEnemy(),
             TargetType.Rear => GetRearmostEnemy(),
             TargetType.Position => GetEnemyAtPosition(targetPosition),
+            // ⚠️ **随机敌人**（D73：詹金「鼠群冲击」：「对随机敌人造成…伤害」）
+            TargetType.Random => GetRandomEnemy(),
             _ => GetFrontmostEnemy()
         };
+    }
+
+    /// <summary>
+    /// 随机挑一个**存活**的敌人（D73）。
+    ///
+    /// wiki 原文：「对**随机敌人**造成 攻击力×30% 点伤害 X+4 次。」
+    /// → 每次命中都可能是**不同的敌人**（所以走的是「对随机敌人」这个目标，而不是固定前排）。
+    /// </summary>
+    private Enemy GetRandomEnemy()
+    {
+        List<Enemy> alive = GetLivingEnemies();
+        if (alive == null || alive.Count == 0) return null;
+
+        RandomNumberGenerator rng = new RandomNumberGenerator();
+        rng.Randomize();
+        return alive[rng.RandiRange(0, alive.Count - 1)];
     }
 }

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_murphy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1F5F73"/>
+      <stop offset="1" stop-color="#15414E"/>
+    </linearGradient>
+    <linearGradient id="headGrad_murphy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4C7F8F"/>
+      <stop offset="1" stop-color="#1F5F73"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M46 286 C26 232 40 172 72 146" fill="none" stroke="#7FD6C4" stroke-width="7" stroke-linecap="round" />
+  <path d="M210 286 C230 232 216 172 184 146" fill="none" stroke="#7FD6C4" stroke-width="7" stroke-linecap="round" />
+  <circle cx="72" cy="140" r="9" fill="#7FD6C4" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="184" cy="140" r="9" fill="#7FD6C4" stroke="#0B0E14" stroke-width="3" />
+  <path d="M110 132 C85.7 135 64.1 144 56 158 C60 188 70 202 74 214 C76 230 74 241 68 250 L65 296 L191 296 L188 250 C182 241 180 230 182 214 C186 202 196 188 200 158 C154.1 144 175.7 135 146 132 Z" fill="url(#bodyGrad_murphy)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#5B9A8D" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_murphy)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="62" r="18" fill="url(#headGrad_murphy)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="62" r="18" fill="url(#headGrad_murphy)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="62" r="9" fill="#7FD6C4" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="62" r="9" fill="#7FD6C4" stroke="#0B0E14" stroke-width="3" />
+  <path d="M104 86 L152 86 L146 110 L110 110 Z" fill="#7FD6C4" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <path d="M113 210 C121 192 129 220 143 201" fill="none" stroke="#7FD6C4" stroke-width="6" stroke-linecap="round" />
+</svg>

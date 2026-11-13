@@ -230,6 +230,53 @@ public partial class UltimateSkill : Resource, ICardLevelable
     [Export]
     public string DrawFilter = "";
 
+    /// <summary>
+    /// **洗入抽牌堆的衍生卡 id**（D73：卡斯托尔「不屈的孤嚎鸟」：「将 3 张「黑羽」洗入抽牌堆。」）。
+    ///
+    /// ⚠️ 与 <see cref="AddCardToHandId"/> 的区别：那个是**置入手牌**，这个是**洗进抽牌堆**。
+    /// </summary>
+    [Export]
+    public string ShuffleCardId = "";
+
+    /// <summary>洗入抽牌堆的张数</summary>
+    [Export]
+    public int ShuffleCount = 0;
+
+    /// <summary>洗入时覆盖的算力消耗（-1 = 不覆盖）</summary>
+    [Export]
+    public int ShuffleCost = -1;
+
+    /// <summary>洗入时是否附加「消耗」词缀（打出即销毁）</summary>
+    [Export]
+    public bool ShuffleConsume = false;
+
+    /// <summary>
+    /// **置入手牌那张卡的算力消耗覆盖**（D73：詹金「雾都街童」）。
+    ///
+    /// wiki 原文（6 级）：「将 3 张（启灵3：4 张）附加{{词条|消耗}}、**算力消耗为 0** 的「布朗出动！」置入手牌。」
+    /// </summary>
+    [Export]
+    public int AddCardCost = -1;
+
+    /// <summary>置入手牌那张卡是否附加「消耗」词缀（D73：詹金「雾都街童」）</summary>
+    [Export]
+    public bool AddCardConsume = false;
+
+    /// <summary>
+    /// **全体敌人伤害降低的百分比**（D73：墨菲「虚妄继承者」）。
+    ///
+    /// wiki 原文（6 级）：「**所有敌人本回合伤害降低 50%**。」
+    ///
+    /// ⚠️ 与 <see cref="StrengthDownPercent"/> 的区别：那个是**按施法者防御力**算的点数，
+    ///    这个是**固定百分比**（wiki 原文直接给 50%）。
+    /// </summary>
+    [Export]
+    public int EnemyDamageReductionPercent = 0;
+
+    /// <summary>全体敌人降伤的持续回合（墨菲 = 1 回合 = 「本回合」）</summary>
+    [Export]
+    public int EnemyDamageReductionDuration = 1;
+
     /// <summary>最近一次 Execute 的中文执行摘要</summary>
     public string LastExecuteSummary { get; private set; } = "";
 

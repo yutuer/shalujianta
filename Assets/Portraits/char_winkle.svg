@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_winkle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3A5A8C"/>
+      <stop offset="1" stop-color="#273D5F"/>
+    </linearGradient>
+    <linearGradient id="headGrad_winkle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#617BA3"/>
+      <stop offset="1" stop-color="#3A5A8C"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M30 150 L128 40 L226 150" fill="none" stroke="#9FD8FF" stroke-width="6" stroke-linejoin="round" />
+  <path d="M70 176 L128 96 L186 176" fill="none" stroke="#9FD8FF" stroke-width="5" stroke-linejoin="round" />
+  <path d="M110 132 C89.3 135 70.9 144 64 158 C68 188 76 202 80 214 C82 230 78 241 72 250 L69 296 L187 296 L184 250 C178 241 174 230 176 214 C180 202 188 188 192 158 C152.9 144 171.3 135 146 132 Z" fill="url(#bodyGrad_winkle)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#729CB8" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_winkle)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="62" r="18" fill="url(#headGrad_winkle)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="62" r="18" fill="url(#headGrad_winkle)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="62" r="9" fill="#9FD8FF" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="62" r="9" fill="#9FD8FF" stroke="#0B0E14" stroke-width="3" />
+  <path d="M110 86 L146 86 L128 112 Z" fill="#9FD8FF" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <path d="M115 203 L128 215 L141 203" fill="none" stroke="#9FD8FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M115 193 L128 205 L141 193" fill="none" stroke="#9FD8FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

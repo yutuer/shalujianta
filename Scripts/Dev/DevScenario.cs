@@ -450,6 +450,11 @@ namespace FishEatFish.Dev
 				case "tulu": return CharacterDefinition.CreateTulu();
 				case "helot": return CharacterDefinition.CreateHelot();
 				case "xu": return CharacterDefinition.CreateXu();
+				case "murphy": return CharacterDefinition.CreateMurphy();
+				case "jenkin": return CharacterDefinition.CreateJenkin();
+				case "winkle": return CharacterDefinition.CreateWinkle();
+				case "clementine": return CharacterDefinition.CreateClementine();
+				case "castor": return CharacterDefinition.CreateCastor();
 				default: return null;
 			}
 		}

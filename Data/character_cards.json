@@ -1979,6 +1979,898 @@
                     "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
                 }
             ]
-        }
-    ]
+        },
+        {
+            "cardId": "murphy_attack",
+            "characterId": "murphy",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "启灵2：「基础打击」获得等同于墨菲攻击力 2% 的触腕伤害（本项目没有「触腕伤害」机制）"
+            ]
+        },
+        {
+            "cardId": "murphy_defense",
+            "characterId": "murphy",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "启灵2：「基础防御」获得等同于墨菲攻击力 2% 的触腕伤害（本项目没有「触腕伤害」机制）"
+            ]
+        },
+        {
+            "cardId": "murphy_special",
+            "characterId": "murphy",
+            "name": "螺湮逆流",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": true,
+            "isAreaAttack": true,
+            "damagePercent": 25,
+            "description": "对所有敌人造成 {damage} 点伤害。施加 1 回合虚弱和易伤。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 25,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "weak",
+                    "value": 1,
+                    "duration": 1,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "vulnerable",
+                    "value": 50,
+                    "duration": 1,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "该伤害享受 35% 的触腕伤害加成（本项目没有「触腕伤害」加成通道）",
+                "移除 35% 献祭层数（本项目没有「献祭」减益系统）",
+                "启灵1：每有 2 条触腕额外造成 1 次伤害（本项目没有「触腕攻击次数」机制）",
+                "启灵1：保留（本项目无启灵系统，也没有「启灵」解锁流程）",
+                "「虚弱」的数值：本项目的虚弱是「攻击力 −N 点」的固定值（与 wiki「虚弱」每层 −25% 不一致，见 docs/开发计划.md D70）；「易伤」wiki 原文没给数值，这里用减益表标准值 50%（受到伤害 +50%）"
+            ]
+        },
+        {
+            "cardId": "murphy_special2",
+            "characterId": "murphy",
+            "name": "圣女作成",
+            "style": "striker",
+            "cost": 0,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "description": "获得 {shield} 点护盾和 1 点算力。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 10,
+                    "healthPercent": 5
+                },
+                {
+                    "type": "energy",
+                    "value": 1
+                }
+            ],
+            "pendingMechanics": [
+                "下回合开始时，受到最大生命 5% 的献祭（本项目没有「献祭」减益系统）",
+                "余波：触腕伤害 +攻击力×5%（本项目没有「余波」触发器与「触腕伤害」机制）",
+                "护盾里的「最大生命 5%」在本项目按**体质**算（CharacterAttributes.MaxHealth => Constitution）；两部分各自向上取整后相加，满级会比 wiki 的整值多 1 点"
+            ]
+        },
+        {
+            "cardId": "murphy_special3",
+            "characterId": "murphy",
+            "name": "受造之物",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：获得 1 条触腕。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "stack",
+                    "stackId": "touch_arm",
+                    "count": 1
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "打出卡牌后获得 1 条无视触腕上限的临时触腕（本项目没有「临时触腕」机制）",
+                "打出卡牌后获得等同于 1 算力消耗的银钥充能，每回合最多生效 3 次（本项目没有「银钥能量」效果，也没有「每回合最多 N 次」的计数器）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "jenkin_attack",
+            "characterId": "jenkin",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ]
+        },
+        {
+            "cardId": "jenkin_defense",
+            "characterId": "jenkin",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "启灵2：抽 2 张牌，若不是詹金的卡牌则将其丢弃（本项目没有「按归属筛选抽牌并丢弃」的机制）"
+            ]
+        },
+        {
+            "cardId": "jenkin_special",
+            "characterId": "jenkin",
+            "name": "集结鼠群",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "description": "将 1 张「鼠群冲击」洗入抽牌堆顶部。",
+            "effects": [
+                {
+                    "type": "shuffleIntoDeck",
+                    "shuffleCardId": "jenkin_mouse_shock",
+                    "shuffleCount": 1
+                }
+            ],
+            "pendingMechanics": [
+                "wiki 把「集结鼠群」的算力消耗写作 **X**（动态值），把「鼠群冲击」的命中次数写作 **X + 4 次** —— wiki 没给 X 的数值 → 本轮按 **X = 1** 实现（集结鼠群算力消耗 1 点、鼠群冲击命中 5 次），口径待主人确认",
+                "跃迁：将 1 张「布朗出动！」洗入抽牌堆顶部（本项目没有「跃迁」机制）",
+                "wiki 里「鼠群冲击」的伤害百分比（30% → 60%）随**这张卡**的等级变化 → 本轮让洗入的那张「鼠群冲击」继承本卡等级来还原"
+            ]
+        },
+        {
+            "cardId": "jenkin_special2",
+            "characterId": "jenkin",
+            "name": "布朗出动！",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "isAreaAttack": true,
+            "damagePercent": 15,
+            "description": "对所有敌人造成 {damage} 点伤害。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 15,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "在本场战斗中，「布朗出动！」造成的伤害提高 攻击力×5% 点（本项目没有「单卡伤害成长」机制）",
+                "启灵1：「鼠群冲击」造成的伤害提高 攻击力×2.5% 点（本项目没有「单卡伤害成长」机制）",
+                "跃迁：该技能额外享受 1 倍力量加成（本项目没有「跃迁」机制，也没有「倍享力量」通道）"
+            ]
+        },
+        {
+            "cardId": "jenkin_special3",
+            "characterId": "jenkin",
+            "name": "空间折叠",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：暴击率提高 25%。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "暴击率提高 25%（本项目没有「临时暴击率」机制）",
+                "詹金每造成 1 次伤害，临时暴击伤害 +15%，每回合最多叠加 5 次（本项目没有「临时暴击伤害」机制，也没有「每回合最多 N 次」的计数器）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "jenkin_mouse_shock",
+            "characterId": "jenkin",
+            "name": "鼠群冲击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "cardType": "derived",
+            "isRetain": true,
+            "target": "random",
+            "hitCount": 5,
+            "damagePercent": 30,
+            "affixes": [
+                "retain",
+                "consume"
+            ],
+            "bodyAffixMarks": [
+                "retain",
+                "consume"
+            ],
+            "description": "对随机敌人造成 {damage} 点伤害 5 次。⚠保留。⚠消耗。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 30,
+                    "hitCount": 5,
+                    "target": "target"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "命中次数 **X + 4**：wiki 原文写「造成 攻击力×30% 点伤害 X + 4 次」，X =「集结鼠群」的算力消耗（wiki 未给数值）→ 本轮按 X = 1 实现（命中 5 次），口径待主人确认",
+                "这张卡**不在詹金的卡组里**（wiki：「詹金的核心输出卡鼠群冲击并不在自身指令卡当中，而是需要在每场战斗中使用集结鼠群来获得」）→ 只由「集结鼠群」洗入抽牌堆"
+            ],
+            "affixNotes": [
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                },
+                {
+                    "id": "consume",
+                    "name": "消耗",
+                    "description": "打出后从牌库移除。"
+                }
+            ]
+        },
+        {
+            "cardId": "winkle_attack",
+            "characterId": "winkle",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "启灵1：「基础打击」造成的伤害享受 50% 反击加成（本项目没有「伤害吃反击加成」的通道）"
+            ]
+        },
+        {
+            "cardId": "winkle_defense",
+            "characterId": "winkle",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "winkle_special",
+            "characterId": "winkle",
+            "name": "能量射线",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "isAreaAttack": true,
+            "damagePercent": 40,
+            "description": "对所有敌人造成 {damage} 点伤害和 1 回合虚弱。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 40,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "weak",
+                    "value": 1,
+                    "duration": 1,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "移除所有敌方屏障状态（本项目没有「屏障」减益系统）",
+                "获得 200 点银钥能量（本项目没有「银钥能量」效果）",
+                "跃迁：改为获得 15 点狂气（本项目没有「跃迁」机制）",
+                "启灵1：造成的伤害享受 50% 反击加成（本项目没有「伤害吃反击加成」的通道）",
+                "wiki 原文只写「移除所有敌方屏障状态」，伤害部分没写目标 → 本轮按**全体敌人**实现（屏障移除写的是「所有敌方」）"
+            ]
+        },
+        {
+            "cardId": "winkle_special2",
+            "characterId": "winkle",
+            "name": "精神重建",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "shieldPercent": 20,
+            "description": "获得 {shield} 点护盾，弃掉所有手牌，每弃掉 1 张牌获得的护盾提高 50%。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 20,
+                    "discardShieldBonusPercent": 50
+                }
+            ],
+            "pendingMechanics": [
+                "启灵2：并下回合获得 防御力×5% 点护盾（本项目无启灵系统，也没有「下回合获得护盾」的机制）",
+                "跃迁：不再弃牌并抽 1 张牌，获得的护盾提高 100%（本项目没有「跃迁」机制）",
+                "卡面 {shield} 显示的是**基础护盾**（防御力×20%）—— 弃牌张数是出牌那一刻才知道的，放大后的实际值见战斗日志"
+            ]
+        },
+        {
+            "cardId": "winkle_special3",
+            "characterId": "winkle",
+            "name": "自我封锁",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：打出卡牌后，获得 5 点狂气。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening",
+                    "awakeningRageGain": 5
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "打出卡牌后获得 攻击力×15% 点反击（本项目的灵知觉醒通道只有「回复 / 获得狂气 / 施加减益」三种，没有「每次出牌获得反击」）",
+                "启灵3：打出卡牌后获得的狂气提高（本项目无启灵系统）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "clementine_attack",
+            "characterId": "clementine",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "超距：获得 攻击力×7.5% 点力量（本项目没有「超距」机制，也没有「给自己加力量」的通道 —— 增益目前只能挂在敌人身上，见 docs/开发计划.md D70）"
+            ]
+        },
+        {
+            "cardId": "clementine_defense",
+            "characterId": "clementine",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "超距：获得 攻击力×7.5% 点力量（本项目没有「超距」机制，也没有「给自己加力量」的通道）"
+            ]
+        },
+        {
+            "cardId": "clementine_special",
+            "characterId": "clementine",
+            "name": "痛苦榨取",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": true,
+            "isRetain": true,
+            "target": "random",
+            "hitCount": 3,
+            "damagePercent": 20,
+            "affixes": [
+                "prep1",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "prep1",
+                "retain"
+            ],
+            "description": "随机造成 {damage} 点伤害 3 次。⚠保留。",
+            "affixNotes": [
+                {
+                    "id": "prep1",
+                    "name": "预备1",
+                    "description": "回合结束后，算力消耗-1，被弃掉后也会触发该效果。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ],
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 20,
+                    "hitCount": 3,
+                    "target": "target"
+                },
+                {
+                    "type": "retain"
+                }
+            ],
+            "pendingMechanics": [
+                "获得 150% 克莱门汀银钥充能的银钥能量（本项目没有「银钥能量」效果）",
+                "超距：获得 攻击力×7.5% 点力量（本项目没有「超距」机制，也没有「给自己加力量」的通道）",
+                "「预备1」词缀本项目只做**卡面标注**，没有「必须第 1 回合打出」的强制规则"
+            ]
+        },
+        {
+            "cardId": "clementine_special2",
+            "characterId": "clementine",
+            "name": "精神抚慰",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "description": "回复 {heal} 点生命，临时降低敌人 {strengthDown} 点力量。",
+            "effects": [
+                {
+                    "type": "heal",
+                    "percent": 23
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "strengthdown",
+                    "defensePercent": 10,
+                    "duration": 1,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "临时移除敌人所有「疯狂」状态（本项目没有「疯狂」减益系统）",
+                "超距：获得 攻击力×7.5% 点力量（本项目没有「超距」机制，也没有「给自己加力量」的通道）",
+                "wiki 效果1 的治疗是「体质×22.5%」，本项目的效果百分比字段是 int → 存 23（1 级 = 29 点，与 wiki 一致；6 级 = 58 点，wiki 是 57，差 1 点 —— 要完全对齐需把 CardEffect.Percent 改成 float，见 docs/踩坑记录.md §118）"
+            ]
+        },
+        {
+            "cardId": "clementine_special3",
+            "characterId": "clementine",
+            "name": "妖虫的呼唤",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：每回合打出的首张指令卡，伤害、护盾、生命回复、获得狂气、获得银钥能量的效果次数提高 2。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "每回合打出的首张指令卡……效果次数提高 2（本项目没有「效果次数提高」的通道，也没有「每回合首张指令卡」的计数器）",
+                "启灵3：回合结束时获得 2 层共感；共感 / 精神创伤 / 恐惧固着 的堆叠层数上限提高为 15（本项目没有这些减益系统）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "castor_attack",
+            "characterId": "castor",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "超距：将 1 张「黑羽」洗入抽牌堆，获得 防御力×15% 点护盾（本项目没有「超距」机制）"
+            ]
+        },
+        {
+            "cardId": "castor_defense",
+            "characterId": "castor",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ],
+            "pendingMechanics": [
+                "超距：将 1 张「黑羽」洗入抽牌堆，获得 防御力×15% 点护盾（本项目没有「超距」机制）"
+            ]
+        },
+        {
+            "cardId": "castor_special",
+            "characterId": "castor",
+            "name": "蔽日之羽",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "shieldPercent": 25,
+            "description": "获得 {shield} 点护盾，虚弱所有敌人 1 回合。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 25
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "weak",
+                    "value": 1,
+                    "duration": 1,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "启灵2：手牌中每有 1 张「黑羽」获得 5 点狂气（本项目没有「按手牌里的特定卡计数」的机制）",
+                "超距：将 1 张「黑羽」洗入抽牌堆，获得 防御力×15% 点护盾（本项目没有「超距」机制）"
+            ]
+        },
+        {
+            "cardId": "castor_special2",
+            "characterId": "castor",
+            "name": "穿行永夜",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": true,
+            "hitCount": 3,
+            "damagePercent": 35,
+            "description": "造成 {damage} 点伤害 3 次。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 35,
+                    "hitCount": 3,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "其他友方临时暴击伤害提高，数值等同于卡斯托尔暴击伤害的 10%（本项目没有「友方临时暴击伤害」机制）",
+                "启灵2：本回合每打出 1 张「黑羽」算力消耗降低 1（本项目没有「打出特定牌降费」的机制）",
+                "超距：将 1 张「黑羽」洗入抽牌堆，获得 防御力×15% 点护盾（本项目没有「超距」机制）"
+            ]
+        },
+        {
+            "cardId": "castor_special3",
+            "characterId": "castor",
+            "name": "翱翔夙愿",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：卡斯托尔造成的伤害必定暴击。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "「黑羽」打出后对目标施加 攻击力×160% 层侵蚀（本项目没有「侵蚀」减益系统）",
+                "保留的护盾提高 50%（本项目没有「保留时护盾提高」的机制）",
+                "必定暴击（本项目没有「必定暴击」的机制）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "castor_black_feather",
+            "characterId": "castor",
+            "name": "黑羽",
+            "style": "striker",
+            "cost": 0,
+            "isAttack": true,
+            "cardType": "derived",
+            "isRetain": true,
+            "damagePercent": 70,
+            "shieldPercent": 10,
+            "drawCountBase": 1,
+            "affixes": [
+                "consume",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "consume",
+                "retain"
+            ],
+            "description": "造成 {damage} 点伤害，抽 1 张牌。获得 {shield} 点护盾。⚠消耗。⚠保留。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 70,
+                    "ignoreLevelScale": true,
+                    "target": "target"
+                },
+                {
+                    "type": "draw",
+                    "count": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                },
+                {
+                    "type": "consume"
+                },
+                {
+                    "type": "retain"
+                }
+            ],
+            "pendingMechanics": [
+                "「保留：获得护盾」—— wiki 的护盾是**保留时**才给；本项目的「保留」只影响弃牌阶段，没有「保留时触发」的时机 → 这里按**打出即给护盾**实现",
+                "伤害 70% 是**恒定值**（wiki 效果1~6 都是 70%）→ 效果上打开了 ignoreLevelScale"
+            ],
+            "affixNotes": [
+                {
+                    "id": "consume",
+                    "name": "消耗",
+                    "description": "打出后从牌库移除。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        }    ]
 }

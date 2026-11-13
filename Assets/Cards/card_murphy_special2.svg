@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="140" viewBox="0 0 220 140">
+  <defs>
+    <linearGradient id="bg_murphy_special2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#123743"/>
+      <stop offset="1" stop-color="#091D23"/>
+    </linearGradient>
+    <radialGradient id="glow_murphy_special2" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7FD6C4" stop-opacity="0.52"/>
+      <stop offset="1" stop-color="#7FD6C4" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hill_murphy_special2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1F5F73"/>
+      <stop offset="1" stop-color="#123743"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="220" height="140" fill="url(#bg_murphy_special2)" />
+  <g stroke="#7FD6C4" stroke-width="10" stroke-opacity="0.06" stroke-linecap="round">
+    <path d="M-10 118 L96 12" />
+    <path d="M40 132 L150 22" />
+    <path d="M96 140 L210 26" />
+  </g>
+  <circle cx="110" cy="66" r="72" fill="url(#glow_murphy_special2)" />
+  <circle cx="110" cy="66" r="56" fill="none" stroke="#628F9D" stroke-width="4" stroke-opacity="0.28" />
+  <circle cx="110" cy="66" r="64" fill="none" stroke="#628F9D" stroke-width="3" stroke-opacity="0.16" />
+  <g transform="translate(110 66) scale(1.15) translate(-110 -66)">
+  <circle cx="110" cy="66" r="30" fill="#7FD6C4" stroke="#0B0E14" stroke-width="4" />
+  <ellipse cx="110" cy="66" rx="47" ry="16" fill="none" stroke="#628F9D" stroke-width="5" transform="rotate(-22 110 66)" />
+  <circle cx="110" cy="66" r="12" fill="#628F9D" fill-opacity="0.6" />
+  </g>
+  <path d="M0 120 C40 110 72 126 110 118 C150 109 182 126 220 114 L220 140 L0 140 Z" fill="url(#hill_murphy_special2)" fill-opacity="0.55" />
+  <path d="M0 132 C46 124 78 136 118 130 C156 124 190 136 220 128 L220 140 L0 140 Z" fill="#091D23" fill-opacity="0.5" />
+  <g fill="#628F9D" fill-opacity="0.3"><rect x="178" y="114" width="11" height="11" rx="2" /><rect x="193" y="114" width="11" height="11" rx="2" /></g>
+  <path d="M205 15 L185 15 L205 35 Z" fill="#7FD6C4" fill-opacity="0.85" />
+  <rect x="1.5" y="1.5" width="217" height="137" fill="none" stroke="#0B0E14" stroke-width="3" />
+</svg>

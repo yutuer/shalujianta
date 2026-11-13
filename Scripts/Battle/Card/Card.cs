@@ -13,7 +13,14 @@ public enum TargetType
     None = 0,
     Front = 1,
     Rear = 2,
-    Position = 3
+    Position = 3,
+    /// <summary>
+    /// **随机敌人**（D73）—— 詹金「鼠群冲击」：「对随机敌人造成 攻击力×30% 点伤害 X+4 次。」
+    ///
+    /// ⚠️ 以前数据表里的 <c>"random"</c> 被映射成 <see cref="Position"/>（= 按位置取），
+    /// 那不是「随机」—— D73 起改成真正的随机。
+    /// </summary>
+    Random = 4
 }
 
 /// <summary>
