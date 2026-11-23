@@ -2872,5 +2872,879 @@
                     "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
                 }
             ]
-        }    ]
+        },
+        {
+            "cardId": "kathigu_attack",
+            "characterId": "kathigu",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ]
+        },
+        {
+            "cardId": "kathigu_defense",
+            "characterId": "kathigu",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "kathigu_special",
+            "characterId": "kathigu",
+            "name": "末路枪声",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "hitCount": 2,
+            "damagePercent": 25,
+            "description": "造成 {damage} 点伤害 2 次，获得 攻击力×3% 点力量。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 25,
+                    "hitCount": 2,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "获得 攻击力×3% 点力量（本项目的增益只能挂在敌人身上，没有「给自己加力量」的通道）",
+                "启灵2：拥有 3 层「活焰」时额外获得 攻击力×3% 点力量（本项目无启灵系统，也没有「活焰」词条）"
+            ]
+        },
+        {
+            "cardId": "kathigu_special2",
+            "characterId": "kathigu",
+            "name": "千兆耀斑",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "isAreaAttack": true,
+            "damagePercent": 50,
+            "description": "对全体敌人造成 {damage} 点伤害，享受 300% 力量加成。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 50,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "享受 300% 力量加成（本项目没有「按力量倍率放大伤害」的通道）",
+                "启灵2：拥有 3 层「活焰」时造成的基础伤害提高 50%（本项目无启灵系统，也没有「活焰」词条）"
+            ]
+        },
+        {
+            "cardId": "kathigu_special3",
+            "characterId": "kathigu",
+            "name": "业火重燃",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：回合开始时为手中 1 张凯蒂古拉的指令卡赋予 1 层「活焰」。打出赋予 3 层「活焰」的指令卡后使其返回手中。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "回合开始时为手中 1 张凯蒂古拉的指令卡赋予 1 层「活焰」（本项目没有「活焰」词条 / 卡牌状态机制）",
+                "打出赋予 3 层「活焰」的指令卡后使其返回手中（本项目没有「活焰」层数与「卡牌返回手中」的机制）",
+                "启灵3：战斗开始时赋予所有原始指令卡 1 层「活焰」，每获得 1 层「爆炎」基础伤害提高 5%（本项目无启灵系统，也没有「爆炎」词条）",
+                "启灵7「融于万物的真理」：超限爆发额外造成 2 次伤害，改为随机为手中的凯蒂古拉指令卡分配 5 层「活焰」（本项目无启灵系统 / 无超限爆发）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "nymphaea_attack",
+            "characterId": "nymphaea",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ]
+        },
+        {
+            "cardId": "nymphaea_defense",
+            "characterId": "nymphaea",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "nymphaea_special",
+            "characterId": "nymphaea",
+            "name": "夜潮汹涌",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "target": "highesthp",
+            "description": "对生命最高的敌人造成 {damage} 点伤害并施加等量中毒，享受 2 倍力量加成。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percentFloat": 22.5,
+                    "poisonEqualDamage": true,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "享受 2 倍力量加成（本项目没有「按力量倍率放大伤害」的通道）",
+                "启灵2：每回合打出的前 3 张症状卡使「夜潮汹涌」在本场战斗中造成的伤害提高 攻击力×20%（本项目无启灵系统，也没有「症状卡」概念）"
+            ]
+        },
+        {
+            "cardId": "nymphaea_special2",
+            "characterId": "nymphaea",
+            "name": "丧钟遥鸣",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "description": "对所有敌人施加 {poison} 层中毒，并使其 1 回合虚弱和易伤。",
+            "effects": [
+                {
+                    "type": "debuff",
+                    "debuff": "poison",
+                    "percent": 20,
+                    "duration": 99,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "weak",
+                    "value": 1,
+                    "duration": 1,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "debuff",
+                    "debuff": "vulnerable",
+                    "value": 50,
+                    "duration": 1,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "「虚弱」在本项目是**平砍敌人的攻击力**（WeakDebuff），wiki 词条是「造成的主动和触腕伤害降低 25%」—— 百分比型的虚弱本项目还没有",
+                "「易伤」wiki 原文没给数值，本项目用减益表里的标准值（VulnerableDebuff 默认 50% = 受到伤害 +50%），持续 1 回合",
+                "启灵1：中毒层数翻倍（攻击力×40%），并获得 防御力×22.5% 点护盾（本项目无启灵系统）"
+            ]
+        },
+        {
+            "cardId": "nymphaea_special3",
+            "characterId": "nymphaea",
+            "name": "沉逝苦海",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：宁菲亚打出卡牌后获得 5 点狂气。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening",
+                    "awakeningRageGain": 5,
+                    "awakeningRageGainPerLevel": 1
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "回合结束时，使宁菲亚造成的中毒提高 5%（本项目没有「回合结束时提高自己造成的中毒」的通道）",
+                "启灵7「永沦深海的葬仪」：使宁菲亚造成的中毒提高 50%，持续 3 回合（本项目无启灵系统）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "caecus_attack",
+            "characterId": "caecus",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ]
+        },
+        {
+            "cardId": "caecus_defense",
+            "characterId": "caecus",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "caecus_special",
+            "characterId": "caecus",
+            "name": "逆鳞之护",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "shieldPercent": 25,
+            "description": "获得 {shield} 点护盾，反击和触腕反击额外触发 1 次，造成 50% 伤害。获得 攻击力×4% 点力量。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 25
+                }
+            ],
+            "pendingMechanics": [
+                "直到下个回合开始，反击和触腕反击额外触发 1 次，造成 50% 伤害（本项目没有「反击额外触发次数」的机制）",
+                "获得 攻击力×4% 点力量（本项目没有「给自己加力量」的通道）",
+                "启灵2：护盾提高到 防御力×30%，并获得「保留」"
+            ]
+        },
+        {
+            "cardId": "caecus_special2",
+            "characterId": "caecus",
+            "name": "破碎沉戟",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "damagePercent": 10,
+            "description": "造成 {damage} 点伤害，获得 {counter} 层反击。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                },
+                {
+                    "type": "counter",
+                    "percent": 10,
+                    "temporary": false
+                }
+            ],
+            "pendingMechanics": [
+                "「获得等量的反击」—— wiki 的「等量」指**等于这次的伤害值**；本项目的反击层数 = 攻击力×百分比×等级系数，与伤害值（攻击力×10%×等级系数）公式相同 → 这里用**同百分比**的 counter 效果（数学等价，仅取整时机不同）",
+                "享受 50% 触腕伤害加成（本项目没有「触腕伤害」系统）",
+                "启灵1：获得 15 / 20 点狂气，且该效果每回合只能触发 1 次（本项目无启灵系统，也没有「回合唯一」的触发限制）"
+            ]
+        },
+        {
+            "cardId": "caecus_special3",
+            "characterId": "caecus",
+            "name": "蜕变之躯",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：获得 1 条触腕，每打出 1 张牌回复 体质×7% 点生命并获得 攻击力×10% 点反击。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "stack",
+                    "stackId": "touch_arm",
+                    "count": 1
+                },
+                {
+                    "type": "heal",
+                    "percent": 7,
+                    "timing": [
+                        "onAwakening"
+                    ]
+                },
+                {
+                    "type": "awakening",
+                    "awakeningCounterGainPercent": 10
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "触腕只有「层数」没有「触腕攻击」执行器 → 获得 1 条触腕只影响显示与上限（见图鲁「不朽威仪」）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "pontos_attack",
+            "characterId": "pontos",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ]
+        },
+        {
+            "cardId": "pontos_defense",
+            "characterId": "pontos",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "pontos_special",
+            "characterId": "pontos",
+            "name": "纵魇掠袭",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": true,
+            "isAreaAttack": true,
+            "hitCount": 3,
+            "damagePercent": 30,
+            "description": "对所有敌人造成 {damage} 点伤害 3 次，获得 {rage} 点狂气。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 30,
+                    "hitCount": 3,
+                    "target": "allEnemies"
+                },
+                {
+                    "type": "rage",
+                    "value": 9,
+                    "perLevel": 3
+                }
+            ],
+            "pendingMechanics": [
+                "必定暴击（本项目没有「必定暴击」的机制——暴击率 / 暴击伤害只作属性展示，没有进伤害公式）",
+                "「额外生效 X 次」—— wiki 全文没有给 X 的定义，本轮按 **X = 2** 实现（算力 2、伤害共 3 段、狂气 3×3 = 9 点）",
+                "启灵2：额外 0 次生效（本项目没有「按等级改变额外生效次数」的机制）"
+            ]
+        },
+        {
+            "cardId": "pontos_special2",
+            "characterId": "pontos",
+            "name": "驭魇哨音",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "isRetain": true,
+            "shieldPercent": 30,
+            "affixes": [
+                "prep1",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "prep1",
+                "retain"
+            ],
+            "description": "获得 {shield} 点护盾，将 3 种不同的「囚魇」置入手中。⚠预备1。⚠保留。",
+            "effects": [
+                {
+                    "type": "shield",
+                    "percent": 30
+                },
+                {
+                    "type": "addCardsToHand",
+                    "addCardsToHandIds": "pontos_plunder,pontos_harass,pontos_hunt"
+                },
+                {
+                    "type": "retain"
+                }
+            ],
+            "pendingMechanics": [
+                "「若本场战斗首次释放，则…否则抽 3 张「囚魇」」—— 本项目没有「本场战斗首次 / 否则」的分叉效果，也没有「按卡牌类别抽牌」（抽牌筛选只支持「打击」与「算力消耗最低的指令卡」）",
+                "每拥有 4 张永久囚魇使其中 1 张升级为「双生囚魇」（本项目没有「永久囚魇 / 双生囚魇」的机制）",
+                "「预备1」词缀本项目只做**卡面标注**，没有「必须第 1 回合打出」的强制规则"
+            ],
+            "affixNotes": [
+                {
+                    "id": "prep1",
+                    "name": "预备1",
+                    "description": "回合结束后，算力消耗-1，被弃掉后也会触发该效果。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "pontos_special3",
+            "characterId": "pontos",
+            "name": "囚渊的怒仇",
+            "style": "striker",
+            "cost": 3,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：牌库中每有 3 张「囚魇」，「无休猎宴」就获得 1 层「围猎」。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "牌库中每有 3 张「囚魇」使「无休猎宴」获得 1 层「围猎」（本项目没有「围猎」词条与「按牌库里的特定卡计数」的机制）",
+                "每打出 1 张庞托斯的卡牌，下次「无休猎宴」临时「力量降低」效果提高 25%，每回合至多触发 3 次（本项目没有「力量降低的临时提高」机制）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        },
+        {
+            "cardId": "pontos_plunder",
+            "characterId": "pontos",
+            "artCardId": "pontos_special2",
+            "name": "掳掠之魇",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "cardType": "derived",
+            "description": "将 1 张「灵感」洗入抽牌堆。",
+            "effects": [
+                {
+                    "type": "shuffleIntoDeck",
+                    "shuffleCardId": "pontos_inspiration",
+                    "shuffleCount": 1
+                }
+            ],
+            "pendingMechanics": [
+                "其他唤醒体获得 5 点狂气（本项目没有「给其他角色加狂气」的通道）"
+            ]
+        },
+        {
+            "cardId": "pontos_harass",
+            "characterId": "pontos",
+            "artCardId": "pontos_special2",
+            "name": "滋扰之魇",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "cardType": "derived",
+            "description": "临时降低所有敌人 {strengthDown} 点力量。",
+            "effects": [
+                {
+                    "type": "debuff",
+                    "debuff": "strengthdown",
+                    "defensePercent": 6,
+                    "duration": 1,
+                    "target": "allEnemies"
+                }
+            ],
+            "pendingMechanics": [
+                "触腕伤害 + 攻击力×7.5%（本项目没有「触腕伤害」系统）"
+            ]
+        },
+        {
+            "cardId": "pontos_hunt",
+            "characterId": "pontos",
+            "artCardId": "pontos_special2",
+            "name": "猎杀之魇",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "cardType": "derived",
+            "target": "lowesthp",
+            "description": "对生命最低的敌人造成等同于 1000% 触腕伤害的固定伤害。获得等同于庞托斯基础暴击伤害 15% 的临时暴击伤害。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 0,
+                    "target": "lowesthp"
+                }
+            ],
+            "pendingMechanics": [
+                "⚠️ **这张卡的全部效果都依赖「触腕伤害」系统**（本项目没有）→ 卡面照 wiki 原样，战斗里不结算任何数值；上面的 damage 条目 percent = 0 是占位（只为了让 effects[] 非空、目标解析走「生命最低」）",
+                "获得等同于庞托斯基础暴击伤害 15% 的临时暴击伤害（本项目没有「临时暴击伤害」的机制）"
+            ]
+        },
+        {
+            "cardId": "pontos_inspiration",
+            "characterId": "pontos",
+            "artCardId": "pontos_special3",
+            "name": "灵感",
+            "style": "striker",
+            "cost": 0,
+            "isAttack": false,
+            "cardType": "derived",
+            "isRetain": true,
+            "affixes": [
+                "retain",
+                "consume"
+            ],
+            "bodyAffixMarks": [
+                "retain",
+                "consume"
+            ],
+            "description": "获得 1 点算力，抽 1 张牌。⚠保留。⚠消耗。",
+            "effects": [
+                {
+                    "type": "energy",
+                    "value": 1
+                },
+                {
+                    "type": "draw",
+                    "count": 1
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "affixNotes": [
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                },
+                {
+                    "id": "consume",
+                    "name": "消耗",
+                    "description": "打出后从牌库移除。"
+                }
+            ]
+        },
+        {
+            "cardId": "casiah_attack",
+            "characterId": "casiah",
+            "name": "打击",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": true,
+            "damagePercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "damage",
+                    "percent": 10,
+                    "target": "target"
+                }
+            ]
+        },
+        {
+            "cardId": "casiah_defense",
+            "characterId": "casiah",
+            "name": "防御",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "shieldPercent": 10,
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 5,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shield",
+                    "percent": 10
+                }
+            ]
+        },
+        {
+            "cardId": "casiah_special",
+            "characterId": "casiah",
+            "name": "隔空取物",
+            "style": "striker",
+            "cost": 0,
+            "isAttack": true,
+            "target": "random",
+            "hitCount": 2,
+            "damagePercent": 20,
+            "description": "视为「打击」。选择超维空间任意 1 张牌置入手牌并使其算力消耗 -2。随机造成 {damage} 点伤害 2 次，获得 攻击力×12% 点临时力量。",
+            "effects": [
+                {
+                    "type": "damage",
+                    "percent": 20,
+                    "hitCount": 2,
+                    "target": "target"
+                }
+            ],
+            "pendingMechanics": [
+                "视为「打击」（本项目没有「视为某张卡」的机制）",
+                "选择超维空间任意 1 张牌置入手牌并使其算力消耗 -2（本项目没有「超维空间」这个牌池，也没有「从牌池选牌置入手牌」的机制）",
+                "获得 攻击力×12% 点临时力量（本项目没有「给自己加力量」的通道，也没有「临时」层数）",
+                "启灵3「余波」：将 1 张「灵感」洗入抽牌堆（本项目无启灵系统）"
+            ]
+        },
+        {
+            "cardId": "casiah_special2",
+            "characterId": "casiah",
+            "name": "统统消失！",
+            "style": "striker",
+            "cost": 1,
+            "isAttack": false,
+            "description": "获得 {rage} 点狂气。弃掉手牌中的症状和状态卡，将其他手牌洗入抽牌堆，抽取等同于弃掉和洗入数量的牌。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 10,
+                    "perLevel": 1
+                },
+                {
+                    "type": "shuffleHandToDeck",
+                    "drawAfterShuffle": true
+                }
+            ],
+            "pendingMechanics": [
+                "弃掉手牌中的症状和状态卡（本项目没有「症状卡 / 状态卡」的分类，与艾尔瓦「无止境的正义」是同一个缺口）→ 这一版把**全部手牌**洗回抽牌堆",
+                "「跃迁」：返还「统统消失！」的算力消耗（本项目没有「跃迁」机制）",
+                "启灵1：每抽 1 张牌获得 3 点狂气（本项目无启灵系统）"
+            ]
+        },
+        {
+            "cardId": "casiah_special3",
+            "characterId": "casiah",
+            "name": "演出序幕",
+            "style": "striker",
+            "cost": 2,
+            "isAttack": false,
+            "cardType": "awakening",
+            "isRetain": true,
+            "affixes": [
+                "awakening",
+                "retain"
+            ],
+            "bodyAffixMarks": [
+                "awakening",
+                "retain"
+            ],
+            "description": "⚠灵知觉醒：卡茜亚每打出 1 张卡牌，获得 攻击力×12% 点临时力量。⚠保留。",
+            "effects": [
+                {
+                    "type": "rage",
+                    "value": 25,
+                    "perLevel": 5
+                },
+                {
+                    "type": "awakening"
+                },
+                {
+                    "type": "retain"
+                },
+                {
+                    "type": "consume"
+                }
+            ],
+            "pendingMechanics": [
+                "每打出 1 张卡牌获得 攻击力×12% 点临时力量（本项目没有「给自己加力量」的通道，也没有「临时」层数）",
+                "启灵7「纵情欢笑」：本次狂气爆发伤害次数变为三倍；之后 5 次打出卡茜亚的指令卡后获得攻击力 10% 的力量（本项目无启灵系统 / 无超限爆发）"
+            ],
+            "affixNotes": [
+                {
+                    "id": "awakening",
+                    "name": "灵知觉醒",
+                    "description": "打出后使唤醒体在本场战斗中获得特殊的能力提升。重复打出灵知觉醒无法叠加生效。"
+                },
+                {
+                    "id": "retain",
+                    "name": "保留",
+                    "description": "卡牌不会在弃牌阶段进入弃牌堆，而是保留在手牌中并触发后续效果。"
+                }
+            ]
+        }
+    ]
 }

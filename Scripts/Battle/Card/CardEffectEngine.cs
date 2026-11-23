@@ -208,6 +208,12 @@ namespace FishEatFish.Battle.Card
 				case CardEffectType.ShuffleIntoDeck:
 					ExecuteShuffleIntoDeck(card, effect, ctx);
 					break;
+				case CardEffectType.AddCardsToHand:
+					ExecuteAddCardsToHand(card, effect, ctx);
+					break;
+				case CardEffectType.ShuffleHandToDeck:
+					ExecuteShuffleHandToDeck(card, effect, ctx);
+					break;
 
 				default:
 					GD.PrintErr($"[CardEffectEngine] 未知效果类型：{effect.Type}（卡 {card.CardId}）");
@@ -244,6 +250,7 @@ namespace FishEatFish.Battle.Card
 						enemy.TakeDamage(damage);
 						ctx.AddLastDamage(enemy, damage);
 						ApplySinMarkBleed(enemy, damage, sinMarkPercent, ctx);
+						ApplyPoisonEqualDamage(enemy, damage, effect, ctx);
 					}
 					Log(ctx, $"你使用了{card.Name}，对{enemy.EnemyName}造成{damage}点伤害{hitText}", LogType.Damage);
 				}
@@ -272,6 +279,7 @@ namespace FishEatFish.Battle.Card
 				hitTarget.TakeDamage(damage);
 				ctx.AddLastDamage(hitTarget, damage);
 				ApplySinMarkBleed(hitTarget, damage, sinMarkPercent, ctx);
+				ApplyPoisonEqualDamage(hitTarget, damage, effect, ctx);
 			}
 
 			string targetDescription = card.Target switch
@@ -288,6 +296,103 @@ namespace FishEatFish.Battle.Card
 		/// **罪印带来的出血**：这次伤害附加「罪印层数 %」的出血。
 		/// 层数 = <c>ceil(本次伤害 × 罪印层数 / 100)</c>（取整口径照 D51 全局 = ceil）。
 		/// </summary>
+				/// <summary>
+		/// **伤害等量中毒**（D74：宁菲亚「夜潮汹涌」）。
+		///
+		/// wiki 原文：「造成 [攻击力*22.5%] 点伤害并**施加等量中毒**。」
+		/// → 这次伤害打多少，敌人身上就叠多少层中毒（中毒的层数即伤害值）。
+		/// </summary>
+		private static void ApplyPoisonEqualDamage(Enemy target, int damage, CardEffect effect, CardEffectContext ctx)
+		{
+			if (!effect.PoisonEqualDamage) return;
+			if (target == null || target.IsDead) return;
+			if (damage <= 0) return;
+			
+			StatusEffect poison = EffectRegistry.CreateDebuff("poison");
+			if (poison == null)
+			{
+				GD.PrintErr("[CardEffectEngine] 未知减益 id：poison（中毒）");
+				return;
+			}
+			
+			// 中毒的层数存 DamagePerTurn（层数即伤害值），走 Card.ApplyDebuffValue
+			Card.ApplyDebuffValue(poison, damage);
+			poison.Initialize();
+			target.AddStatusEffect(poison);
+			
+			GD.Print($"[PoisonEqual] {target.EnemyName} 本次伤害 {damage} → 叠加 {damage} 层中毒");
+			Log(ctx, $"给{target.EnemyName}附加了{damage}层中毒", LogType.System);
+		}
+		
+		/// <summary>
+		/// **置入多张指定卡到手牌**（D74：庞托斯「驭魇哨音」：「生成 3 种不同的「囚魇」置入手中」）。
+		///
+		/// 注意：置入的是独立实例（从模板克隆），不共享同一个 Card 对象。
+		/// 注意：**继承来源卡的等级**（D74）：6 级的「驭魇哨音」生成的囚魇应该按 6 级算数值。
+		/// </summary>
+		private static void ExecuteAddCardsToHand(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			if (string.IsNullOrEmpty(effect.AddCardsToHandIds) || ctx.Player == null) return;
+			
+			string[] ids = effect.AddCardsToHandIds.Split(',');
+			int added = 0;
+			foreach (string rawId in ids)
+			{
+				string cardId = rawId.Trim();
+				if (string.IsNullOrEmpty(cardId)) continue;
+			
+				if (!CharacterCardLoader.TryGetCharacterCard(cardId, out Card template))
+				{
+					GD.PrintErr($"[CardEffectEngine] 卡 {card.CardId}：要置入手牌的卡「{cardId}」不在 character_cards.json 里");
+					continue;
+				}
+			
+				// 手牌上限（与 Player.DrawCards 一致）
+				if (ctx.Player.Hand.Count >= ctx.Player.MaxHandSize)
+				{
+					GD.Print($"[CardEffectEngine] 卡 {card.CardId}：手牌已满（{ctx.Player.Hand.Count}/{ctx.Player.MaxHandSize}），未能置入「{template.Name}」");
+					break;
+				}
+			
+				Card instance = template.Clone();
+					instance.Level = Mathf.Clamp(card.Level, 1, instance.MaxLevel);
+					if (ctx.RageTarget?.Character != null)
+					{
+					instance.OwnerCharacterId = ctx.RageTarget.Character.CharacterId;
+						instance.LinkedAttributes = ctx.RageTarget.Character.GetAttributes();
+					}
+				ctx.Player.Hand.Add(instance);
+				added++;
+			}
+			
+			if (added > 0)
+			{
+				Log(ctx, $"你使用了{card.Name}，将{added}张衍生卡置入手中", LogType.System);
+			}
+		}
+		
+		/// <summary>
+		/// **把手牌洗回抽牌堆**（D74：卡茜亚「统统消失！」：「将其他手牌洗入抽牌堆」）。
+		///
+		/// 注意：wiki 那句还有「弃掉手牌中的症状和状态卡」—— 本项目没有「症状卡 / 状态卡」分类，
+		/// 这一部分登记在数据表的 pendingMechanics 里。
+		/// </summary>
+		private static void ExecuteShuffleHandToDeck(Card card, CardEffect effect, CardEffectContext ctx)
+		{
+			// ⚠️ 这里**不要再判 effect.ShuffleHandToDeck** —— 能走到这个 case 就说明
+			//    effect.Type 已经是 "shuffleHandToDeck"（引擎按 type 分派），再判一次是自相矛盾。
+			if (ctx.Player == null) return;
+			
+			int shuffled = ctx.Player.ShuffleHandToDeck();
+			Log(ctx, $"你使用了{card.Name}，将手牌 {shuffled} 张洗入抽牌堆", LogType.System);
+			
+			if (effect.DrawAfterShuffle && shuffled > 0)
+			{
+				ctx.Player.DrawCards(shuffled);
+					Log(ctx, $"你使用了{card.Name}，抽了{shuffled}张牌", LogType.System);
+			}
+		}
+		
 		private static void ApplySinMarkBleed(Enemy target, int damage, int sinMarkPercent, CardEffectContext ctx)
 		{
 			if (target == null || sinMarkPercent <= 0 || damage <= 0) return;
@@ -811,9 +916,22 @@ namespace FishEatFish.Battle.Card
 				break;
 			}
 
+			// 「每出牌获得的狂气」按觉醒卡的等级算一次（D74：宁菲亚「沉逝苦海」5 / 6 / 7 / 8 / 9 / 10 点）
+			int awakeningRageGain = CardLevelSystem.CalculateFixedValue(
+				card.Level, effect.AwakeningRageGain, effect.AwakeningRageGainPerLevel);
+			
+			// 「每出牌获得的反击层数」（D74：凯刻斯「蜕变之躯」攻击力 10%）
+			float awakeningCounterGain = 0f;
+			if (effect.AwakeningCounterGainPercent > 0 && attributes != null)
+			{
+				// 先转 double 再算，避免 float 精度少一格（踩坑 §107 / §114）
+				awakeningCounterGain = (float)((double)attributes.Attack * effect.AwakeningCounterGainPercent / 100.0
+					* CardLevelSystem.CalculateCoefficient(card.Level));
+			}
+			
 			bool activated = ctx.RageTarget.ActivateAwakening(
 				heal,
-				effect.AwakeningRageGain,
+				awakeningRageGain,
 				effect.AwakeningDebuff,
 				debuffStacks,
 				effect.AwakeningTriggerCardId,
@@ -821,7 +939,8 @@ namespace FishEatFish.Battle.Card
 				effect.AwakeningBleedCardId,
 				effect.AwakeningBleedPercent,
 				effect.AwakeningCounterPercent,
-				effect.AwakeningShieldPercent);
+				effect.AwakeningShieldPercent,
+				awakeningCounterGain);
 
 			// 登记「弃牌阶段后」的层数效果（罪印）
 			// ⚠️ 重复打出会走到「已登记过」的分支 → 只更新数值，不新增条目（不会翻倍结算）
@@ -889,14 +1008,15 @@ namespace FishEatFish.Battle.Card
 			if (card == null || effect == null) return 0;
 
 			int level = card.Level;
-			if (effect.Percent > 0 && attributes != null)
+			float percent = effect.EffectivePercent;
+			if (percent > 0 && attributes != null)
 			{
 				if (effect.IgnoreLevelScale)
 				{
 					// 恒定系数：攻击力 × N%（向上取整，照参考游戏口径）
-					return Mathf.CeilToInt(attributes.Attack * effect.Percent / 100f);
+					return Mathf.CeilToInt((float)((double)attributes.Attack * percent / 100.0));
 				}
-				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Attack, effect.Percent / 100f);
+				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Attack, percent / 100f);
 			}
 			if (effect.Value > 0)
 			{
@@ -917,9 +1037,10 @@ namespace FishEatFish.Battle.Card
 
 			int level = card.Level;
 			int value = 0;
-			if (effect.Percent > 0 && attributes != null)
+			float percent = effect.EffectivePercent;
+			if (percent > 0 && attributes != null)
 			{
-				value = CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Defense, effect.Percent / 100f);
+				value = CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Defense, percent / 100f);
 			}
 			else if (effect.Value > 0)
 			{
@@ -1005,9 +1126,9 @@ namespace FishEatFish.Battle.Card
 			{
 				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Defense, effect.DefensePercent / 100f);
 			}
-			if (effect.Percent > 0 && attributes != null)
+			if (effect.EffectivePercent > 0 && attributes != null)
 			{
-				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Attack, effect.Percent / 100f);
+				return CardLevelSystem.CalculateAttributeLinkedValue(level, attributes.Attack, effect.EffectivePercent / 100f);
 			}
 			if (effect.Value > 0)
 			{
@@ -1041,13 +1162,14 @@ namespace FishEatFish.Battle.Card
 		public static float CalculateCounter(Card card, CardEffect effect, CharacterAttributes attributes)
 		{
 			if (card == null || effect == null) return 0f;
-			if (effect.Percent <= 0 || attributes == null) return 0f;
+			float percent = effect.EffectivePercent;
+			if (percent <= 0 || attributes == null) return 0f;
 
 			int attack = attributes.Attack;
 			if (attack <= 0) return 0f;
 
 			// ⚠️ 跟伤害/护盾同一套：先转 double 再乘，避免 float 精度少一格（踩坑 §107 / §114）
-			return (float)((double)attack * effect.Percent / 100.0
+			return (float)((double)attack * percent / 100.0
 				* CardLevelSystem.CalculateCoefficient(card.Level));
 		}
 	}

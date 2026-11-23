@@ -441,5 +441,94 @@
             "pendingMechanics": [
                 "启灵7「飞跃荆棘海」：超限爆发额外将 3 张「黑羽」置入手中、本回合「黑羽」保留的护盾提高卡斯托尔防御力的 10%、每次打出「黑羽」额外施加攻击力 160% 的侵蚀（本项目无启灵系统、无超限爆发）"
             ]
-        }    ]
+        },
+        {
+            "skillId": "kathigu_ultimate",
+            "characterId": "kathigu",
+            "name": "焚却世界的爆炎",
+            "nameEn": "The Conflagration That Burns the World",
+            "description": "对全体敌人造成 {damage} 点穿刺伤害，享受 300% 力量加成。抽 2 张凯蒂古拉的「指令卡」，为手中 3 张凯蒂古拉的「指令卡」赋予 1 层「活焰」。",
+            "rageCost": 100,
+            "damagePercent": 200,
+            "isAreaAttack": true,
+            "drawCount": 2,
+            "pendingMechanics": [
+                "穿刺伤害：同时对护盾和生命造成伤害，且无法被免疫（本项目没有「穿刺」词条；伤害走统一通道，先扣护盾再扣血）",
+                "享受 300% 力量加成（本项目没有「按力量倍率放大伤害」的通道）",
+                "抽 2 张凯蒂古拉的「指令卡」（本项目的抽牌筛选只支持「打击」与「算力消耗最低的指令卡」，没有「按角色筛指令卡」）",
+                "为手中 3 张凯蒂古拉的「指令卡」赋予 1 层「活焰」（本项目没有「活焰」词条 / 卡牌状态机制）",
+                "启灵7「融于万物的真理」：超限爆发额外造成 2 次伤害，改为随机为手中的凯蒂古拉指令卡分配 5 层「活焰」（本项目无启灵系统 / 无超限爆发）"
+            ]
+        },
+        {
+            "skillId": "nymphaea_ultimate",
+            "characterId": "nymphaea",
+            "name": "自我的葬仪",
+            "nameEn": "Funeral of the Self",
+            "description": "对所有敌人施加 {poison} 层中毒并触发 120% 其中毒效果。获得 攻击力×4.5% 点力量。",
+            "rageCost": 100,
+            "applyDebuffName": "poison",
+            "debuffValuePercent": 45,
+            "buffDuration": 99,
+            "isAreaAttack": true,
+            "triggerPoisonPercent": 120,
+            "pendingMechanics": [
+                "获得 攻击力×4.5% 点力量（本项目没有「给自己加力量」的通道）",
+                "启灵3：本场战斗后续释放「自我的葬仪」施加的中毒层数提高 攻击力×90% 层（本项目无启灵系统）"
+            ]
+        },
+        {
+            "skillId": "caecus_ultimate",
+            "characterId": "caecus",
+            "name": "承自异端之血",
+            "nameEn": "Blood Inherited from the Abyss",
+            "description": "回复 {heal} 点生命并驱散自身虚弱状态。对所有敌人施加 1 层易伤。触腕伤害 + 攻击力×20%。反击 + 攻击力×30%。下回合开始前，每受到 1 次攻击，就使 1 条触腕反击攻击者。",
+            "rageCost": 100,
+            "healPercent": 15,
+            "disperseSelfDebuffName": "weak",
+            "applyDebuffName": "vulnerable",
+            "buffValue": 50,
+            "buffDuration": 1,
+            "isAreaAttack": true,
+            "counterGainPercent": 30,
+            "pendingMechanics": [
+                "触腕伤害 + 攻击力×20%（本项目没有「触腕伤害」系统）",
+                "下回合开始前，每受到 1 次攻击，就使 1 条触腕反击攻击者（本项目没有「受击时触腕反击」的机制）",
+                "「易伤」wiki 原文没给数值，本项目用减益表里的标准值（VulnerableDebuff 默认 50% = 受到伤害 +50%），持续 1 回合"
+            ]
+        },
+        {
+            "skillId": "pontos_ultimate",
+            "characterId": "pontos",
+            "name": "无休猎宴",
+            "nameEn": "The Endless Hunt",
+            "description": "移除自身力量降低状态。临时降低所有敌人 {strengthDown} 点力量。对生命最低的敌人造成等同于 3000% 触腕伤害的固定伤害，若将其击杀生成 1 张永久「囚魇」置入手中，每场战斗最多生成 3 张永久「囚魇」。",
+            "rageCost": 100,
+            "target": "lowesthp",
+            "strengthDownPercent": 18,
+            "strengthDownDuration": 1,
+            "disperseSelfDebuffName": "strengthdown",
+            "pendingMechanics": [
+                "「对生命最低的敌人造成等同于 3000% 触腕伤害的固定伤害」（本项目没有「触腕伤害」系统，也没有「固定伤害」这条独立通道）",
+                "「若将其击杀生成 1 张永久「囚魇」置入手中，每场战斗最多 3 张」（本项目没有「永久衍生物」机制）",
+                "启灵1/启灵7：「猎杀之魇」固定伤害 +10%、「无休猎宴」基础力量降低 +5%、造成固定伤害变为 3 倍、击杀额外生成 1 张「囚魇」、各处「囚魇」算力消耗 -1（本项目无启灵系统 / 无超限爆发）"
+            ]
+        },
+        {
+            "skillId": "casiah_ultimate",
+            "characterId": "casiah",
+            "name": "魔术嘉年华",
+            "nameEn": "Magic Carnival",
+            "description": "对所有敌人造成 {damage} 点伤害，抽 {draw} 张牌。每抽到 1 张卡茜亚的指令卡就对随机敌人造成 攻击力×150% 点伤害。使卡茜亚所有基础伤害提高 x%。",
+            "rageCost": 100,
+            "damagePercent": 150,
+            "isAreaAttack": true,
+            "drawCount": 3,
+            "pendingMechanics": [
+                "每抽到 1 张卡茜亚的指令卡就对随机敌人造成 攻击力×150% 点伤害（本项目没有「抽牌时回调造成伤害」的机制）",
+                "使卡茜亚所有基础伤害提高 x%（wiki 全文没有给 x% 的定义；本项目也没有「提高自身基础伤害」的通道）",
+                "启灵2：抽 4 张牌，症状卡/状态卡也算（本项目无启灵系统，也没有「症状卡 / 状态卡」的分类）"
+            ]
+        }
+    ]
 }

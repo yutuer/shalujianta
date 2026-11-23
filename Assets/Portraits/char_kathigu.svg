@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_kathigu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7A3A2A"/>
+      <stop offset="1" stop-color="#53271D"/>
+    </linearGradient>
+    <linearGradient id="headGrad_kathigu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#956155"/>
+      <stop offset="1" stop-color="#7A3A2A"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <path d="M44 44 L128 128 L212 44" fill="none" stroke="#FFB05C" stroke-width="5" stroke-linejoin="round" />
+  <circle cx="128" cy="128" r="20" fill="none" stroke="#FFB05C" stroke-width="5" />
+  <path d="M128 96 L128 160 M96 128 L160 128" fill="none" stroke="#FFB05C" stroke-width="4" stroke-linecap="round" />
+  <path d="M110 132 C88.4 135 69.2 144 62 158 C66 188 74 202 78 214 C80 230 78 241 72 250 L69 296 L187 296 L184 250 C178 241 176 230 178 214 C182 202 190 188 194 158 C153.2 144 172.4 135 146 132 Z" fill="url(#bodyGrad_kathigu)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#B87F42" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_kathigu)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="62" r="18" fill="url(#headGrad_kathigu)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="62" r="18" fill="url(#headGrad_kathigu)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="62" r="9" fill="#FFB05C" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="62" r="9" fill="#FFB05C" stroke="#0B0E14" stroke-width="3" />
+  <path d="M108 90 L148 90 L142 112 L114 112 Z" fill="#FFB05C" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <path d="M115 191 L141 191 L128 219 Z" fill="#FFB05C" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

@@ -40,6 +40,7 @@ public static class UltimateExecutor
 
         ApplyDamage(skill, targets, summary);
         ApplyDebuff(skill, targets, summary);
+        ApplyTriggerPoison(skill, targets, summary);
         ApplyStrengthDown(skill, targets, summary);
         ApplyHeal(skill, player, summary);
         ApplyShield(skill, player, owner, summary);
@@ -252,6 +253,29 @@ public static class UltimateExecutor
                 selected = aliveEnemies[random.RandiRange(0, aliveEnemies.Count - 1)];
                 break;
 
+            // D74：生命最高 / 生命最低（宁菲亚「夜潮汹涌」/ 庞托斯「无休猎宴」）
+            case "highesthp":
+                {
+                    Enemy best = aliveEnemies[0];
+                    foreach (Enemy enemy in aliveEnemies)
+                    {
+                        if (enemy.CurrentHealth > best.CurrentHealth) best = enemy;
+                    }
+                    selected = best;
+                }
+                break;
+
+            case "lowesthp":
+                {
+                    Enemy worst = aliveEnemies[0];
+                    foreach (Enemy enemy in aliveEnemies)
+                    {
+                        if (enemy.CurrentHealth < worst.CurrentHealth) worst = enemy;
+                    }
+                    selected = worst;
+                }
+                break;
+
             default:
                 selected = aliveEnemies[0];
                 break;
@@ -321,6 +345,45 @@ public static class UltimateExecutor
         }
 
         summary.Add($"附加{debuffName}（数值{buffValue}，持续{buffDuration}回合）");
+    }
+
+    /// <summary>
+    /// **触发目标身上的中毒**（D74：宁菲亚「自我的葬仪」）。
+    ///
+    /// wiki 原文（6 级）：「对所有敌人施加 [攻击力*90%] 层中毒并**触发 120% 其中毒效果**。」
+    /// → 对每个目标造成「其身上中毒层数 × 百分比」的**纯粹伤害**（与卡牌的 triggerPoison 同一条通道）。
+    /// ⚠️ 百分比**不乘等级系数**（wiki 效果1~6 都是 120%）。
+    /// ⚠️ **不消耗毒层**（与卡牌那条一致）。
+    /// </summary>
+    private static void ApplyTriggerPoison(UltimateSkill skill, List<Enemy> targets, List<string> summary)
+    {
+        if (skill.TriggerPoisonPercent <= 0 || targets.Count == 0) return;
+
+        int total = 0;
+        foreach (Enemy enemy in targets)
+        {
+            int stacks = enemy.GetPoisonStacks();
+            if (stacks <= 0)
+            {
+                GD.Print($"[UltimateExecutor] 【{skill.Name}】{enemy.EnemyName} 身上没有中毒层数，未触发中毒");
+                continue;
+            }
+
+            // ⚠️ 先转 double 再算，避免 float 精度少一格（踩坑 §107 / §114）
+            double raw = (double)stacks * skill.TriggerPoisonPercent / 100.0;
+            int damage = Mathf.CeilToInt((float)raw);
+            if (damage <= 0) continue;
+
+            // ⚠️ 纯粹伤害（与中毒回合末那条同一通道）：不走防御、不吃易伤/破甲
+            enemy.TakePureDamage(damage);
+            total += damage;
+            GD.Print($"[UltimateExecutor] 【{skill.Name}】触发 {enemy.EnemyName} 的 {stacks} 层中毒，造成 {damage} 点纯粹伤害");
+        }
+
+        if (total > 0)
+        {
+            summary.Add($"触发中毒造成{total}点纯粹伤害");
+        }
     }
 
     /// <summary>

@@ -277,6 +277,16 @@ public partial class UltimateSkill : Resource, ICardLevelable
     [Export]
     public int EnemyDamageReductionDuration = 1;
 
+    /// <summary>
+    /// **触发目标身上的中毒**（D74：宁菲亚「自我的葬仪」：「触发 120% 其中毒效果」）。
+    ///
+    /// → 对每个目标造成「其身上中毒层数 × 百分比」的**纯粹伤害**（与卡牌的 triggerPoison 同一条通道）。
+    /// ⚠️ 百分比**不乘等级系数**（wiki 效果1~6 都是 120%）。
+    /// ⚠️ **不消耗毒层**（与卡牌那条一致）。
+    /// </summary>
+    [Export]
+    public int TriggerPoisonPercent = 0;
+
     /// <summary>最近一次 Execute 的中文执行摘要</summary>
     public string LastExecuteSummary { get; private set; } = "";
 

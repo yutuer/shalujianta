@@ -158,7 +158,17 @@ $PlayablePalette = [ordered]@{
     # 克莱门汀 —— 超维 / 辅助型 / 生命重构与治疗
     'clementine' = @{ Main = '#6B4C7A'; Accent = '#E8C0E0'; Feature = 'crest22' }
     # 卡斯托尔 —— 超维 / 防御型 / 孤嚎鸟与黑羽
-    'castor'     = @{ Main = '#2E3A4A'; Accent = '#C8B088'; Feature = 'crest23' }
+    'castor'     = @{ Main = '#2E3A4A'; Accent = '#C8B088'; Feature = 'crest23' }    # D74 新增 5 个 wiki 角色（2026-11-24 主人指定）
+    # 凯蒂古拉 —— 混沌 / 伤害型 / 末路枪声
+    'kathigu'   = @{ Main = '#7A3A2A'; Accent = '#FFB05C'; Feature = 'crest24' }
+    # 宁菲亚 —— 混沌 / 中毒型 / 夜潮汹涌
+    'nymphaea'  = @{ Main = '#2E4A7A'; Accent = '#9FF0E0'; Feature = 'crest25' }
+    # 凯刻斯 —— 深海 / 反击型 / 破碎沉戟
+    'caecus'    = @{ Main = '#35485E'; Accent = '#A8C8E8'; Feature = 'crest26' }
+    # 庞托斯 —— 深海 / 防御型 / 囚渊的怒仇
+    'pontos'    = @{ Main = '#4A3A5E'; Accent = '#C0A0E8'; Feature = 'crest27' }
+    # 卡茜亚 —— 超维 / 减益型 / 魔术嘉年华
+    'casiah'    = @{ Main = '#6E2A4A'; Accent = '#F0A0C0'; Feature = 'crest28' }
 }
 
 # 12 星座 BOSS：角色是「人」，头像用头盔 + 冠饰，不套动物特征。
@@ -425,6 +435,17 @@ function Get-CrestFeature {
         'crest22' { @('<path d="M64 8 C48 26 44 38 52 44 C60 50 68 50 76 44 C84 38 80 26 64 8 Z" fill="none" stroke="{0}" stroke-width="6" stroke-linejoin="round" />' -f $Accent) }
         # 卡斯托尔：孤嚎鸟
         'crest23' { @('<path d="M38 20 L64 46 L90 20" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />' -f $Accent, '<path d="M64 46 L64 60" fill="none" stroke="{0}" stroke-width="5" stroke-linecap="round" />' -f $Accent) }
+        # ===== D74 新增 5 个 wiki 角色（2026-11-24）=====
+        # 凯蒂古拉：长枪与准星
+        'crest24' { @('<path d="M38 44 L90 6" fill="none" stroke="{0}" stroke-width="7" stroke-linecap="round" />' -f $Accent, '<circle cx="38" cy="44" r="5" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent, '<circle cx="90" cy="6" r="5" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent) }
+        # 宁菲亚：毒滴
+        'crest25' { @('<path d="M64 6 C56 18 52 26 56 34 C60 42 68 42 72 34 C76 26 72 18 64 6 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />' -f $Accent) }
+        # 凯刻斯：破碎的裂纹
+        'crest26' { @('<path d="M70 6 L56 24 L70 26 L54 46" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />' -f $Accent) }
+        # 庞托斯：囚魇的枷锁
+        'crest27' { @('<rect x="44" y="12" width="40" height="30" rx="4" fill="none" stroke="{0}" stroke-width="5" />' -f $Accent, '<path d="M44 22 H84 M44 32 H84 M64 12 V42" fill="none" stroke="{0}" stroke-width="3" />' -f $Accent) }
+        # 卡茜亚：魔术师的礼帽
+        'crest28' { @('<rect x="54" y="4" width="20" height="14" rx="3" fill="{0}" stroke="#0B0E14" stroke-width="3" />' -f $Accent, '<path d="M40 46 V22 H88 V46 Z" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />' -f $Accent, '<path d="M34 46 H94" fill="none" stroke="{0}" stroke-width="6" stroke-linecap="round" />' -f $Accent) }
         default { @('<path d="M44 32 C44 12 60 6 64 20 C68 6 84 12 84 32" fill="{0}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />' -f $Accent) }
     }
 }

@@ -455,6 +455,11 @@ namespace FishEatFish.Dev
 				case "winkle": return CharacterDefinition.CreateWinkle();
 				case "clementine": return CharacterDefinition.CreateClementine();
 				case "castor": return CharacterDefinition.CreateCastor();
+			case "kathigu": return CharacterDefinition.CreateKathigu();
+			case "nymphaea": return CharacterDefinition.CreateNymphaea();
+			case "caecus": return CharacterDefinition.CreateCaecus();
+			case "pontos": return CharacterDefinition.CreatePontos();
+			case "casiah": return CharacterDefinition.CreateCasiah();
 				default: return null;
 			}
 		}

@@ -315,8 +315,16 @@ public partial class CharacterPosition : Node2D
     /// 「打出后使唤醒体在本场战斗中获得特殊的能力提升。**重复打出灵知觉醒无法叠加生效**。」
     /// → 重复打出不叠加，但也不清空已有状态。
     /// </summary>
+        /// <summary>
+    /// **灵知觉醒：每打出一张卡牌获得的反击层数**（D74：凯刻斯「蜕变之躯」）。
+    ///
+    /// 注意：保持 float —— 反击层数是 float（踩坑 §118）。
+    /// 数值在觉醒激活时按觉醒卡的等级算好（之后卡牌等级再变也不追溯）。
+    /// </summary>
+    public float AwakeningCounterGain { get; private set; } = 0f;
+
     public bool ActivateAwakening(int healAmount, int rageGain, string debuffId, int debuffStacks, string triggerCardId, string sourceCardId = "",
-        string bleedCardId = "", int bleedPercent = 0, int counterPercent = 0, int shieldPercent = 0)
+        string bleedCardId = "", int bleedPercent = 0, int counterPercent = 0, int shieldPercent = 0, float counterGain = 0f)
     {
         if (AwakeningActive)
         {
@@ -333,6 +341,8 @@ public partial class CharacterPosition : Node2D
         AwakeningSourceCardId = sourceCardId ?? "";
         AwakeningBleedCardId = bleedCardId ?? "";
         AwakeningBleedPercent = bleedPercent;
+        // 「每打出一张卡牌获得 N% 攻击力的反击」（D74：凯刻斯「蜕变之躯」）
+        AwakeningCounterGain = counterGain;
 
         // ⚠️ **「施加的护盾和反击提高 N%」**（诺缔拉「维修大师」）——
         // 作用在**获得的那一刻**（不是对已有层数整体放大）。

@@ -203,7 +203,22 @@ public class CharacterCardLoader
                     // ⚠️ **弃牌换护盾**的加成百分比（D73：温柯尔「精神重建」）
                     DiscardShieldBonusPercent = effectDict.ContainsKey("discardShieldBonusPercent") ? (int)(long)effectDict["discardShieldBonusPercent"] : 0,
                     // ⚠️ **按「最大生命」算的护盾百分比**（D73：墨菲「圣女作成」）
-                    HealthPercent = effectDict.ContainsKey("healthPercent") ? (int)(long)effectDict["healthPercent"] : 0
+                    HealthPercent = effectDict.ContainsKey("healthPercent") ? (int)(long)effectDict["healthPercent"] : 0,
+                    // ⚠️ **小数百分比**（D74：宁菲亚「夜潮汹涌」= 攻击力×22.5%）
+                    //    int 字段存不下小数原值 → 单独一个 float 字段（踩坑 §118）
+                    PercentFloat = effectDict.ContainsKey("percentFloat") ? (float)(double)effectDict["percentFloat"] : 0f,
+                    // ⚠️ **伤害等量中毒**（D74：宁菲亚「夜潮汹涌」）
+                    PoisonEqualDamage = effectDict.ContainsKey("poisonEqualDamage") && (bool)effectDict["poisonEqualDamage"],
+                    // ⚠️ **置入手牌的多张指定卡**（D74：庞托斯「驭魇哨音」生成 3 种囚魇）
+                    AddCardsToHandIds = effectDict.ContainsKey("addCardsToHandIds") ? effectDict["addCardsToHandIds"].ToString() : "",
+                    // ⚠️ **把手牌洗回抽牌堆**（D74：卡茜亚「统统消失！」）
+                    //    ⚠️ **不要在这里再放一个同名的 bool 字段** —— effect 的 type 本身就是
+                    //    "shuffleHandToDeck"，引擎按 type 分派；再来一个同名开关会被
+                    //    误当成「这个键存在才生效」，而数据表里根本没有这个键 → 恒 false → 功能静默失效。
+                    DrawAfterShuffle = effectDict.ContainsKey("drawAfterShuffle") && (bool)effectDict["drawAfterShuffle"],
+                    // ⚠️ **灵知觉醒：每出牌获得反击 / 狂气**（D74：凯刻斯 / 宁菲亚）
+                    AwakeningCounterGainPercent = effectDict.ContainsKey("awakeningCounterGainPercent") ? (int)(long)effectDict["awakeningCounterGainPercent"] : 0,
+                    AwakeningRageGainPerLevel = effectDict.ContainsKey("awakeningRageGainPerLevel") ? (int)(long)effectDict["awakeningRageGainPerLevel"] : 0
                 };
 
                 if (effectDict.ContainsKey("timing") && effectDict["timing"].Obj != null)
@@ -264,6 +279,9 @@ public class CharacterCardLoader
                 // ⚠️ D73：「random」现在真的是**随机敌人**（詹金「鼠群冲击」），
                 //   以前被映射成 Position（按位置取）—— 那不是随机。
                 "random" => TargetType.Random,
+                // ⚠️ **生命最高 / 最低**（D74：宁菲亚「夜潮汹涌」/ 庞托斯「无休猎宴」）
+                "highesthp" => TargetType.HighestHp,
+                "lowesthp" => TargetType.LowestHp,
                 _ => TargetType.None
             };
         }

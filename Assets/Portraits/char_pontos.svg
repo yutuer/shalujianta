@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+  <defs>
+    <linearGradient id="bodyGrad_pontos" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4A3A5E"/>
+      <stop offset="1" stop-color="#322740"/>
+    </linearGradient>
+    <linearGradient id="headGrad_pontos" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6E617E"/>
+      <stop offset="1" stop-color="#4A3A5E"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="128" cy="302" rx="76" ry="13" fill="#000000" fill-opacity="0.42" />
+  <rect x="58" y="120" width="48" height="56" rx="8" fill="none" stroke="#C0A0E8" stroke-width="5" />
+  <path d="M58 138 H106 M58 156 H106 M82 120 V176" fill="none" stroke="#C0A0E8" stroke-width="3" />
+  <path d="M36 260 C50 232 62 244 72 226" fill="none" stroke="#C0A0E8" stroke-width="5" stroke-linecap="round" />
+  <path d="M220 260 C206 232 194 244 184 226" fill="none" stroke="#C0A0E8" stroke-width="5" stroke-linecap="round" />
+  <path d="M110 132 C84.8 135 62.4 144 54 158 C58 188 66 202 70 214 C72 230 72 241 66 250 L63 296 L193 296 L190 250 C184 241 184 230 186 214 C190 202 198 188 202 158 C154.4 144 176.8 135 146 132 Z" fill="url(#bodyGrad_pontos)" stroke="#0B0E14" stroke-width="5" stroke-linejoin="round" />
+  <path d="M106 142 L128 166 L150 142 L158 154 L128 184 L98 154 Z" fill="#8A73A7" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="128" cy="104" r="36" fill="url(#headGrad_pontos)" stroke="#0B0E14" stroke-width="5" />
+  <ellipse cx="113" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <ellipse cx="143" cy="106" rx="4.5" ry="5.5" fill="#0B0E14" />
+  <circle cx="96" cy="62" r="18" fill="url(#headGrad_pontos)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="160" cy="62" r="18" fill="url(#headGrad_pontos)" stroke="#0B0E14" stroke-width="5" />
+  <circle cx="96" cy="62" r="9" fill="#C0A0E8" stroke="#0B0E14" stroke-width="3" />
+  <circle cx="160" cy="62" r="9" fill="#C0A0E8" stroke="#0B0E14" stroke-width="3" />
+  <path d="M112 84 L144 84 L128 112 Z" fill="#C0A0E8" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+  <polygon points="128,190 131.8,199.7 142.3,200.4 134.2,207 136.8,217.1 128,211.5 119.2,217.1 121.8,207 113.7,200.4 124.2,199.7" fill="#C0A0E8" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />
+</svg>

@@ -259,7 +259,11 @@ foreach ($c in $cards) {
             #   「获得防御力×20% 点护盾。选择 1 名其他唤醒体获得 20 点狂气。」）
             #   （2026-11-13 加 ryker_special2：莱克「摊牌时刻」6 级
             #   「造成攻击力×40% 点伤害 1~6 次。莱克获得 15 点狂气。」）
-            $rageWhitelist = @('thais_special', 'nuodila_special2', 'ryker_special2')
+            #   （2026-11-24 加 pontos_special：庞托斯「纵魇掠袭」
+            #   「对所有敌人造成 攻击力×30% 点必定暴击伤害。获得 3 点狂气。额外生效 X 次。」
+            #   2026-11-24 加 casiah_special2：卡茜亚「统统消失！」
+            #   「获得 10 点狂气。弃掉手牌中的症状和状态卡……」
+            $rageWhitelist = @('thais_special', 'nuodila_special2', 'ryker_special2', 'pontos_special', 'casiah_special2')
             if ($rageWhitelist -notcontains $cid) {
                 $problems += "[character_cards.json] 卡「$cid」是专属指令卡，按参考口径**不给怒气**（参考图属性面板没有「狂气」行），请删掉 effects 里的 rage 条目"
             }

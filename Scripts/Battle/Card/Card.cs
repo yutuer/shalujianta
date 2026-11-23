@@ -20,7 +20,15 @@ public enum TargetType
     /// ⚠️ 以前数据表里的 <c>"random"</c> 被映射成 <see cref="Position"/>（= 按位置取），
     /// 那不是「随机」—— D73 起改成真正的随机。
     /// </summary>
-    Random = 4
+    Random = 4,
+    /// <summary>
+    /// **生命最高的敌人**（D74）—— 宁菲亚「夜潮汹涌」：「对生命最高的敌人造成…伤害」。
+    /// </summary>
+    HighestHp = 5,
+    /// <summary>
+    /// **生命最低的敌人**（D74）—— 庞托斯「无休猎宴」：「对生命最低的敌人造成…固定伤害」。
+    /// </summary>
+    LowestHp = 6
 }
 
 /// <summary>

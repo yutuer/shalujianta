@@ -684,6 +684,108 @@ $Characters['castor'] = @{
     )
     Emblem = 'triangleUp'
 }
+# ===== D74 新增 5 个 wiki 角色（2026-11-24 主人指定）=====
+# ⚠️ 加了新角色后跑本脚本要用 -Only（例：-Only kathigu,nymphaea,caecus,pontos,casiah），
+#    别全量跑 —— 老角色的立绘已被主人手工精修过。
+# ⚠️ 胸章形状必须与既有角色/敌人**互不相同**：
+#    本轮用 triangleDown / ellipse / ring / star5 / crown（square 留空备用）。
+
+# 凯蒂古拉（Kathigu）—— 混沌界域 / 伤害型 / 末路枪声与业火
+$Characters['kathigu'] = @{
+    Main = '#7A3A2A'; Accent = '#FFB05C'
+    Sh = 66; Wa = 50; Hp = 56
+    Behind = @(
+        '<path d="M44 44 L128 128 L212 44" fill="none" stroke="{ACC}" stroke-width="5" stroke-linejoin="round" />',
+        '<circle cx="128" cy="128" r="20" fill="none" stroke="{ACC}" stroke-width="5" />',
+        '<path d="M128 96 L128 160 M96 128 L160 128" fill="none" stroke="{ACC}" stroke-width="4" stroke-linecap="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M108 90 L148 90 L142 112 L114 112 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'triangleDown'
+}
+
+# 宁菲亚（Nymphaea）—— 混沌界域 / 中毒型 / 夜潮与沉逝苦海
+$Characters['nymphaea'] = @{
+    Main = '#2E4A7A'; Accent = '#9FF0E0'
+    Sh = 60; Wa = 44; Hp = 52
+    Behind = @(
+        '<path d="M30 236 C58 212 84 258 112 234 C140 210 168 256 226 224" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M30 262 C58 238 84 284 112 260 C140 236 168 282 226 250" fill="none" stroke="{ACC}" stroke-width="4" stroke-linecap="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M112 82 L144 82 L128 108 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'ellipse'
+}
+
+# 凯刻斯（Caecus）—— 深海界域 / 反击型 / 触腕与破碎沉戟
+$Characters['caecus'] = @{
+    Main = '#35485E'; Accent = '#A8C8E8'
+    Sh = 70; Wa = 54; Hp = 58
+    Behind = @(
+        '<path d="M50 274 C30 220 42 166 70 140" fill="none" stroke="{ACC}" stroke-width="7" stroke-linecap="round" />',
+        '<path d="M206 274 C226 220 214 166 186 140" fill="none" stroke="{ACC}" stroke-width="7" stroke-linecap="round" />',
+        '<circle cx="70" cy="134" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="186" cy="134" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M110 88 L146 88 L140 114 L116 114 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'ring'
+}
+
+# 庞托斯（Pontos）—— 深海界域 / 防御型 / 囚魇与纵魇掠袭
+$Characters['pontos'] = @{
+    Main = '#4A3A5E'; Accent = '#C0A0E8'
+    Sh = 74; Wa = 58; Hp = 62
+    Behind = @(
+        '<rect x="58" y="120" width="48" height="56" rx="8" fill="none" stroke="{ACC}" stroke-width="5" />',
+        '<path d="M58 138 H106 M58 156 H106 M82 120 V176" fill="none" stroke="{ACC}" stroke-width="3" />',
+        '<path d="M36 260 C50 232 62 244 72 226" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />',
+        '<path d="M220 260 C206 232 194 244 184 226" fill="none" stroke="{ACC}" stroke-width="5" stroke-linecap="round" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M112 84 L144 84 L128 112 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'star5'
+}
+
+# 卡茜亚（Casiah）—— 超维界域 / 减益型 / 魔术嘉年华与统统消失
+$Characters['casiah'] = @{
+    Main = '#6E2A4A'; Accent = '#F0A0C0'
+    Sh = 58; Wa = 46; Hp = 54
+    Behind = @(
+        '<path d="M128 22 L128 88" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<path d="M94 56 L162 56" fill="none" stroke="{ACC}" stroke-width="6" stroke-linecap="round" />',
+        '<circle cx="128" cy="56" r="22" fill="none" stroke="{ACC}" stroke-width="5" />',
+        '<circle cx="128" cy="56" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />'
+    )
+    After = @(
+        '<circle cx="96" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="160" cy="62" r="18" fill="url(#{HEADGRAD})" stroke="#0B0E14" stroke-width="5" />',
+        '<circle cx="96" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<circle cx="160" cy="62" r="9" fill="{ACC}" stroke="#0B0E14" stroke-width="3" />',
+        '<path d="M110 84 L146 84 L128 112 Z" fill="{ACC}" stroke="#0B0E14" stroke-width="3" stroke-linejoin="round" />'
+    )
+    Emblem = 'crown'
+}
 
 
 

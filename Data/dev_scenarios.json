@@ -229,6 +229,48 @@
       "map": "map01",
       "target": "battle",
       "enemyWave": "elite_wave"
+    },
+    "kathigu_team": {
+        "desc": "凯蒂古拉 + 其余三个真角色（2026-11-24 D74：wiki 新角色 —— 属性 140/167/126 / 末路枪声 / 千兆耀斑 / 业火重燃 / 焚却世界的爆炎）",
+        "team": ["kathigu", "pollux", "jialun", "sanga"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
+    },
+    "nymphaea_team": {
+        "desc": "宁菲亚 + 其余三个真角色（2026-11-24 D74：wiki 新角色 —— 属性 76/120/80 / 夜潮汹涌 / 丧钟遥鸣 / 沉逝苦海 / 自我的葬仪）",
+        "team": ["nymphaea", "pollux", "jialun", "sanga"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
+    },
+    "caecus_team": {
+        "desc": "凯刻斯 + 其余三个真角色（2026-11-24 D74：wiki 新角色 —— 属性 156/124/136 / 逆鳞之护 / 破碎沉戟 / 蜕变之躯 / 承自异端之血）",
+        "team": ["caecus", "pollux", "jialun", "sanga"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
+    },
+    "pontos_team": {
+        "desc": "庞托斯 + 其余三个真角色（2026-11-24 D74：wiki 新角色 —— 属性 180/131/176 / 纵魇掠袭 / 驭魇哨音 / 囚渊的怒仇 / 无休猎宴 + 3 张囚魇）",
+        "team": ["pontos", "pollux", "jialun", "sanga"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
+    },
+    "casiah_team": {
+        "desc": "卡茜亚 + 其余三个真角色（2026-11-24 D74：wiki 新角色 —— 属性 108/112/96 / 隔空取物 / 统统消失！/ 演出序幕 / 魔术嘉年华）",
+        "team": ["casiah", "pollux", "jialun", "sanga"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
+    },
+    "d74_team": {
+        "desc": "D74 四个新角色同队（凯蒂古拉 / 宁菲亚 / 凯刻斯 / 庞托斯，一次跑测覆盖四个角色的卡组与数值）",
+        "team": ["kathigu", "nymphaea", "caecus", "pontos"],
+        "keyOrder": "silver_slash",
+        "map": "map01",
+        "target": "battle"
     }
   }
 }

@@ -139,6 +139,7 @@ public class UltimateLoader
         ultimate.AddCardConsume = GetBoolValue(dict, "addCardConsume");
         ultimate.EnemyDamageReductionPercent = GetIntValue(dict, "enemyDamageReductionPercent", 0);
         ultimate.EnemyDamageReductionDuration = GetIntValue(dict, "enemyDamageReductionDuration", 1);
+        ultimate.TriggerPoisonPercent = GetIntValue(dict, "triggerPoisonPercent", 0);
 
         // 说明里提到的衍生卡（点它弹衍生卡说明面板）
         ultimate.DerivedCardId = GetStringValue(dict, "derivedCardId");

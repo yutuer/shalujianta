@@ -1463,6 +1463,12 @@ namespace FishEatFish.Scenes
 		if (owner.AwakeningRageGain > 0)
 		{
 			owner.AddRage(owner.AwakeningRageGain);
+			// 「每打出一张卡牌获得 N% 攻击力的反击」（D74：凯刻斯「蜕变之躯」）
+			if (owner.AwakeningCounterGain > 0f)
+			{
+				float gained = owner.AddCounter(owner.AwakeningCounterGain, false);
+				AddMessage($"灵知觉醒：获得{gained:F1}层反击", LogType.System);
+			}
 			AddMessage($"灵知觉醒：获得{owner.AwakeningRageGain}点狂气", LogType.System);
 		}
 

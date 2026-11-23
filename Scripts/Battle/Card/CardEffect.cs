@@ -29,6 +29,21 @@ namespace FishEatFish.Battle.Card
 		public int Percent { get; set; }
 
 		/// <summary>
+		/// **小数百分比**（D74）——
+		///
+		/// 灰机 wiki 的效果数值**可能是小数**（宁菲亚「夜潮汹涌」= 攻击力×22.5%）。
+		/// ⚠️ <see cref="Percent"/> 是 int → 小数原值在赋值那一刻就被四舍五入掉了（踩坑 §118）。
+		/// → 凡外部原值带小数的百分比走这个字段；<see cref="EffectivePercent"/> 会优先取它。
+		/// </summary>
+		public float PercentFloat { get; set; }
+
+		/// <summary>
+		/// **生效的百分比**：整数 <see cref="Percent"/> 优先，没有才用小数 <see cref="PercentFloat"/>。
+		/// 卡面显示与战斗结算都读它（公式只写一处，踩坑 §124）。
+		/// </summary>
+		public float EffectivePercent => Percent > 0 ? Percent : PercentFloat;
+
+		/// <summary>
 		/// **按施法者「防御力」算的百分比**（D72）。
 		///
 		/// 灰机 wiki 有一类减益的数值是按**防御力**算的：
@@ -120,6 +135,46 @@ namespace FishEatFish.Battle.Card
 		/// ⚠️ 与 <see cref="Percent"/>（防御力百分比）**分开写**，别混进同一个字段。
 		/// </summary>
 		public int HealthPercent { get; set; }
+
+		/// <summary>
+		/// **伤害等量中毒**（D74：宁菲亚「夜潮汹涌」）。
+		///
+		/// wiki 原文：「造成 [攻击力*22.5%] 点伤害并**施加等量中毒**。」
+		/// → 这次伤害打多少，敌人身上就叠多少层中毒（层数即伤害值）。
+		/// ⚠️ 必须是**伤害效果上的字段**（不是另一个效果类型）——
+		///    否则卡面正文里的 {damage} 占位符取不到值会显示 0。
+		/// </summary>
+		public bool PoisonEqualDamage { get; set; }
+
+		/// <summary>
+		/// **置入手牌的多张指定卡**（D74：庞托斯「驭魇哨音」：「生成 3 种不同的「囚魇」置入手中」）。
+		///
+		/// 数据表写法：<c>{ "type": "addCardsToHand", "addCardsToHandIds": "a,b,c" }</c>
+		/// → 逗号分隔的卡牌 id，**每种一张**（不是同一种叠 N 张）。
+		/// </summary>
+		public string AddCardsToHandIds { get; set; } = "";
+
+		/// <summary>
+		/// **洗回手牌后抽等量的牌**（D74：卡茜亚「统统消失！」：「抽取等同于弃掉和洗入数量的牌」）。
+		/// </summary>
+		public bool DrawAfterShuffle { get; set; }
+
+		/// <summary>
+		/// **灵知觉醒：每打出一张卡牌获得 N% 攻击力的反击**（D74：凯刻斯「蜕变之躯」）。
+		///
+		/// wiki 原文：「凯刻斯每打出 1 张牌，回复 [体质*7%] 点生命并获得 [攻击力*10%] 点反击。」
+		/// ⚠️ 与 AwakeningCounterPercent 的区别：那个是「施加的反击提高 N%」（倍率），
+		///    这个是「每次出牌**获得** N% 攻击力的反击层数」（固定获得）。
+		/// </summary>
+		public int AwakeningCounterGainPercent { get; set; }
+
+		/// <summary>
+		/// **灵知觉醒「每出牌获得狂气」的每级增量**（D74：宁菲亚「沉逝苦海」）。
+		///
+		/// wiki 原文（效果1~6）：「宁菲亚打出卡牌后，获得 5 / 6 / 7 / 8 / 9 / 10 点狂气。」
+		/// → 觉醒激活时按**觉醒卡的等级**算一次：value + perLevel × (等级 − 1)。
+		/// </summary>
+		public int AwakeningRageGainPerLevel { get; set; }
 
 		/// <summary>增益 id（<c>Data/buffs.json</c>）</summary>
 		public string Buff { get; set; } = "";
@@ -428,6 +483,20 @@ namespace FishEatFish.Battle.Card
 		/// ⚠️ 洗入的卡是**独立实例**（从模板克隆），不是共享同一个 Card 对象。
 		/// </summary>
 		public const string ShuffleIntoDeck = "shuffleIntoDeck";
+
+		/// <summary>
+		/// **置入多张指定卡到手牌**（D74：庞托斯「驭魇哨音」：「生成 3 种不同的「囚魇」置入手中」）。
+		///
+		/// 数据表写法：<c>{ "type": "addCardsToHand", "addCardsToHandIds": "a,b,c" }</c>
+		/// </summary>
+		public const string AddCardsToHand = "addCardsToHand";
+
+		/// <summary>
+		/// **把手牌洗回抽牌堆**（D74：卡茜亚「统统消失！」）。
+		///
+		/// 数据表写法：<c>{ "type": "shuffleHandToDeck", "drawAfterShuffle": true }</c>
+		/// </summary>
+		public const string ShuffleHandToDeck = "shuffleHandToDeck";
 
 
 	}

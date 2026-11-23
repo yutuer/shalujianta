@@ -348,6 +348,28 @@ public partial class Player : Node, IUnit
 	///
 	/// ⚠️ 与 <see cref="DiscardHand"/> 的区别：**返回张数**（那张卡要用它算护盾加成）。
 	/// </summary>
+	/// <summary>
+	/// **把手牌全部洗回抽牌堆**（D74：卡茜亚「统统消失！」：「将其他手牌洗入抽牌堆」）。
+	///
+	/// 返回洗回的张数（那张卡要按这个数「抽等量的牌」）。
+	/// ⚠️ 手牌上限仍然生效：洗回后立刻抽牌，可能只抽得进一部分。
+	/// </summary>
+	public int ShuffleHandToDeck()
+	{
+		int count = Hand.Count;
+		if (count <= 0) return 0;
+	
+		foreach (Card.Card card in Hand)
+		{
+			Deck.Add(card);
+		}
+		Hand.Clear();
+		ShuffleDeck();
+	
+		GD.Print($"[Player] 手牌洗回抽牌堆：{count} 张");
+		return count;
+	}
+
 	public int DiscardHandForShield()
 	{
 		List<Card.Card> cardsToDiscard = new List<Card.Card>();

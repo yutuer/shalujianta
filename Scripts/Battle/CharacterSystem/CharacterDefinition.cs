@@ -938,6 +938,267 @@ public partial class CharacterDefinition : Resource
     /// 卡组：打击 + 防御 + 翱翔夙愿（灵知觉醒）/ 蔽日之羽 / 穿行永夜；
     /// 狂气爆发「不屈的孤嚎鸟」。衍生卡「黑羽」由狂气爆发洗入抽牌堆。
     /// </summary>
+    /// <summary>
+    /// **凯蒂古拉**（Kathigu-Ra）—— **可玩角色**（灰机 wiki 角色页「凯蒂古拉」，2026-11-24 主人指定新增）。
+    ///
+    /// 属性口径（与 D71 / D73 一致）：**统一用 wiki 的「60 级 0 命」数据**。
+    /// - 本体 3 项 = wiki 60 级行：体质 **140** / 攻击 **167** / 防御 **126**
+    /// - 其余 = 通用值 + wiki 升格5(=60 级时) 那 2 条覆盖：
+    ///   暴击率 **9.8%** / 暴击伤害 **64.4%**
+    ///   （通用值其余 7 项：界域精通0 / 伤害强效0 / 基础狂气100 / 狂气回充0 /
+    ///    银钥充能15 / 黑印掉落0 / 死亡抵抗0）
+    ///
+    /// 界域 = **混沌**、定位 **伤害型**（wiki「唤醒体类型=伤害型」）→ Striker。
+    ///
+    /// 卡组：打击 + 防御 + 业火重燃（灵知觉醒）/ 末路枪声 / 千兆耀斑；
+    /// 狂气爆发「焚却世界的爆炎」。
+    /// </summary>
+    public static CharacterDefinition CreateKathigu()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "kathigu",
+            Name = "凯蒂古拉",
+            NameEn = "Kathigu-Ra",
+            // 界域=混沌（wiki 角色页「|界域=混沌」）
+            Race = CharacterRace.Chaos,
+            // 伤害型（wiki「唤醒体类型=伤害型」）
+            Archetype = CharacterArchetype.Striker,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 167,
+            BaseDefense = 126,
+            BaseConstitution = 140,
+            BaseCritRate = 9.8f,
+            // 暴击伤害 64.4%（wiki 升格5 原值，小数）
+            BaseCritDamage = 64.4f,
+            BaseDomainMastery = 0f,
+            BaseDamageBonus = 0f,
+            BaseRageReturn = 0f,
+            BaseSilverKeyCharge = 15f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "kathigu_attack",
+            DefenseCardId = "kathigu_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "kathigu_special3", "kathigu_special", "kathigu_special2" },
+            UltimateSkillId = "kathigu_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **宁菲亚**（Nymphaea）—— **可玩角色**（灰机 wiki 角色页「宁菲亚」，2026-11-24 主人指定新增）。
+    ///
+    /// 属性口径：wiki「60 级 0 命」。
+    /// - 本体 3 项：体质 **76** / 攻击 **120** / 防御 **80**
+    /// - 通用值 + 升格5 覆盖：暴击率5 / 暴击伤害50 / **伤害强效 21%** /
+    ///   **银钥充能 19.8** / 界域精通0 / 基础狂气100 / 狂气回充0 /
+    ///   黑印掉落0 / 死亡抵抗0
+    ///
+    /// 界域 = **混沌**、定位 **伤害型**（wiki「唤醒体类型=伤害型」）。
+    /// 她的机制围绕「中毒」→ 取 **Poison（毒师）** 定位（界面类型标签仍是 wiki 的「伤害型」）。
+    ///
+    /// 卡组：打击 + 防御 + 沉逝苦海（灵知觉醒）/ 夜潮汹涌 / 丧钟遥鸣；
+    /// 狂气爆发「自我的葬仪」。
+    /// </summary>
+    public static CharacterDefinition CreateNymphaea()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "nymphaea",
+            Name = "宁菲亚",
+            NameEn = "Nymphaea",
+            // 界域=混沌（wiki 角色页「|界域=混沌」）
+            Race = CharacterRace.Chaos,
+            // 伤害型（wiki「唤醒体类型=伤害型」）；机制围绕中毒 → 毒师
+            Archetype = CharacterArchetype.Poison,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 120,
+            BaseDefense = 80,
+            BaseConstitution = 76,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            BaseDomainMastery = 0f,
+            // 伤害强效 21%（wiki 升格5 原值，小数）
+            BaseDamageBonus = 21f,
+            BaseRageReturn = 0f,
+            // 银钥充能 19.8（wiki 升格5 原值，小数）
+            BaseSilverKeyCharge = 19.8f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "nymphaea_attack",
+            DefenseCardId = "nymphaea_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "nymphaea_special3", "nymphaea_special", "nymphaea_special2" },
+            UltimateSkillId = "nymphaea_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **凯刻斯**（Caecus）—— **可玩角色**（灰机 wiki 角色页「凯刻斯」，2026-11-24 主人指定新增）。
+    ///
+    /// 属性口径：wiki「60 级 0 命」。
+    /// - 本体 3 项：体质 **156** / 攻击 **124** / 防御 **136**
+    /// - 通用值 + 升格5 覆盖：暴击率5 / 暴击伤害50 / **界域精通 54.5** /
+    ///   **黑印掉落 8.4%** / 伤害强效0 / 基础狂气100 / 狂气回充0 /
+    ///   银钥充能15 / 死亡抵抗0
+    ///
+    /// 界域 = **深海**、定位 **防御型**（wiki「唤醒体类型=防御型」）。
+    /// 他的机制围绕「反击 + 触腕」→ 取 **Counter（反击者）** 定位（界面类型标签仍是 wiki 的「防御型」）。
+    ///
+    /// 卡组：打击 + 防御 + 蜕变之躯（灵知觉醒）/ 逆鳞之护 / 破碎沉戟；
+    /// 狂气爆发「承自异端之血」。
+    /// </summary>
+    public static CharacterDefinition CreateCaecus()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "caecus",
+            Name = "凯刻斯",
+            NameEn = "Caecus",
+            // 界域=深海（wiki 角色页「|界域=深海」）
+            Race = CharacterRace.Abyss,
+            // 防御型（wiki「唤醒体类型=防御型」）；机制围绕反击 → 反击者
+            Archetype = CharacterArchetype.Counter,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 124,
+            BaseDefense = 136,
+            BaseConstitution = 156,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            // 界域精通 54.5（wiki 升格5 原值，小数）
+            BaseDomainMastery = 54.5f,
+            BaseDamageBonus = 0f,
+            BaseRageReturn = 0f,
+            BaseSilverKeyCharge = 15f,
+            // 黑印掉落 8.4%（wiki 升格5 原值，小数）
+            BaseBlackMarkDrop = 8.4f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "caecus_attack",
+            DefenseCardId = "caecus_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "caecus_special3", "caecus_special", "caecus_special2" },
+            UltimateSkillId = "caecus_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **庞托斯**（Pontos）—— **可玩角色**（灰机 wiki 角色页「庞托斯」，2026-11-24 主人指定新增）。
+    ///
+    /// 属性口径：wiki「60 级 0 命」。
+    /// - 本体 3 项：体质 **180** / 攻击 **131** / 防御 **176**
+    /// - 通用值 + 升格5 覆盖：暴击率5 / **暴击伤害 64.4%** / **伤害强效 4.8%** /
+    ///   界域精通0 / 基础狂气100 / 狂气回充0 / 银钥充能15 / 黑印掉落0 / 死亡抵抗0
+    ///
+    /// 界域 = **深海**、定位 **防御型**（wiki「唤醒体类型=防御型」）→ Tank。
+    ///
+    /// 卡组：打击 + 防御 + 囚渊的怒仇（灵知觉醒）/ 纵魇掠袭 / 驭魇哨音；
+    /// 狂气爆发「无休猎宴」。附属卡：掳掠之魇 / 滋扰之魇 / 猎杀之魇（3 张「囚魇」）+ 灵感。
+    /// </summary>
+    public static CharacterDefinition CreatePontos()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "pontos",
+            Name = "庞托斯",
+            NameEn = "Pontos",
+            // 界域=深海（wiki 角色页「|界域=深海」）
+            Race = CharacterRace.Abyss,
+            // 防御型（wiki「唤醒体类型=防御型」）
+            Archetype = CharacterArchetype.Tank,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 131,
+            BaseDefense = 176,
+            BaseConstitution = 180,
+            BaseCritRate = 5,
+            // 暴击伤害 64.4%（wiki 升格5 原值，小数）
+            BaseCritDamage = 64.4f,
+            BaseDomainMastery = 0f,
+            // 伤害强效 4.8%（wiki 升格5 原值，小数）
+            BaseDamageBonus = 4.8f,
+            BaseRageReturn = 0f,
+            BaseSilverKeyCharge = 15f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "pontos_attack",
+            DefenseCardId = "pontos_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "pontos_special3", "pontos_special", "pontos_special2" },
+            UltimateSkillId = "pontos_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
+
+    /// <summary>
+    /// **卡茜亚**（Casiah）—— **可玩角色**（灰机 wiki 角色页「卡茜亚」，2026-11-24 主人指定新增）。
+    ///
+    /// 属性口径：wiki「60 级 0 命」。
+    /// - 本体 3 项：体质 **108** / 攻击 **112** / 防御 **96**
+    /// - 通用值 + 升格5 覆盖：暴击率5 / 暴击伤害50 / **界域精通 24** /
+    ///   **狂气回充 2.4** / 伤害强效0 / 基础狂气100 / 银钥充能15 / 黑印掉落0 / 死亡抵抗0
+    ///
+    /// 界域 = **超维**、定位 **辅助型**（wiki「唤醒体类型=辅助型」）。
+    /// ⚠️ 本项目的「辅助型」只有 Healer / Debuffer 两档（界面标签由 wiki 的三分类给出）→
+    ///    卡茜亚既不治疗也不削弱，取 **Debuffer（削弱者）**；界面类型标签仍是 wiki 的「辅助型」。
+    ///
+    /// 卡组：打击 + 防御 + 演出序幕（灵知觉醒）/ 隔空取物 / 统统消失！；
+    /// 狂气爆发「魔术嘉年华」。
+    /// </summary>
+    public static CharacterDefinition CreateCasiah()
+    {
+        var charDef = new CharacterDefinition
+        {
+            CharacterId = "casiah",
+            Name = "卡茜亚",
+            NameEn = "Casiah",
+            // 界域=超维（wiki 角色页「|界域=超维」）
+            Race = CharacterRace.Hyperdimension,
+            // 辅助型（wiki「唤醒体类型=辅助型」）
+            Archetype = CharacterArchetype.Debuffer,
+            BaseHealth = 30,
+            BaseEnergy = 2,
+            BaseDrawCount = 2,
+            BaseAttack = 112,
+            BaseDefense = 96,
+            BaseConstitution = 108,
+            BaseCritRate = 5,
+            BaseCritDamage = 50,
+            // 界域精通 24（wiki 升格5 原值，小数）
+            BaseDomainMastery = 24f,
+            BaseDamageBonus = 0f,
+            // 狂气回充 2.4（wiki 升格5 原值，小数）
+            BaseRageReturn = 2.4f,
+            BaseSilverKeyCharge = 15f,
+            BaseBlackMarkDrop = 0f,
+            BaseDeathResistance = 0f,
+            BaseMaxRage = 100,
+            AttackCardId = "casiah_attack",
+            DefenseCardId = "casiah_defense",
+            // ⚠️ 顺序即显示顺序：[0] = 灵知觉醒卡（永远排 5 张的正中间）
+            SpecialCardIds = new string[] { "casiah_special3", "casiah_special", "casiah_special2" },
+            UltimateSkillId = "casiah_ultimate"
+        };
+        charDef.ApplyRaceDefaults();
+        return charDef;
+    }
     public static CharacterDefinition CreateCastor()
     {
         var charDef = new CharacterDefinition
@@ -1017,6 +1278,11 @@ public partial class CharacterDefinition : Resource
             CreateWinkle(),
             CreateClementine(),
             CreateCastor(),
+            CreateKathigu(),
+            CreateNymphaea(),
+            CreateCaecus(),
+            CreatePontos(),
+            CreateCasiah(),
             CreateMu(),
             CreateAldebaran(),
             CreateSaga(),

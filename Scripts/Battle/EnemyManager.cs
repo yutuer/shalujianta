@@ -96,6 +96,10 @@ public partial class EnemyManager
             TargetType.Position => GetEnemyAtPosition(targetPosition),
             // ⚠️ **随机敌人**（D73：詹金「鼠群冲击」：「对随机敌人造成…伤害」）
             TargetType.Random => GetRandomEnemy(),
+            // ⚠️ **生命最高 / 最低**（D74）：宁菲亚「夜潮汹涌」打生命最高的；
+            //    庞托斯「无休猎宴」打生命最低的。
+            TargetType.HighestHp => GetHighestHpEnemy(),
+            TargetType.LowestHp => GetLowestHpEnemy(),
             _ => GetFrontmostEnemy()
         };
     }
@@ -114,5 +118,35 @@ public partial class EnemyManager
         RandomNumberGenerator rng = new RandomNumberGenerator();
         rng.Randomize();
         return alive[rng.RandiRange(0, alive.Count - 1)];
+    }
+
+    /// <summary>
+    /// **生命最高的存活敌人**（D74：宁菲亚「夜潮汹涌」）。
+    ///
+    /// wiki 原文：「对**生命最高**的敌人造成 [攻击力*22.5%] 点伤害并施加等量中毒。」
+    /// </summary>
+    public Enemy GetHighestHpEnemy()
+    {
+        Enemy best = null;
+        foreach (Enemy enemy in GetLivingEnemies())
+        {
+            if (best == null || enemy.CurrentHealth > best.CurrentHealth) best = enemy;
+        }
+        return best;
+    }
+
+    /// <summary>
+    /// **生命最低的存活敌人**（D74：庞托斯「无休猎宴」）。
+    ///
+    /// wiki 原文：「对**生命最低**的敌人造成等同于 3000% 触腕伤害的固定伤害。」
+    /// </summary>
+    public Enemy GetLowestHpEnemy()
+    {
+        Enemy best = null;
+        foreach (Enemy enemy in GetLivingEnemies())
+        {
+            if (best == null || enemy.CurrentHealth < best.CurrentHealth) best = enemy;
+        }
+        return best;
     }
 }
